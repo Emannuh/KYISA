@@ -5,92 +5,261 @@
 
 {% block content %}
 
-<!-- ── HERO ────────────────────────────────────────────────────────────────── -->
-<section class="hero">
-    <div class="hero-content">
-        <img src="{% static 'img/kyisa_logo.png' %}" alt="KYISA" class="hero-logo">
-        <h1>Kenya Youth Intercounty Sports Association</h1>
-        <h2>Nurturing athletic excellence across all 47 counties</h2>
-        <div class="hero-buttons">
-            <a href="{% url 'public_competitions' %}" class="btn btn-white btn-lg">View Competitions</a>
-            <a href="{% url 'about' %}" class="btn btn-outline-white btn-lg">Learn More</a>
+<!-- ══════════════════════════════════════════════════════════════════════════
+     HERO — FULL-SCREEN CINEMATIC
+     ══════════════════════════════════════════════════════════════════════════ -->
+<section class="hero" id="hero">
+    <!-- Background layers -->
+    <div class="hero-bg">
+        <div class="hero-gradient"></div>
+        <canvas class="hero-canvas" id="heroCanvas"></canvas>
+    </div>
+
+    <!-- Content — Phase A (text) -->
+    <div class="hero-content hero-phase hero-phase--active" id="heroPhaseA">
+        <div class="hero-logo-wrap anim-zoom">
+            <div class="hero-logo-ring"></div>
+            <img src="{% static 'img/kyisa_logo.png' %}" alt="KYISA" class="hero-logo-img">
+        </div>
+
+        <h1 class="hero-title">
+            <span class="hero-line anim-up" style="--delay:.25s">Kenya Youth</span>
+            <span class="hero-line anim-up" style="--delay:.45s">Intercounty Sports</span>
+            <span class="hero-line hero-line--accent anim-up" style="--delay:.65s">Association</span>
+        </h1>
+
+        <p class="hero-tagline anim-up" style="--delay:.85s">THE HOME OF KENYAN YOUTH SPORTS</p>
+
+        <p class="hero-quote anim-up" style="--delay:1s">
+            "Champions are built through discipline, teamwork,<br>and the relentless pursuit of excellence."
+        </p>
+
+        <div class="hero-actions anim-up" style="--delay:1.15s">
+            <a href="{% url 'public_competitions' %}" class="btn btn--primary btn--lg">
+                View Competitions
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="{% url 'about' %}" class="btn btn--outline btn--lg">Learn More</a>
+        </div>
+
+        <div class="hero-scroll anim-up" style="--delay:1.5s">
+            <div class="scroll-indicator">
+                <div class="scroll-dot"></div>
+            </div>
+            <span>Scroll</span>
+        </div>
+    </div>
+
+    <!-- Content — Phase B (logo showcase) -->
+    <div class="hero-content hero-phase" id="heroPhaseB">
+        <div class="hero-showcase">
+            <div class="hero-showcase__orbit">
+                <div class="hero-showcase__ring hero-showcase__ring--1"></div>
+                <div class="hero-showcase__ring hero-showcase__ring--2"></div>
+                <div class="hero-showcase__ring hero-showcase__ring--3"></div>
+            </div>
+            <img src="{% static 'img/kyisa_logo.png' %}" alt="KYISA" class="hero-showcase__logo">
+        </div>
+        <h2 class="hero-showcase__text">KYISA</h2>
+        <p class="hero-showcase__sub">Empowering Youth Through Sports</p>
+        <div class="hero-actions">
+            <a href="{% url 'public_competitions' %}" class="btn btn--primary btn--lg">
+                View Competitions
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="{% url 'about' %}" class="btn btn--outline btn--lg">Learn More</a>
+        </div>
+    </div>
+
+    <!-- Content — Phase C (Kenyan flag) -->
+    <div class="hero-content hero-phase" id="heroPhaseC">
+        <div class="kenya-flag-wrap">
+            <div class="kenya-flag">
+                <div class="flag-stripe flag-stripe--black"></div>
+                <div class="flag-stripe flag-stripe--white-top"></div>
+                <div class="flag-stripe flag-stripe--red"></div>
+                <div class="flag-stripe flag-stripe--white-bot"></div>
+                <div class="flag-stripe flag-stripe--green"></div>
+                <!-- Shield -->
+                <div class="flag-shield">
+                    <svg viewBox="0 0 120 160" class="flag-shield-svg">
+                        <!-- Shield shape -->
+                        <ellipse cx="60" cy="80" rx="38" ry="58" fill="#C62828" stroke="#111" stroke-width="3"/>
+                        <!-- Vertical spears -->
+                        <line x1="60" y1="5" x2="60" y2="155" stroke="#111" stroke-width="3"/>
+                        <!-- Cross bars on shield -->
+                        <ellipse cx="60" cy="60" rx="18" ry="5" fill="none" stroke="#fff" stroke-width="2.5"/>
+                        <ellipse cx="60" cy="80" rx="20" ry="5" fill="none" stroke="#fff" stroke-width="2.5"/>
+                        <ellipse cx="60" cy="100" rx="18" ry="5" fill="none" stroke="#fff" stroke-width="2.5"/>
+                        <!-- Spear tips -->
+                        <polygon points="25,10 30,30 20,30" fill="#555"/>
+                        <polygon points="95,10 100,30 90,30" fill="#555"/>
+                        <line x1="25" y1="30" x2="25" y2="140" stroke="#555" stroke-width="2.5"/>
+                        <line x1="95" y1="30" x2="95" y2="140" stroke="#555" stroke-width="2.5"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <h2 class="flag-title">Republic of Kenya</h2>
+        <p class="flag-sub">Harambee &mdash; Let Us All Pull Together</p>
+    </div>
+
+    <div class="kenya-stripe" style="position:absolute;bottom:0;left:0;right:0;z-index:5"></div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     STATS TICKER
+     ══════════════════════════════════════════════════════════════════════════ -->
+<div class="ticker">
+    <div class="ticker-track">
+        <div class="ticker-content" id="tickerContent">
+            <span class="ticker-item"><strong>{{ stats.competitions|default:"0" }}</strong> Competitions</span>
+            <span class="ticker-sep">&#x2022;</span>
+            <span class="ticker-item"><strong>{{ stats.teams|default:"0" }}</strong> Teams</span>
+            <span class="ticker-sep">&#x2022;</span>
+            <span class="ticker-item"><strong>{{ stats.players|default:"0" }}</strong> Players</span>
+            <span class="ticker-sep">&#x2022;</span>
+            <span class="ticker-item"><strong>{{ stats.referees|default:"0" }}</strong> Referees</span>
+            <span class="ticker-sep">&#x2022;</span>
+            <span class="ticker-item"><strong>47</strong> Counties</span>
+            <span class="ticker-sep">&#x2022;</span>
+            <span class="ticker-item"><strong>{{ stats.competitions|default:"0" }}</strong> Competitions</span>
+            <span class="ticker-sep">&#x2022;</span>
+            <span class="ticker-item"><strong>{{ stats.teams|default:"0" }}</strong> Teams</span>
+            <span class="ticker-sep">&#x2022;</span>
+            <span class="ticker-item"><strong>{{ stats.players|default:"0" }}</strong> Players</span>
+            <span class="ticker-sep">&#x2022;</span>
+            <span class="ticker-item"><strong>{{ stats.referees|default:"0" }}</strong> Referees</span>
+            <span class="ticker-sep">&#x2022;</span>
+            <span class="ticker-item"><strong>47</strong> Counties</span>
+            <span class="ticker-sep">&#x2022;</span>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     COUNTDOWN — NEXT EDITION
+     ══════════════════════════════════════════════════════════════════════════ -->
+<section class="countdown-section" id="countdown">
+    <div class="container">
+        <div class="countdown-inner reveal">
+            <div class="countdown-info">
+                <span class="badge badge--red">Next Edition</span>
+                <h2 class="countdown-title">KYISA 2026<br><span>Laikipia County</span></h2>
+                <p class="countdown-dates">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C62828" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    11th April — 17th April 2026
+                </p>
+                <p class="countdown-venue">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B5E20" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    Laikipia County, Kenya
+                </p>
+            </div>
+            <div class="countdown-timer" id="countdownTimer">
+                <div class="countdown-unit">
+                    <span class="countdown-num" id="cdDays">00</span>
+                    <span class="countdown-label">Days</span>
+                </div>
+                <div class="countdown-sep">:</div>
+                <div class="countdown-unit">
+                    <span class="countdown-num" id="cdHours">00</span>
+                    <span class="countdown-label">Hours</span>
+                </div>
+                <div class="countdown-sep">:</div>
+                <div class="countdown-unit">
+                    <span class="countdown-num" id="cdMins">00</span>
+                    <span class="countdown-label">Minutes</span>
+                </div>
+                <div class="countdown-sep">:</div>
+                <div class="countdown-unit">
+                    <span class="countdown-num" id="cdSecs">00</span>
+                    <span class="countdown-label">Seconds</span>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- ── FEATURES ────────────────────────────────────────────────────────────── -->
-<section class="section">
+<!-- ══════════════════════════════════════════════════════════════════════════
+     WHAT WE DO
+     ══════════════════════════════════════════════════════════════════════════ -->
+<section class="sec" id="about">
     <div class="container">
-        <div class="section-header">
-            <h2>What We Do</h2>
-            <p>Empowering Kenya's youth through organized competitive sports</p>
-            <div class="line"></div>
+        <div class="sec-head reveal">
+            <span class="badge">What We Do</span>
+            <h2 class="sec-title">Empowering Kenya's Youth<br>Through Sport</h2>
+            <div class="sec-line"></div>
         </div>
+
         <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon green">🏆</div>
+            <div class="feature reveal" style="--delay:.05s">
+                <span class="feature-num">01</span>
                 <h3>Intercounty Competitions</h3>
-                <p>Organizing and managing sporting tournaments that bring together youth teams from counties across Kenya.</p>
+                <p>Organizing tournaments that bring together youth from all 47 counties in thrilling competitive action.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon red">⚽</div>
+            <div class="feature reveal" style="--delay:.12s">
+                <span class="feature-num">02</span>
                 <h3>Youth Development</h3>
-                <p>Identifying and nurturing young sporting talent through competitive and well-structured sporting programs.</p>
+                <p>Identifying and nurturing young talent through well-structured programs that shape future champions.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon blue">📋</div>
+            <div class="feature reveal" style="--delay:.19s">
+                <span class="feature-num">03</span>
                 <h3>Referee Management</h3>
-                <p>Training, certifying, and appointing qualified match officials to ensure fair play in all competitions.</p>
+                <p>Training and certifying qualified match officials to ensure fair play at all levels.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon yellow">📊</div>
-                <h3>Results & Statistics</h3>
-                <p>Tracking fixtures, results, standings, and player statistics across all KYISA competitions.</p>
+            <div class="feature reveal" style="--delay:.26s">
+                <span class="feature-num">04</span>
+                <h3>Results & Stats</h3>
+                <p>Real-time tracking of fixtures, results, standings, and player statistics across all competitions.</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ── UPCOMING MATCHES ───────────────────────────────────────────────────── -->
-<section class="section section-alt">
+<!-- ══════════════════════════════════════════════════════════════════════════
+     UPCOMING FIXTURES
+     ══════════════════════════════════════════════════════════════════════════ -->
+<section class="sec sec--dark" id="fixtures">
     <div class="container">
-        <div class="section-header">
-            <h2>Upcoming Fixtures</h2>
-            <p>Don't miss the next exciting matches</p>
-            <div class="line"></div>
+        <div class="sec-head reveal">
+            <span class="badge badge--red">Match Day</span>
+            <h2 class="sec-title">Upcoming Fixtures</h2>
+            <div class="sec-line"></div>
         </div>
 
         {% if upcoming_fixtures %}
-        <div class="grid-3">
-            {% for fixture in upcoming_fixtures %}
-            <div class="match-card">
-                <div class="match-card-header">
-                    <span>{{ fixture.competition.name }}</span>
-                    <span>{{ fixture.match_date|date:"d M Y" }}</span>
-                </div>
-                <div class="match-card-body">
-                    <div class="match-team">
-                        <div class="badge-icon">🛡️</div>
-                        <h4>{{ fixture.home_team.name }}</h4>
-                        <p>{{ fixture.home_team.county|default:"" }}</p>
+        <div class="card-grid card-grid--3">
+            {% for match in upcoming_fixtures %}
+            <div class="match-card reveal" style="--delay:{{ forloop.counter0 }}0ms">
+                <div class="match-card__comp">{{ match.competition.name }}</div>
+                <div class="match-card__body">
+                    <div class="match-card__team">
+                        <div class="team-badge">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1B5E20" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <span>{{ match.home_team.name }}</span>
                     </div>
-                    <div class="match-vs">VS</div>
-                    <div class="match-team">
-                        <div class="badge-icon">🛡️</div>
-                        <h4>{{ fixture.away_team.name }}</h4>
-                        <p>{{ fixture.away_team.county|default:"" }}</p>
+                    <div class="match-card__vs">
+                        <strong>VS</strong>
+                        <small>{{ match.match_date|date:"d M · H:i" }}</small>
+                    </div>
+                    <div class="match-card__team">
+                        <div class="team-badge">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1B5E20" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <span>{{ match.away_team.name }}</span>
                     </div>
                 </div>
-                <div class="match-card-footer">
-                    <span>📍 {{ fixture.venue.name|default:"TBD" }}</span>
-                    <span>🕐 {{ fixture.match_date|date:"H:i" }}</span>
+                <div class="match-card__foot">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    {{ match.venue.name|default:"TBD" }}
                 </div>
             </div>
             {% endfor %}
         </div>
         {% else %}
-        <div class="empty-state">
-            <div class="icon">📅</div>
+        <div class="empty-state reveal">
+            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(27,94,32,.25)" stroke-width="1"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
             <h3>No Upcoming Fixtures</h3>
             <p>Check back soon for scheduled matches.</p>
         </div>
@@ -98,71 +267,70 @@
     </div>
 </section>
 
-<!-- ── STATISTICS COUNTER ─────────────────────────────────────────────────── -->
-<section class="section section-dark">
+<!-- ══════════════════════════════════════════════════════════════════════════
+     COUNTER STATS
+     ══════════════════════════════════════════════════════════════════════════ -->
+<section class="stats-bar">
     <div class="container">
-        <div class="counter-grid">
-            <div class="counter-item">
-                <h3 data-target="{{ stats.competitions }}">{{ stats.competitions }}</h3>
-                <p>Competitions</p>
+        <div class="stats-row">
+            <div class="stat-item reveal" style="--delay:0s">
+                <span class="stat-num" data-count="{{ stats.competitions|default:'0' }}">0</span>
+                <span class="stat-label">Competitions</span>
             </div>
-            <div class="counter-item">
-                <h3 data-target="{{ stats.teams }}">{{ stats.teams }}</h3>
-                <p>Registered Teams</p>
+            <div class="stat-item reveal" style="--delay:.08s">
+                <span class="stat-num" data-count="{{ stats.teams|default:'0' }}">0</span>
+                <span class="stat-label">Registered Teams</span>
             </div>
-            <div class="counter-item">
-                <h3 data-target="{{ stats.players }}">{{ stats.players }}</h3>
-                <p>Active Players</p>
+            <div class="stat-item reveal" style="--delay:.16s">
+                <span class="stat-num" data-count="{{ stats.players|default:'0' }}">0</span>
+                <span class="stat-label">Active Players</span>
             </div>
-            <div class="counter-item">
-                <h3 data-target="{{ stats.referees }}">{{ stats.referees }}</h3>
-                <p>Certified Referees</p>
+            <div class="stat-item reveal" style="--delay:.24s">
+                <span class="stat-num" data-count="{{ stats.referees|default:'0' }}">0</span>
+                <span class="stat-label">Certified Referees</span>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ── RECENT RESULTS ─────────────────────────────────────────────────────── -->
-<section class="section">
+<!-- ══════════════════════════════════════════════════════════════════════════
+     RECENT RESULTS
+     ══════════════════════════════════════════════════════════════════════════ -->
+<section class="sec" id="results">
     <div class="container">
-        <div class="section-header">
-            <h2>Recent Results</h2>
-            <p>Latest match outcomes from across our competitions</p>
-            <div class="line"></div>
+        <div class="sec-head reveal">
+            <span class="badge">Scoreboard</span>
+            <h2 class="sec-title">Recent Results</h2>
+            <div class="sec-line"></div>
         </div>
 
         {% if recent_results %}
-        <div class="grid-3">
-            {% for fixture in recent_results %}
-            <div class="match-card">
-                <div class="match-card-header">
-                    <span>{{ fixture.competition.name }}</span>
-                    <span>{{ fixture.match_date|date:"d M Y" }}</span>
+        <div class="card-grid card-grid--3">
+            {% for match in recent_results %}
+            <div class="result-card reveal" style="--delay:{{ forloop.counter0 }}0ms">
+                <div class="result-card__head">
+                    <span>{{ match.competition.name }}</span>
+                    <span>{{ match.match_date|date:"d M Y" }}</span>
                 </div>
-                <div class="match-card-body">
-                    <div class="match-team">
-                        <div class="badge-icon">🛡️</div>
-                        <h4>{{ fixture.home_team.name }}</h4>
+                <div class="result-card__body">
+                    <span class="result-card__team">{{ match.home_team.name }}</span>
+                    <div class="result-card__score">
+                        <span>{{ match.home_score|default:"0" }}</span>
+                        <em>–</em>
+                        <span>{{ match.away_score|default:"0" }}</span>
                     </div>
-                    <div class="match-score">{{ fixture.home_score|default:"0" }} - {{ fixture.away_score|default:"0" }}</div>
-                    <div class="match-team">
-                        <div class="badge-icon">🛡️</div>
-                        <h4>{{ fixture.away_team.name }}</h4>
-                    </div>
+                    <span class="result-card__team">{{ match.away_team.name }}</span>
                 </div>
-                <div class="match-card-footer">
-                    <span>📍 {{ fixture.venue.name|default:"—" }}</span>
-                    <span>✅ Completed</span>
-                </div>
+                <div class="result-card__ft">Full Time</div>
             </div>
             {% endfor %}
         </div>
-        <div style="text-align:center;margin-top:2rem;">
-            <a href="{% url 'public_results' %}" class="btn btn-primary">View All Results →</a>
+        <div style="text-align:center;margin-top:2rem" class="reveal">
+            <a href="{% url 'public_results' %}" class="btn btn--primary">View All Results &rarr;</a>
         </div>
         {% else %}
-        <div class="empty-state">
-            <div class="icon">📊</div>
+        <div class="empty-state reveal">
+            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(27,94,32,.25)" stroke-width="1"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
             <h3>No Results Yet</h3>
             <p>Match results will appear here once competitions begin.</p>
         </div>
@@ -170,41 +338,341 @@
     </div>
 </section>
 
-<!-- ── NEWS / ANNOUNCEMENTS ───────────────────────────────────────────────── -->
-<section class="section section-alt">
+<!-- ══════════════════════════════════════════════════════════════════════════
+     STORIES CAROUSEL
+     ══════════════════════════════════════════════════════════════════════════ -->
+<section class="stories-section sec sec--dark" id="news">
     <div class="container">
-        <div class="section-header">
-            <h2>Latest News</h2>
-            <p>Stay updated with KYISA announcements</p>
-            <div class="line"></div>
+        <div class="sec-head reveal">
+            <span class="badge badge--red">Newsroom</span>
+            <h2 class="sec-title">Stories &amp; Highlights</h2>
+            <div class="sec-line"></div>
         </div>
-        <div class="grid-3">
-            <div class="news-card">
-                <div class="news-card-img">🏅</div>
-                <div class="news-card-body">
-                    <p class="date">📅 Announcement</p>
-                    <h3>Registration Open for New Season</h3>
-                    <p>County teams can now register for the upcoming intercounty championship. Don't miss the deadline!</p>
+
+        <div class="stories-carousel reveal">
+            <div class="stories-progress" id="storiesProgress"></div>
+            <div class="story-slide story-slide--active">
+                <div class="story-slide__img">
+                    <img src="{% static 'img/kyisa_women_football.jpg' %}" alt="Women's football action at KYISA">
+                    <div class="story-slide__overlay">
+                        <span class="story-slide__tag">Women's Football</span>
+                        <h3>High-intensity action on the pitch</h3>
+                    </div>
                 </div>
             </div>
-            <div class="news-card">
-                <div class="news-card-img" style="background: linear-gradient(135deg, #C62828, #EF5350);">🎓</div>
-                <div class="news-card-body">
-                    <p class="date">📅 Training</p>
-                    <h3>Referee Training Program</h3>
-                    <p>KYISA's referee development program continues producing quality match officials across all counties.</p>
+
+            <!-- Slide 2 — story + image -->
+            <div class="story-slide">
+                <div class="story-slide__split">
+                    <div class="story-slide__text">
+                        <span class="story-slide__tag">KYISA 2025 &middot; Homa Bay</span>
+                        <h3>Makueni County Dominates at KYISA Games</h3>
+                        <p>Makueni made an emphatic statement at the KYISA games in Homa Bay. The men's football team pulled off a stunning 1-0 victory against defending champions Busia, while the women footballers produced a commanding 2-0 victory over Kajiado to book their semifinal spot.</p>
+                        <p>On the basketball court, the women's team edged Siaya 48-47 in a nail-biting encounter that went down to the wire.</p>
+                    </div>
+                    <div class="story-slide__img">
+                        <img src="{% static 'img/kyisa_men_football.jpg' %}" alt="Men's football action at KYISA">
+                    </div>
                 </div>
             </div>
-            <div class="news-card">
-                <div class="news-card-img" style="background: linear-gradient(135deg, #1565C0, #42A5F5);">🤝</div>
-                <div class="news-card-body">
-                    <p class="date">📅 Partnership</p>
-                    <h3>Growing Youth Sports in Kenya</h3>
-                    <p>Building partnerships with county governments to support youth sports development across Kenya.</p>
+
+            <!-- Slide 3 — image only -->
+            <div class="story-slide">
+                <div class="story-slide__img">
+                    <img src="{% static 'img/kyisa_basketball.jpg' %}" alt="Basketball action at KYISA">
+                    <div class="story-slide__overlay">
+                        <span class="story-slide__tag">Basketball</span>
+                        <h3>Thrilling court action across counties</h3>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Slide 4 — story + image -->
+            <div class="story-slide">
+                <div class="story-slide__split">
+                    <div class="story-slide__text">
+                        <span class="story-slide__tag">Champions &middot; 10th Edition</span>
+                        <h3>Makueni's Historic Triple Crown</h3>
+                        <p>Makueni County recorded their most successful performance at the 10th edition of KYISA Games. The women's football team defended their title for the third consecutive year, defeating Kajiado 5-4 on penalties in a thrilling final.</p>
+                        <p>Makueni also claimed victory in men's basketball, overpowering hosts Homa Bay 78-52. Overall, the county reached five finals — showcasing its emergence as a sporting giant.</p>
+                    </div>
+                    <div class="story-slide__img">
+                        <img src="{% static 'img/kyisa_champions.jpg' %}" alt="Makueni women's team celebrating with trophy">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carousel controls -->
+        <div class="stories-controls reveal">
+            <button class="stories-btn stories-btn--prev" id="storiesPrev" aria-label="Previous">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <div class="stories-dots" id="storiesDots">
+                <button class="stories-dot stories-dot--active" data-idx="0"></button>
+                <button class="stories-dot" data-idx="1"></button>
+                <button class="stories-dot" data-idx="2"></button>
+                <button class="stories-dot" data-idx="3"></button>
+            </div>
+            <button class="stories-btn stories-btn--next" id="storiesNext" aria-label="Next">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     AFFILIATIONS
+     ══════════════════════════════════════════════════════════════════════════ -->
+<section class="affiliations-section" id="affiliations">
+    <div class="container">
+        <p class="affil-label reveal">Proudly affiliated with</p>
+        <div class="affil-row reveal">
+            <div class="affil-item">
+                <img src="{% static 'img/fkf_logo.png' %}" alt="Football Kenya Federation">
+                <span>Football Kenya Federation</span>
+            </div>
+            <div class="affil-item">
+                <img src="{% static 'img/kbf_logo.png' %}" alt="Kenya Basketball Federation">
+                <span>Kenya Basketball Federation</span>
+            </div>
+            <div class="affil-item">
+                <img src="{% static 'img/kvf_logo.png' %}" alt="Kenya Volleyball Federation">
+                <span>Kenya Volleyball Federation</span>
+            </div>
+            <div class="affil-item">
+                <img src="{% static 'img/khf_logo.png' %}" alt="Kenya Handball Federation">
+                <span>Kenya Handball Federation</span>
             </div>
         </div>
     </div>
 </section>
 
+<!-- ══════════════════════════════════════════════════════════════════════════
+     CTA
+     ══════════════════════════════════════════════════════════════════════════ -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-box reveal">
+            <img src="{% static 'img/kyisa_logo.png' %}" alt="KYISA" class="cta-logo">
+            <h2>Join the Movement</h2>
+            <p>Whether you're a team, a referee, or a supporter — KYISA is your home for youth sports in Kenya.</p>
+            <div class="cta-actions">
+                <a href="{% url 'public_competitions' %}" class="btn btn--primary btn--lg">Browse Competitions</a>
+                <a href="{% url 'contact' %}" class="btn btn--outline btn--lg">Contact Us</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+    /* ── Preloader ──────────────────────────────────────────────────── */
+    var bar = document.getElementById('preloaderBar');
+    var preloader = document.getElementById('preloader');
+    var progress = 0;
+    var loadInt = setInterval(function(){
+        progress += Math.random() * 18 + 6;
+        if (progress >= 100) { progress = 100; clearInterval(loadInt); }
+        bar.style.width = progress + '%';
+        if (progress >= 100) {
+            setTimeout(function(){
+                preloader.classList.add('preloader--done');
+            }, 350);
+        }
+    }, 100);
+
+    /* ── Countdown timer ──────────────────────────────────────────── */
+    var targetDate = new Date('2026-04-11T08:00:00+03:00').getTime();
+    var cdDays = document.getElementById('cdDays');
+    var cdHours = document.getElementById('cdHours');
+    var cdMins = document.getElementById('cdMins');
+    var cdSecs = document.getElementById('cdSecs');
+
+    function updateCountdown() {
+        var now = new Date().getTime();
+        var diff = targetDate - now;
+        if (diff <= 0) {
+            cdDays.textContent = '00';
+            cdHours.textContent = '00';
+            cdMins.textContent = '00';
+            cdSecs.textContent = '00';
+            return;
+        }
+        var d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        var h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        var s = Math.floor((diff % (1000 * 60)) / 1000);
+        cdDays.textContent = d < 10 ? '0' + d : d;
+        cdHours.textContent = h < 10 ? '0' + h : h;
+        cdMins.textContent = m < 10 ? '0' + m : m;
+        cdSecs.textContent = s < 10 ? '0' + s : s;
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    /* ── Scroll reveals ─────────────────────────────────────────────── */
+    var revealEls = document.querySelectorAll('.reveal, .anim-up, .anim-zoom');
+    var revealObs = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+            if(e.isIntersecting){
+                e.target.classList.add('in-view');
+                revealObs.unobserve(e.target);
+            }
+        });
+    }, {threshold: 0.1, rootMargin: '0px 0px -40px 0px'});
+    revealEls.forEach(function(el){ revealObs.observe(el); });
+
+    /* ── Counter animation ──────────────────────────────────────────── */
+    var counterObs = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+            if(e.isIntersecting){
+                var el = e.target;
+                var target = parseInt(el.getAttribute('data-count')) || 0;
+                if(!target){ el.textContent='0'; counterObs.unobserve(el); return; }
+                var cur = 0;
+                var step = Math.max(1, Math.ceil(target / 50));
+                var t = setInterval(function(){
+                    cur += step;
+                    if(cur >= target){ cur = target; clearInterval(t); }
+                    el.textContent = cur.toLocaleString();
+                }, 35);
+                counterObs.unobserve(el);
+            }
+        });
+    }, {threshold: 0.5});
+    document.querySelectorAll('.stat-num').forEach(function(el){ counterObs.observe(el); });
+
+    /* ── Navbar solid on scroll ─────────────────────────────────────── */
+    var nav = document.getElementById('fkfNav');
+    window.addEventListener('scroll', function(){
+        if(window.scrollY > 60) nav.classList.add('fkf-nav--solid');
+        else nav.classList.remove('fkf-nav--solid');
+    });
+
+    /* ── Mobile nav toggle ──────────────────────────────────────────── */
+    var toggle = document.getElementById('navToggle');
+    var links = document.getElementById('navLinks');
+    if(toggle){
+        toggle.addEventListener('click', function(){
+            toggle.classList.toggle('open');
+            links.classList.toggle('open');
+        });
+        // Close menu when clicking a link
+        links.querySelectorAll('a').forEach(function(a){
+            a.addEventListener('click', function(){
+                toggle.classList.remove('open');
+                links.classList.remove('open');
+            });
+        });
+    }
+
+    /* ── Hero phase switcher ──────────────────────────────────────────── */
+    var phaseA = document.getElementById('heroPhaseA');
+    var phaseB = document.getElementById('heroPhaseB');
+    var phaseC = document.getElementById('heroPhaseC');
+    if (phaseA && phaseB && phaseC) {
+        var heroPhases = [phaseA, phaseB, phaseC];
+        var phaseDurations = [8000, 8000, 4000]; // text, logo, flag
+        var activePhase = 0;
+        var initialDelay = 4000;
+
+        function switchHeroPhase() {
+            heroPhases[activePhase].classList.remove('hero-phase--active');
+            activePhase = (activePhase + 1) % heroPhases.length;
+            heroPhases[activePhase].classList.add('hero-phase--active');
+            // schedule next switch with per-phase duration
+            setTimeout(switchHeroPhase, phaseDurations[activePhase]);
+        }
+
+        setTimeout(function() {
+            setTimeout(switchHeroPhase, phaseDurations[activePhase]);
+        }, initialDelay);
+    }
+
+    /* ── Stories carousel ─────────────────────────────────────────────── */
+    var slides = document.querySelectorAll('.story-slide');
+    var dots = document.querySelectorAll('.stories-dot');
+    var prevBtn = document.getElementById('storiesPrev');
+    var nextBtn = document.getElementById('storiesNext');
+    var progressBar = document.getElementById('storiesProgress');
+    var currentSlide = 0;
+    var slideCount = slides.length;
+    var autoInterval;
+
+    function goToSlide(idx) {
+        slides[currentSlide].classList.remove('story-slide--active');
+        dots[currentSlide].classList.remove('stories-dot--active');
+        currentSlide = (idx + slideCount) % slideCount;
+        slides[currentSlide].classList.add('story-slide--active');
+        dots[currentSlide].classList.add('stories-dot--active');
+        // restart progress bar
+        if (progressBar) {
+            progressBar.style.animation = 'none';
+            progressBar.offsetHeight;
+            progressBar.style.animation = '';
+        }
+    }
+
+    function startAuto() {
+        autoInterval = setInterval(function(){ goToSlide(currentSlide + 1); }, 6000);
+    }
+    function resetAuto() {
+        clearInterval(autoInterval);
+        startAuto();
+    }
+
+    if (prevBtn && nextBtn && slideCount > 0) {
+        nextBtn.addEventListener('click', function(){ goToSlide(currentSlide + 1); resetAuto(); });
+        prevBtn.addEventListener('click', function(){ goToSlide(currentSlide - 1); resetAuto(); });
+        dots.forEach(function(dot) {
+            dot.addEventListener('click', function(){
+                goToSlide(parseInt(dot.getAttribute('data-idx')));
+                resetAuto();
+            });
+        });
+        startAuto();
+    }
+
+    /* ── Canvas particles ───────────────────────────────────────────── */
+    var canvas = document.getElementById('heroCanvas');
+    if(canvas && canvas.getContext){
+        var ctx = canvas.getContext('2d');
+        var w, h, particles = [];
+        function resize(){
+            w = canvas.width = canvas.parentElement.offsetWidth;
+            h = canvas.height = canvas.parentElement.offsetHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+        for(var i=0; i<50; i++){
+            particles.push({
+                x: Math.random()*w, y: Math.random()*h,
+                r: Math.random()*1.8+0.5,
+                dx: (Math.random()-0.5)*0.3,
+                dy: (Math.random()-0.5)*0.3,
+                o: Math.random()*0.35+0.08
+            });
+        }
+        function draw(){
+            ctx.clearRect(0,0,w,h);
+            for(var i=0;i<particles.length;i++){
+                var d = particles[i];
+                d.x += d.dx; d.y += d.dy;
+                if(d.x<0||d.x>w) d.dx*=-1;
+                if(d.y<0||d.y>h) d.dy*=-1;
+                ctx.beginPath();
+                ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
+                ctx.fillStyle='rgba(27,94,32,'+d.o+')';
+                ctx.fill();
+            }
+            requestAnimationFrame(draw);
+        }
+        draw();
+    }
+})();
+</script>
 {% endblock %}

@@ -34,6 +34,8 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_filters",
     "drf_spectacular",
+    "crispy_forms",
+    "crispy_bootstrap5",
 
     # KYISA Apps
     "accounts",
@@ -41,6 +43,7 @@ INSTALLED_APPS = [
     "referees",
     "teams",
     "matches",
+    "admin_dashboard",
 ]
 
 # ── MIDDLEWARE ─────────────────────────────────────────────────────────────────
@@ -159,6 +162,9 @@ STATIC_URL  = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
@@ -200,8 +206,12 @@ USE_TZ        = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ── SQUAD RULES ────────────────────────────────────────────────────────────────
-SQUAD_SUBMISSION_HOURS_BEFORE_KICKOFF = 4   # Hours before KO that squad must be submitted
+SQUAD_SUBMISSION_HOURS_BEFORE_KICKOFF = 2
 SQUAD_MIN_PLAYERS  = 11
 SQUAD_MAX_PLAYERS  = 16
 SQUAD_MAX_STARTERS = 11
 SQUAD_MAX_SUBS     = 5
+
+# ── CRISPY FORMS ───────────────────────────────────────────────────────────────
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"

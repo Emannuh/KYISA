@@ -1,0 +1,14 @@
+{% extends 'public/base.html' %}
+{% block title %}Registration Submitted{% endblock %}
+{% block content %}
+<section style="padding:120px 0 60px;background:linear-gradient(135deg,#f5f7f5 0%,#e8f5e9 100%);min-height:100vh">
+<div class="container" style="max-width:600px;text-align:center">
+    <div style="background:#fff;border-radius:16px;padding:3rem;box-shadow:0 4px 24px rgba(0,0,0,.06)">
+        <div style="font-size:4rem">✅</div>
+        <h1 style="color:#1B5E20;margin:1rem 0">Registration Submitted!</h1>
+        <p style="color:#555;margin-bottom:2rem">Your team registration is <strong>pending approval</strong>. An administrator will review your application and contact you via the email provided.</p>
+        <a href="{% url 'home' %}" style="background:#1B5E20;color:#fff;padding:.75rem 2rem;border-radius:8px;text-decoration:none;font-weight:600">Back to Home</a>
+    </div>
+</div>
+</section>
+{% endblock %}

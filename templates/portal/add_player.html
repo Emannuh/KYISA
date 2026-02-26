@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% block title %}Add Player — {{ team.name }} — KYISA CMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'teams_list' %}">Teams</a>
+        <a href="{% url 'team_detail' pk=team.pk %}">{{ team.name }}</a>
+        <span>Add Player</span>
+    </div>
+    <h1>Add Player to {{ team.name }}</h1>
+    <p>Fill in the player details and upload required verification documents.</p>
+</div>
+
+<!-- Age bracket notice -->
+<div style="margin-bottom:1.5rem;padding:1rem 1.25rem;border-radius:10px;background:#fff3e0;border-left:4px solid #f57c00;display:flex;align-items:center;gap:.75rem">
+    <span style="font-size:1.5rem">⚠️</span>
+    <div>
+        <strong style="color:#e65100">Age Requirement</strong>
+        <p style="margin:0;color:#555;font-size:.9rem">Players must be between <strong>18 and 23 years old</strong>. Players outside this age bracket will be automatically rejected.</p>
+    </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem">
+    <!-- Form Column -->
+    <div class="card">
+        <div class="card-header"><h3>Player Details & Documents</h3></div>
+        <div class="card-body">
+            {% if messages %}
+            {% for message in messages %}
+            <div style="margin-bottom:1rem;padding:.75rem 1rem;border-radius:8px;background:{% if message.tags == 'success' %}#e8f5e9{% elif message.tags == 'error' %}#fce4ec{% elif message.tags == 'warning' %}#fff3e0{% else %}#e3f2fd{% endif %};border-left:4px solid {% if message.tags == 'success' %}#1B5E20{% elif message.tags == 'error' %}#C62828{% elif message.tags == 'warning' %}#f57c00{% else %}#1565c0{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <fieldset style="border:1px solid #e0e0e0;border-radius:10px;padding:1.25rem;margin-bottom:1.25rem">
+                    <legend style="font-weight:700;color:#1B5E20;padding:0 .5rem;font-size:.95rem">Personal Information</legend>
+                    {% for field in form %}
+                        {% if field.name == 'first_name' or field.name == 'last_name' or field.name == 'date_of_birth' or field.name == 'position' or field.name == 'shirt_number' or field.name == 'national_id_number' or field.name == 'birth_cert_number' %}
+                        <div style="margin-bottom:1rem">
+                            <label for="{{ field.id_for_label }}" style="display:block;font-weight:600;color:#333;margin-bottom:.3rem;font-size:.9rem">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}<small style="color:#888;font-size:.8rem">{{ field.help_text }}</small>{% endif %}
+                            {% for error in field.errors %}<div style="color:#C62828;font-size:.85rem;margin-top:.2rem">{{ error }}</div>{% endfor %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </fieldset>
+
+                <fieldset style="border:1px solid #e0e0e0;border-radius:10px;padding:1.25rem;margin-bottom:1.25rem">
+                    <legend style="font-weight:700;color:#1B5E20;padding:0 .5rem;font-size:.95rem">📄 Verification Documents</legend>
+                    <p style="color:#666;font-size:.85rem;margin-bottom:1rem">All three documents are required for player verification by the admin.</p>
+                    {% for field in form %}
+                        {% if field.name == 'photo' or field.name == 'id_document' or field.name == 'birth_certificate' %}
+                        <div style="margin-bottom:1rem;padding:.75rem;background:#f5f7f5;border-radius:8px">
+                            <label for="{{ field.id_for_label }}" style="display:block;font-weight:600;color:#333;margin-bottom:.3rem;font-size:.9rem">
+                                {% if field.name == 'photo' %}📸{% elif field.name == 'id_document' %}🪪{% else %}📜{% endif %}
+                                {{ field.label }}
+                            </label>
+                            {{ field }}
+                            {% if field.help_text %}<small style="color:#888;font-size:.8rem">{{ field.help_text }}</small>{% endif %}
+                            {% for error in field.errors %}<div style="color:#C62828;font-size:.85rem;margin-top:.2rem">{{ error }}</div>{% endfor %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </fieldset>
+
+                {% if form.non_field_errors %}
+                <div style="color:#C62828;margin-bottom:1rem;padding:.75rem;background:#fce4ec;border-radius:8px">
+                    {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div style="display:flex;gap:.75rem;margin-top:1rem">
+                    <button type="submit" name="action" value="add_more" class="btn btn-outline btn-sm" style="background:#1B5E20;color:#fff;border-color:#1B5E20;padding:.6rem 1.5rem;flex:1">
+                        Save &amp; Add Another
+                    </button>
+                    <button type="submit" name="action" value="finish" class="btn btn-outline btn-sm" style="padding:.6rem 1.5rem;flex:1">
+                        Save &amp; Finish
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Current Squad Column -->
+    <div class="card">
+        <div class="card-header">
+            <h3>Current Squad ({{ player_count }})</h3>
+        </div>
+        <div class="card-body">
+            {% if players %}
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Pos</th>
+                            <th>Age</th>
+                            <th>Docs</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in players %}
+                        <tr>
+                            <td><strong>{{ p.shirt_number }}</strong></td>
+                            <td>{{ p.first_name }} {{ p.last_name }}</td>
+                            <td><span class="badge" style="background:#e8f5e9;color:#1B5E20">{{ p.get_position_display }}</span></td>
+                            <td>
+                                {% if p.is_age_eligible %}
+                                {{ p.age }}
+                                {% else %}
+                                <span style="color:#C62828;font-weight:600" title="Outside 18-23 bracket">{{ p.age }} ⛔</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if p.documents_uploaded %}
+                                <span style="color:#1B5E20" title="All documents uploaded">✅</span>
+                                {% else %}
+                                <span style="color:#f57c00" title="Missing documents">⚠️</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if p.verification_status == 'verified' %}
+                                <span class="badge badge-success">Verified</span>
+                                {% elif p.verification_status == 'rejected' %}
+                                <span class="badge badge-danger">Rejected</span>
+                                {% else %}
+                                <span class="badge badge-warning" style="background:#fff3e0;color:#e65100">Pending</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="icon" style="font-size:2rem">👥</div>
+                <h3>No players yet</h3>
+                <p>Add your first player using the form.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

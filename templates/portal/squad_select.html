@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% block title %}Select Squad — {{ fixture }} — KYISA CMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'matches_list' %}">Matches</a>
+        <span>Select Squad</span>
+    </div>
+    <h1>📋 Select Squad</h1>
+    <p>{{ team.name }} — {{ fixture.home_team }} vs {{ fixture.away_team }}</p>
+</div>
+
+<!-- Fixture Info -->
+<div class="stats-grid" style="margin-bottom:1.5rem;">
+    <div class="stat-card">
+        <div class="stat-label">Match Date</div>
+        <div class="stat-value" style="font-size:1.1rem;">{{ fixture.match_date|date:"d M Y" }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Kick-off</div>
+        <div class="stat-value" style="font-size:1.1rem;">{{ fixture.kickoff_time|time:"H:i" }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Squad Deadline</div>
+        <div class="stat-value" style="font-size:1.1rem;{% if deadline_passed %}color:#c62828{% else %}color:#2E7D32{% endif %}">
+            {{ deadline|date:"d M Y H:i" }}
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Venue</div>
+        <div class="stat-value" style="font-size:1.1rem;">{{ fixture.venue|default:"TBD" }}</div>
+    </div>
+</div>
+
+{% if existing %}
+<div class="alert alert-{% if existing.status == 'approved' %}success{% elif existing.status == 'rejected' %}danger{% elif existing.status == 'submitted' %}info{% else %}gray{% endif %}" style="margin-bottom:1.5rem;">
+    <strong>Current Status:</strong> {{ existing.get_status_display }}
+    {% if existing.rejection_reason %}
+    <br><strong>Rejection Reason:</strong> {{ existing.rejection_reason }}
+    {% endif %}
+</div>
+{% endif %}
+
+{% if deadline_passed %}
+<div class="alert alert-danger" style="margin-bottom:1.5rem;">
+    <strong>⏰ Deadline Passed</strong> — Squad submission closed at {{ deadline|date:"d M Y H:i" }}. Contact the competition manager if you need an extension.
+</div>
+{% endif %}
+
+<form method="post" id="squadForm">
+{% csrf_token %}
+
+<!-- Rules -->
+<div class="card" style="margin-bottom:1.5rem;">
+    <div class="card-header"><h3>📏 Squad Rules</h3></div>
+    <div class="card-body">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;">
+            <div><strong>Starters:</strong> {{ settings.max_starters }}</div>
+            <div><strong>Max Subs:</strong> {{ settings.max_subs }}</div>
+            <div><strong>Min Squad:</strong> {{ settings.min_players }}</div>
+            <div><strong>Max Squad:</strong> {{ settings.max_players }}</div>
+        </div>
+    </div>
+</div>
+
+{% if players %}
+<div class="card" style="margin-bottom:1.5rem;">
+    <div class="card-header">
+        <h3>⚽ Available Players ({{ players|length }})</h3>
+        <div style="display:flex;gap:1rem;font-size:.9rem;">
+            <span id="starterCount" style="color:#1B5E20;font-weight:600">Starters: 0/{{ settings.max_starters }}</span>
+            <span id="subCount" style="color:#1565C0;font-weight:600">Subs: 0/{{ settings.max_subs }}</span>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:70px;">Starter</th>
+                        <th style="width:70px;">Sub</th>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Position</th>
+                        <th>Age</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player in players %}
+                    <tr>
+                        <td style="text-align:center;">
+                            <input type="checkbox" name="starters" value="{{ player.pk }}"
+                                   class="starter-cb" data-player="{{ player.pk }}"
+                                   {% if player.pk in starter_ids %}checked{% endif %}
+                                   {% if deadline_passed %}disabled{% endif %}>
+                        </td>
+                        <td style="text-align:center;">
+                            <input type="checkbox" name="subs" value="{{ player.pk }}"
+                                   class="sub-cb" data-player="{{ player.pk }}"
+                                   {% if player.pk in sub_ids %}checked{% endif %}
+                                   {% if deadline_passed %}disabled{% endif %}>
+                        </td>
+                        <td><strong>{{ player.shirt_number }}</strong></td>
+                        <td>{{ player.get_full_name }}</td>
+                        <td>{{ player.get_position_display }}</td>
+                        <td>{{ player.age }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% if not deadline_passed %}
+<div style="display:flex;gap:1rem;justify-content:flex-end;">
+    <a href="{% url 'matches_list' %}" class="btn" style="background:#757575;color:#fff;padding:.6rem 1.5rem;border-radius:8px;text-decoration:none;">Cancel</a>
+    <button type="submit" class="btn" id="submitBtn"
+            style="background:#1B5E20;color:#fff;padding:.6rem 1.5rem;border-radius:8px;border:none;cursor:pointer;font-size:1rem;">
+        📤 Submit Squad
+    </button>
+</div>
+{% endif %}
+{% else %}
+<div class="card">
+    <div class="card-body">
+        <div class="empty-state">
+            <div class="icon">😞</div>
+            <h3>No Eligible Players</h3>
+            <p>No verified and eligible players found. Ensure players are registered and have passed verification.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const maxStarters = {{ settings.max_starters }};
+    const maxSubs = {{ settings.max_subs }};
+    const minPlayers = {{ settings.min_players }};
+
+    function updateCounts() {
+        const starters = document.querySelectorAll('.starter-cb:checked').length;
+        const subs = document.querySelectorAll('.sub-cb:checked').length;
+        document.getElementById('starterCount').textContent = `Starters: ${starters}/${maxStarters}`;
+        document.getElementById('subCount').textContent = `Subs: ${subs}/${maxSubs}`;
+
+        const starterEl = document.getElementById('starterCount');
+        const subEl = document.getElementById('subCount');
+        starterEl.style.color = starters === maxStarters ? '#2E7D32' : (starters > maxStarters ? '#c62828' : '#FF8F00');
+        subEl.style.color = subs <= maxSubs ? '#1565C0' : '#c62828';
+
+        const btn = document.getElementById('submitBtn');
+        if (btn) {
+            const valid = starters === maxStarters && subs <= maxSubs && (starters + subs) >= minPlayers;
+            btn.disabled = !valid;
+            btn.style.opacity = valid ? '1' : '.5';
+        }
+    }
+
+    // Mutual exclusivity: starter ↔ sub
+    document.querySelectorAll('.starter-cb').forEach(cb => {
+        cb.addEventListener('change', function() {
+            if (this.checked) {
+                const pid = this.dataset.player;
+                const subCb = document.querySelector(`.sub-cb[data-player="${pid}"]`);
+                if (subCb) subCb.checked = false;
+            }
+            updateCounts();
+        });
+    });
+    document.querySelectorAll('.sub-cb').forEach(cb => {
+        cb.addEventListener('change', function() {
+            if (this.checked) {
+                const pid = this.dataset.player;
+                const starterCb = document.querySelector(`.starter-cb[data-player="${pid}"]`);
+                if (starterCb) starterCb.checked = false;
+            }
+            updateCounts();
+        });
+    });
+
+    updateCounts();
+});
+</script>
+{% endblock %}

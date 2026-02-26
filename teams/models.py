@@ -59,15 +59,63 @@ class PlayerStatus(models.TextChoices):
     INJURED    = "injured",    "Injured"
 
 
+class VerificationStatus(models.TextChoices):
+    PENDING  = "pending",  "Pending Verification"
+    VERIFIED = "verified", "Verified"
+    REJECTED = "rejected", "Rejected"
+
+
+class RejectionReason(models.TextChoices):
+    FAKE_ID         = "fake_id",         "Fake / Invalid ID"
+    FAKE_BIRTH_CERT = "fake_birth_cert", "Fake / Invalid Birth Certificate"
+    PHOTO_MISMATCH  = "photo_mismatch",  "Photo Does Not Match"
+    AGE_OUTSIDE     = "age_outside",     "Outside Age Bracket (18-23)"
+    INCOMPLETE_DOCS = "incomplete_docs", "Incomplete Documents"
+    OTHER           = "other",           "Other"
+
+
+# Age bracket constants
+PLAYER_MIN_AGE = 18
+PLAYER_MAX_AGE = 23
+
+
 class Player(models.Model):
     team           = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="players")
     first_name     = models.CharField(max_length=100)
     last_name      = models.CharField(max_length=100)
     date_of_birth  = models.DateField()
     position       = models.CharField(max_length=10, choices=Position.choices)
-    shirt_number   = models.PositiveIntegerField()
-    id_number      = models.CharField(max_length=20, help_text="Birth cert / National ID")
-    photo          = models.ImageField(upload_to="players/", null=True, blank=True)
+    shirt_number       = models.PositiveIntegerField()
+    national_id_number = models.CharField(max_length=20, blank=True, default="",
+                                          help_text="National ID number")
+    birth_cert_number  = models.CharField(max_length=30, blank=True, default="",
+                                          help_text="Birth Certificate number")
+
+    # ── Document uploads for verification ─────────────────────────────────
+    photo          = models.ImageField(upload_to="players/photos/", null=True, blank=True,
+                                       help_text="Passport-size photo")
+    id_document    = models.ImageField(upload_to="players/ids/", null=True, blank=True,
+                                       help_text="Copy of National ID")
+    birth_certificate = models.ImageField(upload_to="players/birth_certs/", null=True, blank=True,
+                                          help_text="Copy of Birth Certificate")
+
+    # ── Verification workflow ─────────────────────────────────────────────
+    verification_status = models.CharField(
+        max_length=20, choices=VerificationStatus.choices,
+        default=VerificationStatus.PENDING,
+    )
+    rejection_reason = models.CharField(
+        max_length=30, choices=RejectionReason.choices,
+        blank=True, default="",
+    )
+    rejection_notes  = models.TextField(blank=True, default="",
+                                        help_text="Additional notes on rejection")
+    verified_by      = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name="verified_players",
+    )
+    verified_at      = models.DateTimeField(null=True, blank=True)
+
     status         = models.CharField(max_length=20, choices=PlayerStatus.choices, default=PlayerStatus.ELIGIBLE)
     registered_at  = models.DateTimeField(auto_now_add=True)
 
@@ -87,3 +135,34 @@ class Player(models.Model):
         today = timezone.now().date()
         dob   = self.date_of_birth
         return today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+
+    @property
+    def is_age_eligible(self):
+        """True if the player falls within the 18–23 age bracket."""
+        return PLAYER_MIN_AGE <= self.age <= PLAYER_MAX_AGE
+
+    @property
+    def documents_uploaded(self):
+        """True if all three required documents are present."""
+        return bool(self.photo and self.id_document and self.birth_certificate)
+
+    def auto_check_age(self):
+        """
+        Automatically lock out players outside the 18-23 bracket.
+        Called on save. Sets status to ineligible and rejection reason.
+        """
+        if not self.is_age_eligible:
+            self.verification_status = VerificationStatus.REJECTED
+            self.rejection_reason = RejectionReason.AGE_OUTSIDE
+            self.rejection_notes = (
+                f"Player is {self.age} years old. "
+                f"Must be between {PLAYER_MIN_AGE} and {PLAYER_MAX_AGE}."
+            )
+            self.status = PlayerStatus.INELIGIBLE
+            return False
+        return True
+
+    def save(self, *args, **kwargs):
+        # Auto-reject players outside the age bracket on every save
+        self.auto_check_age()
+        super().save(*args, **kwargs)

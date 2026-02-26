@@ -16,7 +16,7 @@
         <h3>All Fixtures</h3>
     </div>
     <div class="card-body">
-        {% if fixtures %}
+        {% if fixture_data %}
         <div class="table-responsive">
             <table>
                 <thead>
@@ -29,10 +29,12 @@
                         <th>Away</th>
                         <th>Venue</th>
                         <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for f in fixtures %}
+                    {% for fd in fixture_data %}
+                    {% with f=fd.fixture %}
                     <tr>
                         <td>{{ f.match_date|date:"d M Y" }}</td>
                         <td>{{ f.kickoff_time|time:"H:i" }}</td>
@@ -62,7 +64,72 @@
                             <span class="badge badge-gray">{{ f.get_status_display }}</span>
                             {% endif %}
                         </td>
+                        <td style="white-space:nowrap;">
+                            {% comment %} TEAM MANAGER — Squad Selection {% endcomment %}
+                            {% if user.role == 'team_manager' %}
+                                {% if fd.squad %}
+                                    {% if fd.squad.status == 'approved' %}
+                                    <span class="badge badge-success" style="font-size:.75rem;">Squad ✅</span>
+                                    {% elif fd.squad.status == 'submitted' %}
+                                    <span class="badge badge-info" style="font-size:.75rem;">Squad Pending</span>
+                                    {% elif fd.squad.status == 'rejected' %}
+                                    <a href="{% url 'squad_select' fixture_pk=f.pk %}"
+                                       style="background:#c62828;color:#fff;padding:.25rem .6rem;border-radius:5px;text-decoration:none;font-size:.75rem;">
+                                        Resubmit Squad
+                                    </a>
+                                    {% else %}
+                                    <a href="{% url 'squad_select' fixture_pk=f.pk %}"
+                                       style="background:#1B5E20;color:#fff;padding:.25rem .6rem;border-radius:5px;text-decoration:none;font-size:.75rem;">
+                                        Select Squad
+                                    </a>
+                                    {% endif %}
+                                {% elif not fd.deadline_passed and f.status != 'completed' %}
+                                <a href="{% url 'squad_select' fixture_pk=f.pk %}"
+                                   style="background:#1B5E20;color:#fff;padding:.25rem .6rem;border-radius:5px;text-decoration:none;font-size:.75rem;">
+                                    Select Squad
+                                </a>
+                                {% elif f.status != 'completed' %}
+                                <span style="color:#999;font-size:.75rem;">Deadline passed</span>
+                                {% endif %}
+                            {% endif %}
+
+                            {% comment %} REFEREE — Submit Report {% endcomment %}
+                            {% if user.role == 'referee' %}
+                                {% if fd.report %}
+                                <a href="{% url 'match_report_detail' report_pk=fd.report.pk %}"
+                                   style="color:#1B5E20;text-decoration:underline;font-size:.8rem;">
+                                    View Report
+                                </a>
+                                {% elif f.status == 'completed' or f.status == 'live' or f.status == 'confirmed' %}
+                                <a href="{% url 'match_report_form' fixture_pk=f.pk %}"
+                                   style="background:#1B5E20;color:#fff;padding:.25rem .6rem;border-radius:5px;text-decoration:none;font-size:.75rem;">
+                                    Submit Report
+                                </a>
+                                {% endif %}
+                            {% endif %}
+
+                            {% comment %} ADMIN / CM — View Report {% endcomment %}
+                            {% if user.role == 'admin' or user.role == 'competition_manager' %}
+                                {% if fd.report %}
+                                <a href="{% url 'match_report_detail' report_pk=fd.report.pk %}"
+                                   style="color:#1B5E20;text-decoration:underline;font-size:.8rem;margin-right:.5rem;">
+                                    Report
+                                </a>
+                                {% endif %}
+                            {% endif %}
+
+                            {% comment %} REFEREE MANAGER — Review Report {% endcomment %}
+                            {% if user.role == 'referee_manager' or user.role == 'admin' %}
+                                {% if fd.report and fd.report.status == 'submitted' %}
+                                <a href="{% url 'match_report_review' report_pk=fd.report.pk %}"
+                                   style="background:#FF8F00;color:#fff;padding:.25rem .6rem;border-radius:5px;text-decoration:none;font-size:.75rem;">
+                                    Review Report
+                                </a>
+                                {% endif %}
+                            {% endif %}
+                        </td>
                     </tr>
+                    {% endwith %}
                     {% endfor %}
                 </tbody>
             </table>
@@ -77,7 +144,39 @@
     </div>
 </div>
 
-<!-- Match Reports -->
+<!-- Pending Reports (Referee Manager / Admin) -->
+{% if pending_reports %}
+<div class="card" style="margin-top:1.5rem;">
+    <div class="card-header"><h3>🔶 Reports Pending Review</h3></div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr><th>Fixture</th><th>Score</th><th>Referee</th><th>Submitted</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                    {% for report in pending_reports %}
+                    <tr>
+                        <td>{{ report.fixture.home_team }} vs {{ report.fixture.away_team }}</td>
+                        <td><strong>{{ report.home_score }} - {{ report.away_score }}</strong></td>
+                        <td>{{ report.referee.user.get_full_name|default:"—" }}</td>
+                        <td>{{ report.submitted_at|date:"d M Y H:i"|default:"—" }}</td>
+                        <td>
+                            <a href="{% url 'match_report_review' report_pk=report.pk %}"
+                               style="background:#FF8F00;color:#fff;padding:.3rem .8rem;border-radius:6px;text-decoration:none;font-size:.85rem;">
+                                Review
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- All Match Reports -->
 {% if match_reports %}
 <div class="card" style="margin-top:1.5rem;">
     <div class="card-header"><h3>Match Reports</h3></div>
@@ -85,14 +184,14 @@
         <div class="table-responsive">
             <table>
                 <thead>
-                    <tr><th>Fixture</th><th>Score</th><th>Referee</th><th>Status</th><th>Submitted</th></tr>
+                    <tr><th>Fixture</th><th>Score</th><th>Referee</th><th>Status</th><th>Submitted</th><th>Action</th></tr>
                 </thead>
                 <tbody>
                     {% for report in match_reports %}
                     <tr>
-                        <td>{{ report.fixture }}</td>
+                        <td>{{ report.fixture.home_team }} vs {{ report.fixture.away_team }}</td>
                         <td><strong>{{ report.home_score }} - {{ report.away_score }}</strong></td>
-                        <td>{{ report.referee|default:"—" }}</td>
+                        <td>{{ report.referee.user.get_full_name|default:"—" }}</td>
                         <td>
                             {% if report.status == 'approved' %}
                             <span class="badge badge-success">Approved</span>
@@ -105,6 +204,10 @@
                             {% endif %}
                         </td>
                         <td>{{ report.submitted_at|date:"d M Y"|default:"—" }}</td>
+                        <td>
+                            <a href="{% url 'match_report_detail' report_pk=report.pk %}"
+                               style="color:#1B5E20;text-decoration:underline;font-size:.85rem;">View</a>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>

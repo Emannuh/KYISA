@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Edit User Roles{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1><i class="fas fa-user-tag"></i> Edit User Roles</h1>
+            <p class="text-muted">Manage role assignments for {{ edit_user.email }}</p>
+        </div>
+        <a href="{% url 'manage_league_admins' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Users
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <!-- User Info Card -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-user"></i> User Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless mb-0">
+                        <tr>
+                            <th width="120">Username:</th>
+                            <td><strong>{{ edit_user.email }}</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Full Name:</th>
+                            <td>{{ edit_user.first_name }} {{ edit_user.last_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
+                            <td>{{ edit_user.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Status:</th>
+                            <td>
+                                {% if edit_user.is_active %}
+                                <span class="badge bg-success">Active</span>
+                                {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Joined:</th>
+                            <td>{{ edit_user.date_joined|date:"M d, Y" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Current Roles -->
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="fas fa-list"></i> Current Roles</h6>
+                </div>
+                <div class="card-body">
+                    {% if user_groups %}
+                    <ul class="list-group">
+                        {% for group in user_groups %}
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success"></i> {{ group.name }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted mb-0">No roles assigned yet</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <!-- Edit Roles Form -->
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-edit"></i> Update Roles</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <p class="text-muted">Select the roles you want to assign to this user:</p>
+                        
+                        <div class="list-group mb-3">
+                            {% for group in all_groups %}
+                            <label class="list-group-item">
+                                <input type="checkbox" name="groups" value="{{ group.name }}" 
+                                       class="form-check-input me-2"
+                                       {% if group in user_groups %}checked{% endif %}>
+                                <strong>{{ group.name }}</strong>
+                                <br>
+                                <small class="text-muted">
+                                    {% if group.name == 'League Admin' %}
+                                    Full system control, manage all teams/players/matches
+                                    {% elif group.name == 'Team Managers' %}
+                                    Manage own team, players, and transfers
+                                    {% elif group.name == 'Referee' %}
+                                    Submit match reports and view appointments
+                                    {% elif group.name == 'Referees Manager' %}
+                                    Assign referees to matches
+                                    {% else %}
+                                    {{ group.name }} role
+                                    {% endif %}
+                                </small>
+                            </label>
+                            {% endfor %}
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i> 
+                            <strong>Warning:</strong> Changing roles will immediately affect what this user can access.
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> Save Role Changes
+                            </button>
+                            <a href="{% url 'manage_league_admins' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

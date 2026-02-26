@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+{% block title %}User Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1><i class="fas fa-users-cog"></i> Complete User Management</h1>
+            <p class="text-muted">Manage all system users and their roles</p>
+        </div>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3>{{ user_stats.total }}</h3>
+                    <small>Total Users</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3>{{ user_stats.active }}</h3>
+                    <small>Active</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-danger text-white">
+                <div class="card-body text-center">
+                    <h3>{{ user_stats.inactive }}</h3>
+                    <small>Inactive</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h3>{{ user_stats.team_managers }}</h3>
+                    <small>Team Managers</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-warning text-dark">
+                <div class="card-body text-center">
+                    <h3>{{ user_stats.referees }}</h3>
+                    <small>Referees</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-dark text-white">
+                <div class="card-body text-center">
+                    <h3>{{ user_stats.league_admins }}</h3>
+                    <small>League Admins</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create New User Form -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-plus-circle"></i> Create New User</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" action="{% url 'create_league_admin' %}">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-2">
+                        <label class="form-label">Username <span class="text-danger">*</span></label>
+                        <input type="text" name="username" class="form-control" required placeholder="username">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Email <span class="text-danger">*</span></label>
+                        <input type="email" name="email" class="form-control" required placeholder="user@example.com">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">First Name <span class="text-danger">*</span></label>
+                        <input type="text" name="first_name" class="form-control" required placeholder="John">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                        <input type="text" name="last_name" class="form-control" required placeholder="Doe">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Role <span class="text-danger">*</span></label>
+                        <select name="role" class="form-select" required>
+                            <option value="">Select Role...</option>
+                            <option value="League Admin">League Admin</option>
+                            <option value="Team Managers">Team Manager</option>
+                            <option value="Referee">Referee</option>
+                            <option value="Referees Manager">Referees Manager</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-user-plus"></i> Create
+                        </button>
+                    </div>
+                </div>
+                <div class="alert alert-info mt-3 mb-0">
+                    <i class="fas fa-info-circle"></i> A random password will be generated and displayed. <strong>Save it!</strong>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Filters and Search -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Filter by Role</label>
+                    <select name="role" class="form-select" onchange="this.form.submit()">
+                        <option value="all" {% if role_filter == 'all' %}selected{% endif %}>All Roles</option>
+                        <option value="League Admin" {% if role_filter == 'League Admin' %}selected{% endif %}>League Admin</option>
+                        <option value="Team Managers" {% if role_filter == 'Team Managers' %}selected{% endif %}>Team Managers</option>
+                        <option value="Referee" {% if role_filter == 'Referee' %}selected{% endif %}>Referees</option>
+                        <option value="Referees Manager" {% if role_filter == 'Referees Manager' %}selected{% endif %}>Referees Manager</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Filter by Status</label>
+                    <select name="status" class="form-select" onchange="this.form.submit()">
+                        <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Status</option>
+                        <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active Only</option>
+                        <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive Only</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Search Users</label>
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control" placeholder="Search by username, email, or name..." value="{{ search_query }}">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                        <a href="{% url 'manage_league_admins' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Clear
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="fas fa-list"></i> All Users ({{ users.count }})</h5>
+        </div>
+        <div class="card-body">
+            {% if users %}
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Roles</th>
+                            <th>Status</th>
+                            <th>Joined</th>
+                            <th>Last Login</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>
+                                <strong>{{ user.email }}</strong>
+                                {% if user.is_superuser %}
+                                <span class="badge bg-danger ms-1">Superuser</span>
+                                {% endif %}
+                                {% if user.is_staff %}
+                                <span class="badge bg-warning text-dark ms-1">Staff</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.first_name }} {{ user.last_name }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                {% for group in user.groups.all %}
+                                <span class="badge bg-secondary">{{ group.name }}</span>
+                                {% empty %}
+                                <span class="text-muted">No role</span>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% if user.is_active %}
+                                <span class="badge bg-success">Active</span>
+                                {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                            <td>
+                                {% if user.last_login %}
+                                {{ user.last_login|date:"M d, Y H:i" }}
+                                {% else %}
+                                <span class="text-muted">Never</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <!-- Edit Roles -->
+                                    <a href="{% url 'edit_user_roles' user.id %}" 
+                                       class="btn btn-sm btn-info" title="Edit Roles">
+                                        <i class="fas fa-user-tag"></i>
+                                    </a>
+                                    
+                                    <!-- Toggle Status -->
+                                    <a href="{% url 'toggle_league_admin_status' user.id %}" 
+                                       class="btn btn-sm btn-{% if user.is_active %}warning{% else %}success{% endif %}"
+                                       onclick="return confirm('{% if user.is_active %}Deactivate{% else %}Activate{% endif %} {{ user.email }}?')"
+                                       title="{% if user.is_active %}Deactivate{% else %}Activate{% endif %}">
+                                        <i class="fas fa-{% if user.is_active %}ban{% else %}check{% endif %}"></i>
+                                    </a>
+                                    
+                                    <!-- Reset Password -->
+                                    <a href="{% url 'reset_league_admin_password' user.id %}" 
+                                       class="btn btn-sm btn-primary"
+                                       onclick="return confirm('Reset password for {{ user.email }}?')"
+                                       title="Reset Password">
+                                        <i class="fas fa-key"></i>
+                                    </a>
+                                    
+                                    <!-- Delete User -->
+                                    {% if not user.is_superuser and user != request.user %}
+                                    <a href="{% url 'delete_user' user.id %}" 
+                                       class="btn btn-sm btn-danger"
+                                       onclick="return confirm('⚠️ DELETE {{ user.email }}? This cannot be undone!')"
+                                       title="Delete User">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i> No users found matching your filters.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Information Panel -->
+    <div class="card mt-4 border-info">
+        <div class="card-header bg-info text-white">
+            <h6 class="mb-0"><i class="fas fa-info-circle"></i> User Management Guide</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6><strong>Available Roles:</strong></h6>
+                    <ul>
+                        <li><strong>League Admin:</strong> Full system control (like this dashboard)</li>
+                        <li><strong>Team Manager:</strong> Manage own team, players, transfers</li>
+                        <li><strong>Referee:</strong> Submit match reports</li>
+                        <li><strong>Referees Manager:</strong> Assign referees to matches</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6><strong>Actions:</strong></h6>
+                    <ul>
+                        <li><i class="fas fa-user-tag text-info"></i> <strong>Edit Roles:</strong> Change user's role assignments</li>
+                        <li><i class="fas fa-ban text-warning"></i> <strong>Deactivate:</strong> User cannot login (reversible)</li>
+                        <li><i class="fas fa-key text-primary"></i> <strong>Reset Password:</strong> Generate new password</li>
+                        <li><i class="fas fa-trash text-danger"></i> <strong>Delete:</strong> Permanently remove user</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
