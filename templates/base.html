@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}KYISA CMS{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'img/kyisa_logo.png' %}" type="image/png">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% block body %}
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="{% url 'dashboard' %}" class="navbar-brand">
+            <img src="{% static 'img/kyisa_logo.png' %}" alt="KYISA">
+            <span>KYISA CMS</span>
+        </a>
+        <button class="nav-toggle" onclick="document.querySelector('.navbar-nav').classList.toggle('show')">☰</button>
+        <ul class="navbar-nav">
+            <li><a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">🏠 Dashboard</a></li>
+            {% if user.role == 'admin' or user.role == 'competition_manager' %}
+            <li><a href="{% url 'competitions_list' %}" class="{% if 'competition' in request.resolver_match.url_name %}active{% endif %}">🏆 Competitions</a></li>
+            {% endif %}
+            {% if user.role == 'admin' or user.role == 'competition_manager' or user.role == 'team_manager' %}
+            <li><a href="{% url 'teams_list' %}" class="{% if 'team' in request.resolver_match.url_name %}active{% endif %}">⚽ Teams</a></li>
+            {% endif %}
+            {% if user.role == 'admin' or user.role == 'referee_manager' or user.role == 'referee' %}
+            <li><a href="{% url 'referees_list' %}" class="{% if 'referee' in request.resolver_match.url_name %}active{% endif %}">🏁 Referees</a></li>
+            {% endif %}
+            <li><a href="{% url 'matches_list' %}" class="{% if 'match' in request.resolver_match.url_name %}active{% endif %}">📋 Matches</a></li>
+        </ul>
+        <div class="navbar-user">
+            <a href="{% url 'home' %}" style="color:rgba(255,255,255,.7);font-size:.8rem;margin-right:.5rem;">← Website</a>
+            <span class="role-badge">{{ user.get_role_display }}</span>
+            <span>{{ user.get_full_name }}</span>
+            <form method="post" action="{% url 'web_logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- Layout -->
+    <div class="layout">
+        {% include 'includes/sidebar.html' %}
+        <main class="main-content">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        &copy; 2026 Kenya Youth Intercounty Sports Association (KYISA). All rights reserved.
+    </footer>
+    {% endblock %}
+
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

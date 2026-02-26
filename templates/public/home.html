@@ -1,0 +1,210 @@
+{% extends "public/base.html" %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<!-- ── HERO ────────────────────────────────────────────────────────────────── -->
+<section class="hero">
+    <div class="hero-content">
+        <img src="{% static 'img/kyisa_logo.png' %}" alt="KYISA" class="hero-logo">
+        <h1>Kenya Youth Intercounty Sports Association</h1>
+        <h2>Nurturing athletic excellence across all 47 counties</h2>
+        <div class="hero-buttons">
+            <a href="{% url 'public_competitions' %}" class="btn btn-white btn-lg">View Competitions</a>
+            <a href="{% url 'about' %}" class="btn btn-outline-white btn-lg">Learn More</a>
+        </div>
+    </div>
+</section>
+
+<!-- ── FEATURES ────────────────────────────────────────────────────────────── -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2>What We Do</h2>
+            <p>Empowering Kenya's youth through organized competitive sports</p>
+            <div class="line"></div>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon green">🏆</div>
+                <h3>Intercounty Competitions</h3>
+                <p>Organizing and managing sporting tournaments that bring together youth teams from counties across Kenya.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon red">⚽</div>
+                <h3>Youth Development</h3>
+                <p>Identifying and nurturing young sporting talent through competitive and well-structured sporting programs.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon blue">📋</div>
+                <h3>Referee Management</h3>
+                <p>Training, certifying, and appointing qualified match officials to ensure fair play in all competitions.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon yellow">📊</div>
+                <h3>Results & Statistics</h3>
+                <p>Tracking fixtures, results, standings, and player statistics across all KYISA competitions.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── UPCOMING MATCHES ───────────────────────────────────────────────────── -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="section-header">
+            <h2>Upcoming Fixtures</h2>
+            <p>Don't miss the next exciting matches</p>
+            <div class="line"></div>
+        </div>
+
+        {% if upcoming_fixtures %}
+        <div class="grid-3">
+            {% for fixture in upcoming_fixtures %}
+            <div class="match-card">
+                <div class="match-card-header">
+                    <span>{{ fixture.competition.name }}</span>
+                    <span>{{ fixture.match_date|date:"d M Y" }}</span>
+                </div>
+                <div class="match-card-body">
+                    <div class="match-team">
+                        <div class="badge-icon">🛡️</div>
+                        <h4>{{ fixture.home_team.name }}</h4>
+                        <p>{{ fixture.home_team.county|default:"" }}</p>
+                    </div>
+                    <div class="match-vs">VS</div>
+                    <div class="match-team">
+                        <div class="badge-icon">🛡️</div>
+                        <h4>{{ fixture.away_team.name }}</h4>
+                        <p>{{ fixture.away_team.county|default:"" }}</p>
+                    </div>
+                </div>
+                <div class="match-card-footer">
+                    <span>📍 {{ fixture.venue.name|default:"TBD" }}</span>
+                    <span>🕐 {{ fixture.match_date|date:"H:i" }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="icon">📅</div>
+            <h3>No Upcoming Fixtures</h3>
+            <p>Check back soon for scheduled matches.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- ── STATISTICS COUNTER ─────────────────────────────────────────────────── -->
+<section class="section section-dark">
+    <div class="container">
+        <div class="counter-grid">
+            <div class="counter-item">
+                <h3 data-target="{{ stats.competitions }}">{{ stats.competitions }}</h3>
+                <p>Competitions</p>
+            </div>
+            <div class="counter-item">
+                <h3 data-target="{{ stats.teams }}">{{ stats.teams }}</h3>
+                <p>Registered Teams</p>
+            </div>
+            <div class="counter-item">
+                <h3 data-target="{{ stats.players }}">{{ stats.players }}</h3>
+                <p>Active Players</p>
+            </div>
+            <div class="counter-item">
+                <h3 data-target="{{ stats.referees }}">{{ stats.referees }}</h3>
+                <p>Certified Referees</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── RECENT RESULTS ─────────────────────────────────────────────────────── -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Recent Results</h2>
+            <p>Latest match outcomes from across our competitions</p>
+            <div class="line"></div>
+        </div>
+
+        {% if recent_results %}
+        <div class="grid-3">
+            {% for fixture in recent_results %}
+            <div class="match-card">
+                <div class="match-card-header">
+                    <span>{{ fixture.competition.name }}</span>
+                    <span>{{ fixture.match_date|date:"d M Y" }}</span>
+                </div>
+                <div class="match-card-body">
+                    <div class="match-team">
+                        <div class="badge-icon">🛡️</div>
+                        <h4>{{ fixture.home_team.name }}</h4>
+                    </div>
+                    <div class="match-score">{{ fixture.home_score|default:"0" }} - {{ fixture.away_score|default:"0" }}</div>
+                    <div class="match-team">
+                        <div class="badge-icon">🛡️</div>
+                        <h4>{{ fixture.away_team.name }}</h4>
+                    </div>
+                </div>
+                <div class="match-card-footer">
+                    <span>📍 {{ fixture.venue.name|default:"—" }}</span>
+                    <span>✅ Completed</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div style="text-align:center;margin-top:2rem;">
+            <a href="{% url 'public_results' %}" class="btn btn-primary">View All Results →</a>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="icon">📊</div>
+            <h3>No Results Yet</h3>
+            <p>Match results will appear here once competitions begin.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- ── NEWS / ANNOUNCEMENTS ───────────────────────────────────────────────── -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="section-header">
+            <h2>Latest News</h2>
+            <p>Stay updated with KYISA announcements</p>
+            <div class="line"></div>
+        </div>
+        <div class="grid-3">
+            <div class="news-card">
+                <div class="news-card-img">🏅</div>
+                <div class="news-card-body">
+                    <p class="date">📅 Announcement</p>
+                    <h3>Registration Open for New Season</h3>
+                    <p>County teams can now register for the upcoming intercounty championship. Don't miss the deadline!</p>
+                </div>
+            </div>
+            <div class="news-card">
+                <div class="news-card-img" style="background: linear-gradient(135deg, #C62828, #EF5350);">🎓</div>
+                <div class="news-card-body">
+                    <p class="date">📅 Training</p>
+                    <h3>Referee Training Program</h3>
+                    <p>KYISA's referee development program continues producing quality match officials across all counties.</p>
+                </div>
+            </div>
+            <div class="news-card">
+                <div class="news-card-img" style="background: linear-gradient(135deg, #1565C0, #42A5F5);">🤝</div>
+                <div class="news-card-body">
+                    <p class="date">📅 Partnership</p>
+                    <h3>Growing Youth Sports in Kenya</h3>
+                    <p>Building partnerships with county governments to support youth sports development across Kenya.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,71 @@
+<!-- Sidebar Navigation -->
+<aside class="sidebar">
+    {% if user.role == 'admin' %}
+    <!-- ADMIN SIDEBAR -->
+    <div class="sidebar-section">
+        <h4>Administration</h4>
+        <a href="{% url 'dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <span class="icon">📊</span> Dashboard
+        </a>
+        <a href="{% url 'admin:index' %}" class="sidebar-link" target="_blank">
+            <span class="icon">⚙️</span> Admin Panel
+        </a>
+    </div>
+    <div class="sidebar-section">
+        <h4>Management</h4>
+        <a href="{% url 'competitions_list' %}" class="sidebar-link"><span class="icon">🏆</span> Competitions</a>
+        <a href="{% url 'teams_list' %}" class="sidebar-link"><span class="icon">⚽</span> Teams</a>
+        <a href="{% url 'referees_list' %}" class="sidebar-link"><span class="icon">🏁</span> Referees</a>
+        <a href="{% url 'matches_list' %}" class="sidebar-link"><span class="icon">📋</span> Matches</a>
+    </div>
+
+    {% elif user.role == 'competition_manager' %}
+    <!-- COMPETITION MANAGER SIDEBAR -->
+    <div class="sidebar-section">
+        <h4>Competitions</h4>
+        <a href="{% url 'dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <span class="icon">📊</span> Dashboard
+        </a>
+        <a href="{% url 'competitions_list' %}" class="sidebar-link"><span class="icon">🏆</span> My Competitions</a>
+        <a href="{% url 'teams_list' %}" class="sidebar-link"><span class="icon">⚽</span> Teams</a>
+        <a href="{% url 'matches_list' %}" class="sidebar-link"><span class="icon">📋</span> Fixtures</a>
+    </div>
+
+    {% elif user.role == 'referee_manager' %}
+    <!-- REFEREE MANAGER SIDEBAR -->
+    <div class="sidebar-section">
+        <h4>Referee Management</h4>
+        <a href="{% url 'dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <span class="icon">📊</span> Dashboard
+        </a>
+        <a href="{% url 'referees_list' %}" class="sidebar-link"><span class="icon">🏁</span> Referees</a>
+        <a href="{% url 'matches_list' %}" class="sidebar-link"><span class="icon">📋</span> Match Reports</a>
+    </div>
+
+    {% elif user.role == 'referee' %}
+    <!-- REFEREE SIDEBAR -->
+    <div class="sidebar-section">
+        <h4>My Portal</h4>
+        <a href="{% url 'dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <span class="icon">📊</span> Dashboard
+        </a>
+        <a href="{% url 'matches_list' %}" class="sidebar-link"><span class="icon">📋</span> My Appointments</a>
+    </div>
+
+    {% elif user.role == 'team_manager' %}
+    <!-- TEAM MANAGER SIDEBAR -->
+    <div class="sidebar-section">
+        <h4>My Team</h4>
+        <a href="{% url 'dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <span class="icon">📊</span> Dashboard
+        </a>
+        <a href="{% url 'teams_list' %}" class="sidebar-link"><span class="icon">⚽</span> My Team</a>
+        <a href="{% url 'matches_list' %}" class="sidebar-link"><span class="icon">📋</span> Fixtures</a>
+    </div>
+    {% endif %}
+
+    <div class="sidebar-section" style="margin-top: auto;">
+        <h4>Account</h4>
+        <a href="{% url 'web_profile' %}" class="sidebar-link"><span class="icon">👤</span> My Profile</a>
+    </div>
+</aside>

@@ -1,0 +1,149 @@
+{% extends "public/base.html" %}
+{% load static %}
+
+{% block title %}About{% endblock %}
+
+{% block content %}
+
+<!-- ── PAGE HERO ───────────────────────────────────────────────────────────── -->
+<section class="hero" style="padding:3rem 2rem;">
+    <div class="hero-content">
+        <h1>About KYISA</h1>
+        <h2>Kenya Youth Intercounty Sports Association</h2>
+    </div>
+</section>
+
+<!-- ── ABOUT SECTION ──────────────────────────────────────────────────────── -->
+<section class="section">
+    <div class="container">
+        <div class="about-grid">
+            <div class="about-text">
+                <h2>Who We Are</h2>
+                <p>
+                    The Kenya Youth Intercounty Sports Association (KYISA) is the premier organisation
+                    dedicated to organising and managing intercounty youth sporting competitions across
+                    all 47 counties of Kenya.
+                </p>
+                <p>
+                    Founded with a mission to nurture young athletic talent, KYISA provides a structured
+                    platform for youth teams to compete at the highest intercounty level, fostering
+                    sportsmanship, teamwork, and excellence.
+                </p>
+                <p>
+                    Through our competitions, we aim to identify, develop, and promote Kenya's future
+                    sports stars while building strong community ties across county lines.
+                </p>
+                <a href="{% url 'public_competitions' %}" class="btn btn-primary" style="margin-top:1rem;">View Our Competitions</a>
+            </div>
+            <div class="about-image">
+                <div class="big-icon">🏆</div>
+                <h2 style="margin-top:1rem;">Excellence in Youth Sports</h2>
+                <p style="margin-top:.5rem;opacity:.8;">Building champions across Kenya's 47 counties</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── MISSION & VISION ───────────────────────────────────────────────────── -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="section-header">
+            <h2>Our Mission & Vision</h2>
+            <div class="line"></div>
+        </div>
+        <div class="grid-2">
+            <div class="feature-card">
+                <div class="feature-icon green">🎯</div>
+                <h3>Our Mission</h3>
+                <p>To organise and manage competitive intercounty youth sporting events that identify,
+                develop, and celebrate young athletic talent across all 47 counties of Kenya.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon blue">🌟</div>
+                <h3>Our Vision</h3>
+                <p>A Kenya where every young athlete, regardless of their county of origin, has the
+                opportunity to develop their sporting potential through fair, competitive, and
+                well-structured sporting programmes.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── CORE VALUES ─────────────────────────────────────────────────────────── -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Our Core Values</h2>
+            <p>The principles that guide everything we do</p>
+            <div class="line"></div>
+        </div>
+        <div class="grid-4">
+            <div class="value-card">
+                <div class="icon">⚖️</div>
+                <h4>Fair Play</h4>
+                <p>Ensuring integrity and fairness in every match and competition we organise.</p>
+            </div>
+            <div class="value-card">
+                <div class="icon">🤝</div>
+                <h4>Inclusivity</h4>
+                <p>Opening doors for youth from all 47 counties to participate equally.</p>
+            </div>
+            <div class="value-card">
+                <div class="icon">📈</div>
+                <h4>Development</h4>
+                <p>Continuously developing athletes, referees, and management capabilities.</p>
+            </div>
+            <div class="value-card">
+                <div class="icon">🏅</div>
+                <h4>Excellence</h4>
+                <p>Striving for the highest standards in competition management and sportsmanship.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── STATISTICS ──────────────────────────────────────────────────────────── -->
+<section class="section section-dark">
+    <div class="container">
+        <div class="section-header">
+            <h2>KYISA by the Numbers</h2>
+            <div class="line"></div>
+        </div>
+        <div class="counter-grid">
+            <div class="counter-item">
+                <h3>47</h3>
+                <p>Counties Covered</p>
+            </div>
+            <div class="counter-item">
+                <h3>{{ stats.competitions }}</h3>
+                <p>Competitions</p>
+            </div>
+            <div class="counter-item">
+                <h3>{{ stats.teams }}</h3>
+                <p>Registered Teams</p>
+            </div>
+            <div class="counter-item">
+                <h3>{{ stats.players }}</h3>
+                <p>Active Players</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── PARTICIPATING COUNTIES ─────────────────────────────────────────────── -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="section-header">
+            <h2>Participating Counties</h2>
+            <p>Youth talent from across Kenya</p>
+            <div class="line"></div>
+        </div>
+        <div class="counties-grid">
+            {% for county in counties %}
+            <div class="county-tag">{{ county.1 }}</div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}

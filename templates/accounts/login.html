@@ -1,0 +1,60 @@
+{% load static %}
+{% block body %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — KYISA CMS</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'img/kyisa_logo.png' %}" type="image/png">
+</head>
+<body>
+<div class="login-page">
+    <div class="login-left">
+        <img src="{% static 'img/kyisa_logo.png' %}" alt="KYISA Logo">
+        <h1>KYISA CMS</h1>
+        <p>Kenya Youth Intercounty Sports Association — Competition Management System</p>
+        <br>
+        <p style="opacity:.6; font-size:.9rem;">Manage competitions, teams, referees, fixtures and match reports all in one place.</p>
+    </div>
+    <div class="login-right">
+        <div class="login-box">
+            <h2>Welcome Back</h2>
+            <p class="subtitle">Sign in to your portal</p>
+
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+
+            {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+            {% endif %}
+
+            <form method="post" action="{% url 'web_login' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-control"
+                           placeholder="you@example.com" required autofocus
+                           value="{{ email|default:'' }}">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-control"
+                           placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+
+            <p style="text-align:center; margin-top:1.5rem; font-size:.85rem; color:#757575;">
+                Don't have an account? Contact your KYISA administrator.
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+{% endblock %}

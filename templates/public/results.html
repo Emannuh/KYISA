@@ -1,0 +1,105 @@
+{% extends "public/base.html" %}
+{% load static %}
+
+{% block title %}Results{% endblock %}
+
+{% block content %}
+
+<!-- ── PAGE HERO ───────────────────────────────────────────────────────────── -->
+<section class="hero" style="padding:3rem 2rem;">
+    <div class="hero-content">
+        <h1>Match Results</h1>
+        <h2>Latest scores and outcomes from KYISA competitions</h2>
+    </div>
+</section>
+
+<!-- ── COMPLETED MATCHES ──────────────────────────────────────────────────── -->
+<section class="section">
+    <div class="container">
+        {% if completed_fixtures %}
+        <div class="section-header">
+            <h2>Completed Matches</h2>
+            <p>Full-time results</p>
+            <div class="line"></div>
+        </div>
+        <div class="grid-3">
+            {% for fixture in completed_fixtures %}
+            <div class="match-card">
+                <div class="match-card-header">
+                    <span>{{ fixture.competition.name }}</span>
+                    <span>{{ fixture.match_date|date:"d M Y" }}</span>
+                </div>
+                <div class="match-card-body">
+                    <div class="match-team">
+                        <div class="badge-icon">🛡️</div>
+                        <h4>{{ fixture.home_team.name }}</h4>
+                    </div>
+                    <div class="match-score">{{ fixture.home_score|default:"0" }} - {{ fixture.away_score|default:"0" }}</div>
+                    <div class="match-team">
+                        <div class="badge-icon">🛡️</div>
+                        <h4>{{ fixture.away_team.name }}</h4>
+                    </div>
+                </div>
+                <div class="match-card-footer">
+                    <span>📍 {{ fixture.venue.name|default:"—" }}</span>
+                    <span>✅ Full Time</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="icon">📊</div>
+            <h3>No Results Available</h3>
+            <p>Match results will appear here once competitions are underway.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- ── UPCOMING FIXTURES ──────────────────────────────────────────────────── -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="section-header">
+            <h2>Upcoming Fixtures</h2>
+            <p>Matches yet to be played</p>
+            <div class="line"></div>
+        </div>
+
+        {% if upcoming_fixtures %}
+        <div class="grid-3">
+            {% for fixture in upcoming_fixtures %}
+            <div class="match-card">
+                <div class="match-card-header">
+                    <span>{{ fixture.competition.name }}</span>
+                    <span>{{ fixture.match_date|date:"d M Y" }}</span>
+                </div>
+                <div class="match-card-body">
+                    <div class="match-team">
+                        <div class="badge-icon">🛡️</div>
+                        <h4>{{ fixture.home_team.name }}</h4>
+                    </div>
+                    <div class="match-vs">VS</div>
+                    <div class="match-team">
+                        <div class="badge-icon">🛡️</div>
+                        <h4>{{ fixture.away_team.name }}</h4>
+                    </div>
+                </div>
+                <div class="match-card-footer">
+                    <span>📍 {{ fixture.venue.name|default:"TBD" }}</span>
+                    <span>🕐 {{ fixture.match_date|date:"H:i" }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="icon">📅</div>
+            <h3>No Upcoming Fixtures</h3>
+            <p>Check back soon for scheduled matches.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

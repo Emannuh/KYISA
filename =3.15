@@ -1,0 +1,5 @@
+Requirement already satisfied: Django in d:\kyisa_cms_django (2)\kyisa_cms\venv\lib\site-packages (5.0.4)
+Requirement already satisfied: djangorestframework in d:\kyisa_cms_django (2)\kyisa_cms\venv\lib\site-packages (3.15.1)
+Requirement already satisfied: asgiref<4,>=3.7.0 in d:\kyisa_cms_django (2)\kyisa_cms\venv\lib\site-packages (from Django) (3.11.1)
+Requirement already satisfied: sqlparse>=0.3.1 in d:\kyisa_cms_django (2)\kyisa_cms\venv\lib\site-packages (from Django) (0.5.5)
+Requirement already satisfied: tzdata in d:\kyisa_cms_django (2)\kyisa_cms\venv\lib\site-packages (from Django) (2025.3)

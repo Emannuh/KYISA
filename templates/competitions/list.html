@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Competitions — KYISA CMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <span>Competitions</span>
+    </div>
+    <h1>🏆 Competitions</h1>
+    <p>Manage all KYISA competitions and tournaments</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>All Competitions</h3>
+    </div>
+    <div class="card-body">
+        {% if competitions %}
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Season</th>
+                        <th>Age Group</th>
+                        <th>Status</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Teams</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for comp in competitions %}
+                    <tr>
+                        <td><strong>{{ comp.name }}</strong></td>
+                        <td>{{ comp.season }}</td>
+                        <td>{{ comp.get_age_group_display }}</td>
+                        <td>
+                            {% if comp.status == 'active' %}
+                            <span class="badge badge-success">Active</span>
+                            {% elif comp.status == 'registration' %}
+                            <span class="badge badge-info">Registration</span>
+                            {% elif comp.status == 'completed' %}
+                            <span class="badge badge-gray">Completed</span>
+                            {% elif comp.status == 'upcoming' %}
+                            <span class="badge badge-warning">Upcoming</span>
+                            {% else %}
+                            <span class="badge badge-danger">{{ comp.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ comp.start_date|date:"d M Y" }}</td>
+                        <td>{{ comp.end_date|date:"d M Y" }}</td>
+                        <td>{{ comp.teams.count }} / {{ comp.max_teams }}</td>
+                        <td>
+                            <a href="{% url 'competition_detail' comp.pk %}" class="btn btn-outline btn-sm">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="icon">🏆</div>
+            <h3>No competitions yet</h3>
+            <p>Competitions will appear here once created.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

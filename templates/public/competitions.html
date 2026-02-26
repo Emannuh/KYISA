@@ -1,0 +1,108 @@
+{% extends "public/base.html" %}
+{% load static %}
+
+{% block title %}Competitions{% endblock %}
+
+{% block content %}
+
+<!-- ── PAGE HERO ───────────────────────────────────────────────────────────── -->
+<section class="hero" style="padding:3rem 2rem;">
+    <div class="hero-content">
+        <h1>Competitions</h1>
+        <h2>Browse KYISA intercounty sporting competitions</h2>
+    </div>
+</section>
+
+<!-- ── ACTIVE COMPETITIONS ────────────────────────────────────────────────── -->
+<section class="section">
+    <div class="container">
+        {% if active_competitions %}
+        <div class="section-header">
+            <h2>Active Competitions</h2>
+            <p>Currently running tournaments and leagues</p>
+            <div class="line"></div>
+        </div>
+        <div class="grid-3">
+            {% for comp in active_competitions %}
+            <div class="feature-card" style="text-align:left;">
+                <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;">
+                    <div class="feature-icon green" style="margin:0;width:50px;height:50px;font-size:1.3rem;">🏆</div>
+                    <div>
+                        <h3 style="margin:0;">{{ comp.name }}</h3>
+                        <span class="badge badge-success">Active</span>
+                    </div>
+                </div>
+                <p>{{ comp.description|default:"An intercounty competition organised by KYISA." }}</p>
+                <div style="margin-top:1rem;font-size:.85rem;color:var(--gray);">
+                    <p>📅 {{ comp.start_date|date:"d M Y" }} — {{ comp.end_date|date:"d M Y"|default:"Ongoing" }}</p>
+                    <p>📍 {{ comp.venue.name|default:"Multiple Venues" }}</p>
+                    <p>👥 {{ comp.teams.count|default:"0" }} Teams</p>
+                </div>
+                <a href="{% url 'public_competition_detail' comp.pk %}" class="btn btn-primary btn-sm" style="margin-top:1rem;">View Details →</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if upcoming_competitions %}
+        <div class="section-header" style="margin-top:3rem;">
+            <h2>Upcoming Competitions</h2>
+            <p>Tournaments and leagues coming soon</p>
+            <div class="line"></div>
+        </div>
+        <div class="grid-3">
+            {% for comp in upcoming_competitions %}
+            <div class="feature-card" style="text-align:left;">
+                <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;">
+                    <div class="feature-icon blue" style="margin:0;width:50px;height:50px;font-size:1.3rem;">📋</div>
+                    <div>
+                        <h3 style="margin:0;">{{ comp.name }}</h3>
+                        <span class="badge badge-info">Upcoming</span>
+                    </div>
+                </div>
+                <p>{{ comp.description|default:"An upcoming intercounty competition organised by KYISA." }}</p>
+                <div style="margin-top:1rem;font-size:.85rem;color:var(--gray);">
+                    <p>📅 Starts {{ comp.start_date|date:"d M Y" }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if completed_competitions %}
+        <div class="section-header" style="margin-top:3rem;">
+            <h2>Completed Competitions</h2>
+            <p>Past tournaments and their results</p>
+            <div class="line"></div>
+        </div>
+        <div class="grid-3">
+            {% for comp in completed_competitions %}
+            <div class="feature-card" style="text-align:left;">
+                <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;">
+                    <div class="feature-icon yellow" style="margin:0;width:50px;height:50px;font-size:1.3rem;">🏅</div>
+                    <div>
+                        <h3 style="margin:0;">{{ comp.name }}</h3>
+                        <span class="badge badge-gray">Completed</span>
+                    </div>
+                </div>
+                <p>{{ comp.description|default:"This competition has been completed." }}</p>
+                <div style="margin-top:1rem;font-size:.85rem;color:var(--gray);">
+                    <p>📅 {{ comp.start_date|date:"d M Y" }} — {{ comp.end_date|date:"d M Y" }}</p>
+                </div>
+                <a href="{% url 'public_competition_detail' comp.pk %}" class="btn btn-outline btn-sm" style="margin-top:1rem;">View Results →</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if not active_competitions and not upcoming_competitions and not completed_competitions %}
+        <div class="empty-state">
+            <div class="icon">🏆</div>
+            <h3>No Competitions Yet</h3>
+            <p>Competitions will be listed here once they are created. Check back soon!</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

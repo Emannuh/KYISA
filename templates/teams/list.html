@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Teams — KYISA CMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <span>Teams</span>
+    </div>
+    <h1>⚽ Teams</h1>
+    <p>{% if user.role == 'team_manager' %}Your team and players{% else %}All registered teams{% endif %}</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>{% if user.role == 'team_manager' %}My Teams{% else %}All Teams{% endif %}</h3>
+    </div>
+    <div class="card-body">
+        {% if teams %}
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>County</th>
+                        <th>Competition</th>
+                        <th>Manager</th>
+                        <th>Players</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for team in teams %}
+                    <tr>
+                        <td><strong>{{ team.name }}</strong></td>
+                        <td>{{ team.county }}</td>
+                        <td>{{ team.competition|default:"—" }}</td>
+                        <td>{{ team.manager|default:"—" }}</td>
+                        <td>{{ team.players.count }}</td>
+                        <td>
+                            {% if team.status == 'registered' %}
+                            <span class="badge badge-success">Registered</span>
+                            {% elif team.status == 'pending' %}
+                            <span class="badge badge-warning">Pending</span>
+                            {% else %}
+                            <span class="badge badge-danger">{{ team.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'team_detail' team.pk %}" class="btn btn-outline btn-sm">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="icon">⚽</div>
+            <h3>No teams found</h3>
+            <p>Teams will appear here once registered.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}KYISA{% endblock %} — Kenya Youth Intercounty Sports Association</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'img/kyisa_logo.png' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- ── PUBLIC NAVBAR ──────────────────────────────────────────────────────── -->
+<nav class="pub-nav">
+    <a href="{% url 'home' %}" class="pub-nav-brand">
+        <img src="{% static 'img/kyisa_logo.png' %}" alt="KYISA">
+        <span>KYISA</span>
+    </a>
+
+    <button class="pub-nav-toggle" onclick="document.querySelector('.pub-nav-links').classList.toggle('show')">
+        ☰
+    </button>
+
+    <ul class="pub-nav-links">
+        <li><a href="{% url 'home' %}" class="{% if active_page == 'home' %}active{% endif %}">Home</a></li>
+        <li><a href="{% url 'about' %}" class="{% if active_page == 'about' %}active{% endif %}">About</a></li>
+        <li><a href="{% url 'public_competitions' %}" class="{% if active_page == 'competitions' %}active{% endif %}">Competitions</a></li>
+        <li><a href="{% url 'public_results' %}" class="{% if active_page == 'results' %}active{% endif %}">Results</a></li>
+        <li><a href="{% url 'contact' %}" class="{% if active_page == 'contact' %}active{% endif %}">Contact</a></li>
+    </ul>
+
+    <div class="pub-nav-actions">
+        {% if user.is_authenticated %}
+            <a href="{% url 'dashboard' %}" class="btn btn-primary btn-sm">Portal</a>
+        {% else %}
+            <a href="{% url 'web_login' %}" class="btn btn-primary btn-sm">Staff Login</a>
+        {% endif %}
+    </div>
+</nav>
+
+<!-- ── KENYA FLAG STRIPE ──────────────────────────────────────────────────── -->
+<div class="kenya-stripe"></div>
+
+<!-- ── MESSAGES ────────────────────────────────────────────────────────────── -->
+{% if messages %}
+<div class="container" style="margin-top:1rem;">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- ── MAIN CONTENT ───────────────────────────────────────────────────────── -->
+{% block content %}{% endblock %}
+
+<!-- ── PUBLIC FOOTER ──────────────────────────────────────────────────────── -->
+<footer class="pub-footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <img src="{% static 'img/kyisa_logo.png' %}" alt="KYISA">
+                <p>Kenya Youth Intercounty Sports Association — nurturing young athletic talent across all 47 counties through fair, competitive, and well-organized sporting events.</p>
+                <div class="social-links">
+                    <a href="#" title="Facebook">f</a>
+                    <a href="#" title="Twitter">𝕏</a>
+                    <a href="#" title="Instagram">📷</a>
+                    <a href="#" title="YouTube">▶</a>
+                </div>
+            </div>
+            <div>
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'about' %}">About KYISA</a></li>
+                    <li><a href="{% url 'public_competitions' %}">Competitions</a></li>
+                    <li><a href="{% url 'public_results' %}">Results</a></li>
+                    <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Resources</h4>
+                <ul class="footer-links">
+                    <li><a href="{% url 'web_login' %}">Staff Portal</a></li>
+                    <li><a href="/api/docs/">API Documentation</a></li>
+                    <li><a href="/admin/">Admin Panel</a></li>
+                    <li><a href="#">Rules & Regulations</a></li>
+                    <li><a href="#">Downloads</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Contact</h4>
+                <ul class="footer-links">
+                    <li>📍 Nairobi, Kenya</li>
+                    <li>📧 info@kyisa.co.ke</li>
+                    <li>📞 +254 700 000 000</li>
+                    <li>🕐 Mon-Fri: 8AM - 5PM EAT</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="kenya-stripe"></div>
+    <div class="footer-bottom">
+        <div class="container">
+            &copy; {{ current_year|default:"2026" }} Kenya Youth Intercounty Sports Association. All rights reserved.
+        </div>
+    </div>
+</footer>
+
+<script src="{% static 'js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

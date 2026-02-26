@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block title %}Matches & Fixtures — KYISA CMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <span>Matches</span>
+    </div>
+    <h1>📋 Matches & Fixtures</h1>
+    <p>View all scheduled fixtures, results and match reports</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>All Fixtures</h3>
+    </div>
+    <div class="card-body">
+        {% if fixtures %}
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Competition</th>
+                        <th>Home</th>
+                        <th></th>
+                        <th>Away</th>
+                        <th>Venue</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for f in fixtures %}
+                    <tr>
+                        <td>{{ f.match_date|date:"d M Y" }}</td>
+                        <td>{{ f.kickoff_time|time:"H:i" }}</td>
+                        <td>{{ f.competition.name }}</td>
+                        <td><strong>{{ f.home_team.name }}</strong></td>
+                        <td style="text-align:center;">
+                            {% if f.home_score is not None %}
+                            <strong>{{ f.home_score }} - {{ f.away_score }}</strong>
+                            {% else %}
+                            vs
+                            {% endif %}
+                        </td>
+                        <td><strong>{{ f.away_team.name }}</strong></td>
+                        <td>{{ f.venue|default:"TBD" }}</td>
+                        <td>
+                            {% if f.status == 'completed' %}
+                            <span class="badge badge-success">Completed</span>
+                            {% elif f.status == 'live' %}
+                            <span class="badge badge-danger">Live</span>
+                            {% elif f.status == 'confirmed' %}
+                            <span class="badge badge-info">Confirmed</span>
+                            {% elif f.status == 'postponed' %}
+                            <span class="badge badge-warning">Postponed</span>
+                            {% elif f.status == 'cancelled' %}
+                            <span class="badge badge-danger">Cancelled</span>
+                            {% else %}
+                            <span class="badge badge-gray">{{ f.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="icon">📅</div>
+            <h3>No fixtures scheduled</h3>
+            <p>Fixtures will appear here once they are created.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Match Reports -->
+{% if match_reports %}
+<div class="card" style="margin-top:1.5rem;">
+    <div class="card-header"><h3>Match Reports</h3></div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr><th>Fixture</th><th>Score</th><th>Referee</th><th>Status</th><th>Submitted</th></tr>
+                </thead>
+                <tbody>
+                    {% for report in match_reports %}
+                    <tr>
+                        <td>{{ report.fixture }}</td>
+                        <td><strong>{{ report.home_score }} - {{ report.away_score }}</strong></td>
+                        <td>{{ report.referee|default:"—" }}</td>
+                        <td>
+                            {% if report.status == 'approved' %}
+                            <span class="badge badge-success">Approved</span>
+                            {% elif report.status == 'submitted' %}
+                            <span class="badge badge-info">Submitted</span>
+                            {% elif report.status == 'returned' %}
+                            <span class="badge badge-warning">Returned</span>
+                            {% else %}
+                            <span class="badge badge-gray">{{ report.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ report.submitted_at|date:"d M Y"|default:"—" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

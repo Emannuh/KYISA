@@ -1,0 +1,124 @@
+{% extends "public/base.html" %}
+{% load static %}
+
+{% block title %}Contact{% endblock %}
+
+{% block content %}
+
+<!-- ── PAGE HERO ───────────────────────────────────────────────────────────── -->
+<section class="hero" style="padding:3rem 2rem;">
+    <div class="hero-content">
+        <h1>Contact Us</h1>
+        <h2>Get in touch with KYISA</h2>
+    </div>
+</section>
+
+<!-- ── CONTACT SECTION ────────────────────────────────────────────────────── -->
+<section class="section">
+    <div class="container">
+        <div class="contact-grid">
+            <!-- Contact Information -->
+            <div>
+                <h2 style="font-size:1.5rem;margin-bottom:1.5rem;">Get in Touch</h2>
+                <p style="color:var(--gray);margin-bottom:2rem;">
+                    Have questions about KYISA competitions, team registration, or referee programmes?
+                    We'd love to hear from you!
+                </p>
+
+                <div class="contact-info-card">
+                    <div class="icon">📍</div>
+                    <div>
+                        <h4>Location</h4>
+                        <p>Nairobi, Kenya<br>Sports Centre, Kasarani</p>
+                    </div>
+                </div>
+
+                <div class="contact-info-card">
+                    <div class="icon">📧</div>
+                    <div>
+                        <h4>Email</h4>
+                        <p>info@kyisa.co.ke<br>competitions@kyisa.co.ke</p>
+                    </div>
+                </div>
+
+                <div class="contact-info-card">
+                    <div class="icon">📞</div>
+                    <div>
+                        <h4>Phone</h4>
+                        <p>+254 700 000 000<br>+254 711 000 000</p>
+                    </div>
+                </div>
+
+                <div class="contact-info-card">
+                    <div class="icon">🕐</div>
+                    <div>
+                        <h4>Office Hours</h4>
+                        <p>Monday – Friday: 8:00 AM – 5:00 PM EAT<br>Saturday: 9:00 AM – 1:00 PM</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="contact-form">
+                <h3 style="margin-bottom:1.5rem;">Send us a Message</h3>
+
+                {% if contact_sent %}
+                <div class="alert alert-success">
+                    Thank you for your message! We'll get back to you soon.
+                </div>
+                {% endif %}
+
+                <form method="post" action="{% url 'contact' %}">
+                    {% csrf_token %}
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>First Name</label>
+                            <input type="text" name="first_name" class="form-control" required placeholder="Your first name">
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            <input type="text" name="last_name" class="form-control" required placeholder="Your last name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" name="email" class="form-control" required placeholder="you@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <select name="subject" class="form-control">
+                            <option value="general">General Enquiry</option>
+                            <option value="registration">Team Registration</option>
+                            <option value="competition">Competition Information</option>
+                            <option value="referee">Referee Programme</option>
+                            <option value="partnership">Partnership / Sponsorship</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea name="message" class="form-control" required placeholder="Your message..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">
+                        Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── MAP PLACEHOLDER ────────────────────────────────────────────────────── -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="section-header">
+            <h2>Find Us</h2>
+            <div class="line"></div>
+        </div>
+        <div style="background:var(--bg);border-radius:var(--radius-lg);height:300px;display:flex;align-items:center;justify-content:center;color:var(--gray);font-size:1.1rem;">
+            📍 Nairobi, Kenya — Map integration coming soon
+        </div>
+    </div>
+</section>
+
+{% endblock %}
