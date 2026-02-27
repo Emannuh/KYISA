@@ -47,7 +47,6 @@ def home_view(request):
         'competitions': Competition.objects.count(),
         'teams': Team.objects.count(),
         'players': Player.objects.count(),
-        'referees': RefereeProfile.objects.filter(is_approved=True).count(),
     }
     upcoming_fixtures = Fixture.objects.filter(
         match_date__gte=now

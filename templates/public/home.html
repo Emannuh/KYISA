@@ -74,34 +74,19 @@
     <!-- Content — Phase C (Kenyan flag) -->
     <div class="hero-content hero-phase" id="heroPhaseC">
         <div class="kenya-flag-wrap">
+            <!-- Flag pole -->
+            <div class="flag-pole">
+                <div class="flag-pole-cap"></div>
+            </div>
+            <!-- Flag fabric — real image with wind animation -->
             <div class="kenya-flag">
-                <div class="flag-stripe flag-stripe--black"></div>
-                <div class="flag-stripe flag-stripe--white-top"></div>
-                <div class="flag-stripe flag-stripe--red"></div>
-                <div class="flag-stripe flag-stripe--white-bot"></div>
-                <div class="flag-stripe flag-stripe--green"></div>
-                <!-- Shield -->
-                <div class="flag-shield">
-                    <svg viewBox="0 0 120 160" class="flag-shield-svg">
-                        <!-- Shield shape -->
-                        <ellipse cx="60" cy="80" rx="38" ry="58" fill="#C62828" stroke="#111" stroke-width="3"/>
-                        <!-- Vertical spears -->
-                        <line x1="60" y1="5" x2="60" y2="155" stroke="#111" stroke-width="3"/>
-                        <!-- Cross bars on shield -->
-                        <ellipse cx="60" cy="60" rx="18" ry="5" fill="none" stroke="#fff" stroke-width="2.5"/>
-                        <ellipse cx="60" cy="80" rx="20" ry="5" fill="none" stroke="#fff" stroke-width="2.5"/>
-                        <ellipse cx="60" cy="100" rx="18" ry="5" fill="none" stroke="#fff" stroke-width="2.5"/>
-                        <!-- Spear tips -->
-                        <polygon points="25,10 30,30 20,30" fill="#555"/>
-                        <polygon points="95,10 100,30 90,30" fill="#555"/>
-                        <line x1="25" y1="30" x2="25" y2="140" stroke="#555" stroke-width="2.5"/>
-                        <line x1="95" y1="30" x2="95" y2="140" stroke="#555" stroke-width="2.5"/>
-                    </svg>
-                </div>
+                <img src="{% static 'img/kenya_flag.png' %}" alt="Flag of Kenya" class="flag-img">
             </div>
         </div>
-        <h2 class="flag-title">Republic of Kenya</h2>
-        <p class="flag-sub">Harambee &mdash; Let Us All Pull Together</p>
+        <p class="flag-quote">
+            &ldquo;Our children may learn about heroes of the past. Our task is to make ourselves architects of the future.&rdquo;
+        </p>
+        <span class="flag-author">&mdash; Mzee Jomo Kenyatta, <em>First President of Kenya</em></span>
     </div>
 
     <div class="kenya-stripe" style="position:absolute;bottom:0;left:0;right:0;z-index:5"></div>
@@ -119,8 +104,6 @@
             <span class="ticker-sep">&#x2022;</span>
             <span class="ticker-item"><strong>{{ stats.players|default:"0" }}</strong> Players</span>
             <span class="ticker-sep">&#x2022;</span>
-            <span class="ticker-item"><strong>{{ stats.referees|default:"0" }}</strong> Referees</span>
-            <span class="ticker-sep">&#x2022;</span>
             <span class="ticker-item"><strong>47</strong> Counties</span>
             <span class="ticker-sep">&#x2022;</span>
             <span class="ticker-item"><strong>{{ stats.competitions|default:"0" }}</strong> Competitions</span>
@@ -128,8 +111,6 @@
             <span class="ticker-item"><strong>{{ stats.teams|default:"0" }}</strong> Teams</span>
             <span class="ticker-sep">&#x2022;</span>
             <span class="ticker-item"><strong>{{ stats.players|default:"0" }}</strong> Players</span>
-            <span class="ticker-sep">&#x2022;</span>
-            <span class="ticker-item"><strong>{{ stats.referees|default:"0" }}</strong> Referees</span>
             <span class="ticker-sep">&#x2022;</span>
             <span class="ticker-item"><strong>47</strong> Counties</span>
             <span class="ticker-sep">&#x2022;</span>
@@ -144,7 +125,7 @@
     <div class="container">
         <div class="countdown-inner reveal">
             <div class="countdown-info">
-                <span class="badge badge--red">Next Edition</span>
+                <span class="badge badge--red">11th Edition</span>
                 <h2 class="countdown-title">KYISA 2026<br><span>Laikipia County</span></h2>
                 <p class="countdown-dates">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C62828" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -152,8 +133,12 @@
                 </p>
                 <p class="countdown-venue">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B5E20" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                    Laikipia County, Kenya
+                    Nyahururu Town, Laikipia County, Kenya
                 </p>
+                <div style="margin-top:1.25rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+                    <span class="badge" style="border-color:rgba(76,175,80,.5);color:#A5D6A7;background:rgba(76,175,80,.18);font-size:.85rem;padding:.35rem .9rem;animation:pulse-glow 2s ease-in-out infinite;">🟢 Registration Open</span>
+                    <a href="{% url 'team_register' %}" class="btn btn--primary" style="font-size:.85rem;padding:.55rem 1.4rem;">Register Your Team →</a>
+                </div>
             </div>
             <div class="countdown-timer" id="countdownTimer">
                 <div class="countdown-unit">
@@ -187,25 +172,28 @@
     <div class="container">
         <div class="sec-head reveal">
             <span class="badge">What We Do</span>
-            <h2 class="sec-title">Empowering Kenya's Youth<br>Through Sport</h2>
+            <h2 class="sec-title">The Annual Youth Championship<br>For Ages 18 – 23</h2>
             <div class="sec-line"></div>
+            <p style="max-width:680px;margin:.8rem auto 0;color:#555;font-size:1.05rem;line-height:1.7;">
+                KYISA is Kenya's premier annual intercounty sports championship, bringing together talented young athletes aged <strong>18 to 23</strong> from all 47 counties to compete at the highest level.
+            </p>
         </div>
 
         <div class="features-grid">
             <div class="feature reveal" style="--delay:.05s">
                 <span class="feature-num">01</span>
-                <h3>Intercounty Competitions</h3>
-                <p>Organizing tournaments that bring together youth from all 47 counties in thrilling competitive action.</p>
+                <h3>Annual Championship</h3>
+                <p>Every year, KYISA hosts a week-long multi-sport championship where counties field their best youth athletes to compete for glory.</p>
             </div>
             <div class="feature reveal" style="--delay:.12s">
                 <span class="feature-num">02</span>
-                <h3>Youth Development</h3>
-                <p>Identifying and nurturing young talent through well-structured programs that shape future champions.</p>
+                <h3>Youth Ages 18 – 23</h3>
+                <p>Exclusively for young Kenyans aged 18 to 23 — identifying, developing, and celebrating the next generation of sporting talent.</p>
             </div>
             <div class="feature reveal" style="--delay:.19s">
                 <span class="feature-num">03</span>
-                <h3>Referee Management</h3>
-                <p>Training and certifying qualified match officials to ensure fair play at all levels.</p>
+                <h3>Intercounty Competition</h3>
+                <p>Teams representing all 47 counties go head-to-head in football, basketball, volleyball, handball and more.</p>
             </div>
             <div class="feature reveal" style="--delay:.26s">
                 <span class="feature-num">04</span>
@@ -284,10 +272,6 @@
             <div class="stat-item reveal" style="--delay:.16s">
                 <span class="stat-num" data-count="{{ stats.players|default:'0' }}">0</span>
                 <span class="stat-label">Active Players</span>
-            </div>
-            <div class="stat-item reveal" style="--delay:.24s">
-                <span class="stat-num" data-count="{{ stats.referees|default:'0' }}">0</span>
-                <span class="stat-label">Certified Referees</span>
             </div>
         </div>
     </div>
@@ -456,7 +440,7 @@
         <div class="cta-box reveal">
             <img src="{% static 'img/kyisa_logo.png' %}" alt="KYISA" class="cta-logo">
             <h2>Join the Movement</h2>
-            <p>Whether you're a team, a referee, or a supporter — KYISA is your home for youth sports in Kenya.</p>
+            <p>Whether you're a team or a supporter — KYISA is your home for youth sports in Kenya.</p>
             <div class="cta-actions">
                 <a href="{% url 'public_competitions' %}" class="btn btn--primary btn--lg">Browse Competitions</a>
                 <a href="{% url 'contact' %}" class="btn btn--outline btn--lg">Contact Us</a>
