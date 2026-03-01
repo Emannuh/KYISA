@@ -40,10 +40,11 @@ INSTALLED_APPS = [
     # KYISA Apps
     "accounts",
     "competitions",
-    "referees",
+    "referees.apps.RefereesConfig",
     "teams",
     "matches",
     "admin_dashboard",
+    "appeals",
 ]
 
 # ── MIDDLEWARE ─────────────────────────────────────────────────────────────────
@@ -57,6 +58,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "accounts.middleware.ForcePasswordChangeMiddleware",
+    "admin_dashboard.activity_middleware.ActivityLoggingMiddleware",
 ]
 
 ROOT_URLCONF   = "kyisa_cms.urls"

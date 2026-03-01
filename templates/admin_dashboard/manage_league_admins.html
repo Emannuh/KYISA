@@ -74,10 +74,6 @@
             <form method="post" action="{% url 'create_league_admin' %}">
                 {% csrf_token %}
                 <div class="row g-3">
-                    <div class="col-md-2">
-                        <label class="form-label">Username <span class="text-danger">*</span></label>
-                        <input type="text" name="username" class="form-control" required placeholder="username">
-                    </div>
                     <div class="col-md-3">
                         <label class="form-label">Email <span class="text-danger">*</span></label>
                         <input type="email" name="email" class="form-control" required placeholder="user@example.com">
@@ -91,13 +87,16 @@
                         <input type="text" name="last_name" class="form-control" required placeholder="Doe">
                     </div>
                     <div class="col-md-2">
+                        <label class="form-label">Phone</label>
+                        <input type="text" name="phone" class="form-control" placeholder="+254...">
+                    </div>
+                    <div class="col-md-2">
                         <label class="form-label">Role <span class="text-danger">*</span></label>
                         <select name="role" class="form-select" required>
                             <option value="">Select Role...</option>
-                            <option value="League Admin">League Admin</option>
-                            <option value="Team Managers">Team Manager</option>
-                            <option value="Referee">Referee</option>
-                            <option value="Referees Manager">Referees Manager</option>
+                            {% for value, label in role_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="col-md-1 d-flex align-items-end">
@@ -107,7 +106,7 @@
                     </div>
                 </div>
                 <div class="alert alert-info mt-3 mb-0">
-                    <i class="fas fa-info-circle"></i> A random password will be generated and displayed. <strong>Save it!</strong>
+                    <i class="fas fa-info-circle"></i> A one-time password will be generated and emailed to the user. They must change it on first login.
                 </div>
             </form>
         </div>
@@ -121,10 +120,9 @@
                     <label class="form-label">Filter by Role</label>
                     <select name="role" class="form-select" onchange="this.form.submit()">
                         <option value="all" {% if role_filter == 'all' %}selected{% endif %}>All Roles</option>
-                        <option value="League Admin" {% if role_filter == 'League Admin' %}selected{% endif %}>League Admin</option>
-                        <option value="Team Managers" {% if role_filter == 'Team Managers' %}selected{% endif %}>Team Managers</option>
-                        <option value="Referee" {% if role_filter == 'Referee' %}selected{% endif %}>Referees</option>
-                        <option value="Referees Manager" {% if role_filter == 'Referees Manager' %}selected{% endif %}>Referees Manager</option>
+                        {% for value, label in role_choices %}
+                        <option value="{{ value }}" {% if role_filter == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -162,10 +160,9 @@
                 <table class="table table-hover table-striped">
                     <thead>
                         <tr>
-                            <th>Username</th>
-                            <th>Name</th>
                             <th>Email</th>
-                            <th>Roles</th>
+                            <th>Name</th>
+                            <th>Role</th>
                             <th>Status</th>
                             <th>Joined</th>
                             <th>Last Login</th>
@@ -185,19 +182,19 @@
                                 {% endif %}
                             </td>
                             <td>{{ user.first_name }} {{ user.last_name }}</td>
-                            <td>{{ user.email }}</td>
                             <td>
-                                {% for group in user.groups.all %}
-                                <span class="badge bg-secondary">{{ group.name }}</span>
-                                {% empty %}
-                                <span class="text-muted">No role</span>
-                                {% endfor %}
+                                <span class="badge bg-secondary">{{ user.get_role_display }}</span>
                             </td>
                             <td>
-                                {% if user.is_active %}
+                                {% if user.is_suspended %}
+                                <span class="badge bg-dark">Suspended</span>
+                                {% elif user.is_active %}
                                 <span class="badge bg-success">Active</span>
                                 {% else %}
                                 <span class="badge bg-danger">Inactive</span>
+                                {% endif %}
+                                {% if user.must_change_password %}
+                                <span class="badge bg-warning text-dark ms-1" title="Must change password">OTP</span>
                                 {% endif %}
                             </td>
                             <td>{{ user.date_joined|date:"M d, Y" }}</td>

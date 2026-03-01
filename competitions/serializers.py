@@ -59,6 +59,18 @@ class PoolTeamSerializer(serializers.ModelSerializer):
             "goals_for", "goals_against", "goal_difference", "points",
         ]
 
+    def validate_team(self, team):
+        """Only teams with confirmed payment can be added to a pool."""
+        if not team.payment_confirmed:
+            raise serializers.ValidationError(
+                f"{team.name} cannot be added to a pool — payment has not been confirmed by the treasurer."
+            )
+        if team.status != "registered":
+            raise serializers.ValidationError(
+                f"{team.name} is not registered. Only approved teams can join a pool."
+            )
+        return team
+
 
 class PoolSerializer(serializers.ModelSerializer):
     standings = PoolTeamSerializer(source="pool_teams", many=True, read_only=True)
@@ -129,4 +141,13 @@ class FixtureSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data["created_by"] = self.context["request"].user
+        # Ensure both teams have confirmed payment before creating a fixture
+        home = validated_data.get("home_team")
+        away = validated_data.get("away_team")
+        for t in (home, away):
+            if t and not t.payment_confirmed:
+                raise serializers.ValidationError(
+                    {"detail": f"{t.name} has not been cleared by the treasurer. "
+                     f"Fixtures can only be created for teams with confirmed payment."}
+                )
         return super().create(validated_data)

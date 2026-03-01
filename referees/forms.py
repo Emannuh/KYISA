@@ -95,6 +95,15 @@ class RefereeRegistrationForm(forms.Form):
         }),
         label='Years of Experience',
     )
+    profile_picture = forms.ImageField(
+        required=False,
+        widget=forms.FileInput(attrs={
+            'class': 'form-control',
+            'accept': 'image/*',
+        }),
+        label='Profile Picture',
+        help_text='Passport-size photo (optional)',
+    )
 
     def clean_email(self):
         from accounts.models import User

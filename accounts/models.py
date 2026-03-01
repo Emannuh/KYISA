@@ -12,6 +12,7 @@ class UserRole(models.TextChoices):
     REFEREE             = "referee",             "Referee"
     TEAM_MANAGER        = "team_manager",        "Team Manager"
     TREASURER           = "treasurer",           "Treasurer"
+    JURY_CHAIR          = "jury_chair",          "Chair of the Jury"
     ADMIN               = "admin",               "System Admin"
 
 
@@ -45,6 +46,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     profile_photo = models.ImageField(upload_to="profiles/", null=True, blank=True)
     is_active   = models.BooleanField(default=True)
     is_staff    = models.BooleanField(default=False)
+    is_suspended = models.BooleanField(default=False, help_text="Admin-suspended account")
+    must_change_password = models.BooleanField(
+        default=False,
+        help_text="When True the user must set a new password on next login.",
+    )
     date_joined = models.DateTimeField(default=timezone.now)
     last_login  = models.DateTimeField(null=True, blank=True)
 
@@ -75,6 +81,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_team_manager(self): return self.role == UserRole.TEAM_MANAGER
     @property
     def is_treasurer(self): return self.role == UserRole.TREASURER
+    @property
+    def is_jury_chair(self): return self.role == UserRole.JURY_CHAIR
+    @property
+    def is_admin(self): return self.role == UserRole.ADMIN or self.is_superuser
 
 
 class KenyaCounty(models.TextChoices):

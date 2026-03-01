@@ -128,6 +128,18 @@ class PoolTeam(models.Model):
         unique_together = ["pool", "team"]
         ordering = ["-won", "-goals_for"]
 
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.team_id:
+            if not self.team.payment_confirmed:
+                raise ValidationError(
+                    f"{self.team.name} cannot be pooled — payment has not been confirmed by the treasurer."
+                )
+            if self.team.status != "registered":
+                raise ValidationError(
+                    f"{self.team.name} is not approved. Only registered teams can be pooled."
+                )
+
     @property
     def points(self):
         return (self.won * 3) + self.drawn
@@ -179,6 +191,19 @@ class Fixture(models.Model):
 
     class Meta:
         ordering = ["match_date", "kickoff_time"]
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        errors = {}
+        for side, fk in [("home_team", self.home_team_id), ("away_team", self.away_team_id)]:
+            if fk:
+                team = getattr(self, side)
+                if not team.payment_confirmed:
+                    errors[side] = f"{team.name} cannot play — payment not confirmed by the treasurer."
+                elif team.status != "registered":
+                    errors[side] = f"{team.name} is not an approved team."
+        if errors:
+            raise ValidationError(errors)
 
     def __str__(self):
         return f"{self.home_team} vs {self.away_team} — {self.match_date}"

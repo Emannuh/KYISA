@@ -6,6 +6,8 @@ from . import views
 from . import admin_views
 from . import reschedule_admin_views
 from . import activity_views
+from . import export_views
+from . import audit_report_views
 
 
 urlpatterns = [
@@ -24,6 +26,15 @@ urlpatterns = [
     path('activity-logs/', activity_views.activity_logs, name='activity_logs'),
     path('activity-logs/<int:log_id>/', activity_views.activity_log_detail, name='activity_log_detail'),
     path('activity-logs/<int:log_id>/undo/', activity_views.undo_action, name='undo_action'),
+    
+    # Export Logs
+    path('activity-logs/export/excel/', export_views.export_logs_excel, name='export_logs_excel'),
+    path('activity-logs/export/pdf/', export_views.export_logs_pdf, name='export_logs_pdf'),
+    
+    # Audit Report (Super Admin)
+    path('audit-report/', audit_report_views.audit_report, name='audit_report'),
+    path('audit-report/export/excel/', audit_report_views.export_audit_excel, name='export_audit_excel'),
+    path('audit-report/export/pdf/', audit_report_views.export_audit_pdf, name='export_audit_pdf'),
     
     # Registration Window Controls
     path('toggle-registration/', views.toggle_registration_window, name='toggle_registration'),

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Jury Dashboard — KYISA CMS{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+    <div>
+        <h1>🏛️ Jury Dashboard</h1>
+        <p class="text-muted">Chair of the Jury — Appeals Overview</p>
+    </div>
+    <a href="{% url 'appeals_list' %}" class="btn btn-outline">View All Appeals</a>
+</div>
+
+<!-- Statistics Cards -->
+<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:1rem; margin-bottom:2rem;">
+    <div class="card" style="padding:1.5rem; text-align:center;">
+        <div style="font-size:2rem; font-weight:700; color:#333;">{{ total_appeals }}</div>
+        <div style="color:#666; font-size:.85rem;">Total Appeals</div>
+    </div>
+    <div class="card" style="padding:1.5rem; text-align:center;">
+        <div style="font-size:2rem; font-weight:700; color:#ff9800;">{{ pending_response }}</div>
+        <div style="color:#666; font-size:.85rem;">Awaiting Response</div>
+    </div>
+    <div class="card" style="padding:1.5rem; text-align:center;">
+        <div style="font-size:2rem; font-weight:700; color:#2196f3;">{{ awaiting_decision }}</div>
+        <div style="color:#666; font-size:.85rem;">Awaiting Decision</div>
+    </div>
+    <div class="card" style="padding:1.5rem; text-align:center;">
+        <div style="font-size:2rem; font-weight:700; color:#4caf50;">{{ decided }}</div>
+        <div style="color:#666; font-size:.85rem;">Decided</div>
+    </div>
+    <div class="card" style="padding:1.5rem; text-align:center;">
+        <div style="font-size:2rem; font-weight:700; color:#9c27b0;">{{ my_decisions }}</div>
+        <div style="color:#666; font-size:.85rem;">My Decisions</div>
+    </div>
+</div>
+
+<!-- Recent Appeals -->
+<div class="card" style="padding:1.5rem;">
+    <h3 style="margin:0 0 1rem;">📋 Recent Appeals</h3>
+    {% if recent_appeals %}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Subject</th>
+                    <th>Appellant</th>
+                    <th>Respondent</th>
+                    <th>Status</th>
+                    <th>Filed</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appeal in recent_appeals %}
+                <tr>
+                    <td>{{ appeal.pk }}</td>
+                    <td>
+                        {{ appeal.subject|truncatechars:40 }}
+                        {% if appeal.is_reappeal %}
+                        <span class="badge" style="background:#ff9800; color:#fff; font-size:.65rem;">RE-APPEAL</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ appeal.appellant_team }}</td>
+                    <td>{{ appeal.respondent_team }}</td>
+                    <td>
+                        <span class="badge {% if appeal.status == 'submitted' %}bg-warning{% elif appeal.status == 'response_received' %}bg-info{% elif appeal.status == 'under_review' %}bg-primary{% elif appeal.status == 'decided' %}bg-success{% else %}bg-dark{% endif %}" style="padding:3px 6px; border-radius:4px; color:#fff; font-size:.75rem;">
+                            {{ appeal.get_status_display }}
+                        </span>
+                    </td>
+                    <td>{{ appeal.created_at|date:"d M Y" }}</td>
+                    <td>
+                        <a href="{% url 'appeal_detail' pk=appeal.pk %}" class="btn btn-sm btn-outline">View</a>
+                        {% if appeal.status in 'response_received,under_review' %}
+                        <a href="{% url 'jury_decision' pk=appeal.pk %}" class="btn btn-sm btn-primary">Decide</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p style="color:#888; text-align:center; padding:2rem;">No appeals filed yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

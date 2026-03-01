@@ -25,6 +25,13 @@
         <a href="{% url 'player_verification_list' %}" class="sidebar-link"><span class="icon">🔍</span> Player Verification</a>
         <a href="{% url 'squad_review_list' %}" class="sidebar-link"><span class="icon">📋</span> Squad Approval</a>
     </div>
+    <div class="sidebar-section">
+        <h4>System</h4>
+        <a href="{% url 'manage_league_admins' %}" class="sidebar-link"><span class="icon">👥</span> User Management</a>
+        <a href="{% url 'activity_logs' %}" class="sidebar-link"><span class="icon">📜</span> Activity Logs</a>
+        <a href="{% url 'audit_report' %}" class="sidebar-link"><span class="icon">🛡️</span> Audit Report</a>
+        <a href="{% url 'appeals_list' %}" class="sidebar-link"><span class="icon">⚖️</span> Appeals</a>
+    </div>
 
     {% elif user.role == 'competition_manager' %}
     <!-- COMPETITION MANAGER SIDEBAR -->
@@ -56,12 +63,21 @@
     <!-- REFEREE SIDEBAR -->
     <div class="sidebar-section">
         <h4>My Portal</h4>
-        <a href="{% url 'dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+        <a href="{% url 'referee_portal' %}" class="sidebar-link {% if request.resolver_match.url_name == 'referee_portal' %}active{% endif %}">
             <span class="icon">📊</span> Dashboard
         </a>
-        <a href="{% url 'referees_list' %}" class="sidebar-link"><span class="icon">📅</span> My Appointments</a>
-        <a href="{% url 'squad_review_list' %}" class="sidebar-link"><span class="icon">📋</span> Squad Approval</a>
-        <a href="{% url 'matches_list' %}" class="sidebar-link"><span class="icon">📝</span> Match Reports</a>
+        <a href="{% url 'referees_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'referees_list' %}active{% endif %}">
+            <span class="icon">📅</span> My Appointments
+        </a>
+        <a href="{% url 'referee_availability' %}" class="sidebar-link {% if request.resolver_match.url_name == 'referee_availability' %}active{% endif %}">
+            <span class="icon">📆</span> Availability
+        </a>
+        <a href="{% url 'squad_review_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'squad_review_list' %}active{% endif %}">
+            <span class="icon">📋</span> Squad Approval
+        </a>
+        <a href="{% url 'matches_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'matches_list' %}active{% endif %}">
+            <span class="icon">📝</span> Match Reports
+        </a>
     </div>
 
     {% elif user.role == 'team_manager' %}
@@ -74,6 +90,11 @@
         <a href="{% url 'teams_list' %}" class="sidebar-link"><span class="icon">⚽</span> My Team</a>
         <a href="{% url 'matches_list' %}" class="sidebar-link"><span class="icon">📋</span> Fixtures & Squads</a>
     </div>
+    <div class="sidebar-section">
+        <h4>Appeals</h4>
+        <a href="{% url 'appeals_list' %}" class="sidebar-link"><span class="icon">⚖️</span> My Appeals</a>
+        <a href="{% url 'submit_appeal' %}" class="sidebar-link"><span class="icon">📝</span> File Appeal</a>
+    </div>
     {% elif user.role == 'treasurer' %}
     <!-- TREASURER SIDEBAR -->
     <div class="sidebar-section">
@@ -83,6 +104,18 @@
         </a>
         <a href="{% url 'treasurer_teams' %}" class="sidebar-link {% if 'treasurer_teams' in request.resolver_match.url_name %}active{% endif %}">
             <span class="icon">⚽</span> Team Registrations
+        </a>
+        <a href="{% url 'appeals_list' %}" class="sidebar-link"><span class="icon">⚖️</span> Appeal Fees</a>
+    </div>
+    {% elif user.role == 'jury_chair' %}
+    <!-- JURY CHAIR SIDEBAR -->
+    <div class="sidebar-section">
+        <h4>Jury & Appeals</h4>
+        <a href="{% url 'jury_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'jury_dashboard' %}active{% endif %}">
+            <span class="icon">🏛️</span> Jury Dashboard
+        </a>
+        <a href="{% url 'appeals_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'appeals_list' %}active{% endif %}">
+            <span class="icon">⚖️</span> All Appeals
         </a>
     </div>    {% endif %}
 

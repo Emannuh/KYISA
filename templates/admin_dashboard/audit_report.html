@@ -1,0 +1,339 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Audit Report — KYISA CMS{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item active">Audit Report</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-success mb-1"><i class="fas fa-shield-alt"></i> System Audit Report</h2>
+            <p class="text-muted mb-0">Complete record of <strong>who</strong> did <strong>what</strong> and <strong>when</strong> across the entire system.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'export_audit_excel' %}?{{ request.GET.urlencode }}" class="btn btn-success">
+                <i class="fas fa-file-excel"></i> Export Excel
+            </a>
+            <a href="{% url 'export_audit_pdf' %}?{{ request.GET.urlencode }}" class="btn btn-danger">
+                <i class="fas fa-file-pdf"></i> Export PDF
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm" style="background:linear-gradient(135deg,#1B5E20,#388E3C);color:#fff">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div style="font-size:.8rem;opacity:.8">Total Actions</div>
+                            <div style="font-size:2rem;font-weight:800;line-height:1.1">{{ total|default:0 }}</div>
+                        </div>
+                        <i class="fas fa-database" style="font-size:2rem;opacity:.3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm" style="background:linear-gradient(135deg,#0D47A1,#1976D2);color:#fff">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div style="font-size:.8rem;opacity:.8">Today</div>
+                            <div style="font-size:2rem;font-weight:800;line-height:1.1">{{ today|default:0 }}</div>
+                        </div>
+                        <i class="fas fa-calendar-day" style="font-size:2rem;opacity:.3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm" style="background:linear-gradient(135deg,#E65100,#FB8C00);color:#fff">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div style="font-size:.8rem;opacity:.8">This Week</div>
+                            <div style="font-size:2rem;font-weight:800;line-height:1.1">{{ this_week|default:0 }}</div>
+                        </div>
+                        <i class="fas fa-calendar-week" style="font-size:2rem;opacity:.3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm" style="background:linear-gradient(135deg,#6A1B9A,#AB47BC);color:#fff">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div style="font-size:.8rem;opacity:.8">This Month</div>
+                            <div style="font-size:2rem;font-weight:800;line-height:1.1">{{ this_month|default:0 }}</div>
+                        </div>
+                        <i class="fas fa-calendar-alt" style="font-size:2rem;opacity:.3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-dark text-white py-2">
+            <h6 class="mb-0"><i class="fas fa-filter"></i> Filter Audit Trail</h6>
+        </div>
+        <div class="card-body py-3">
+            <form method="get" id="auditFilterForm">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-2">
+                        <label class="form-label form-label-sm">Category</label>
+                        <select name="category" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="">All Categories</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat }}" {% if cat == f_category %}selected{% endif %}>{{ cat }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label form-label-sm">User</label>
+                        <select name="user" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="">All Users</option>
+                            {% for u in all_users %}
+                            <option value="{{ u.id }}" {% if u.id|stringformat:"s" == f_user %}selected{% endif %}>{{ u.email }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label form-label-sm">From</label>
+                        <input type="date" name="date_from" class="form-control form-control-sm" value="{{ f_date_from }}" onchange="this.form.submit()">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label form-label-sm">To</label>
+                        <input type="date" name="date_to" class="form-control form-control-sm" value="{{ f_date_to }}" onchange="this.form.submit()">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label form-label-sm">Search</label>
+                        <div class="input-group input-group-sm">
+                            <input type="text" name="search" class="form-control" placeholder="Search descriptions, users…" value="{{ f_search }}">
+                            <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <a href="{% url 'audit_report' %}" class="btn btn-sm btn-outline-secondary w-100"><i class="fas fa-undo"></i></a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <!-- Category Breakdown -->
+        <div class="col-lg-5">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white py-2">
+                    <h6 class="mb-0"><i class="fas fa-chart-pie"></i> Actions by Category</h6>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead class="table-light">
+                            <tr><th>Category</th><th class="text-end">Count</th><th style="width:40%">Share</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for cs in category_stats %}
+                            <tr>
+                                <td><strong>{{ cs.name }}</strong></td>
+                                <td class="text-end">{{ cs.count }}</td>
+                                <td>
+                                    {% widthratio cs.count total 100 as pct %}
+                                    <div class="progress" style="height:18px">
+                                        <div class="progress-bar bg-success" style="width:{% widthratio cs.count total 100 %}%">
+                                            {% widthratio cs.count total 100 %}%
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="3" class="text-muted text-center py-3">No data</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Users -->
+        <div class="col-lg-7">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white py-2">
+                    <h6 class="mb-0"><i class="fas fa-users"></i> Most Active Users</h6>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead class="table-light">
+                            <tr><th>User</th><th>Name</th><th>Role</th><th class="text-end">Actions</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for us in user_stats %}
+                            <tr>
+                                <td><code>{{ us.user__email }}</code></td>
+                                <td>{{ us.user__first_name }} {{ us.user__last_name }}</td>
+                                <td><span class="badge bg-secondary">{{ us.user__role }}</span></td>
+                                <td class="text-end"><strong>{{ us.count }}</strong></td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="4" class="text-muted text-center py-3">No data</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Critical / Important Actions -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-danger text-white py-2">
+            <h6 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Recent Critical Actions (Approvals, Payments, Suspensions, User Changes)</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width:14%">Date &amp; Time</th>
+                            <th style="width:16%">Performed By</th>
+                            <th style="width:10%">Role</th>
+                            <th style="width:14%">Action</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in critical_logs %}
+                        <tr>
+                            <td>
+                                <small>{{ log.timestamp|date:"d M Y" }}<br><strong>{{ log.timestamp|time:"H:i" }}</strong></small>
+                            </td>
+                            <td>
+                                {% if log.user %}
+                                <strong>{{ log.user.get_full_name }}</strong><br>
+                                <small class="text-muted">{{ log.user.email }}</small>
+                                {% else %}
+                                <span class="text-muted">System</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if log.user %}
+                                <span class="badge bg-dark">{{ log.user.get_role_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ log.action_class }} rounded-pill">
+                                    <i class="fas fa-{{ log.action_icon }}"></i> {{ log.get_action_display }}
+                                </span>
+                            </td>
+                            <td>{{ log.description|truncatechars:150 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-muted text-center py-3">No critical actions found</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Activity Log (paginated) -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white py-2 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0"><i class="fas fa-list"></i> Full Audit Trail ({{ total }} record{{ total|pluralize }})</h6>
+            <span class="badge bg-light text-dark">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        </div>
+        <div class="card-body p-0">
+            {% if page_obj %}
+            <div class="table-responsive">
+                <table class="table table-sm table-hover mb-0"  style="font-size:.88rem">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width:12%">Date &amp; Time</th>
+                            <th style="width:14%">User</th>
+                            <th style="width:9%">Role</th>
+                            <th style="width:12%">Action</th>
+                            <th>Description</th>
+                            <th style="width:8%">IP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in page_obj %}
+                        <tr {% if log.is_undone %}class="table-secondary"{% endif %}>
+                            <td>
+                                <small>{{ log.timestamp|date:"d M Y" }}<br>{{ log.timestamp|time:"H:i:s" }}</small>
+                            </td>
+                            <td>
+                                {% if log.user %}
+                                <strong>{{ log.user.get_full_name }}</strong><br>
+                                <small class="text-muted">{{ log.user.email }}</small>
+                                {% else %}
+                                <span class="text-muted">System</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if log.user %}
+                                <span class="badge bg-secondary" style="font-size:.72rem">{{ log.user.get_role_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ log.action_class }} rounded-pill" style="font-size:.72rem">
+                                    <i class="fas fa-{{ log.action_icon }}"></i> {{ log.get_action_display }}
+                                </span>
+                                {% if log.is_undone %}
+                                <br><span class="badge bg-secondary mt-1" style="font-size:.65rem"><i class="fas fa-undo"></i> Undone</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ log.description|truncatechars:120 }}
+                                {% if log.object_repr %}
+                                <br><small class="text-muted">{{ log.object_repr }}</small>
+                                {% endif %}
+                            </td>
+                            <td><small class="text-muted">{{ log.ip_address|default:"-" }}</small></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if page_obj.has_other_pages %}
+            <div class="card-footer py-2">
+                <nav>
+                    <ul class="pagination pagination-sm justify-content-center mb-0">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page=1{% if f_category %}&category={{ f_category }}{% endif %}{% if f_user %}&user={{ f_user }}{% endif %}{% if f_date_from %}&date_from={{ f_date_from }}{% endif %}{% if f_date_to %}&date_to={{ f_date_to }}{% endif %}{% if f_search %}&search={{ f_search }}{% endif %}">First</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if f_category %}&category={{ f_category }}{% endif %}{% if f_user %}&user={{ f_user }}{% endif %}{% if f_date_from %}&date_from={{ f_date_from }}{% endif %}{% if f_date_to %}&date_to={{ f_date_to }}{% endif %}{% if f_search %}&search={{ f_search }}{% endif %}">Prev</a></li>
+                        {% endif %}
+                        <li class="page-item active"><span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+                        {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if f_category %}&category={{ f_category }}{% endif %}{% if f_user %}&user={{ f_user }}{% endif %}{% if f_date_from %}&date_from={{ f_date_from }}{% endif %}{% if f_date_to %}&date_to={{ f_date_to }}{% endif %}{% if f_search %}&search={{ f_search }}{% endif %}">Next</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if f_category %}&category={{ f_category }}{% endif %}{% if f_user %}&user={{ f_user }}{% endif %}{% if f_date_from %}&date_from={{ f_date_from }}{% endif %}{% if f_date_to %}&date_to={{ f_date_to }}{% endif %}{% if f_search %}&search={{ f_search }}{% endif %}">Last</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="py-5 text-center">
+                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                <p class="text-muted">No activity recorded yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

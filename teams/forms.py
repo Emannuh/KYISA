@@ -41,7 +41,7 @@ class TeamRegistrationForm(forms.ModelForm):
         fields = [
             'name', 'county', 'sport_type', 'competition',
             'contact_phone', 'contact_email',
-            'home_colour', 'away_colour', 'badge',
+            'home_colour', 'away_colour', 'badge', 'county_logo',
         ]
         widgets = {
             'name': forms.TextInput(attrs={
@@ -78,6 +78,10 @@ class TeamRegistrationForm(forms.ModelForm):
                 'class': 'form-control',
                 'accept': 'image/*',
             }),
+            'county_logo': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': 'image/*',
+            }),
         }
         labels = {
             'name': 'Team Name *',
@@ -88,6 +92,7 @@ class TeamRegistrationForm(forms.ModelForm):
             'home_colour': 'Home Kit Colour',
             'away_colour': 'Away Kit Colour',
             'badge': 'Team Badge / Logo',
+            'county_logo': 'County Logo',
         }
 
     def clean_name(self):

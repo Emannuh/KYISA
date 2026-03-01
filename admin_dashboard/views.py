@@ -14,6 +14,7 @@ from teams.models import Team, Player
 from referees.models import RefereeProfile, RefereeAppointment
 from competitions.models import Competition, Fixture
 from matches.models import MatchReport
+from .models import ActivityLog
 
 
 def admin_required(user):
@@ -152,6 +153,15 @@ def approve_registrations(request):
             team.status = 'registered'
             team.save()
 
+            # Explicit audit log
+            ActivityLog.objects.create(
+                user=request.user,
+                action='TEAM_APPROVE',
+                description=f'{request.user.get_full_name()} approved team: {team.name} (County: {team.county})',
+                object_repr=str(team),
+                ip_address=request.META.get('REMOTE_ADDR', ''),
+            )
+
             # Create manager account if contact email exists and no manager linked
             if team.contact_email and not team.manager:
                 try:
@@ -175,6 +185,8 @@ def approve_registrations(request):
                             role=UserRole.TEAM_MANAGER,
                             county=team.county,
                         )
+                        mgr.must_change_password = True
+                        mgr.save(update_fields=['must_change_password'])
                         team.manager = mgr
                         team.save()
 
@@ -194,6 +206,13 @@ def approve_registrations(request):
         elif action == 'reject':
             team.status = 'suspended'
             team.save()
+            ActivityLog.objects.create(
+                user=request.user,
+                action='TEAM_REJECT',
+                description=f'{request.user.get_full_name()} rejected team: {team.name}',
+                object_repr=str(team),
+                ip_address=request.META.get('REMOTE_ADDR', ''),
+            )
             messages.warning(request, f'{team.name} registration rejected.')
 
         return redirect('approve_registrations')
@@ -337,6 +356,7 @@ def assign_zones(request):
     """Assign teams to competitions (KYISA equivalent of zone assignment)."""
     unassigned_teams = Team.objects.filter(
         status='registered',
+        payment_confirmed=True,
         competition__isnull=True
     ).order_by('name')
 
@@ -347,10 +367,28 @@ def assign_zones(request):
         comp_id = request.POST.get('competition_id')
 
         team = get_object_or_404(Team, id=team_id)
+
+        # Only treasurer-approved teams can participate
+        if not team.payment_confirmed:
+            messages.error(request, f'{team.name} cannot be assigned — payment has not been confirmed by the treasurer.')
+            return redirect('assign_zones')
+        if team.status != 'registered':
+            messages.error(request, f'{team.name} is not approved. Only registered teams can participate.')
+            return redirect('assign_zones')
+
         comp = get_object_or_404(Competition, id=comp_id) if comp_id else None
 
         team.competition = comp
         team.save()
+
+        # Audit log
+        ActivityLog.objects.create(
+            user=request.user,
+            action='ZONE_ASSIGN',
+            description=f'{request.user.get_full_name()} assigned {team.name} to {comp.name if comp else "None"}',
+            object_repr=str(team),
+            ip_address=request.META.get('REMOTE_ADDR', ''),
+        )
 
         messages.success(request, f'{team.name} assigned to {comp.name if comp else "None"}.')
         return redirect('assign_zones')
@@ -467,6 +505,22 @@ def create_league_admin(request):
                 role=role,
                 is_active=True,
             )
+            user_obj.must_change_password = True
+            user_obj.save(update_fields=['must_change_password'])
+
+            # Auto-create RefereeProfile when role is referee
+            if role == 'referee':
+                from referees.models import RefereeProfile
+                RefereeProfile.objects.get_or_create(
+                    user=user_obj,
+                    defaults={
+                        'county': user_obj.county or '',
+                        'is_approved': True,
+                        'approved_by': request.user,
+                        'approved_at': timezone.now(),
+                    },
+                )
+
             send_welcome_email(user_obj, password, role)
             messages.success(request, mark_safe(
                 f'User created!<br>'
@@ -507,7 +561,8 @@ def reset_league_admin_password(request, user_id):
     user_obj = get_object_or_404(User, id=user_id)
     new_password = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
     user_obj.set_password(new_password)
-    user_obj.save()
+    user_obj.must_change_password = True
+    user_obj.save(update_fields=['password', 'must_change_password'])
 
     send_password_reset_email(user_obj, new_password)
     messages.success(request, mark_safe(

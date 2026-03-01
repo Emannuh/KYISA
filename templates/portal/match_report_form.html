@@ -136,6 +136,99 @@
     </div>
 </div>
 
+<!-- Match Officials -->
+{% if match_officials %}
+<div class="card" style="margin-bottom:1.5rem;">
+    <div class="card-header"><h3>🏁 Match Officials</h3></div>
+    <div class="card-body">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
+            {% for official in match_officials %}
+            <div style="padding:.6rem;background:#f9f9f9;border-radius:8px;">
+                <div style="font-size:.8rem;color:#666;">{{ official.get_role_display }}</div>
+                <div style="font-weight:600;">{{ official.referee.user.get_full_name }}</div>
+                <div style="font-size:.8rem;">
+                    {% if official.status == 'confirmed' %}
+                    <span style="color:#2E7D32;">✅ Confirmed</span>
+                    {% elif official.status == 'pending' %}
+                    <span style="color:#FF8F00;">🔶 Pending</span>
+                    {% elif official.status == 'declined' %}
+                    <span style="color:#c62828;">❌ Declined</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Approved Squad Lineups (auto-populated from squad submissions) -->
+{% if home_squad or away_squad %}
+<div class="card" style="margin-bottom:1.5rem;">
+    <div class="card-header"><h3>👥 Approved Match Squads</h3></div>
+    <div class="card-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;">
+            <!-- Home Team -->
+            <div>
+                <h4 style="color:#1B5E20;margin-bottom:.5rem;">{{ fixture.home_team.name }}</h4>
+                {% if home_squad %}
+                {% if home_starters %}
+                <div style="margin-bottom:.8rem;">
+                    <div style="font-weight:600;font-size:.85rem;color:#333;margin-bottom:.3rem;">Starting XI</div>
+                    {% for sp in home_starters %}
+                    <div style="display:flex;justify-content:space-between;padding:.2rem .4rem;{% if forloop.counter|divisibleby:2 %}background:#f9f9f9;{% endif %}border-radius:4px;font-size:.85rem;">
+                        <span>#{{ sp.shirt_number }} {{ sp.player.get_full_name }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% if home_subs %}
+                <div>
+                    <div style="font-weight:600;font-size:.85rem;color:#666;margin-bottom:.3rem;">Substitutes</div>
+                    {% for sp in home_subs %}
+                    <div style="display:flex;justify-content:space-between;padding:.2rem .4rem;{% if forloop.counter|divisibleby:2 %}background:#f9f9f9;{% endif %}border-radius:4px;font-size:.85rem;">
+                        <span>#{{ sp.shirt_number }} {{ sp.player.get_full_name }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% else %}
+                <div style="color:#999;font-size:.85rem;">No approved squad submitted</div>
+                {% endif %}
+            </div>
+            <!-- Away Team -->
+            <div>
+                <h4 style="color:#1565C0;margin-bottom:.5rem;">{{ fixture.away_team.name }}</h4>
+                {% if away_squad %}
+                {% if away_starters %}
+                <div style="margin-bottom:.8rem;">
+                    <div style="font-weight:600;font-size:.85rem;color:#333;margin-bottom:.3rem;">Starting XI</div>
+                    {% for sp in away_starters %}
+                    <div style="display:flex;justify-content:space-between;padding:.2rem .4rem;{% if forloop.counter|divisibleby:2 %}background:#f9f9f9;{% endif %}border-radius:4px;font-size:.85rem;">
+                        <span>#{{ sp.shirt_number }} {{ sp.player.get_full_name }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% if away_subs %}
+                <div>
+                    <div style="font-weight:600;font-size:.85rem;color:#666;margin-bottom:.3rem;">Substitutes</div>
+                    {% for sp in away_subs %}
+                    <div style="display:flex;justify-content:space-between;padding:.2rem .4rem;{% if forloop.counter|divisibleby:2 %}background:#f9f9f9;{% endif %}border-radius:4px;font-size:.85rem;">
+                        <span>#{{ sp.shirt_number }} {{ sp.player.get_full_name }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% else %}
+                <div style="color:#999;font-size:.85rem;">No approved squad submitted</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <!-- Referee Notes -->
 <div class="card" style="margin-bottom:1.5rem;">
     <div class="card-header"><h3>🗒️ Referee Notes</h3></div>

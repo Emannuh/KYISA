@@ -16,7 +16,7 @@ class PlayerSerializer(serializers.ModelSerializer):
         fields = [
             "id", "team", "first_name", "last_name", "full_name",
             "date_of_birth", "age", "position", "position_display",
-            "shirt_number", "id_number", "photo",
+            "shirt_number", "national_id_number", "photo",
             "status", "status_display", "registered_at",
         ]
         read_only_fields = ["registered_at"]

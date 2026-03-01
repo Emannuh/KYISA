@@ -7,67 +7,82 @@ import json
 
 class ActivityLoggingMiddleware(MiddlewareMixin):
     """
-    Middleware to automatically log user activities across the system
+    Middleware to automatically log user activities across the KYISA CMS.
+    Captures POST requests that change data and logs them as ActivityLog entries.
+    Login/logout are handled by accounts.signals instead.
     """
-    
-    # Actions that should be logged
+
+    # Map URL fragments to action types
     LOGGED_PATHS = {
-        # Authentication
-        '/accounts/login/': 'LOGIN',
-        '/accounts/logout/': 'LOGOUT',
-        
         # Team Management
-        '/teams/register/': 'TEAM_CREATE',
-        '/teams/edit/': 'TEAM_UPDATE',
-        '/teams/delete/': 'TEAM_DELETE',
-        
-        # Player Management
-        '/teams/player/add/': 'PLAYER_CREATE',
-        '/teams/player/edit/': 'PLAYER_UPDATE',
-        '/teams/player/delete/': 'PLAYER_DELETE',
-        '/teams/player/transfer/': 'PLAYER_TRANSFER',
-        
-        # Match Management
-        '/matches/create/': 'MATCH_CREATE',
-        '/matches/edit/': 'MATCH_UPDATE',
-        '/matches/reschedule/': 'MATCH_RESCHEDULE',
-        
-        # Match Reports
-        '/referees/match/': 'MATCH_REPORT',
-        
-        # Fixture Management
-        '/admin-dashboard/generate-fixtures/': 'FIXTURE_GENERATE',
-        
-        # Squad Management
-        '/referees/matchday/squad/submit/': 'SQUAD_SUBMIT',
-        '/referees/matchday/referee/approve/': 'SQUAD_APPROVE',
-        
-        # Referee Management
-        '/referees/match/': 'REFEREE_ACTION',
-        '/referees/register/': 'REFEREE_REGISTER',
-        
-        # Payment Management
-        '/payments/': 'PAYMENT_ACTION',
-        
-        # Admin Actions
-        '/admin-dashboard/': 'ADMIN_ACTION',
+        '/portal/teams/': 'TEAM_UPDATE',
+        '/add-player/': 'PLAYER_CREATE',
+        '/edit/': 'PLAYER_UPDATE',
+        '/delete/': 'PLAYER_DELETE',
+
+        # Approval workflows
+        '/portal/teams/pending/': 'TEAM_APPROVE',
+        '/portal/referees/pending/': 'REFEREE_APPROVE',
+
+        # Squad & Match
+        '/squad/': 'MATCHDAY_SQUAD_SUBMIT',
+        '/report/': 'MATCH_REPORT',
+        '/review/': 'MATCH_REPORT_APPROVE',
+
+        # Referee
+        '/portal/appointments/': 'REFEREE_ACTION',
+        '/portal/referee/availability/': 'REFEREE_ACTION',
+
+        # Treasurer
+        '/portal/treasurer/teams/': 'PAYMENT_ACTION',
+
+        # Admin Dashboard
+        '/portal/admin-dashboard/generate-fixtures/': 'FIXTURE_GENERATE',
+        '/portal/admin-dashboard/reschedule-fixtures/': 'MATCH_RESCHEDULE',
+        '/portal/admin-dashboard/approve-registrations/': 'TEAM_APPROVE',
+        '/portal/admin-dashboard/approve-reports/': 'MATCH_REPORT_APPROVE',
+        '/portal/admin-dashboard/suspensions/': 'SUSPENSION_CREATE',
+        '/portal/admin-dashboard/assign-zones/': 'ZONE_ASSIGN',
+        '/portal/admin-dashboard/users/create/': 'USER_CREATE',
+        '/portal/admin-dashboard/users/toggle/': 'USER_UPDATE',
+        '/portal/admin-dashboard/users/reset-password/': 'PASSWORD_CHANGE',
+        '/portal/admin-dashboard/users/edit-roles/': 'USER_ROLE_CHANGE',
+        '/portal/admin-dashboard/users/delete/': 'USER_DELETE',
+        '/portal/admin-dashboard/transfers/': 'PLAYER_TRANSFER',
+        '/portal/admin-dashboard/toggle-registration/': 'REGISTRATION_TOGGLE',
+        '/portal/admin-dashboard/activity-logs/': 'ADMIN_ACTION',
+
+        # Profile & password
+        '/portal/profile/change-password/': 'PASSWORD_CHANGE',
+        '/portal/force-change-password/': 'PASSWORD_CHANGE',
+
+        # Public registration
+        '/register/team/': 'TEAM_CREATE',
+        '/register/referee/': 'REFEREE_REGISTER',
+
+        # Squad review (referee)
+        '/portal/squads/': 'SQUAD_APPROVE',
     }
     
     def process_response(self, request, response):
-        """Log activity after successful requests"""
-        
+        """Log activity after successful POST requests"""
+
         # Only log for authenticated users
         if not request.user.is_authenticated:
             return response
-        
+
         # Only log POST requests (actions that change data)
         if request.method != 'POST':
             return response
-        
+
         # Only log successful responses (200-399)
         if not (200 <= response.status_code < 400):
             return response
-        
+
+        # Skip login/logout — handled by signals
+        if any(seg in request.path for seg in ('/login/', '/logout/')):
+            return response
+
         # Get the action type based on path
         action = self._get_action_type(request.path)
         if not action:
@@ -99,57 +114,52 @@ class ActivityLoggingMiddleware(MiddlewareMixin):
         return response
     
     def _get_action_type(self, path):
-        """Determine action type from request path"""
-        for path_pattern, action in self.LOGGED_PATHS.items():
-            if path_pattern in path:
-                # Special handling for specific actions
-                if 'login' in path:
-                    return 'LOGIN'
-                elif 'logout' in path:
-                    return 'LOGOUT'
-                elif 'generate-fixtures' in path:
-                    return 'FIXTURE_GENERATE' if 'regenerate' not in path else 'FIXTURE_REGENERATE'
-                elif 'approve' in path:
-                    return 'SQUAD_APPROVE'
-                elif 'submit' in path and 'squad' in path:
-                    return 'MATCHDAY_SQUAD_SUBMIT'
-                elif 'comprehensive-report' in path:
-                    return 'MATCH_REPORT'
-                elif 'reschedule' in path:
-                    return 'MATCH_RESCHEDULE'
-                elif 'transfer' in path:
-                    return 'PLAYER_TRANSFER'
-                elif 'register' in path and 'teams' in path:
-                    return 'TEAM_CREATE'
-                elif 'register' in path and 'referee' in path:
-                    return 'REFEREE_REGISTER'
-                else:
-                    return action
-        return None
-    
+        """Determine action type from request path (most-specific match wins)."""
+        best_match = None
+        best_len = 0
+        for pattern, action in self.LOGGED_PATHS.items():
+            if pattern in path and len(pattern) > best_len:
+                best_match = action
+                best_len = len(pattern)
+        return best_match
+
     def _generate_description(self, request, action):
         """Generate human-readable description of the action"""
         user = request.user
+        name = user.get_full_name() or user.email
         path = request.path
-        
+
         descriptions = {
-            'LOGIN': f'{user.username} logged into the system',
-            'LOGOUT': f'{user.username} logged out',
-            'FIXTURE_GENERATE': f'{user.username} generated fixtures',
-            'FIXTURE_REGENERATE': f'{user.username} regenerated fixtures',
-            'SQUAD_APPROVE': f'{user.username} approved matchday squad',
-            'MATCHDAY_SQUAD_SUBMIT': f'{user.username} submitted matchday squad',
-            'MATCH_REPORT': f'{user.username} submitted/updated match report',
-            'TEAM_CREATE': f'{user.username} registered a new team',
-            'TEAM_UPDATE': f'{user.username} updated team information',
-            'PLAYER_CREATE': f'{user.username} added a new player',
-            'PLAYER_UPDATE': f'{user.username} updated player information',
-            'PLAYER_TRANSFER': f'{user.username} processed player transfer',
-            'MATCH_RESCHEDULE': f'{user.username} rescheduled a match',
-            'REFEREE_REGISTER': f'{user.username} registered as referee',
+            'FIXTURE_GENERATE': f'{name} generated fixtures',
+            'FIXTURE_REGENERATE': f'{name} regenerated fixtures',
+            'SQUAD_APPROVE': f'{name} approved matchday squad',
+            'MATCHDAY_SQUAD_SUBMIT': f'{name} submitted matchday squad',
+            'MATCH_REPORT': f'{name} submitted/updated match report',
+            'MATCH_REPORT_APPROVE': f'{name} reviewed a match report',
+            'TEAM_CREATE': f'{name} registered a new team',
+            'TEAM_UPDATE': f'{name} updated team information',
+            'TEAM_APPROVE': f'{name} approved/rejected a team',
+            'PLAYER_CREATE': f'{name} added a new player',
+            'PLAYER_UPDATE': f'{name} updated player information',
+            'PLAYER_DELETE': f'{name} deleted a player',
+            'PLAYER_TRANSFER': f'{name} processed player transfer',
+            'MATCH_RESCHEDULE': f'{name} rescheduled a match',
+            'REFEREE_REGISTER': f'{name} registered as referee',
+            'REFEREE_APPROVE': f'{name} approved/rejected a referee',
+            'REFEREE_ACTION': f'{name} performed referee action',
+            'PAYMENT_ACTION': f'{name} processed payment/treasurer action',
+            'ZONE_ASSIGN': f'{name} assigned team to competition/zone',
+            'SQUAD_APPROVE': f'{name} reviewed a squad submission',
+            'USER_CREATE': f'{name} created a new user account',
+            'USER_UPDATE': f'{name} updated a user account',
+            'USER_DELETE': f'{name} deleted a user account',
+            'USER_ROLE_CHANGE': f'{name} changed a user role',
+            'PASSWORD_CHANGE': f'{name} changed/reset a password',
+            'SUSPENSION_CREATE': f'{name} managed a suspension',
+            'REGISTRATION_TOGGLE': f'{name} toggled registration window',
         }
-        
-        return descriptions.get(action, f'{user.username} performed {action} at {path}')
+
+        return descriptions.get(action, f'{name} performed {action} at {path}')
     
     def _get_client_ip(self, request):
         """Get client IP address"""

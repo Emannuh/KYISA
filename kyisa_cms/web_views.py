@@ -16,9 +16,13 @@ from accounts.models import User, UserRole, KenyaCounty
 from competitions.models import Competition, Fixture, SportType, EXHIBITION_SPORTS, COUNTY_REGISTRATION_FEE_CAP
 from teams.models import Team, Player, VerificationStatus, RejectionReason, PLAYER_MIN_AGE, PLAYER_MAX_AGE
 from teams.forms import TeamRegistrationForm, PlayerRegistrationForm
-from referees.models import RefereeProfile, RefereeAppointment
+from referees.models import (
+    RefereeProfile, RefereeAppointment, RefereeAvailability,
+    AppointmentStatus, AvailabilityStatus,
+)
 from referees.forms import RefereeRegistrationForm
 from matches.models import MatchReport, MatchEvent, MatchReportStatus, SquadSubmission, SquadPlayer, SquadStatus
+from datetime import date, timedelta
 
 
 # ── ROLE DECORATOR ────────────────────────────────────────────────────────────
@@ -179,7 +183,15 @@ def web_login_view(request):
         password = request.POST.get('password', '')
         user = authenticate(request, username=email, password=password)
         if user is not None:
+            if getattr(user, 'is_suspended', False):
+                return render(request, 'accounts/login.html', {
+                    'error': 'Your account has been suspended. Please contact the administrator.',
+                    'email': email,
+                })
             login(request, user)
+            if getattr(user, 'must_change_password', False):
+                messages.warning(request, 'You must change your password before continuing.')
+                return redirect('force_change_password')
             messages.success(request, f'Welcome back, {user.first_name}!')
             return redirect('dashboard')
         else:
@@ -189,6 +201,31 @@ def web_login_view(request):
             })
 
     return render(request, 'accounts/login.html')
+
+
+@login_required(login_url='web_login')
+def force_change_password_view(request):
+    """Force users with one-time passwords to set a new password."""
+    if not getattr(request.user, 'must_change_password', False):
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        new_password = request.POST.get('new_password', '')
+        confirm_password = request.POST.get('confirm_password', '')
+
+        if new_password != confirm_password:
+            messages.error(request, 'Passwords do not match.')
+        elif len(new_password) < 8:
+            messages.error(request, 'Password must be at least 8 characters.')
+        else:
+            request.user.set_password(new_password)
+            request.user.must_change_password = False
+            request.user.save(update_fields=['password', 'must_change_password'])
+            login(request, request.user)
+            messages.success(request, 'Password changed successfully! Welcome to KYISA CMS.')
+            return redirect('dashboard')
+
+    return render(request, 'accounts/force_change_password.html')
 
 
 def web_logout_view(request):
@@ -217,20 +254,15 @@ def dashboard_view(request):
     if user.role == 'treasurer':
         return redirect('treasurer_dashboard')
 
+    if user.role == 'referee':
+        return redirect('referee_portal')
+
     if user.role == 'team_manager':
         stats['teams'] = Team.objects.filter(manager=user).count()
         my_teams = Team.objects.filter(manager=user)
         recent_fixtures = Fixture.objects.filter(
             Q(home_team__in=my_teams) | Q(away_team__in=my_teams)
         ).order_by('-match_date')[:10]
-    elif user.role == 'referee':
-        try:
-            profile = user.referee_profile
-            recent_fixtures = Fixture.objects.filter(
-                referee_appointments__referee=profile
-            ).order_by('-match_date')[:10]
-        except RefereeProfile.DoesNotExist:
-            recent_fixtures = Fixture.objects.none()
     else:
         recent_fixtures = Fixture.objects.select_related(
             'competition', 'home_team', 'away_team'
@@ -315,9 +347,9 @@ def add_player_view(request, team_pk):
         messages.error(request, 'You do not have permission to manage this team.')
         return redirect('teams_list')
 
-    # Team must be approved/registered
-    if team.status != 'registered':
-        messages.warning(request, 'Players can only be added to approved teams.')
+    # Suspended teams cannot add players
+    if team.status == 'suspended':
+        messages.warning(request, 'This team is suspended. Players cannot be added.')
         return redirect('team_detail', pk=team.pk)
 
     from teams.forms import PlayerRegistrationForm
@@ -543,7 +575,8 @@ def change_password_view(request):
             messages.error(request, 'Password must be at least 8 characters.')
         else:
             request.user.set_password(new_password)
-            request.user.save()
+            request.user.must_change_password = False
+            request.user.save(update_fields=['password', 'must_change_password'])
             login(request, request.user)
             messages.success(request, 'Password updated successfully!')
 
@@ -589,7 +622,7 @@ def team_register_success_view(request):
 def referee_register_view(request):
     """Public referee registration — creates User + RefereeProfile (pending)."""
     if request.method == 'POST':
-        form = RefereeRegistrationForm(request.POST)
+        form = RefereeRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             cd = form.cleaned_data
             # Create user account (inactive until approved)
@@ -605,7 +638,7 @@ def referee_register_view(request):
                 is_active=False,
             )
             # Create referee profile
-            RefereeProfile.objects.create(
+            profile = RefereeProfile.objects.create(
                 user=user,
                 license_number=cd['license_number'],
                 level=cd.get('level') or 'County',
@@ -614,6 +647,10 @@ def referee_register_view(request):
                 years_experience=cd.get('years_experience') or 0,
                 is_approved=False,
             )
+            # Save profile picture if uploaded
+            if cd.get('profile_picture'):
+                profile.profile_picture = cd['profile_picture']
+                profile.save(update_fields=['profile_picture'])
             messages.success(request, mark_safe(
                 f'<strong>Registration Successful!</strong><br>'
                 f'Thank you, <strong>{cd["first_name"]} {cd["last_name"]}</strong>!<br>'
@@ -861,6 +898,11 @@ def squad_select_view(request, fixture_pk):
         team = fixture.away_team
     else:
         messages.error(request, 'Your team is not involved in this fixture.')
+        return redirect('matches_list')
+
+    # Only treasurer-approved teams can submit squads / play
+    if not team.payment_confirmed:
+        messages.error(request, 'Your team cannot participate — payment has not been confirmed by the treasurer.')
         return redirect('matches_list')
 
     deadline = fixture.squad_deadline
@@ -1134,6 +1176,23 @@ def match_report_form_view(request, fixture_pk):
     # Get existing events
     events = report.events.all().order_by('minute') if report else []
 
+    # ── Auto-populate from approved squads (FKF pattern) ──
+    home_squad = SquadSubmission.objects.filter(
+        fixture=fixture, team=fixture.home_team, status=SquadStatus.APPROVED
+    ).first()
+    away_squad = SquadSubmission.objects.filter(
+        fixture=fixture, team=fixture.away_team, status=SquadStatus.APPROVED
+    ).first()
+    home_starters = home_squad.squad_players.filter(is_starter=True).select_related('player').order_by('shirt_number') if home_squad else []
+    home_subs = home_squad.squad_players.filter(is_starter=False).select_related('player').order_by('shirt_number') if home_squad else []
+    away_starters = away_squad.squad_players.filter(is_starter=True).select_related('player').order_by('shirt_number') if away_squad else []
+    away_subs = away_squad.squad_players.filter(is_starter=False).select_related('player').order_by('shirt_number') if away_squad else []
+
+    # Other officials appointed to this match
+    match_officials = RefereeAppointment.objects.filter(
+        fixture=fixture
+    ).select_related('referee__user').order_by('role')
+
     return render(request, 'portal/match_report_form.html', {
         'fixture': fixture,
         'report': report,
@@ -1142,6 +1201,14 @@ def match_report_form_view(request, fixture_pk):
         'away_players': away_players,
         'pitch_choices': [('excellent', 'Excellent'), ('good', 'Good'), ('fair', 'Fair'), ('poor', 'Poor')],
         'event_types': MatchEvent.EVENT_TYPES,
+        # Squad data
+        'home_squad': home_squad,
+        'away_squad': away_squad,
+        'home_starters': home_starters,
+        'home_subs': home_subs,
+        'away_starters': away_starters,
+        'away_subs': away_subs,
+        'match_officials': match_officials,
     })
 
 
@@ -1236,6 +1303,215 @@ def appointment_action_view(request, appointment_pk):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+#   REFEREE DASHBOARD  (Comprehensive — borrowed from FKF)
+# ══════════════════════════════════════════════════════════════════════════════
+
+@role_required('referee')
+def referee_dashboard_view(request):
+    """
+    Full referee portal dashboard showing:
+    – pending confirmations, upcoming / current / completed matches
+    – pending match reports, squad approvals, availability summary
+    """
+    user = request.user
+    try:
+        profile = user.referee_profile
+    except RefereeProfile.DoesNotExist:
+        # Render an empty-state dashboard instead of redirecting (avoids loop)
+        return render(request, 'portal/referee_dashboard.html', {
+            'profile': None,
+            'no_profile': True,
+            'pending_confirmation': [],
+            'upcoming_matches': [],
+            'current_matches': [],
+            'completed_matches': [],
+            'pending_reports': [],
+            'draft_reports': [],
+            'returned_reports': [],
+            'pending_squads': [],
+            'availability_calendar': [],
+            'total_appointments': 0,
+        })
+
+    today = date.today()
+
+    appointments = RefereeAppointment.objects.filter(
+        referee=profile
+    ).select_related(
+        'fixture__home_team', 'fixture__away_team',
+        'fixture__venue', 'fixture__competition',
+    ).order_by('fixture__match_date')
+
+    pending_confirmation = []
+    upcoming_matches = []
+    completed_matches = []
+    current_matches = []
+
+    for appt in appointments:
+        match_date = appt.fixture.match_date
+        info = {
+            'appointment': appt,
+            'fixture': appt.fixture,
+            'role': appt.get_role_display(),
+            'status': appt.status,
+            'match_date': match_date,
+        }
+        if match_date == today:
+            current_matches.append(info)
+            if appt.status == AppointmentStatus.PENDING:
+                pending_confirmation.append(info)
+        elif match_date > today:
+            if appt.status == AppointmentStatus.PENDING:
+                pending_confirmation.append(info)
+            upcoming_matches.append(info)
+        else:
+            completed_matches.append(info)
+
+    # Pending match reports  (fixtures where referee is centre and no report submitted yet)
+    centre_fixture_ids = RefereeAppointment.objects.filter(
+        referee=profile, role='centre',
+    ).values_list('fixture_id', flat=True)
+
+    pending_reports = Fixture.objects.filter(
+        pk__in=centre_fixture_ids,
+        match_date__lt=today,
+        status='completed',
+    ).exclude(
+        match_report__status__in=[MatchReportStatus.SUBMITTED, MatchReportStatus.APPROVED]
+    ).select_related('home_team', 'away_team')
+
+    draft_reports = MatchReport.objects.filter(
+        referee=profile, status=MatchReportStatus.DRAFT,
+    ).select_related('fixture__home_team', 'fixture__away_team')
+
+    returned_reports = MatchReport.objects.filter(
+        referee=profile, status=MatchReportStatus.RETURNED,
+    ).select_related('fixture__home_team', 'fixture__away_team')
+
+    # Squads awaiting approval (centre referee only)
+    pending_squads = SquadSubmission.objects.filter(
+        fixture_id__in=centre_fixture_ids,
+        status=SquadStatus.SUBMITTED,
+    ).select_related('fixture__home_team', 'fixture__away_team', 'team')
+
+    # Availability for next 14 days
+    upcoming_dates = [today + timedelta(days=i) for i in range(14)]
+    availability_map = dict(
+        RefereeAvailability.objects.filter(
+            referee=profile,
+            date__gte=today,
+            date__lte=today + timedelta(days=13),
+        ).values_list('date', 'status')
+    )
+
+    availability_calendar = []
+    for d in upcoming_dates:
+        availability_calendar.append({
+            'date': d,
+            'status': availability_map.get(d, None),
+            'has_match': appointments.filter(fixture__match_date=d).exists(),
+        })
+
+    return render(request, 'portal/referee_dashboard.html', {
+        'profile': profile,
+        'pending_confirmation': pending_confirmation,
+        'upcoming_matches': upcoming_matches,
+        'current_matches': current_matches,
+        'completed_matches': completed_matches[:10],
+        'pending_reports': pending_reports,
+        'draft_reports': draft_reports,
+        'returned_reports': returned_reports,
+        'pending_squads': pending_squads,
+        'availability_calendar': availability_calendar,
+        'total_appointments': appointments.count(),
+    })
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   REFEREE AVAILABILITY MANAGEMENT
+# ══════════════════════════════════════════════════════════════════════════════
+
+@role_required('referee')
+def referee_availability_view(request):
+    """
+    Referee sets availability for the next 30 days — calendar grid interface.
+    POST toggles a single date's availability.
+    """
+    user = request.user
+    try:
+        profile = user.referee_profile
+    except RefereeProfile.DoesNotExist:
+        messages.error(request, 'No referee profile found.')
+        return redirect('dashboard')
+
+    today = date.today()
+    date_range_end = today + timedelta(days=30)
+
+    if request.method == 'POST':
+        target_date_str = request.POST.get('date')
+        new_status = request.POST.get('status')  # 'available' or 'unavailable'
+        notes = request.POST.get('notes', '')
+
+        if target_date_str and new_status in ('available', 'unavailable'):
+            try:
+                target_date = date.fromisoformat(target_date_str)
+                if target_date >= today:
+                    RefereeAvailability.objects.update_or_create(
+                        referee=profile,
+                        date=target_date,
+                        defaults={'status': new_status, 'notes': notes},
+                    )
+                    status_label = 'Available' if new_status == 'available' else 'Unavailable'
+                    messages.success(request, f'{status_label} set for {target_date.strftime("%d %b %Y")}.')
+            except (ValueError, TypeError):
+                messages.error(request, 'Invalid date.')
+
+        return redirect('referee_availability')
+
+    # Build 30-day calendar
+    all_dates = [today + timedelta(days=i) for i in range(31)]
+    availability_map = dict(
+        RefereeAvailability.objects.filter(
+            referee=profile,
+            date__gte=today,
+            date__lte=date_range_end,
+        ).values_list('date', 'status')
+    )
+    notes_map = dict(
+        RefereeAvailability.objects.filter(
+            referee=profile,
+            date__gte=today,
+            date__lte=date_range_end,
+        ).values_list('date', 'notes')
+    )
+
+    # Match dates this referee is appointed to
+    match_dates = set(
+        RefereeAppointment.objects.filter(
+            referee=profile,
+            fixture__match_date__gte=today,
+            fixture__match_date__lte=date_range_end,
+        ).values_list('fixture__match_date', flat=True)
+    )
+
+    calendar_days = []
+    for d in all_dates:
+        calendar_days.append({
+            'date': d,
+            'status': availability_map.get(d, None),
+            'notes': notes_map.get(d, ''),
+            'has_match': d in match_dates,
+            'is_today': d == today,
+            'weekday': d.strftime('%a'),
+        })
+
+    return render(request, 'portal/referee_availability.html', {
+        'calendar_days': calendar_days,
+        'profile': profile,
+    })
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 #   TREASURER PORTAL
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -1284,6 +1560,15 @@ def treasurer_teams_view(request):
                 team.payment_confirmed_by = request.user
                 team.payment_confirmed_at = timezone.now()
                 team.save()
+                # Log this action explicitly for audit
+                from admin_dashboard.models import ActivityLog as AuditLog
+                AuditLog.objects.create(
+                    user=request.user,
+                    action='PAYMENT_VERIFIED',
+                    description=f'{request.user.get_full_name()} confirmed payment for {team.name} (Ref: {ref}, Amount: {team.payment_amount})',
+                    object_repr=str(team),
+                    ip_address=request.META.get('REMOTE_ADDR', ''),
+                )
                 messages.success(request, f'✅ Payment confirmed for <strong>{team.name}</strong> (Ref: {ref})')
 
         elif action == 'approve':
@@ -1320,6 +1605,15 @@ def treasurer_teams_view(request):
         elif action == 'reject':
             team.status = 'suspended'
             team.save()
+            # Log rejection for audit
+            from admin_dashboard.models import ActivityLog as AuditLog
+            AuditLog.objects.create(
+                user=request.user,
+                action='TEAM_REJECT',
+                description=f'{request.user.get_full_name()} rejected team registration: {team.name}',
+                object_repr=str(team),
+                ip_address=request.META.get('REMOTE_ADDR', ''),
+            )
             messages.warning(request, f'❌ {team.name} registration rejected.')
 
         return redirect('treasurer_teams')

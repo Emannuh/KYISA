@@ -29,6 +29,7 @@ class Team(models.Model):
     )
     status      = models.CharField(max_length=20, choices=TeamStatus.choices, default=TeamStatus.PENDING)
     badge       = models.ImageField(upload_to="team_badges/", null=True, blank=True)
+    county_logo = models.ImageField(upload_to="county_logos/", null=True, blank=True, help_text="County government logo")
     home_colour = models.CharField(max_length=50, blank=True, help_text="Primary kit colour")
     away_colour = models.CharField(max_length=50, blank=True)
     contact_phone = models.CharField(max_length=20, blank=True)

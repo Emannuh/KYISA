@@ -21,6 +21,12 @@ class PoolTeamInline(admin.TabularInline):
     extra  = 0
     fields = ["team", "played", "won", "drawn", "lost", "goals_for", "goals_against"]
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "team":
+            from teams.models import Team
+            kwargs["queryset"] = Team.objects.filter(status="registered", payment_confirmed=True)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 @admin.register(Pool)
 class PoolAdmin(admin.ModelAdmin):
@@ -35,6 +41,12 @@ class FixtureAdmin(admin.ModelAdmin):
     list_filter   = ["status", "competition", "match_date"]
     search_fields = ["home_team__name", "away_team__name"]
     date_hierarchy = "match_date"
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name in ("home_team", "away_team"):
+            from teams.models import Team
+            kwargs["queryset"] = Team.objects.filter(status="registered", payment_confirmed=True)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 @admin.register(CountyRegistration)

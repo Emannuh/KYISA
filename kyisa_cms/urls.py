@@ -16,6 +16,7 @@ from .web_views import (
     referee_register_view, referee_register_success_view,
     # CMS portal
     web_login_view, web_logout_view, dashboard_view,
+    force_change_password_view,
     competitions_list_view, competition_detail_view,
     teams_list_view, team_detail_view,
     referees_list_view,
@@ -31,8 +32,9 @@ from .web_views import (
     squad_select_view, squad_review_list_view, squad_review_view,
     # Match reporting
     match_report_form_view, match_report_detail_view, match_report_review_view,
-    # Referee appointments
+    # Referee appointments & portal
     appointment_action_view,
+    referee_dashboard_view, referee_availability_view,
     # Treasurer portal
     treasurer_dashboard_view,
     treasurer_teams_view,
@@ -56,6 +58,7 @@ urlpatterns = [
     # ── CMS PORTAL (Authenticated) ───────────────────────────────────────────
     path("portal/login/",                   web_login_view,         name="web_login"),
     path("portal/logout/",                  web_logout_view,        name="web_logout"),
+    path("portal/force-change-password/",   force_change_password_view, name="force_change_password"),
     path("portal/",                         dashboard_view,         name="dashboard"),
     path("portal/competitions/",            competitions_list_view, name="competitions_list"),
     path("portal/competitions/<int:pk>/",   competition_detail_view, name="competition_detail"),
@@ -89,12 +92,19 @@ urlpatterns = [
     # ── PORTAL: REFEREE APPOINTMENTS ──────────────────────────────────────
     path("portal/appointments/<int:appointment_pk>/",     appointment_action_view,    name="appointment_action"),
 
+    # ── PORTAL: REFEREE DASHBOARD & AVAILABILITY ──────────────────────────
+    path("portal/referee/",                               referee_dashboard_view,     name="referee_portal"),
+    path("portal/referee/availability/",                  referee_availability_view,  name="referee_availability"),
+
     # ── TREASURER PORTAL ────────────────────────────────────────────────────
     path("portal/treasurer/",             treasurer_dashboard_view, name="treasurer_dashboard"),
     path("portal/treasurer/teams/",       treasurer_teams_view,     name="treasurer_teams"),
 
     # ── ADMIN DASHBOARD ───────────────────────────────────────────────────────
     path("portal/admin-dashboard/", include("admin_dashboard.urls")),
+
+    # ── APPEALS & JURY ────────────────────────────────────────────────────────
+    path("portal/appeals/", include("appeals.urls")),
 
     # ── DJANGO ADMIN ─────────────────────────────────────────────────────────
     path("admin/", admin.site.urls),

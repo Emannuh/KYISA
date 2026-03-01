@@ -32,6 +32,7 @@ class RefereeProfile(models.Model):
     )
     approved_at    = models.DateTimeField(null=True, blank=True)
     id_number      = models.CharField(max_length=20, blank=True, help_text="National ID / Passport")
+    profile_picture = models.ImageField(upload_to="referee_photos/", null=True, blank=True, help_text="Passport-size photo")
     bio            = models.TextField(blank=True)
     years_experience = models.PositiveIntegerField(default=0)
 
