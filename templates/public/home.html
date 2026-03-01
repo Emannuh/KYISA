@@ -83,10 +83,12 @@
                 <img src="{% static 'img/kenya_flag.png' %}" alt="Flag of Kenya" class="flag-img">
             </div>
         </div>
-        <p class="flag-quote">
-            &ldquo;Our children may learn about heroes of the past. Our task is to make ourselves architects of the future.&rdquo;
-        </p>
-        <span class="flag-author">&mdash; Mzee Jomo Kenyatta, <em>First President of Kenya</em></span>
+        <div class="flag-text-block">
+            <p class="flag-quote">
+                &ldquo;Our children may learn about heroes of the past. Our task is to make ourselves architects of the future.&rdquo;
+            </p>
+            <span class="flag-author">&mdash; Mzee Jomo Kenyatta, <em>First President of Kenya</em></span>
+        </div>
     </div>
 
     <div class="kenya-stripe" style="position:absolute;bottom:0;left:0;right:0;z-index:5"></div>
@@ -560,7 +562,7 @@
     var phaseC = document.getElementById('heroPhaseC');
     if (phaseA && phaseB && phaseC) {
         var heroPhases = [phaseA, phaseB, phaseC];
-        var phaseDurations = [8000, 8000, 4000]; // text, logo, flag
+        var phaseDurations = [8000, 8000, 9000]; // text, logo, flag
         var activePhase = 0;
         var initialDelay = 4000;
 

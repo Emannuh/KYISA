@@ -13,7 +13,7 @@ from functools import wraps
 import secrets, string
 
 from accounts.models import User, UserRole, KenyaCounty
-from competitions.models import Competition, Fixture
+from competitions.models import Competition, Fixture, SportType, EXHIBITION_SPORTS, COUNTY_REGISTRATION_FEE_CAP
 from teams.models import Team, Player, VerificationStatus, RejectionReason, PLAYER_MIN_AGE, PLAYER_MAX_AGE
 from teams.forms import TeamRegistrationForm, PlayerRegistrationForm
 from referees.models import RefereeProfile, RefereeAppointment
@@ -83,15 +83,31 @@ def about_view(request):
 
 
 def public_competitions_view(request):
-    """Public competitions listing — active, upcoming, completed."""
-    active = Competition.objects.filter(status='active')
-    upcoming = Competition.objects.filter(status__in=['upcoming', 'registration'])
-    completed = Competition.objects.filter(status='completed')
+    """Public competitions listing — grouped by sport, with exhibition marker."""
+    all_comps = Competition.objects.all()
+    active    = all_comps.filter(status='active')
+    upcoming  = all_comps.filter(status__in=['upcoming', 'registration'])
+    completed = all_comps.filter(status='completed')
+
+    # KYISA sports catalogue — order matters for display
+    SPORT_CATALOGUE = [
+        {'key': SportType.SOCCER,           'label': 'Soccer',               'icon': '⚽', 'exhibition': False},
+        {'key': SportType.VOLLEYBALL_MEN,   'label': 'Volleyball (Men)',      'icon': '🏐', 'exhibition': False},
+        {'key': SportType.VOLLEYBALL_WOMEN, 'label': 'Volleyball (Women)',    'icon': '🏐', 'exhibition': False},
+        {'key': SportType.BASKETBALL,       'label': 'Basketball',            'icon': '🏀', 'exhibition': False},
+        {'key': SportType.BASKETBALL_3X3,   'label': 'Basketball 3×3',        'icon': '🏀', 'exhibition': False},
+        {'key': SportType.HANDBALL,         'label': 'Handball',              'icon': '🤾', 'exhibition': False},
+        {'key': SportType.BEACH_VOLLEYBALL, 'label': 'Beach Volleyball',      'icon': '🏖️', 'exhibition': True},
+        {'key': SportType.BEACH_HANDBALL,   'label': 'Beach Handball',        'icon': '🏖️', 'exhibition': True},
+    ]
+
     return render(request, 'public/competitions.html', {
         'active_page': 'competitions',
         'active_competitions': active,
         'upcoming_competitions': upcoming,
         'completed_competitions': completed,
+        'sport_catalogue': SPORT_CATALOGUE,
+        'all_competitions': all_comps,
     })
 
 
@@ -198,6 +214,9 @@ def dashboard_view(request):
     }
 
     # For team managers, show only their team's data
+    if user.role == 'treasurer':
+        return redirect('treasurer_dashboard')
+
     if user.role == 'team_manager':
         stats['teams'] = Team.objects.filter(manager=user).count()
         my_teams = Team.objects.filter(manager=user)
@@ -556,6 +575,7 @@ def team_register_view(request):
     return render(request, 'public/team_register.html', {
         'form': form,
         'active_page': 'register',
+        'registration_fee': COUNTY_REGISTRATION_FEE_CAP,
     })
 
 
@@ -1212,4 +1232,105 @@ def appointment_action_view(request, appointment_pk):
 
     return render(request, 'portal/appointment_action.html', {
         'appointment': appointment,
+    })
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   TREASURER PORTAL
+# ══════════════════════════════════════════════════════════════════════════════
+
+@role_required('treasurer', 'admin')
+def treasurer_dashboard_view(request):
+    """Treasurer home — overview of pending, paid, and approved teams."""
+    pending_count   = Team.objects.filter(status='pending', payment_confirmed=False).count()
+    paid_count      = Team.objects.filter(status='pending', payment_confirmed=True).count()
+    approved_count  = Team.objects.filter(status='registered').count()
+    rejected_count  = Team.objects.filter(status='suspended').count()
+    recent = Team.objects.filter(status='pending').order_by('-registered_at')[:5]
+    return render(request, 'portal/treasurer/dashboard.html', {
+        'pending_count':    pending_count,
+        'paid_count':       paid_count,
+        'approved_count':   approved_count,
+        'rejected_count':   rejected_count,
+        'recent_teams':     recent,
+        'registration_fee': COUNTY_REGISTRATION_FEE_CAP,
+    })
+
+
+@role_required('treasurer', 'admin')
+def treasurer_teams_view(request):
+    """
+    Treasurer main workspace:
+    - Shows all pending teams
+    - Treasurer can confirm payment (enter M-Pesa ref + amount)
+    - Then approve → team status = registered, manager account created
+    - Or reject the registration
+    """
+    if request.method == 'POST':
+        team_id = request.POST.get('team_id')
+        action  = request.POST.get('action')
+        team    = get_object_or_404(Team, pk=team_id)
+
+        if action == 'confirm_payment':
+            ref    = request.POST.get('payment_reference', '').strip()
+            amount = request.POST.get('payment_amount', '').strip()
+            if not ref:
+                messages.error(request, 'Please enter the M-Pesa / payment reference.')
+            else:
+                team.payment_confirmed    = True
+                team.payment_reference    = ref
+                # Default to the standard county fee if not entered
+                team.payment_amount       = amount if amount else COUNTY_REGISTRATION_FEE_CAP
+                team.payment_confirmed_by = request.user
+                team.payment_confirmed_at = timezone.now()
+                team.save()
+                messages.success(request, f'✅ Payment confirmed for <strong>{team.name}</strong> (Ref: {ref})')
+
+        elif action == 'approve':
+            if not team.payment_confirmed:
+                messages.error(request, f'❌ Cannot approve {team.name} — payment not yet confirmed.')
+            else:
+                team.status = 'registered'
+                team.save()
+                # Create team manager account if email provided and no manager yet
+                if team.contact_email and not team.manager:
+                    try:
+                        temp_pw = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(10))
+                        manager = User.objects.create_user(
+                            email=team.contact_email,
+                            password=temp_pw,
+                            first_name=team.name,
+                            last_name='Manager',
+                            role=UserRole.TEAM_MANAGER,
+                            county=team.county,
+                        )
+                        team.manager = manager
+                        team.save()
+                        messages.success(request, mark_safe(
+                            f'✅ <strong>{team.name}</strong> approved!<br>'
+                            f'Manager login: <code>{team.contact_email}</code><br>'
+                            f'Temporary password: <code>{temp_pw}</code><br>'
+                            f'<em>Share these credentials with the team manager.</em>'
+                        ))
+                    except Exception as e:
+                        messages.warning(request, f'Team approved but manager account failed: {e}')
+                else:
+                    messages.success(request, f'✅ {team.name} approved.')
+
+        elif action == 'reject':
+            team.status = 'suspended'
+            team.save()
+            messages.warning(request, f'❌ {team.name} registration rejected.')
+
+        return redirect('treasurer_teams')
+
+    # Split pending teams into: not-yet-paid vs payment-confirmed-awaiting-approval
+    unpaid  = Team.objects.filter(status='pending', payment_confirmed=False).order_by('-registered_at')
+    paid    = Team.objects.filter(status='pending', payment_confirmed=True).order_by('-registered_at')
+    return render(request, 'portal/treasurer/teams.html', {
+        'unpaid_teams':         unpaid,
+        'paid_teams':           paid,
+        'unpaid_count':         unpaid.count(),
+        'paid_count':           paid.count(),
+        'registration_fee':     COUNTY_REGISTRATION_FEE_CAP,
     })

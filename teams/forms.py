@@ -8,16 +8,39 @@ from django.utils import timezone
 from .models import Team, Player, PLAYER_MIN_AGE, PLAYER_MAX_AGE
 
 
+"""
+KYISA Teams — Django Forms for Registration & Management
+Adapted from FKFSYS teams registration workflow.
+"""
+from django import forms
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+from .models import Team, Player, PLAYER_MIN_AGE, PLAYER_MAX_AGE
+from competitions.models import Competition, CompetitionStatus, SportType
+
+
 class TeamRegistrationForm(forms.ModelForm):
     """
     Public team registration form.
     Creates a team with 'pending' status awaiting admin approval.
     """
+    competition = forms.ModelChoiceField(
+        queryset=Competition.objects.filter(
+            sport_type=SportType.SOCCER,
+            status__in=[CompetitionStatus.REGISTRATION, CompetitionStatus.UPCOMING],
+        ),
+        required=False,
+        empty_label="— Select a competition (optional) —",
+        widget=forms.Select(attrs={'class': 'form-control', 'id': 'id_competition'}),
+        label="Competition",
+        help_text="Soccer competitions currently open for registration.",
+    )
 
     class Meta:
         model = Team
         fields = [
-            'name', 'county', 'contact_phone', 'contact_email',
+            'name', 'county', 'sport_type', 'competition',
+            'contact_phone', 'contact_email',
             'home_colour', 'away_colour', 'badge',
         ]
         widgets = {
@@ -30,6 +53,10 @@ class TeamRegistrationForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'e.g. Laikipia',
                 'required': True,
+            }),
+            'sport_type': forms.Select(attrs={
+                'class': 'form-control',
+                'id': 'id_sport_type',
             }),
             'contact_phone': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -55,6 +82,7 @@ class TeamRegistrationForm(forms.ModelForm):
         labels = {
             'name': 'Team Name *',
             'county': 'County *',
+            'sport_type': 'Sport *',
             'contact_phone': 'Contact Phone',
             'contact_email': 'Contact Email',
             'home_colour': 'Home Kit Colour',
@@ -73,6 +101,14 @@ class TeamRegistrationForm(forms.ModelForm):
         if email and Team.objects.filter(contact_email=email).exists():
             raise ValidationError('This email is already registered to another team.')
         return email
+
+    def clean(self):
+        cleaned = super().clean()
+        sport = cleaned.get('sport_type')
+        competition = cleaned.get('competition')
+        if competition and sport and competition.sport_type != sport:
+            self.add_error('competition', 'Selected competition does not match the chosen sport.')
+        return cleaned
 
 
 class PlayerRegistrationForm(forms.ModelForm):

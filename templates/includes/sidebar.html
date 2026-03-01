@@ -74,7 +74,17 @@
         <a href="{% url 'teams_list' %}" class="sidebar-link"><span class="icon">⚽</span> My Team</a>
         <a href="{% url 'matches_list' %}" class="sidebar-link"><span class="icon">📋</span> Fixtures & Squads</a>
     </div>
-    {% endif %}
+    {% elif user.role == 'treasurer' %}
+    <!-- TREASURER SIDEBAR -->
+    <div class="sidebar-section">
+        <h4>Treasurer Portal</h4>
+        <a href="{% url 'treasurer_dashboard' %}" class="sidebar-link {% if 'treasurer_dashboard' in request.resolver_match.url_name %}active{% endif %}">
+            <span class="icon">💰</span> Dashboard
+        </a>
+        <a href="{% url 'treasurer_teams' %}" class="sidebar-link {% if 'treasurer_teams' in request.resolver_match.url_name %}active{% endif %}">
+            <span class="icon">⚽</span> Team Registrations
+        </a>
+    </div>    {% endif %}
 
     <div class="sidebar-section" style="margin-top: auto;">
         <h4>Account</h4>

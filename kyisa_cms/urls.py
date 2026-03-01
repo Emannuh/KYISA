@@ -33,6 +33,9 @@ from .web_views import (
     match_report_form_view, match_report_detail_view, match_report_review_view,
     # Referee appointments
     appointment_action_view,
+    # Treasurer portal
+    treasurer_dashboard_view,
+    treasurer_teams_view,
 )
 
 urlpatterns = [
@@ -85,6 +88,11 @@ urlpatterns = [
 
     # ── PORTAL: REFEREE APPOINTMENTS ──────────────────────────────────────
     path("portal/appointments/<int:appointment_pk>/",     appointment_action_view,    name="appointment_action"),
+
+    # ── TREASURER PORTAL ────────────────────────────────────────────────────
+    path("portal/treasurer/",             treasurer_dashboard_view, name="treasurer_dashboard"),
+    path("portal/treasurer/teams/",       treasurer_teams_view,     name="treasurer_teams"),
+
     # ── ADMIN DASHBOARD ───────────────────────────────────────────────────────
     path("portal/admin-dashboard/", include("admin_dashboard.urls")),
 

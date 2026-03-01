@@ -5,7 +5,6 @@
 
 {% block content %}
 
-<!-- ── PAGE HERO ───────────────────────────────────────────────────────────── -->
 <section class="hero" style="padding:3rem 2rem;">
     <div class="hero-content">
         <h1>Competitions</h1>
@@ -13,96 +12,169 @@
     </div>
 </section>
 
-<!-- ── ACTIVE COMPETITIONS ────────────────────────────────────────────────── -->
-<section class="section">
+<section class="section section-alt">
     <div class="container">
-        {% if active_competitions %}
         <div class="section-header">
-            <h2>Active Competitions</h2>
-            <p>Currently running tournaments and leagues</p>
+            <h2>Our Sports</h2>
+            <p>KYISA organises competitive intercounty tournaments across these disciplines</p>
             <div class="line"></div>
         </div>
-        <div class="grid-3">
-            {% for comp in active_competitions %}
-            <div class="feature-card" style="text-align:left;">
-                <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;">
-                    <div class="feature-icon green" style="margin:0;width:50px;height:50px;font-size:1.3rem;">🏆</div>
-                    <div>
-                        <h3 style="margin:0;">{{ comp.name }}</h3>
-                        <span class="badge badge-success">Active</span>
-                    </div>
-                </div>
-                <p>{{ comp.description|default:"An intercounty competition organised by KYISA." }}</p>
-                <div style="margin-top:1rem;font-size:.85rem;color:var(--gray);">
-                    <p>📅 {{ comp.start_date|date:"d M Y" }} — {{ comp.end_date|date:"d M Y"|default:"Ongoing" }}</p>
-                    <p>📍 {{ comp.venue.name|default:"Multiple Venues" }}</p>
-                    <p>👥 {{ comp.teams.count|default:"0" }} Teams</p>
-                </div>
-                <a href="{% url 'public_competition_detail' comp.pk %}" class="btn btn-primary btn-sm" style="margin-top:1rem;">View Details →</a>
-            </div>
+        <div class="grid-4">
+            {% for sport in sport_catalogue %}
+            <a href="#sport-{{ sport.key }}" class="sport-card {% if sport.exhibition %}sport-card--exhibition{% endif %}">
+                <div class="sport-card__icon">{{ sport.icon }}</div>
+                <div class="sport-card__name">{{ sport.label }}</div>
+                {% if sport.exhibition %}
+                <span class="sport-card__badge">Exhibition</span>
+                {% endif %}
+                {% if sport.key == "soccer" %}
+                <span class="sport-card__badge sport-card__badge--green">Registration Open</span>
+                {% endif %}
+            </a>
             {% endfor %}
         </div>
-        {% endif %}
-
-        {% if upcoming_competitions %}
-        <div class="section-header" style="margin-top:3rem;">
-            <h2>Upcoming Competitions</h2>
-            <p>Tournaments and leagues coming soon</p>
-            <div class="line"></div>
-        </div>
-        <div class="grid-3">
-            {% for comp in upcoming_competitions %}
-            <div class="feature-card" style="text-align:left;">
-                <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;">
-                    <div class="feature-icon blue" style="margin:0;width:50px;height:50px;font-size:1.3rem;">📋</div>
-                    <div>
-                        <h3 style="margin:0;">{{ comp.name }}</h3>
-                        <span class="badge badge-info">Upcoming</span>
-                    </div>
-                </div>
-                <p>{{ comp.description|default:"An upcoming intercounty competition organised by KYISA." }}</p>
-                <div style="margin-top:1rem;font-size:.85rem;color:var(--gray);">
-                    <p>📅 Starts {{ comp.start_date|date:"d M Y" }}</p>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        {% if completed_competitions %}
-        <div class="section-header" style="margin-top:3rem;">
-            <h2>Completed Competitions</h2>
-            <p>Past tournaments and their results</p>
-            <div class="line"></div>
-        </div>
-        <div class="grid-3">
-            {% for comp in completed_competitions %}
-            <div class="feature-card" style="text-align:left;">
-                <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;">
-                    <div class="feature-icon yellow" style="margin:0;width:50px;height:50px;font-size:1.3rem;">🏅</div>
-                    <div>
-                        <h3 style="margin:0;">{{ comp.name }}</h3>
-                        <span class="badge badge-gray">Completed</span>
-                    </div>
-                </div>
-                <p>{{ comp.description|default:"This competition has been completed." }}</p>
-                <div style="margin-top:1rem;font-size:.85rem;color:var(--gray);">
-                    <p>📅 {{ comp.start_date|date:"d M Y" }} — {{ comp.end_date|date:"d M Y" }}</p>
-                </div>
-                <a href="{% url 'public_competition_detail' comp.pk %}" class="btn btn-outline btn-sm" style="margin-top:1rem;">View Results →</a>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        {% if not active_competitions and not upcoming_competitions and not completed_competitions %}
-        <div class="empty-state">
-            <div class="icon">🏆</div>
-            <h3>No Competitions Yet</h3>
-            <p>Competitions will be listed here once they are created. Check back soon!</p>
-        </div>
-        {% endif %}
     </div>
 </section>
+
+{% for sport in sport_catalogue %}
+<section class="section {% if forloop.even %}section-alt{% endif %}" id="sport-{{ sport.key }}">
+    <div class="container">
+        <div class="section-header">
+            <h2>{{ sport.icon }} {{ sport.label }}
+                {% if sport.exhibition %}
+                <span class="badge badge-gray" style="font-size:.75rem;vertical-align:middle;margin-left:.5rem;">Exhibition</span>
+                {% endif %}
+            </h2>
+            {% if sport.key == "soccer" %}
+            <p>Register your team and compete in intercounty soccer tournaments</p>
+            {% elif sport.exhibition %}
+            <p>Exhibition matches &mdash; showcase events only, no awards are given</p>
+            {% else %}
+            <p>Intercounty {{ sport.label }} competitions across Kenya&#39;s 47 counties</p>
+            {% endif %}
+            <div class="line"></div>
+        </div>
+
+        {% for comp in active_competitions %}{% if comp.sport_type == sport.key %}
+        <div class="feature-card comp-card" style="text-align:left;margin-bottom:1.5rem;">
+            <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap;">
+                <div class="feature-icon green" style="margin:0;width:50px;height:50px;font-size:1.5rem;">&#x1F3C6;</div>
+                <div style="flex:1;">
+                    <h3 style="margin:0;">{{ comp.name }}</h3>
+                    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.35rem;">
+                        <span class="badge badge-success">Active</span>
+                        {% if comp.is_exhibition %}<span class="badge badge-gray">Exhibition</span>{% endif %}
+                        <span class="badge badge-info">{{ comp.get_age_group_display }}</span>
+                    </div>
+                </div>
+                {% if sport.key == "soccer" %}
+                <a href="{% url "team_register" %}" class="btn btn-primary btn-sm">Register Team</a>
+                {% endif %}
+            </div>
+            <p>{{ comp.description|default:"An intercounty competition organised by KYISA." }}</p>
+            <div style="margin-top:1rem;font-size:.85rem;color:var(--gray);">
+                <p>&#x1F4C5; {{ comp.start_date|date:"d M Y" }} &mdash; {{ comp.end_date|date:"d M Y"|default:"Ongoing" }}</p>
+                <p>&#x1F465; {{ comp.teams.count }} / {{ comp.max_teams }} Teams</p>
+            </div>
+            <a href="{% url "public_competition_detail" comp.pk %}" class="btn btn-outline btn-sm" style="margin-top:1rem;">View Details &rarr;</a>
+        </div>
+        {% endif %}{% endfor %}
+
+        {% for comp in upcoming_competitions %}{% if comp.sport_type == sport.key %}
+        <div class="feature-card comp-card" style="text-align:left;margin-bottom:1.5rem;">
+            <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap;">
+                <div class="feature-icon blue" style="margin:0;width:50px;height:50px;font-size:1.5rem;">&#x1F4CB;</div>
+                <div style="flex:1;">
+                    <h3 style="margin:0;">{{ comp.name }}</h3>
+                    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.35rem;">
+                        {% if comp.status == "registration" %}<span class="badge badge-warning">Registration Open</span>
+                        {% else %}<span class="badge badge-info">Upcoming</span>{% endif %}
+                        {% if comp.is_exhibition %}<span class="badge badge-gray">Exhibition</span>{% endif %}
+                        <span class="badge" style="background:var(--bg-alt);color:var(--gray);">{{ comp.get_age_group_display }}</span>
+                    </div>
+                </div>
+                {% if sport.key == "soccer" and comp.status == "registration" %}
+                <a href="{% url "team_register" %}" class="btn btn-primary btn-sm">Register Team</a>
+                {% endif %}
+            </div>
+            <p>{{ comp.description|default:"An upcoming intercounty competition organised by KYISA." }}</p>
+            <div style="margin-top:1rem;font-size:.85rem;color:var(--gray);">
+                <p>&#x1F4C5; Starts {{ comp.start_date|date:"d M Y" }}</p>
+            </div>
+        </div>
+        {% endif %}{% endfor %}
+
+        {% for comp in completed_competitions %}{% if comp.sport_type == sport.key %}
+        <div class="feature-card comp-card" style="text-align:left;margin-bottom:1.5rem;opacity:.85;">
+            <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap;">
+                <div class="feature-icon yellow" style="margin:0;width:50px;height:50px;font-size:1.5rem;">&#x1F3C5;</div>
+                <div style="flex:1;">
+                    <h3 style="margin:0;">{{ comp.name }}</h3>
+                    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.35rem;">
+                        <span class="badge badge-gray">Completed</span>
+                        {% if comp.is_exhibition %}<span class="badge badge-gray">Exhibition</span>{% endif %}
+                    </div>
+                </div>
+            </div>
+            <p>{{ comp.description|default:"This competition has been completed." }}</p>
+            <div style="margin-top:1rem;font-size:.85rem;color:var(--gray);">
+                <p>&#x1F4C5; {{ comp.start_date|date:"d M Y" }} &mdash; {{ comp.end_date|date:"d M Y" }}</p>
+            </div>
+            <a href="{% url "public_competition_detail" comp.pk %}" class="btn btn-outline btn-sm" style="margin-top:1rem;">View Results &rarr;</a>
+        </div>
+        {% endif %}{% endfor %}
+
+        <div class="sport-empty-check" data-sport="{{ sport.key }}">
+            <div class="empty-state" style="padding:2rem 1rem;">
+                <div class="icon">{{ sport.icon }}</div>
+                {% if sport.exhibition %}
+                <h3>Exhibition Matches Coming Soon</h3>
+                {% else %}
+                <h3>No {{ sport.label }} Competitions Yet</h3>
+                {% endif %}
+                {% if sport.key == "soccer" %}
+                <a href="{% url "team_register" %}" class="btn btn-primary" style="margin-top:1rem;">Register Your Soccer Team</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endfor %}
+
+<script>
+(function(){
+    document.querySelectorAll(".sport-empty-check").forEach(function(el){
+        var sport = el.getAttribute("data-sport");
+        var section = document.getElementById("sport-" + sport);
+        if(section){
+            var cards = section.querySelectorAll(".comp-card");
+            if(cards.length > 0){ el.style.display = "none"; }
+        }
+    });
+})();
+</script>
+
+<style>
+.grid-4 { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1.25rem; }
+.sport-card {
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:.5rem; padding:1.75rem 1rem; border-radius:var(--radius-lg);
+    background:var(--white); border:2px solid var(--border);
+    text-decoration:none; color:inherit;
+    transition:border-color .2s, box-shadow .2s, transform .2s;
+    text-align:center;
+}
+.sport-card:hover { border-color:var(--green); box-shadow:var(--shadow-md); transform:translateY(-3px); }
+.sport-card--exhibition { border-style:dashed; background:var(--bg-alt); }
+.sport-card__icon { font-size:2.5rem; }
+.sport-card__name { font-weight:700; font-size:1rem; color:var(--dark); }
+.sport-card__badge {
+    font-size:.7rem; font-weight:700; text-transform:uppercase;
+    letter-spacing:.05em; padding:.2rem .55rem; border-radius:99px;
+    background:var(--red); color:#fff;
+}
+.sport-card__badge--green { background:var(--green); }
+.comp-card { border-left:4px solid var(--green); }
+</style>
 
 {% endblock %}

@@ -26,6 +26,9 @@
             {% if user.role == 'admin' or user.role == 'competition_manager' or user.role == 'team_manager' %}
             <li><a href="{% url 'teams_list' %}" class="{% if 'team' in request.resolver_match.url_name %}active{% endif %}">⚽ Teams</a></li>
             {% endif %}
+            {% if user.role == 'treasurer' %}
+            <li><a href="{% url 'treasurer_teams' %}" class="{% if 'treasurer' in request.resolver_match.url_name %}active{% endif %}">💰 Registrations</a></li>
+            {% endif %}
             {% if user.role == 'admin' or user.role == 'referee_manager' or user.role == 'referee' %}
             <li><a href="{% url 'referees_list' %}" class="{% if 'referee' in request.resolver_match.url_name %}active{% endif %}">🏁 Referees</a></li>
             {% endif %}

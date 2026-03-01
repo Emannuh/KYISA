@@ -3,7 +3,24 @@ KYISA Competitions — Core Models
 """
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.utils import timezone
+
+COUNTY_REGISTRATION_FEE_CAP = 250_000  # KSh — maximum participation fee per county
+
+
+class SportType(models.TextChoices):
+    SOCCER             = "soccer",             "Soccer"
+    VOLLEYBALL_MEN     = "volleyball_men",     "Volleyball (Men)"
+    VOLLEYBALL_WOMEN   = "volleyball_women",   "Volleyball (Women)"
+    BASKETBALL         = "basketball",         "Basketball"
+    BASKETBALL_3X3     = "basketball_3x3",     "Basketball 3x3"
+    HANDBALL           = "handball",           "Handball"
+    BEACH_VOLLEYBALL   = "beach_volleyball",   "Beach Volleyball"
+    BEACH_HANDBALL     = "beach_handball",     "Beach Handball"
+
+
+EXHIBITION_SPORTS = {SportType.BEACH_VOLLEYBALL, SportType.BEACH_HANDBALL}
 
 
 class CompetitionStatus(models.TextChoices):
@@ -25,6 +42,14 @@ class AgeGroup(models.TextChoices):
 
 class Competition(models.Model):
     name        = models.CharField(max_length=200, unique=True)
+    sport_type  = models.CharField(
+        max_length=30, choices=SportType.choices, default=SportType.SOCCER,
+        help_text="Sport discipline for this competition"
+    )
+    is_exhibition = models.BooleanField(
+        default=False,
+        help_text="Mark as exhibition match (e.g. Beach Volleyball, Beach Handball)"
+    )
     season      = models.CharField(max_length=10, default="2025")
     age_group   = models.CharField(max_length=10, choices=AgeGroup.choices, default=AgeGroup.U17)
     status      = models.CharField(max_length=20, choices=CompetitionStatus.choices, default=CompetitionStatus.REGISTRATION)
@@ -46,6 +71,12 @@ class Competition(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.season})"
+
+    def save(self, *args, **kwargs):
+        # Auto-mark beach sports as exhibition
+        if self.sport_type in EXHIBITION_SPORTS:
+            self.is_exhibition = True
+        super().save(*args, **kwargs)
 
 
 class Venue(models.Model):
@@ -167,3 +198,66 @@ class Fixture(models.Model):
         nairobi = pytz.timezone("Africa/Nairobi")
         ko = nairobi.localize(self.kickoff_datetime)
         return ko - timedelta(hours=hours)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# County Registration & Participation Fee
+# ─────────────────────────────────────────────────────────────────────────────
+
+class PaymentStatus(models.TextChoices):
+    PENDING  = "pending",  "Pending Payment"
+    PAID     = "paid",     "Paid"
+    WAIVED   = "waived",   "Waived"
+
+
+class CountyRegistration(models.Model):
+    """
+    Tracks a county's registration for a competition.
+    One record per county per competition — participation fee capped at KSh 250,000.
+    """
+    competition     = models.ForeignKey(
+        Competition, on_delete=models.CASCADE, related_name="county_registrations"
+    )
+    county          = models.CharField(max_length=100)
+    participation_fee = models.DecimalField(
+        max_digits=10, decimal_places=2,
+        default=COUNTY_REGISTRATION_FEE_CAP,
+        help_text="Participation fee in KSh (max 250,000)"
+    )
+    payment_status  = models.CharField(
+        max_length=20, choices=PaymentStatus.choices, default=PaymentStatus.PENDING
+    )
+    payment_reference = models.CharField(
+        max_length=100, blank=True,
+        help_text="M-Pesa or bank reference number"
+    )
+    payment_date    = models.DateField(null=True, blank=True)
+    registered_by   = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True,
+        related_name="county_registrations_created"
+    )
+    registered_at   = models.DateTimeField(auto_now_add=True)
+    notes           = models.TextField(blank=True)
+
+    class Meta:
+        unique_together = ["competition", "county"]
+        ordering = ["competition", "county"]
+        verbose_name = "County Registration"
+        verbose_name_plural = "County Registrations"
+
+    def clean(self):
+        if self.participation_fee and self.participation_fee > COUNTY_REGISTRATION_FEE_CAP:
+            raise ValidationError(
+                f"Participation fee cannot exceed KSh {COUNTY_REGISTRATION_FEE_CAP:,}."
+            )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.county} — {self.competition.name} ({self.get_payment_status_display()})"
+
+    @property
+    def is_paid(self):
+        return self.payment_status in (PaymentStatus.PAID, PaymentStatus.WAIVED)

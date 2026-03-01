@@ -3,6 +3,7 @@ KYISA Teams — Models
 """
 from django.db import models
 from django.conf import settings
+from competitions.models import SportType
 
 
 class TeamStatus(models.TextChoices):
@@ -14,6 +15,10 @@ class TeamStatus(models.TextChoices):
 class Team(models.Model):
     name        = models.CharField(max_length=200, unique=True)
     county      = models.CharField(max_length=100)
+    sport_type  = models.CharField(
+        max_length=30, choices=SportType.choices, default=SportType.SOCCER,
+        help_text="Sport this team competes in"
+    )
     competition = models.ForeignKey(
         "competitions.Competition", on_delete=models.SET_NULL, null=True, blank=True,
         related_name="teams"
@@ -28,6 +33,17 @@ class Team(models.Model):
     away_colour = models.CharField(max_length=50, blank=True)
     contact_phone = models.CharField(max_length=20, blank=True)
     contact_email = models.EmailField(blank=True)
+
+    # ── Payment tracking ───────────────────────────────────────────────────────
+    payment_confirmed    = models.BooleanField(default=False, help_text="Payment verified by treasurer")
+    payment_reference    = models.CharField(max_length=100, blank=True, help_text="M-Pesa or receipt reference")
+    payment_amount       = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Amount paid (KSh)")
+    payment_confirmed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name="payment_confirmations",
+    )
+    payment_confirmed_at = models.DateTimeField(null=True, blank=True)
+
     registered_at = models.DateTimeField(auto_now_add=True)
     updated_at    = models.DateTimeField(auto_now=True)
 

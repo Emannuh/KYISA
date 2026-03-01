@@ -12,15 +12,17 @@ class VenueSerializer(serializers.ModelSerializer):
 
 
 class CompetitionSerializer(serializers.ModelSerializer):
-    status_display    = serializers.CharField(source="get_status_display",    read_only=True)
-    age_group_display = serializers.CharField(source="get_age_group_display", read_only=True)
-    team_count        = serializers.SerializerMethodField()
-    fixture_count     = serializers.SerializerMethodField()
+    status_display     = serializers.CharField(source="get_status_display",     read_only=True)
+    age_group_display  = serializers.CharField(source="get_age_group_display",  read_only=True)
+    sport_type_display = serializers.CharField(source="get_sport_type_display", read_only=True)
+    team_count         = serializers.SerializerMethodField()
+    fixture_count      = serializers.SerializerMethodField()
 
     class Meta:
         model  = Competition
         fields = [
-            "id", "name", "season", "age_group", "age_group_display",
+            "id", "name", "sport_type", "sport_type_display", "is_exhibition",
+            "season", "age_group", "age_group_display",
             "status", "status_display", "description",
             "start_date", "end_date", "max_teams",
             "team_count", "fixture_count",

@@ -11,6 +11,7 @@ class UserRole(models.TextChoices):
     REFEREE_MANAGER     = "referee_manager",     "Referees Manager"
     REFEREE             = "referee",             "Referee"
     TEAM_MANAGER        = "team_manager",        "Team Manager"
+    TREASURER           = "treasurer",           "Treasurer"
     ADMIN               = "admin",               "System Admin"
 
 
@@ -72,6 +73,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_referee(self): return self.role == UserRole.REFEREE
     @property
     def is_team_manager(self): return self.role == UserRole.TEAM_MANAGER
+    @property
+    def is_treasurer(self): return self.role == UserRole.TREASURER
 
 
 class KenyaCounty(models.TextChoices):

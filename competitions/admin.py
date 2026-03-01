@@ -1,11 +1,11 @@
 from django.contrib import admin
-from .models import Competition, Venue, Pool, PoolTeam, Fixture
+from .models import Competition, Venue, Pool, PoolTeam, Fixture, CountyRegistration
 
 
 @admin.register(Competition)
 class CompetitionAdmin(admin.ModelAdmin):
-    list_display  = ["name", "season", "age_group", "status", "start_date", "end_date"]
-    list_filter   = ["status", "age_group", "season"]
+    list_display  = ["name", "sport_type", "is_exhibition", "season", "age_group", "status", "start_date", "end_date"]
+    list_filter   = ["sport_type", "is_exhibition", "status", "age_group", "season"]
     search_fields = ["name"]
 
 
@@ -35,3 +35,12 @@ class FixtureAdmin(admin.ModelAdmin):
     list_filter   = ["status", "competition", "match_date"]
     search_fields = ["home_team__name", "away_team__name"]
     date_hierarchy = "match_date"
+
+
+@admin.register(CountyRegistration)
+class CountyRegistrationAdmin(admin.ModelAdmin):
+    list_display   = ["county", "competition", "participation_fee", "payment_status", "payment_date", "is_paid"]
+    list_filter    = ["payment_status", "competition"]
+    search_fields  = ["county", "payment_reference"]
+    readonly_fields = ["registered_at"]
+    ordering       = ["competition", "county"]
