@@ -11,7 +11,7 @@
 <div class="stats-grid">
     {% if user.role == 'admin' or user.role == 'competition_manager' %}
     <div class="stat-card green">
-        <div class="stat-icon green">🏆</div>
+        <div class="stat-icon green"><i class="bi bi-trophy"></i></div>
         <div class="stat-info">
             <h3>{{ stats.competitions }}</h3>
             <p>Competitions</p>
@@ -20,7 +20,7 @@
     {% endif %}
 
     <div class="stat-card blue">
-        <div class="stat-icon blue">⚽</div>
+        <div class="stat-icon blue"><i class="bi bi-people"></i></div>
         <div class="stat-info">
             <h3>{{ stats.teams }}</h3>
             <p>Teams</p>
@@ -29,7 +29,7 @@
 
     {% if user.role == 'admin' or user.role == 'referee_manager' or user.role == 'referee' %}
     <div class="stat-card yellow">
-        <div class="stat-icon yellow">🏁</div>
+        <div class="stat-icon yellow"><i class="bi bi-flag"></i></div>
         <div class="stat-info">
             <h3>{{ stats.referees }}</h3>
             <p>Referees</p>
@@ -38,7 +38,7 @@
     {% endif %}
 
     <div class="stat-card red">
-        <div class="stat-icon red">📋</div>
+        <div class="stat-icon red"><i class="bi bi-clipboard-data"></i></div>
         <div class="stat-info">
             <h3>{{ stats.fixtures }}</h3>
             <p>Fixtures</p>
@@ -47,7 +47,7 @@
 
     {% if user.role == 'admin' or user.role == 'competition_manager' %}
     <div class="stat-card blue">
-        <div class="stat-icon blue">👥</div>
+        <div class="stat-icon blue"><i class="bi bi-person-vcard"></i></div>
         <div class="stat-info">
             <h3>{{ stats.players }}</h3>
             <p>Players</p>
@@ -63,30 +63,43 @@
         <div class="quick-actions">
             {% if user.role == 'admin' or user.role == 'competition_manager' %}
             <a href="{% url 'competitions_list' %}" class="action-card">
-                <div class="action-icon">🏆</div>
+                <div class="action-icon"><i class="bi bi-trophy"></i></div>
                 <h4>Manage Competitions</h4>
                 <p>View and manage competitions</p>
             </a>
             <a href="{% url 'teams_list' %}" class="action-card">
-                <div class="action-icon">⚽</div>
+                <div class="action-icon"><i class="bi bi-people"></i></div>
                 <h4>Manage Teams</h4>
                 <p>View registered teams</p>
             </a>
             <a href="{% url 'matches_list' %}" class="action-card">
-                <div class="action-icon">📅</div>
+                <div class="action-icon"><i class="bi bi-calendar-event"></i></div>
                 <h4>View Fixtures</h4>
                 <p>Scheduled matches</p>
             </a>
             {% endif %}
 
+            {% if user.role == 'competition_manager' or user.role == 'admin' %}
+            <a href="{% url 'competitions_list' %}" class="action-card" style="border-left:3px solid #6A1B9A">
+                <div class="action-icon"><i class="bi bi-bar-chart-line"></i></div>
+                <h4>Standings &amp; Stats</h4>
+                <p>View standings via competition</p>
+            </a>
+            {% endif %}
+
             {% if user.role == 'referee_manager' %}
+            <a href="{% url 'referee_appointments' %}" class="action-card">
+                <div class="action-icon"><i class="bi bi-calendar-event"></i></div>
+                <h4>Match Appointments</h4>
+                <p>Assign referees to fixtures</p>
+            </a>
             <a href="{% url 'referees_list' %}" class="action-card">
-                <div class="action-icon">🏁</div>
+                <div class="action-icon"><i class="bi bi-flag"></i></div>
                 <h4>Manage Referees</h4>
                 <p>Approve and assign referees</p>
             </a>
             <a href="{% url 'matches_list' %}" class="action-card">
-                <div class="action-icon">📋</div>
+                <div class="action-icon"><i class="bi bi-clipboard-data"></i></div>
                 <h4>Match Reports</h4>
                 <p>Review submitted reports</p>
             </a>
@@ -94,12 +107,12 @@
 
             {% if user.role == 'referee' %}
             <a href="{% url 'matches_list' %}" class="action-card">
-                <div class="action-icon">📅</div>
+                <div class="action-icon"><i class="bi bi-calendar-event"></i></div>
                 <h4>My Appointments</h4>
                 <p>View assigned fixtures</p>
             </a>
             <a href="{% url 'web_profile' %}" class="action-card">
-                <div class="action-icon">👤</div>
+                <div class="action-icon"><i class="bi bi-person-circle"></i></div>
                 <h4>My Profile</h4>
                 <p>Update availability</p>
             </a>
@@ -107,19 +120,19 @@
 
             {% if user.role == 'team_manager' %}
             <a href="{% url 'teams_list' %}" class="action-card">
-                <div class="action-icon">⚽</div>
+                <div class="action-icon"><i class="bi bi-people"></i></div>
                 <h4>My Team</h4>
                 <p>Manage players & squads</p>
             </a>
             <a href="{% url 'matches_list' %}" class="action-card">
-                <div class="action-icon">📅</div>
+                <div class="action-icon"><i class="bi bi-calendar-event"></i></div>
                 <h4>Upcoming Fixtures</h4>
                 <p>View scheduled matches</p>
             </a>
             {% endif %}
 
             <a href="{% url 'web_profile' %}" class="action-card">
-                <div class="action-icon">👤</div>
+                <div class="action-icon"><i class="bi bi-person-circle"></i></div>
                 <h4>My Profile</h4>
                 <p>View account details</p>
             </a>

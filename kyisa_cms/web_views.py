@@ -13,7 +13,10 @@ from functools import wraps
 import secrets, string
 
 from accounts.models import User, UserRole, KenyaCounty
-from competitions.models import Competition, Fixture, SportType, EXHIBITION_SPORTS, COUNTY_REGISTRATION_FEE_CAP
+from competitions.models import (
+    Competition, Fixture, SportType, EXHIBITION_SPORTS, COUNTY_REGISTRATION_FEE_CAP,
+    CountyPayment, PaymentStatus, CompetitionStatus,
+)
 from teams.models import Team, Player, VerificationStatus, RejectionReason, PLAYER_MIN_AGE, PLAYER_MAX_AGE
 from teams.forms import TeamRegistrationForm, PlayerRegistrationForm
 from referees.models import (
@@ -95,14 +98,15 @@ def public_competitions_view(request):
 
     # KYISA sports catalogue — order matters for display
     SPORT_CATALOGUE = [
-        {'key': SportType.SOCCER,           'label': 'Soccer',               'icon': '⚽', 'exhibition': False},
-        {'key': SportType.VOLLEYBALL_MEN,   'label': 'Volleyball (Men)',      'icon': '🏐', 'exhibition': False},
-        {'key': SportType.VOLLEYBALL_WOMEN, 'label': 'Volleyball (Women)',    'icon': '🏐', 'exhibition': False},
-        {'key': SportType.BASKETBALL,       'label': 'Basketball',            'icon': '🏀', 'exhibition': False},
-        {'key': SportType.BASKETBALL_3X3,   'label': 'Basketball 3×3',        'icon': '🏀', 'exhibition': False},
-        {'key': SportType.HANDBALL,         'label': 'Handball',              'icon': '🤾', 'exhibition': False},
-        {'key': SportType.BEACH_VOLLEYBALL, 'label': 'Beach Volleyball',      'icon': '🏖️', 'exhibition': True},
-        {'key': SportType.BEACH_HANDBALL,   'label': 'Beach Handball',        'icon': '🏖️', 'exhibition': True},
+        {'key': SportType.FOOTBALL_MEN,     'label': 'Football (Men)',        'icon': '&#9917;', 'exhibition': False},
+        {'key': SportType.FOOTBALL_WOMEN,   'label': 'Football (Women)',      'icon': '&#9917;', 'exhibition': False},
+        {'key': SportType.VOLLEYBALL_MEN,   'label': 'Volleyball (Men)',      'icon': '&#127952;', 'exhibition': False},
+        {'key': SportType.VOLLEYBALL_WOMEN, 'label': 'Volleyball (Women)',    'icon': '&#127952;', 'exhibition': False},
+        {'key': SportType.BASKETBALL,       'label': 'Basketball',            'icon': '&#127936;', 'exhibition': False},
+        {'key': SportType.BASKETBALL_3X3,   'label': 'Basketball 3x3',        'icon': '&#127936;', 'exhibition': False},
+        {'key': SportType.HANDBALL,         'label': 'Handball',              'icon': '&#129342;', 'exhibition': False},
+        {'key': SportType.BEACH_VOLLEYBALL, 'label': 'Beach Volleyball',      'icon': '&#127958;', 'exhibition': True},
+        {'key': SportType.BEACH_HANDBALL,   'label': 'Beach Handball',        'icon': '&#127958;', 'exhibition': True},
     ]
 
     return render(request, 'public/competitions.html', {
@@ -256,6 +260,9 @@ def dashboard_view(request):
 
     if user.role == 'referee':
         return redirect('referee_portal')
+
+    if user.role == 'competition_manager':
+        return redirect('cm_dashboard')
 
     if user.role == 'team_manager':
         stats['teams'] = Team.objects.filter(manager=user).count()
@@ -1246,9 +1253,9 @@ def match_report_review_view(request, report_pk):
             fixture.status = 'completed'
             fixture.save(update_fields=['home_score', 'away_score', 'status'])
 
-            # Update pool standings
-            from matches.views import _update_standings
-            _update_standings(fixture)
+            # Auto-update pool standings + player statistics
+            from matches.stats_engine import process_approved_report
+            process_approved_report(report)
 
             report.save()
             messages.success(request, f'✅ Match report approved — {fixture.home_team} {report.home_score}-{report.away_score} {fixture.away_team}')
@@ -1517,12 +1524,29 @@ def referee_availability_view(request):
 
 @role_required('treasurer', 'admin')
 def treasurer_dashboard_view(request):
-    """Treasurer home — overview of pending, paid, and approved teams."""
+    """Treasurer home — overview of county payments, teams, and registration status."""
+    current_season = str(date.today().year)
+
+    # County payment stats
+    county_payments = CountyPayment.objects.filter(season=current_season)
+    counties_paid = county_payments.filter(payment_status__in=['paid', 'waived']).count()
+    counties_pending = county_payments.filter(payment_status='pending').count()
+    total_collected = sum(
+        cp.participation_fee for cp in county_payments
+        if cp.payment_status in ('paid', 'waived')
+    )
+
+    # Team stats
     pending_count   = Team.objects.filter(status='pending', payment_confirmed=False).count()
     paid_count      = Team.objects.filter(status='pending', payment_confirmed=True).count()
     approved_count  = Team.objects.filter(status='registered').count()
     rejected_count  = Team.objects.filter(status='suspended').count()
+
+    # Recent pending teams
     recent = Team.objects.filter(status='pending').order_by('-registered_at')[:5]
+    # Recent county payments
+    recent_payments = county_payments.order_by('-updated_at')[:5]
+
     return render(request, 'portal/treasurer/dashboard.html', {
         'pending_count':    pending_count,
         'paid_count':       paid_count,
@@ -1530,6 +1554,11 @@ def treasurer_dashboard_view(request):
         'rejected_count':   rejected_count,
         'recent_teams':     recent,
         'registration_fee': COUNTY_REGISTRATION_FEE_CAP,
+        'counties_paid':    counties_paid,
+        'counties_pending': counties_pending,
+        'total_collected':  total_collected,
+        'recent_payments':  recent_payments,
+        'current_season':   current_season,
     })
 
 
@@ -1627,4 +1656,1245 @@ def treasurer_teams_view(request):
         'unpaid_count':         unpaid.count(),
         'paid_count':           paid.count(),
         'registration_fee':     COUNTY_REGISTRATION_FEE_CAP,
+    })
+
+
+@role_required('treasurer', 'admin')
+def treasurer_county_payments_view(request):
+    """
+    Treasurer manages county-level payments.
+    Each county pays KSh 250,000 per season to cover ALL sports.
+    """
+    current_season = str(date.today().year)
+    season = request.GET.get('season', current_season)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'create_county':
+            county = request.POST.get('county', '').strip()
+            if not county:
+                messages.error(request, 'Please select a county.')
+            elif CountyPayment.objects.filter(county=county, season=season).exists():
+                messages.warning(request, f'{county} already has a payment record for {season}.')
+            else:
+                CountyPayment.objects.create(
+                    county=county,
+                    season=season,
+                    participation_fee=COUNTY_REGISTRATION_FEE_CAP,
+                )
+                messages.success(request, f'County payment record created for {county} ({season}).')
+
+        elif action == 'confirm_payment':
+            payment_id = request.POST.get('payment_id')
+            ref = request.POST.get('payment_reference', '').strip()
+            payment_date_str = request.POST.get('payment_date', '').strip()
+            notes = request.POST.get('notes', '').strip()
+
+            if not ref:
+                messages.error(request, 'Please enter the M-Pesa / payment reference.')
+            else:
+                try:
+                    cp = CountyPayment.objects.get(pk=payment_id)
+                    cp.payment_status = PaymentStatus.PAID
+                    cp.payment_reference = ref
+                    cp.confirmed_by = request.user
+                    cp.confirmed_at = timezone.now()
+                    cp.notes = notes
+                    if payment_date_str:
+                        from datetime import datetime as dt
+                        cp.payment_date = dt.strptime(payment_date_str, '%Y-%m-%d').date()
+                    else:
+                        cp.payment_date = date.today()
+                    cp.save()
+
+                    # Also unlock all teams from this county
+                    Team.objects.filter(
+                        county=cp.county, payment_confirmed=False
+                    ).update(
+                        payment_confirmed=True,
+                        payment_reference=ref,
+                        payment_amount=COUNTY_REGISTRATION_FEE_CAP,
+                        payment_confirmed_by=request.user,
+                        payment_confirmed_at=timezone.now(),
+                    )
+
+                    # Audit log
+                    from admin_dashboard.models import ActivityLog as AuditLog
+                    AuditLog.objects.create(
+                        user=request.user,
+                        action='COUNTY_PAYMENT_CONFIRMED',
+                        description=(
+                            f'{request.user.get_full_name()} confirmed county payment for '
+                            f'{cp.county} — Season {season} (Ref: {ref})'
+                        ),
+                        object_repr=str(cp),
+                        ip_address=request.META.get('REMOTE_ADDR', ''),
+                    )
+                    messages.success(request, f'Payment confirmed for {cp.county} (Ref: {ref}).')
+                except CountyPayment.DoesNotExist:
+                    messages.error(request, 'Payment record not found.')
+
+        elif action == 'waive_payment':
+            payment_id = request.POST.get('payment_id')
+            notes = request.POST.get('notes', '').strip()
+            try:
+                cp = CountyPayment.objects.get(pk=payment_id)
+                cp.payment_status = PaymentStatus.WAIVED
+                cp.confirmed_by = request.user
+                cp.confirmed_at = timezone.now()
+                cp.notes = notes or 'Payment waived'
+                cp.save()
+
+                # Unlock teams
+                Team.objects.filter(
+                    county=cp.county, payment_confirmed=False
+                ).update(
+                    payment_confirmed=True,
+                    payment_confirmed_by=request.user,
+                    payment_confirmed_at=timezone.now(),
+                )
+
+                messages.success(request, f'Payment waived for {cp.county}.')
+            except CountyPayment.DoesNotExist:
+                messages.error(request, 'Payment record not found.')
+
+        return redirect('treasurer_county_payments')
+
+    county_payments = CountyPayment.objects.filter(season=season).order_by('county')
+    paid = county_payments.filter(payment_status__in=['paid', 'waived'])
+    pending = county_payments.filter(payment_status='pending')
+
+    # Counties from KenyaCounty enum that don't have a payment record yet
+    existing_counties = set(county_payments.values_list('county', flat=True))
+    available_counties = [
+        (c.value, c.label) for c in KenyaCounty
+        if c.value not in existing_counties
+    ]
+
+    return render(request, 'portal/treasurer/county_payments.html', {
+        'paid_payments':       paid,
+        'pending_payments':    pending,
+        'paid_count':          paid.count(),
+        'pending_count':       pending.count(),
+        'total_collected':     sum(cp.participation_fee for cp in paid),
+        'registration_fee':    COUNTY_REGISTRATION_FEE_CAP,
+        'season':              season,
+        'current_season':      current_season,
+        'available_counties':  available_counties,
+    })
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   COMPETITION MANAGER — STATISTICS & LEADERBOARDS
+# ══════════════════════════════════════════════════════════════════════════════
+
+@role_required('competition_manager', 'admin')
+def competition_standings_view(request, pk):
+    """
+    Competition Manager view: full standings, knockout bracket, and statistics.
+    """
+    competition = get_object_or_404(Competition, pk=pk)
+    from competitions.models import Pool, PoolTeam
+
+    # Group standings
+    pools = Pool.objects.filter(competition=competition).prefetch_related(
+        'pool_teams__team'
+    ).order_by('name')
+
+    pool_standings = []
+    for pool in pools:
+        teams = pool.pool_teams.all().order_by('-won', 'lost')
+        # Sort by points, then goal difference, then goals scored
+        sorted_teams = sorted(
+            teams,
+            key=lambda pt: (pt.points, pt.goal_difference, pt.goals_for),
+            reverse=True
+        )
+        pool_standings.append({
+            'pool': pool,
+            'teams': sorted_teams,
+        })
+
+    # Knockout fixtures
+    from competitions.models import KnockoutRound
+    knockout_fixtures = Fixture.objects.filter(
+        competition=competition, is_knockout=True
+    ).select_related('home_team', 'away_team', 'venue', 'winner').order_by(
+        'knockout_round', 'bracket_position', 'match_date'
+    )
+
+    # Group knockout fixtures by round
+    knockout_rounds = {}
+    for f in knockout_fixtures:
+        round_name = f.get_knockout_round_display() if f.knockout_round else 'Unknown'
+        if round_name not in knockout_rounds:
+            knockout_rounds[round_name] = []
+        knockout_rounds[round_name].append(f)
+
+    # Statistics
+    from matches.stats_engine import (
+        get_top_scorers, get_top_assisters,
+        get_disciplinary_table, get_clean_sheet_leaders,
+    )
+    top_scorers = get_top_scorers(competition, limit=10)
+    top_assisters = get_top_assisters(competition, limit=10)
+    disciplinary = get_disciplinary_table(competition, limit=10)
+    clean_sheets = get_clean_sheet_leaders(competition, limit=5)
+
+    return render(request, 'portal/competition_standings.html', {
+        'competition':      competition,
+        'pool_standings':   pool_standings,
+        'knockout_rounds':  knockout_rounds,
+        'top_scorers':      top_scorers,
+        'top_assisters':    top_assisters,
+        'disciplinary':     disciplinary,
+        'clean_sheets':     clean_sheets,
+    })
+
+
+@role_required('competition_manager', 'admin')
+def competition_reports_view(request, pk):
+    """
+    Competition Manager reviews and approves match reports for a competition.
+    """
+    competition = get_object_or_404(Competition, pk=pk)
+    filter_status = request.GET.get('status', 'submitted')
+
+    reports_qs = MatchReport.objects.filter(
+        fixture__competition=competition
+    ).select_related(
+        'fixture__home_team', 'fixture__away_team',
+        'fixture__venue', 'referee__user'
+    ).order_by('-submitted_at')
+
+    if filter_status and filter_status != 'all':
+        reports_qs = reports_qs.filter(status=filter_status)
+
+    return render(request, 'portal/competition_reports.html', {
+        'competition': competition,
+        'reports': reports_qs,
+        'filter_status': filter_status,
+        'submitted_count': MatchReport.objects.filter(
+            fixture__competition=competition, status='submitted'
+        ).count(),
+        'approved_count': MatchReport.objects.filter(
+            fixture__competition=competition, status='approved'
+        ).count(),
+    })
+
+
+@role_required('competition_manager', 'admin')
+def competition_report_approve_view(request, pk, report_pk):
+    """
+    Competition Manager approves or returns a specific match report.
+    On approval: updates fixture scores, pool standings, and player statistics.
+    """
+    competition = get_object_or_404(Competition, pk=pk)
+    report = get_object_or_404(MatchReport, pk=report_pk, fixture__competition=competition)
+    events = report.events.select_related('team', 'player').order_by('minute')
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        notes = request.POST.get('reviewer_notes', '')
+
+        if action == 'approve':
+            report.status = MatchReportStatus.APPROVED
+            report.reviewed_by = request.user
+            report.reviewed_at = timezone.now()
+            report.reviewer_notes = notes
+
+            # Update fixture
+            fixture = report.fixture
+            fixture.home_score = report.home_score
+            fixture.away_score = report.away_score
+            fixture.status = 'completed'
+            fixture.save(update_fields=['home_score', 'away_score', 'status'])
+
+            # Auto-update standings + player stats
+            from matches.stats_engine import process_approved_report
+            process_approved_report(report)
+
+            report.save()
+
+            # Audit log
+            from admin_dashboard.models import ActivityLog as AuditLog
+            AuditLog.objects.create(
+                user=request.user,
+                action='MATCH_REPORT_APPROVED',
+                description=(
+                    f'{request.user.get_full_name()} approved match report: '
+                    f'{fixture.home_team} {report.home_score}-{report.away_score} '
+                    f'{fixture.away_team}'
+                ),
+                object_repr=str(report),
+                ip_address=request.META.get('REMOTE_ADDR', ''),
+            )
+            messages.success(
+                request,
+                f'Match report approved — {fixture.home_team} '
+                f'{report.home_score}-{report.away_score} {fixture.away_team}. '
+                f'Standings and player statistics updated automatically.'
+            )
+
+        elif action == 'return':
+            report.status = MatchReportStatus.RETURNED
+            report.reviewer_notes = notes
+            report.save()
+            messages.warning(request, 'Match report returned for revision.')
+
+        return redirect('competition_reports', pk=competition.pk)
+
+    return render(request, 'portal/competition_report_approve.html', {
+        'competition': competition,
+        'report': report,
+        'events': events,
+    })
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   REFEREE MANAGER — MATCH APPOINTMENTS
+# ══════════════════════════════════════════════════════════════════════════════
+
+from referees.models import AppointmentRole, AppointmentStatus as ApptStatus
+
+
+@role_required('referee_manager', 'admin')
+def referee_appointments_view(request):
+    """
+    Referee Manager — overview of all fixtures that need officials,
+    summary statistics and appointment status per match.
+    """
+    today = date.today()
+    filter_status = request.GET.get('status', 'upcoming')  # upcoming | all | past
+
+    # Base queryset: upcoming confirmed/pending fixtures
+    fixtures_qs = Fixture.objects.select_related(
+        'competition', 'home_team', 'away_team', 'venue',
+    ).prefetch_related('referee_appointments__referee__user')
+
+    if filter_status == 'upcoming':
+        fixtures_qs = fixtures_qs.filter(match_date__gte=today).exclude(status__in=['cancelled'])
+    elif filter_status == 'past':
+        fixtures_qs = fixtures_qs.filter(match_date__lt=today)
+    else:
+        fixtures_qs = fixtures_qs.all()
+
+    fixtures_qs = fixtures_qs.order_by('match_date', 'kickoff_time')
+
+    # Build enriched list
+    REQUIRED_ROLES = ['centre', 'ar1', 'ar2', 'fourth']
+    fixture_data = []
+    total_needing = 0
+    total_fully_appointed = 0
+    total_partially = 0
+
+    for fixture in fixtures_qs:
+        appointments = {a.role: a for a in fixture.referee_appointments.all()}
+        roles_info = []
+        filled = 0
+        for role_key in REQUIRED_ROLES:
+            appt = appointments.get(role_key)
+            roles_info.append({
+                'role_key': role_key,
+                'role_label': dict(AppointmentRole.choices).get(role_key, role_key),
+                'appointment': appt,
+                'referee_name': appt.referee.user.get_full_name() if appt else None,
+                'status': appt.status if appt else None,
+                'status_display': appt.get_status_display() if appt else 'Not Appointed',
+            })
+            if appt:
+                filled += 1
+
+        needs_officials = filled < len(REQUIRED_ROLES)
+        is_fully_appointed = filled == len(REQUIRED_ROLES)
+
+        if needs_officials:
+            total_needing += 1
+        if is_fully_appointed:
+            total_fully_appointed += 1
+        elif filled > 0:
+            total_partially += 1
+
+        fixture_data.append({
+            'fixture': fixture,
+            'roles': roles_info,
+            'filled': filled,
+            'total_roles': len(REQUIRED_ROLES),
+            'needs_officials': needs_officials,
+            'is_fully_appointed': is_fully_appointed,
+        })
+
+    # Summary stats
+    approved_referees_count = RefereeProfile.objects.filter(is_approved=True).count()
+
+    return render(request, 'portal/referee_appointments.html', {
+        'fixture_data': fixture_data,
+        'filter_status': filter_status,
+        'total_fixtures': len(fixture_data),
+        'total_needing': total_needing,
+        'total_fully_appointed': total_fully_appointed,
+        'total_partially': total_partially,
+        'approved_referees_count': approved_referees_count,
+    })
+
+
+@role_required('referee_manager', 'admin')
+def referee_appoint_view(request, fixture_pk):
+    """
+    Referee Manager appoints officials to a specific fixture.
+    Shows fixture info, current appointments, and forms to assign each role.
+    """
+    fixture = get_object_or_404(
+        Fixture.objects.select_related(
+            'competition', 'home_team', 'away_team', 'venue',
+        ),
+        pk=fixture_pk,
+    )
+    today = date.today()
+
+    REQUIRED_ROLES = ['centre', 'ar1', 'ar2', 'fourth']
+    role_labels = dict(AppointmentRole.choices)
+
+    if request.method == 'POST':
+        action = request.POST.get('action', '')
+
+        if action == 'appoint':
+            role = request.POST.get('role', '')
+            referee_id = request.POST.get('referee_id', '')
+            notes = request.POST.get('notes', '')
+
+            if role not in REQUIRED_ROLES:
+                messages.error(request, 'Invalid role.')
+            elif not referee_id:
+                messages.error(request, 'Please select a referee.')
+            else:
+                try:
+                    referee_profile = RefereeProfile.objects.get(pk=referee_id, is_approved=True)
+                except RefereeProfile.DoesNotExist:
+                    messages.error(request, 'Selected referee not found or not approved.')
+                    return redirect('referee_appoint', fixture_pk=fixture.pk)
+
+                # Check for duplicate (same referee already appointed in this fixture for another role)
+                existing_same_role = RefereeAppointment.objects.filter(
+                    fixture=fixture, role=role
+                ).exclude(status='replaced').first()
+
+                if existing_same_role:
+                    # Replace existing appointment
+                    existing_same_role.status = 'replaced'
+                    existing_same_role.save()
+
+                # Check referee doesn't have a conflicting appointment on same date
+                conflict = RefereeAppointment.objects.filter(
+                    referee=referee_profile,
+                    fixture__match_date=fixture.match_date,
+                    status__in=['pending', 'confirmed'],
+                ).exclude(fixture=fixture).first()
+
+                if conflict:
+                    messages.warning(
+                        request,
+                        f'⚠️ {referee_profile.user.get_full_name()} already has an appointment '
+                        f'on {fixture.match_date.strftime("%d %b %Y")} '
+                        f'({conflict.fixture}). Appointment created anyway — please verify.'
+                    )
+
+                # Create appointment
+                RefereeAppointment.objects.create(
+                    fixture=fixture,
+                    referee=referee_profile,
+                    role=role,
+                    appointed_by=request.user,
+                    notes=notes,
+                )
+                messages.success(
+                    request,
+                    f'✅ {referee_profile.user.get_full_name()} appointed as '
+                    f'{role_labels.get(role, role)} for {fixture}.'
+                )
+
+        elif action == 'remove':
+            appt_id = request.POST.get('appointment_id', '')
+            try:
+                appt = RefereeAppointment.objects.get(pk=appt_id, fixture=fixture)
+                ref_name = appt.referee.user.get_full_name()
+                role_display = appt.get_role_display()
+                appt.status = 'replaced'
+                appt.save()
+                messages.success(request, f'🔄 {ref_name} ({role_display}) removed from this fixture.')
+            except RefereeAppointment.DoesNotExist:
+                messages.error(request, 'Appointment not found.')
+
+        return redirect('referee_appoint', fixture_pk=fixture.pk)
+
+    # ── Build role data ──
+    current_appointments = {
+        a.role: a for a in RefereeAppointment.objects.filter(
+            fixture=fixture
+        ).exclude(status='replaced').select_related('referee__user')
+    }
+
+    roles_data = []
+    for role_key in REQUIRED_ROLES:
+        appt = current_appointments.get(role_key)
+        roles_data.append({
+            'role_key': role_key,
+            'role_label': role_labels.get(role_key, role_key),
+            'appointment': appt,
+            'referee_name': appt.referee.user.get_full_name() if appt else None,
+            'status': appt.status if appt else None,
+            'status_display': appt.get_status_display() if appt else None,
+        })
+
+    # ── Available referees (approved, with availability info for match date) ──
+    approved_referees = RefereeProfile.objects.filter(
+        is_approved=True
+    ).select_related('user').order_by('user__last_name')
+
+    # Get availability map for this date
+    availability_map = dict(
+        RefereeAvailability.objects.filter(
+            referee__in=approved_referees,
+            date=fixture.match_date,
+        ).values_list('referee_id', 'status')
+    )
+
+    # Get appointments already on this match date (to flag busy referees)
+    busy_on_date = set(
+        RefereeAppointment.objects.filter(
+            fixture__match_date=fixture.match_date,
+            status__in=['pending', 'confirmed'],
+        ).exclude(fixture=fixture).values_list('referee_id', flat=True)
+    )
+
+    # Already appointed to THIS fixture
+    already_appointed_ids = set(
+        a.referee_id for a in current_appointments.values()
+    )
+
+    referees_list = []
+    for ref in approved_referees:
+        avail = availability_map.get(ref.pk, None)
+        is_busy = ref.pk in busy_on_date
+        is_appointed_here = ref.pk in already_appointed_ids
+        referees_list.append({
+            'profile': ref,
+            'full_name': ref.user.get_full_name(),
+            'level': ref.get_level_display(),
+            'county': ref.county,
+            'total_matches': ref.total_matches,
+            'avg_rating': ref.avg_rating,
+            'availability': avail,
+            'availability_label': (
+                'Available' if avail == 'available'
+                else 'Unavailable' if avail == 'unavailable'
+                else 'Not Set'
+            ),
+            'is_busy': is_busy,
+            'is_appointed_here': is_appointed_here,
+        })
+
+    return render(request, 'portal/referee_appoint.html', {
+        'fixture': fixture,
+        'roles_data': roles_data,
+        'referees_list': referees_list,
+        'required_roles': REQUIRED_ROLES,
+        'role_labels': role_labels,
+    })
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   COMPETITION MANAGER — FULL PORTAL VIEWS
+# ══════════════════════════════════════════════════════════════════════════════
+
+@role_required('competition_manager', 'admin')
+def cm_dashboard_view(request):
+    """Competition Manager dashboard — overview of all competitions and key stats."""
+    from competitions.models import (
+        Competition, Fixture, Venue, Pool, PoolTeam,
+        SportType, CompetitionStatus, CountyPayment, PaymentStatus,
+    )
+    from matches.models import MatchReport
+
+    competitions = Competition.objects.all()
+    active = competitions.filter(status__in=['active', 'group_stage', 'knockout'])
+    registration = competitions.filter(status='registration')
+
+    # Key counts
+    stats = {
+        'total_competitions': competitions.count(),
+        'active_competitions': active.count(),
+        'total_fixtures': Fixture.objects.count(),
+        'completed_fixtures': Fixture.objects.filter(status='completed').count(),
+        'pending_reports': MatchReport.objects.filter(status='submitted').count(),
+        'total_teams': Team.objects.filter(status='registered').count(),
+        'total_venues': Venue.objects.filter(is_active=True).count(),
+        'paid_counties': CountyPayment.objects.filter(
+            payment_status__in=['paid', 'waived']
+        ).count(),
+    }
+
+    # Recent fixture results
+    recent_results = Fixture.objects.filter(
+        status='completed'
+    ).select_related(
+        'competition', 'home_team', 'away_team'
+    ).order_by('-updated_at')[:8]
+
+    # Pending reports needing approval
+    pending_reports = MatchReport.objects.filter(
+        status='submitted'
+    ).select_related(
+        'fixture__competition', 'fixture__home_team', 'fixture__away_team',
+        'referee__user'
+    ).order_by('-submitted_at')[:5]
+
+    # Sport breakdown
+    sport_breakdown = []
+    for sport_val, sport_label in SportType.choices:
+        count = competitions.filter(sport_type=sport_val).count()
+        if count > 0:
+            sport_breakdown.append({'label': sport_label, 'count': count})
+
+    return render(request, 'portal/cm/dashboard.html', {
+        'stats': stats,
+        'active_competitions': active,
+        'registration_competitions': registration,
+        'recent_results': recent_results,
+        'pending_reports': pending_reports,
+        'sport_breakdown': sport_breakdown,
+    })
+
+
+@role_required('competition_manager', 'admin')
+def cm_create_competition_view(request):
+    """Create a new competition."""
+    from competitions.models import (
+        Competition, SportType, GenderChoice, CompetitionFormat,
+        AgeGroup, CompetitionStatus,
+    )
+
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        sport_type = request.POST.get('sport_type', SportType.FOOTBALL_MEN)
+        gender = request.POST.get('gender', GenderChoice.MEN)
+        format_type = request.POST.get('format_type', CompetitionFormat.GROUP_AND_KNOCKOUT)
+        season = request.POST.get('season', '2025')
+        age_group = request.POST.get('age_group', AgeGroup.U17)
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        max_teams = request.POST.get('max_teams', 16)
+        teams_per_group = request.POST.get('teams_per_group', 4)
+        qualify_from_group = request.POST.get('qualify_from_group', 2)
+        description = request.POST.get('description', '')
+        rules = request.POST.get('rules', '')
+
+        if not name or not start_date or not end_date:
+            messages.error(request, 'Name, start date, and end date are required.')
+        elif Competition.objects.filter(name=name).exists():
+            messages.error(request, f'A competition named "{name}" already exists.')
+        else:
+            comp = Competition.objects.create(
+                name=name,
+                sport_type=sport_type,
+                gender=gender,
+                format_type=format_type,
+                season=season,
+                age_group=age_group,
+                status=CompetitionStatus.REGISTRATION,
+                start_date=start_date,
+                end_date=end_date,
+                max_teams=int(max_teams),
+                teams_per_group=int(teams_per_group),
+                qualify_from_group=int(qualify_from_group),
+                description=description,
+                rules=rules,
+                created_by=request.user,
+            )
+            # Audit log
+            from admin_dashboard.models import ActivityLog
+            ActivityLog.objects.create(
+                user=request.user,
+                action='COMPETITION_CREATED',
+                description=f'{request.user.get_full_name()} created competition: {comp.name}',
+                object_repr=str(comp),
+                ip_address=request.META.get('REMOTE_ADDR', ''),
+            )
+            messages.success(request, f'Competition "{comp.name}" created successfully.')
+            return redirect('cm_competition_manage', pk=comp.pk)
+
+    return render(request, 'portal/cm/create_competition.html', {
+        'sport_types': SportType.choices,
+        'gender_choices': GenderChoice.choices,
+        'format_choices': CompetitionFormat.choices,
+        'age_groups': AgeGroup.choices,
+    })
+
+
+@role_required('competition_manager', 'admin')
+def cm_edit_competition_view(request, pk):
+    """Edit an existing competition."""
+    from competitions.models import (
+        Competition, SportType, GenderChoice, CompetitionFormat,
+        AgeGroup, CompetitionStatus,
+    )
+    competition = get_object_or_404(Competition, pk=pk)
+
+    if request.method == 'POST':
+        competition.name = request.POST.get('name', competition.name).strip()
+        competition.sport_type = request.POST.get('sport_type', competition.sport_type)
+        competition.gender = request.POST.get('gender', competition.gender)
+        competition.format_type = request.POST.get('format_type', competition.format_type)
+        competition.season = request.POST.get('season', competition.season)
+        competition.age_group = request.POST.get('age_group', competition.age_group)
+        competition.status = request.POST.get('status', competition.status)
+        competition.start_date = request.POST.get('start_date', competition.start_date)
+        competition.end_date = request.POST.get('end_date', competition.end_date)
+        competition.max_teams = int(request.POST.get('max_teams', competition.max_teams))
+        competition.teams_per_group = int(request.POST.get('teams_per_group', competition.teams_per_group))
+        competition.qualify_from_group = int(request.POST.get('qualify_from_group', competition.qualify_from_group))
+        competition.description = request.POST.get('description', competition.description)
+        competition.rules = request.POST.get('rules', competition.rules)
+        competition.save()
+
+        messages.success(request, f'Competition "{competition.name}" updated.')
+        return redirect('cm_competition_manage', pk=competition.pk)
+
+    return render(request, 'portal/cm/edit_competition.html', {
+        'competition': competition,
+        'sport_types': SportType.choices,
+        'gender_choices': GenderChoice.choices,
+        'format_choices': CompetitionFormat.choices,
+        'age_groups': AgeGroup.choices,
+        'status_choices': CompetitionStatus.choices,
+    })
+
+
+@role_required('competition_manager', 'admin')
+def cm_competition_manage_view(request, pk):
+    """
+    Central management hub for a competition.
+    Shows pools, teams, fixtures, standings at a glance.
+    """
+    from competitions.models import (
+        Competition, Pool, PoolTeam, Fixture, Venue, KnockoutRound,
+        CountyPayment,
+    )
+    from matches.models import MatchReport
+
+    competition = get_object_or_404(Competition, pk=pk)
+
+    # Pools & teams
+    pools = Pool.objects.filter(competition=competition).prefetch_related(
+        'pool_teams__team'
+    ).order_by('name')
+
+    pool_data = []
+    for pool in pools:
+        teams = pool.pool_teams.select_related('team').all()
+        sorted_teams = sorted(
+            teams,
+            key=lambda pt: (pt.points, pt.goal_difference, pt.goals_for),
+            reverse=True
+        )
+        pool_data.append({'pool': pool, 'teams': sorted_teams})
+
+    # Registered teams eligible for this competition (paid county, approved)
+    eligible_teams = Team.objects.filter(
+        status='registered',
+        payment_confirmed=True,
+        sport_type=competition.sport_type,
+    ).exclude(
+        pk__in=PoolTeam.objects.filter(
+            pool__competition=competition
+        ).values_list('team_id', flat=True)
+    ).order_by('county', 'name')
+
+    # All teams already in this competition
+    teams_in_comp = Team.objects.filter(
+        pool_memberships__pool__competition=competition
+    ).distinct()
+
+    # Fixtures
+    group_fixtures = Fixture.objects.filter(
+        competition=competition, is_knockout=False
+    ).select_related('home_team', 'away_team', 'venue', 'pool').order_by('match_date', 'kickoff_time')
+
+    knockout_fixtures = Fixture.objects.filter(
+        competition=competition, is_knockout=True
+    ).select_related('home_team', 'away_team', 'venue', 'winner').order_by(
+        'knockout_round', 'bracket_position'
+    )
+
+    # Venues
+    venues = Venue.objects.filter(is_active=True).order_by('county', 'name')
+
+    # Match reports
+    pending_reports = MatchReport.objects.filter(
+        fixture__competition=competition, status='submitted'
+    ).count()
+    approved_reports = MatchReport.objects.filter(
+        fixture__competition=competition, status='approved'
+    ).count()
+
+    return render(request, 'portal/cm/manage_competition.html', {
+        'competition': competition,
+        'pool_data': pool_data,
+        'eligible_teams': eligible_teams,
+        'teams_in_comp': teams_in_comp,
+        'group_fixtures': group_fixtures,
+        'knockout_fixtures': knockout_fixtures,
+        'venues': venues,
+        'pending_reports': pending_reports,
+        'approved_reports': approved_reports,
+    })
+
+
+@role_required('competition_manager', 'admin')
+def cm_manage_pools_view(request, pk):
+    """Create/delete pools and assign/remove teams."""
+    from competitions.models import Competition, Pool, PoolTeam, CountyPayment
+
+    competition = get_object_or_404(Competition, pk=pk)
+
+    if request.method == 'POST':
+        action = request.POST.get('action', '')
+
+        if action == 'create_pool':
+            pool_name = request.POST.get('pool_name', '').strip()
+            if not pool_name:
+                messages.error(request, 'Pool name is required.')
+            elif Pool.objects.filter(competition=competition, name=pool_name).exists():
+                messages.error(request, f'Pool "{pool_name}" already exists.')
+            else:
+                Pool.objects.create(competition=competition, name=pool_name)
+                messages.success(request, f'Pool "{pool_name}" created.')
+
+        elif action == 'delete_pool':
+            pool_id = request.POST.get('pool_id')
+            try:
+                pool = Pool.objects.get(pk=pool_id, competition=competition)
+                name = pool.name
+                pool.delete()
+                messages.success(request, f'Pool "{name}" deleted.')
+            except Pool.DoesNotExist:
+                messages.error(request, 'Pool not found.')
+
+        elif action == 'add_team':
+            pool_id = request.POST.get('pool_id')
+            team_id = request.POST.get('team_id')
+            try:
+                pool = Pool.objects.get(pk=pool_id, competition=competition)
+                team = Team.objects.get(pk=team_id)
+
+                # Validate payment
+                if not team.payment_confirmed:
+                    messages.error(request, f'{team.name} cannot be pooled — payment not confirmed.')
+                elif team.status != 'registered':
+                    messages.error(request, f'{team.name} is not approved.')
+                elif PoolTeam.objects.filter(pool__competition=competition, team=team).exists():
+                    messages.error(request, f'{team.name} is already in a pool for this competition.')
+                else:
+                    PoolTeam.objects.create(pool=pool, team=team)
+                    messages.success(request, f'{team.name} added to {pool.name}.')
+            except (Pool.DoesNotExist, Team.DoesNotExist):
+                messages.error(request, 'Pool or team not found.')
+
+        elif action == 'remove_team':
+            pt_id = request.POST.get('pool_team_id')
+            try:
+                pt = PoolTeam.objects.get(pk=pt_id, pool__competition=competition)
+                name = pt.team.name
+                pool_name = pt.pool.name
+                pt.delete()
+                messages.success(request, f'{name} removed from {pool_name}.')
+            except PoolTeam.DoesNotExist:
+                messages.error(request, 'Team assignment not found.')
+
+        return redirect('cm_manage_pools', pk=competition.pk)
+
+    # GET
+    pools = Pool.objects.filter(competition=competition).prefetch_related(
+        'pool_teams__team'
+    ).order_by('name')
+
+    # Eligible teams not yet in any pool for this competition
+    assigned_ids = PoolTeam.objects.filter(
+        pool__competition=competition
+    ).values_list('team_id', flat=True)
+
+    eligible_teams = Team.objects.filter(
+        status='registered',
+        payment_confirmed=True,
+        sport_type=competition.sport_type,
+    ).exclude(pk__in=assigned_ids).order_by('county', 'name')
+
+    return render(request, 'portal/cm/manage_pools.html', {
+        'competition': competition,
+        'pools': pools,
+        'eligible_teams': eligible_teams,
+    })
+
+
+@role_required('competition_manager', 'admin')
+def cm_generate_fixtures_view(request, pk):
+    """Generate fixtures for a competition."""
+    from competitions.models import Competition, Fixture, Venue, Pool
+    from competitions.fixture_engine import generate_all_fixtures
+
+    competition = get_object_or_404(Competition, pk=pk)
+
+    # Check if fixtures already exist
+    existing_count = Fixture.objects.filter(competition=competition).count()
+
+    if request.method == 'POST':
+        action = request.POST.get('action', '')
+
+        if action == 'generate':
+            start_date_str = request.POST.get('start_date', '')
+            kickoff_time_str = request.POST.get('kickoff_time', '14:00')
+            group_interval = int(request.POST.get('group_interval', 7))
+            knockout_interval = int(request.POST.get('knockout_interval', 3))
+            venue_id = request.POST.get('venue_id', '')
+            knockout_teams = request.POST.get('knockout_teams', '')
+
+            from datetime import datetime
+            try:
+                start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            except (ValueError, TypeError):
+                messages.error(request, 'Invalid start date.')
+                return redirect('cm_generate_fixtures', pk=pk)
+
+            try:
+                kickoff_time = datetime.strptime(kickoff_time_str, '%H:%M').time()
+            except (ValueError, TypeError):
+                kickoff_time = datetime.strptime('14:00', '%H:%M').time()
+
+            venue = None
+            if venue_id:
+                try:
+                    venue = Venue.objects.get(pk=venue_id)
+                except Venue.DoesNotExist:
+                    pass
+
+            ko_teams = int(knockout_teams) if knockout_teams else None
+
+            try:
+                fixtures = generate_all_fixtures(
+                    competition, start_date, kickoff_time,
+                    group_interval=group_interval,
+                    knockout_interval=knockout_interval,
+                    knockout_teams=ko_teams,
+                    venue=venue,
+                    created_by=request.user,
+                )
+
+                from admin_dashboard.models import ActivityLog
+                ActivityLog.objects.create(
+                    user=request.user,
+                    action='FIXTURES_GENERATED',
+                    description=(
+                        f'{request.user.get_full_name()} generated {len(fixtures)} '
+                        f'fixtures for {competition.name}'
+                    ),
+                    object_repr=str(competition),
+                    ip_address=request.META.get('REMOTE_ADDR', ''),
+                )
+
+                messages.success(
+                    request,
+                    f'{len(fixtures)} fixtures generated for {competition.name}.'
+                )
+            except ValueError as e:
+                messages.error(request, str(e))
+
+            return redirect('cm_competition_manage', pk=pk)
+
+        elif action == 'clear':
+            count = Fixture.objects.filter(competition=competition).count()
+            Fixture.objects.filter(competition=competition).delete()
+            messages.warning(request, f'{count} fixtures deleted.')
+            return redirect('cm_generate_fixtures', pk=pk)
+
+    venues = Venue.objects.filter(is_active=True).order_by('county', 'name')
+    pools = Pool.objects.filter(competition=competition).prefetch_related('pool_teams')
+    total_pool_teams = sum(p.pool_teams.count() for p in pools)
+
+    return render(request, 'portal/cm/generate_fixtures.html', {
+        'competition': competition,
+        'existing_count': existing_count,
+        'venues': venues,
+        'pools': pools,
+        'total_pool_teams': total_pool_teams,
+    })
+
+
+@role_required('competition_manager', 'admin')
+def cm_manage_venues_view(request):
+    """Manage venues — list, create, edit."""
+    from competitions.models import Venue
+
+    if request.method == 'POST':
+        action = request.POST.get('action', '')
+
+        if action == 'create':
+            name = request.POST.get('name', '').strip()
+            county = request.POST.get('county', '').strip()
+            city = request.POST.get('city', '').strip()
+            capacity = request.POST.get('capacity', 0)
+            surface = request.POST.get('surface', 'Natural Grass')
+            address = request.POST.get('address', '')
+            facilities = request.POST.get('facilities', '')
+
+            if not name or not county:
+                messages.error(request, 'Venue name and county are required.')
+            else:
+                Venue.objects.create(
+                    name=name, county=county, city=city,
+                    capacity=int(capacity) if capacity else 0,
+                    surface=surface, address=address, facilities=facilities,
+                )
+                messages.success(request, f'Venue "{name}" created.')
+
+        elif action == 'toggle':
+            venue_id = request.POST.get('venue_id')
+            try:
+                venue = Venue.objects.get(pk=venue_id)
+                venue.is_active = not venue.is_active
+                venue.save(update_fields=['is_active'])
+                status = 'activated' if venue.is_active else 'deactivated'
+                messages.success(request, f'Venue "{venue.name}" {status}.')
+            except Venue.DoesNotExist:
+                messages.error(request, 'Venue not found.')
+
+        elif action == 'update':
+            venue_id = request.POST.get('venue_id')
+            try:
+                venue = Venue.objects.get(pk=venue_id)
+                venue.name = request.POST.get('name', venue.name).strip()
+                venue.county = request.POST.get('county', venue.county).strip()
+                venue.city = request.POST.get('city', venue.city).strip()
+                venue.capacity = int(request.POST.get('capacity', venue.capacity) or 0)
+                venue.surface = request.POST.get('surface', venue.surface)
+                venue.address = request.POST.get('address', venue.address)
+                venue.facilities = request.POST.get('facilities', venue.facilities)
+                venue.save()
+                messages.success(request, f'Venue "{venue.name}" updated.')
+            except Venue.DoesNotExist:
+                messages.error(request, 'Venue not found.')
+
+        return redirect('cm_venues')
+
+    venues = Venue.objects.all().order_by('county', 'name')
+    active_venues = venues.filter(is_active=True)
+    inactive_venues = venues.filter(is_active=False)
+
+    return render(request, 'portal/cm/venues.html', {
+        'active_venues': active_venues,
+        'inactive_venues': inactive_venues,
+        'total_venues': venues.count(),
+        'county_choices': KenyaCounty.choices,
+    })
+
+
+@role_required('competition_manager', 'admin')
+def cm_allocate_venue_view(request, pk):
+    """Allocate venues to fixtures for a competition."""
+    from competitions.models import Competition, Fixture, Venue
+
+    competition = get_object_or_404(Competition, pk=pk)
+
+    if request.method == 'POST':
+        # Bulk update venue assignments
+        fixtures = Fixture.objects.filter(competition=competition)
+        updated = 0
+        for fixture in fixtures:
+            venue_id = request.POST.get(f'venue_{fixture.pk}', '')
+            if venue_id:
+                try:
+                    venue = Venue.objects.get(pk=venue_id)
+                    if fixture.venue != venue:
+                        fixture.venue = venue
+                        fixture.save(update_fields=['venue'])
+                        updated += 1
+                except Venue.DoesNotExist:
+                    pass
+            elif fixture.venue:
+                fixture.venue = None
+                fixture.save(update_fields=['venue'])
+                updated += 1
+
+        messages.success(request, f'{updated} fixture venue(s) updated.')
+        return redirect('cm_competition_manage', pk=pk)
+
+    fixtures = Fixture.objects.filter(
+        competition=competition
+    ).select_related(
+        'home_team', 'away_team', 'venue', 'pool'
+    ).order_by('match_date', 'kickoff_time')
+
+    venues = Venue.objects.filter(is_active=True).order_by('county', 'name')
+
+    return render(request, 'portal/cm/allocate_venues.html', {
+        'competition': competition,
+        'fixtures': fixtures,
+        'venues': venues,
+    })
+
+
+@role_required('competition_manager', 'admin')
+def cm_edit_standings_view(request, pk):
+    """Admin override — manually edit pool team standings."""
+    from competitions.models import Competition, Pool, PoolTeam
+
+    competition = get_object_or_404(Competition, pk=pk)
+
+    if request.method == 'POST':
+        action = request.POST.get('action', '')
+
+        if action == 'update_standings':
+            pool_team_id = request.POST.get('pool_team_id')
+            try:
+                pt = PoolTeam.objects.get(pk=pool_team_id, pool__competition=competition)
+                pt.played = int(request.POST.get('played', pt.played))
+                pt.won = int(request.POST.get('won', pt.won))
+                pt.drawn = int(request.POST.get('drawn', pt.drawn))
+                pt.lost = int(request.POST.get('lost', pt.lost))
+                pt.goals_for = int(request.POST.get('goals_for', pt.goals_for))
+                pt.goals_against = int(request.POST.get('goals_against', pt.goals_against))
+                pt.bonus_points = int(request.POST.get('bonus_points', pt.bonus_points))
+                pt.save()
+
+                from admin_dashboard.models import ActivityLog
+                ActivityLog.objects.create(
+                    user=request.user,
+                    action='STANDINGS_OVERRIDE',
+                    description=(
+                        f'{request.user.get_full_name()} manually edited standings for '
+                        f'{pt.team.name} in {pt.pool.name} ({competition.name})'
+                    ),
+                    object_repr=str(pt),
+                    ip_address=request.META.get('REMOTE_ADDR', ''),
+                )
+                messages.success(request, f'Standings updated for {pt.team.name}.')
+            except PoolTeam.DoesNotExist:
+                messages.error(request, 'Pool team not found.')
+
+        elif action == 'recalculate':
+            pool_id = request.POST.get('pool_id')
+            try:
+                pool = Pool.objects.get(pk=pool_id, competition=competition)
+                from matches.stats_engine import recalculate_pool_standings
+                recalculate_pool_standings(pool)
+                messages.success(request, f'Standings recalculated for {pool.name}.')
+            except Pool.DoesNotExist:
+                messages.error(request, 'Pool not found.')
+
+        elif action == 'recalculate_all':
+            pools = Pool.objects.filter(competition=competition)
+            from matches.stats_engine import recalculate_pool_standings
+            for pool in pools:
+                recalculate_pool_standings(pool)
+            messages.success(request, f'All pool standings recalculated for {competition.name}.')
+
+        return redirect('cm_edit_standings', pk=pk)
+
+    pools = Pool.objects.filter(competition=competition).prefetch_related(
+        'pool_teams__team'
+    ).order_by('name')
+
+    pool_data = []
+    for pool in pools:
+        teams = pool.pool_teams.select_related('team').all()
+        sorted_teams = sorted(
+            teams,
+            key=lambda pt: (pt.points, pt.goal_difference, pt.goals_for),
+            reverse=True
+        )
+        pool_data.append({'pool': pool, 'teams': sorted_teams})
+
+    return render(request, 'portal/cm/edit_standings.html', {
+        'competition': competition,
+        'pool_data': pool_data,
+    })
+
+
+@role_required('competition_manager', 'admin')
+def cm_edit_fixture_view(request, pk, fixture_pk):
+    """Edit a specific fixture (date, time, venue, teams for knockout)."""
+    from competitions.models import Competition, Fixture, Venue
+
+    competition = get_object_or_404(Competition, pk=pk)
+    fixture = get_object_or_404(Fixture, pk=fixture_pk, competition=competition)
+
+    if request.method == 'POST':
+        fixture.match_date = request.POST.get('match_date', fixture.match_date)
+        kickoff = request.POST.get('kickoff_time', '')
+        if kickoff:
+            from datetime import datetime
+            try:
+                fixture.kickoff_time = datetime.strptime(kickoff, '%H:%M').time()
+            except ValueError:
+                pass
+        venue_id = request.POST.get('venue_id', '')
+        if venue_id:
+            try:
+                fixture.venue = Venue.objects.get(pk=venue_id)
+            except Venue.DoesNotExist:
+                pass
+        else:
+            fixture.venue = None
+
+        status = request.POST.get('status', fixture.status)
+        if status:
+            fixture.status = status
+
+        # For knockout matches, allow team reassignment
+        if fixture.is_knockout:
+            home_id = request.POST.get('home_team_id', '')
+            away_id = request.POST.get('away_team_id', '')
+            if home_id:
+                try:
+                    fixture.home_team = Team.objects.get(pk=home_id)
+                except Team.DoesNotExist:
+                    pass
+            if away_id:
+                try:
+                    fixture.away_team = Team.objects.get(pk=away_id)
+                except Team.DoesNotExist:
+                    pass
+
+        fixture.save()
+        messages.success(request, f'Fixture updated: {fixture}')
+        return redirect('cm_competition_manage', pk=pk)
+
+    venues = Venue.objects.filter(is_active=True).order_by('county', 'name')
+    from competitions.models import FixtureStatus
+    teams = Team.objects.filter(
+        status='registered', payment_confirmed=True
+    ).order_by('name')
+
+    return render(request, 'portal/cm/edit_fixture.html', {
+        'competition': competition,
+        'fixture': fixture,
+        'venues': venues,
+        'teams': teams,
+        'status_choices': FixtureStatus.choices,
+    })
+
+
+@role_required('competition_manager', 'admin')
+def cm_competition_rules_view(request, pk):
+    """Edit and publish competition rules."""
+    competition = get_object_or_404(Competition, pk=pk)
+
+    if request.method == 'POST':
+        competition.rules = request.POST.get('rules', '')
+        competition.save(update_fields=['rules'])
+        messages.success(request, f'Rules updated for {competition.name}.')
+        return redirect('cm_competition_manage', pk=pk)
+
+    return render(request, 'portal/cm/edit_rules.html', {
+        'competition': competition,
     })

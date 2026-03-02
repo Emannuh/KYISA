@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}KYISA CMS{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="icon" href="{% static 'img/kyisa_logo.png' %}" type="image/png">
     {% block extra_css %}{% endblock %}
 </head>
@@ -17,22 +18,22 @@
             <img src="{% static 'img/kyisa_logo.png' %}" alt="KYISA">
             <span>KYISA CMS</span>
         </a>
-        <button class="nav-toggle" onclick="document.querySelector('.navbar-nav').classList.toggle('show')">☰</button>
+        <button class="nav-toggle" onclick="document.querySelector('.navbar-nav').classList.toggle('show')"><i class="bi bi-list"></i></button>
         <ul class="navbar-nav">
-            <li><a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">🏠 Dashboard</a></li>
+            <li><a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"><i class="bi bi-house-door"></i> Dashboard</a></li>
             {% if user.role == 'admin' or user.role == 'competition_manager' %}
-            <li><a href="{% url 'competitions_list' %}" class="{% if 'competition' in request.resolver_match.url_name %}active{% endif %}">🏆 Competitions</a></li>
+            <li><a href="{% url 'competitions_list' %}" class="{% if 'competition' in request.resolver_match.url_name %}active{% endif %}"><i class="bi bi-trophy"></i> Competitions</a></li>
             {% endif %}
             {% if user.role == 'admin' or user.role == 'competition_manager' or user.role == 'team_manager' %}
-            <li><a href="{% url 'teams_list' %}" class="{% if 'team' in request.resolver_match.url_name %}active{% endif %}">⚽ Teams</a></li>
+            <li><a href="{% url 'teams_list' %}" class="{% if 'team' in request.resolver_match.url_name %}active{% endif %}"><i class="bi bi-people"></i> Teams</a></li>
             {% endif %}
             {% if user.role == 'treasurer' %}
-            <li><a href="{% url 'treasurer_teams' %}" class="{% if 'treasurer' in request.resolver_match.url_name %}active{% endif %}">💰 Registrations</a></li>
+            <li><a href="{% url 'treasurer_dashboard' %}" class="{% if 'treasurer' in request.resolver_match.url_name %}active{% endif %}"><i class="bi bi-cash-stack"></i> Treasurer</a></li>
             {% endif %}
             {% if user.role == 'admin' or user.role == 'referee_manager' or user.role == 'referee' %}
-            <li><a href="{% url 'referees_list' %}" class="{% if 'referee' in request.resolver_match.url_name %}active{% endif %}">🏁 Referees</a></li>
+            <li><a href="{% url 'referees_list' %}" class="{% if 'referee' in request.resolver_match.url_name %}active{% endif %}"><i class="bi bi-flag"></i> Referees</a></li>
             {% endif %}
-            <li><a href="{% url 'matches_list' %}" class="{% if 'match' in request.resolver_match.url_name %}active{% endif %}">📋 Matches</a></li>
+            <li><a href="{% url 'matches_list' %}" class="{% if 'match' in request.resolver_match.url_name %}active{% endif %}"><i class="bi bi-clipboard-data"></i> Matches</a></li>
         </ul>
         <div class="navbar-user">
             <a href="{% url 'home' %}" style="color:rgba(255,255,255,.7);font-size:.8rem;margin-right:.5rem;">← Website</a>

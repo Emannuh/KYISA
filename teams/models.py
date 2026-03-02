@@ -16,7 +16,7 @@ class Team(models.Model):
     name        = models.CharField(max_length=200, unique=True)
     county      = models.CharField(max_length=100)
     sport_type  = models.CharField(
-        max_length=30, choices=SportType.choices, default=SportType.SOCCER,
+        max_length=30, choices=SportType.choices, default=SportType.FOOTBALL_MEN,
         help_text="Sport this team competes in"
     )
     competition = models.ForeignKey(
@@ -30,8 +30,33 @@ class Team(models.Model):
     status      = models.CharField(max_length=20, choices=TeamStatus.choices, default=TeamStatus.PENDING)
     badge       = models.ImageField(upload_to="team_badges/", null=True, blank=True)
     county_logo = models.ImageField(upload_to="county_logos/", null=True, blank=True, help_text="County government logo")
-    home_colour = models.CharField(max_length=50, blank=True, help_text="Primary kit colour")
+
+    # ── Kit details (mandatory for registration) ───────────────────────────
+    # Home kit
+    home_outfield_colour = models.CharField(max_length=50, blank=True, help_text="Home outfield jersey colour")
+    home_shorts_colour   = models.CharField(max_length=50, blank=True, help_text="Home shorts colour")
+    home_socks_colour    = models.CharField(max_length=50, blank=True, help_text="Home socks colour")
+    home_gk_colour       = models.CharField(max_length=50, blank=True, help_text="Home goalkeeper jersey colour")
+    home_kit_image       = models.ImageField(upload_to="kits/home/", null=True, blank=True, help_text="Photo of home kit")
+
+    # Away kit
+    away_outfield_colour = models.CharField(max_length=50, blank=True, help_text="Away outfield jersey colour")
+    away_shorts_colour   = models.CharField(max_length=50, blank=True, help_text="Away shorts colour")
+    away_socks_colour    = models.CharField(max_length=50, blank=True, help_text="Away socks colour")
+    away_gk_colour       = models.CharField(max_length=50, blank=True, help_text="Away goalkeeper jersey colour")
+    away_kit_image       = models.ImageField(upload_to="kits/away/", null=True, blank=True, help_text="Photo of away kit")
+
+    # Third kit (optional)
+    third_outfield_colour = models.CharField(max_length=50, blank=True, help_text="Third outfield jersey colour")
+    third_shorts_colour   = models.CharField(max_length=50, blank=True, help_text="Third shorts colour")
+    third_socks_colour    = models.CharField(max_length=50, blank=True, help_text="Third socks colour")
+    third_gk_colour       = models.CharField(max_length=50, blank=True, help_text="Third goalkeeper jersey colour")
+    third_kit_image       = models.ImageField(upload_to="kits/third/", null=True, blank=True, help_text="Photo of third kit")
+
+    # Legacy fields (kept for backward compat; prefer new kit fields above)
+    home_colour = models.CharField(max_length=50, blank=True, help_text="Primary kit colour (legacy)")
     away_colour = models.CharField(max_length=50, blank=True)
+
     contact_phone = models.CharField(max_length=20, blank=True)
     contact_email = models.EmailField(blank=True)
 
@@ -53,6 +78,23 @@ class Team(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def home_kit_complete(self):
+        """True if all mandatory home kit fields are filled."""
+        return all([self.home_outfield_colour, self.home_shorts_colour,
+                    self.home_socks_colour, self.home_gk_colour])
+
+    @property
+    def away_kit_complete(self):
+        """True if all mandatory away kit fields are filled."""
+        return all([self.away_outfield_colour, self.away_shorts_colour,
+                    self.away_socks_colour, self.away_gk_colour])
+
+    @property
+    def kits_complete(self):
+        """True if both home and away kit details are filled (required for approval)."""
+        return self.home_kit_complete and self.away_kit_complete
 
 
 class Position(models.TextChoices):

@@ -35,9 +35,28 @@ from .web_views import (
     # Referee appointments & portal
     appointment_action_view,
     referee_dashboard_view, referee_availability_view,
+    # Referee manager — appointment management
+    referee_appointments_view, referee_appoint_view,
     # Treasurer portal
     treasurer_dashboard_view,
     treasurer_teams_view,
+    treasurer_county_payments_view,
+    # Competition Manager specific views
+    competition_standings_view,
+    competition_reports_view,
+    competition_report_approve_view,
+    # Competition Manager — full portal
+    cm_dashboard_view,
+    cm_create_competition_view,
+    cm_edit_competition_view,
+    cm_competition_manage_view,
+    cm_manage_pools_view,
+    cm_generate_fixtures_view,
+    cm_manage_venues_view,
+    cm_allocate_venue_view,
+    cm_edit_standings_view,
+    cm_edit_fixture_view,
+    cm_competition_rules_view,
 )
 
 urlpatterns = [
@@ -92,13 +111,38 @@ urlpatterns = [
     # ── PORTAL: REFEREE APPOINTMENTS ──────────────────────────────────────
     path("portal/appointments/<int:appointment_pk>/",     appointment_action_view,    name="appointment_action"),
 
+    # ── PORTAL: REFEREE MANAGER — APPOINTMENT MANAGEMENT ──────────────────
+    path("portal/referee-manager/appointments/",                   referee_appointments_view, name="referee_appointments"),
+    path("portal/referee-manager/appointments/<int:fixture_pk>/",  referee_appoint_view,      name="referee_appoint"),
+
     # ── PORTAL: REFEREE DASHBOARD & AVAILABILITY ──────────────────────────
     path("portal/referee/",                               referee_dashboard_view,     name="referee_portal"),
     path("portal/referee/availability/",                  referee_availability_view,  name="referee_availability"),
 
     # ── TREASURER PORTAL ────────────────────────────────────────────────────
-    path("portal/treasurer/",             treasurer_dashboard_view, name="treasurer_dashboard"),
-    path("portal/treasurer/teams/",       treasurer_teams_view,     name="treasurer_teams"),
+    path("portal/treasurer/",                treasurer_dashboard_view,       name="treasurer_dashboard"),
+    path("portal/treasurer/teams/",          treasurer_teams_view,           name="treasurer_teams"),
+    path("portal/treasurer/county-payments/", treasurer_county_payments_view, name="treasurer_county_payments"),
+
+    # ── COMPETITION MANAGER PORTAL ────────────────────────────────────────
+    path("portal/competitions/<int:pk>/standings/",   competition_standings_view,      name="competition_standings"),
+    path("portal/competitions/<int:pk>/reports/",     competition_reports_view,        name="competition_reports"),
+    path("portal/competitions/<int:pk>/reports/<int:report_pk>/approve/",
+         competition_report_approve_view, name="competition_report_approve"),
+
+    # ── COMPETITION MANAGER — FULL MANAGEMENT ─────────────────────────────
+    path("portal/cm/",                                     cm_dashboard_view,             name="cm_dashboard"),
+    path("portal/cm/create/",                              cm_create_competition_view,    name="cm_create_competition"),
+    path("portal/cm/competitions/<int:pk>/edit/",          cm_edit_competition_view,      name="cm_edit_competition"),
+    path("portal/cm/competitions/<int:pk>/",               cm_competition_manage_view,    name="cm_competition_manage"),
+    path("portal/cm/competitions/<int:pk>/pools/",         cm_manage_pools_view,          name="cm_manage_pools"),
+    path("portal/cm/competitions/<int:pk>/fixtures/generate/", cm_generate_fixtures_view, name="cm_generate_fixtures"),
+    path("portal/cm/competitions/<int:pk>/venues/",        cm_allocate_venue_view,        name="cm_allocate_venues"),
+    path("portal/cm/competitions/<int:pk>/standings/edit/", cm_edit_standings_view,       name="cm_edit_standings"),
+    path("portal/cm/competitions/<int:pk>/fixtures/<int:fixture_pk>/edit/",
+         cm_edit_fixture_view, name="cm_edit_fixture"),
+    path("portal/cm/competitions/<int:pk>/rules/",         cm_competition_rules_view,     name="cm_competition_rules"),
+    path("portal/cm/venues/",                              cm_manage_venues_view,         name="cm_venues"),
 
     # ── ADMIN DASHBOARD ───────────────────────────────────────────────────────
     path("portal/admin-dashboard/", include("admin_dashboard.urls")),

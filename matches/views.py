@@ -169,8 +169,9 @@ class MatchReportApproveView(APIView):
             fixture.away_score = report.away_score
             fixture.status     = "completed"
             fixture.save(update_fields=["home_score", "away_score", "status"])
-            # Update pool standings
-            _update_standings(fixture)
+            # Auto-update standings and player statistics
+            from matches.stats_engine import process_approved_report
+            process_approved_report(report)
         else:
             report.status       = "returned"
             report.reviewer_notes = notes
@@ -181,28 +182,8 @@ class MatchReportApproveView(APIView):
 
 def _update_standings(fixture):
     """
-    Recalculate pool team standings after a completed fixture.
+    Legacy helper — delegates to stats_engine.
+    Kept for backward compatibility with web_views.py calls.
     """
-    from competitions.models import PoolTeam
-    try:
-        pool = fixture.pool
-        if not pool:
-            return
-        home_pt = PoolTeam.objects.get(pool=pool, team=fixture.home_team)
-        away_pt = PoolTeam.objects.get(pool=pool, team=fixture.away_team)
-        hs, as_ = fixture.home_score, fixture.away_score
-
-        home_pt.played += 1; away_pt.played += 1
-        home_pt.goals_for      += hs; home_pt.goals_against += as_
-        away_pt.goals_for      += as_; away_pt.goals_against += hs
-
-        if hs > as_:
-            home_pt.won += 1; away_pt.lost += 1
-        elif as_ > hs:
-            away_pt.won += 1; home_pt.lost += 1
-        else:
-            home_pt.drawn += 1; away_pt.drawn += 1
-
-        home_pt.save(); away_pt.save()
-    except Exception:
-        pass  # Pool teams not set up — skip silently
+    from matches.stats_engine import update_pool_standings
+    update_pool_standings(fixture)

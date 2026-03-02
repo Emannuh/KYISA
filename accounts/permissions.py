@@ -44,6 +44,25 @@ class IsTeamManager(BasePermission):
                     request.user.role == UserRole.TEAM_MANAGER)
 
 
+class IsTreasurer(BasePermission):
+    """Only the Treasurer can access."""
+    message = "You must be a Treasurer to perform this action."
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_authenticated and
+                    request.user.role == UserRole.TREASURER)
+
+
+class IsTreasurerOrAdmin(BasePermission):
+    """Treasurer or Admin."""
+    def has_permission(self, request, view):
+        return bool(
+            request.user and request.user.is_authenticated and
+            (request.user.is_staff or request.user.role in [
+                UserRole.TREASURER, UserRole.ADMIN
+            ])
+        )
+
+
 class IsAdminOrCompetitionManager(BasePermission):
     """Admin staff or Competition Manager."""
     def has_permission(self, request, view):
@@ -63,13 +82,14 @@ class IsRefereeManagerOrAdmin(BasePermission):
 
 
 class IsAnyStaff(BasePermission):
-    """Any internal staff role (CM, RM, Admin) — not team manager or referee."""
+    """Any internal staff role (CM, RM, Treasurer, Admin) — not team manager or referee."""
     def has_permission(self, request, view):
         return bool(
             request.user and request.user.is_authenticated and
             request.user.role in [
                 UserRole.COMPETITION_MANAGER,
                 UserRole.REFEREE_MANAGER,
+                UserRole.TREASURER,
                 UserRole.ADMIN,
             ]
         )

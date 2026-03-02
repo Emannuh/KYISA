@@ -1,11 +1,11 @@
 from django.contrib import admin
-from .models import Competition, Venue, Pool, PoolTeam, Fixture, CountyRegistration
+from .models import Competition, Venue, Pool, PoolTeam, Fixture, CountyPayment, CountyRegistration
 
 
 @admin.register(Competition)
 class CompetitionAdmin(admin.ModelAdmin):
-    list_display  = ["name", "sport_type", "is_exhibition", "season", "age_group", "status", "start_date", "end_date"]
-    list_filter   = ["sport_type", "is_exhibition", "status", "age_group", "season"]
+    list_display  = ["name", "sport_type", "gender", "format_type", "is_exhibition", "season", "age_group", "status", "start_date", "end_date"]
+    list_filter   = ["sport_type", "gender", "format_type", "is_exhibition", "status", "age_group", "season"]
     search_fields = ["name"]
 
 
@@ -19,7 +19,7 @@ class VenueAdmin(admin.ModelAdmin):
 class PoolTeamInline(admin.TabularInline):
     model  = PoolTeam
     extra  = 0
-    fields = ["team", "played", "won", "drawn", "lost", "goals_for", "goals_against"]
+    fields = ["team", "played", "won", "drawn", "lost", "goals_for", "goals_against", "sets_won", "sets_lost", "bonus_points"]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "team":
@@ -37,8 +37,8 @@ class PoolAdmin(admin.ModelAdmin):
 
 @admin.register(Fixture)
 class FixtureAdmin(admin.ModelAdmin):
-    list_display  = ["__str__", "competition", "match_date", "kickoff_time", "venue", "status"]
-    list_filter   = ["status", "competition", "match_date"]
+    list_display  = ["__str__", "competition", "match_date", "kickoff_time", "venue", "status", "is_knockout", "knockout_round"]
+    list_filter   = ["status", "competition", "match_date", "is_knockout", "knockout_round"]
     search_fields = ["home_team__name", "away_team__name"]
     date_hierarchy = "match_date"
 
@@ -49,10 +49,17 @@ class FixtureAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
+@admin.register(CountyPayment)
+class CountyPaymentAdmin(admin.ModelAdmin):
+    list_display  = ["county", "season", "participation_fee", "payment_status", "payment_reference", "payment_date", "confirmed_by"]
+    list_filter   = ["payment_status", "season"]
+    search_fields = ["county", "payment_reference"]
+
+
 @admin.register(CountyRegistration)
 class CountyRegistrationAdmin(admin.ModelAdmin):
-    list_display   = ["county", "competition", "participation_fee", "payment_status", "payment_date", "is_paid"]
-    list_filter    = ["payment_status", "competition"]
-    search_fields  = ["county", "payment_reference"]
+    list_display  = ["county", "competition", "county_payment", "registered_at"]
+    list_filter   = ["competition"]
+    search_fields = ["county"]
     readonly_fields = ["registered_at"]
     ordering       = ["competition", "county"]

@@ -7,7 +7,7 @@
         <a href="{% url 'dashboard' %}">Dashboard</a>
         <span>Competitions</span>
     </div>
-    <h1>🏆 Competitions</h1>
+    <h1><i class="bi bi-trophy"></i> Competitions</h1>
     <p>Manage all KYISA competitions and tournaments</p>
 </div>
 
@@ -22,11 +22,11 @@
                 <thead>
                     <tr>
                         <th>Name</th>
+                        <th>Sport</th>
                         <th>Season</th>
                         <th>Age Group</th>
                         <th>Status</th>
                         <th>Start Date</th>
-                        <th>End Date</th>
                         <th>Teams</th>
                         <th>Actions</th>
                     </tr>
@@ -35,6 +35,7 @@
                     {% for comp in competitions %}
                     <tr>
                         <td><strong>{{ comp.name }}</strong></td>
+                        <td style="font-size:.85rem">{{ comp.get_sport_type_display }}</td>
                         <td>{{ comp.season }}</td>
                         <td>{{ comp.get_age_group_display }}</td>
                         <td>
@@ -46,15 +47,22 @@
                             <span class="badge badge-gray">Completed</span>
                             {% elif comp.status == 'upcoming' %}
                             <span class="badge badge-warning">Upcoming</span>
+                            {% elif comp.status == 'group_stage' %}
+                            <span class="badge badge-info">Group Stage</span>
+                            {% elif comp.status == 'knockout' %}
+                            <span class="badge badge-warning">Knockout</span>
                             {% else %}
                             <span class="badge badge-danger">{{ comp.get_status_display }}</span>
                             {% endif %}
                         </td>
                         <td>{{ comp.start_date|date:"d M Y" }}</td>
-                        <td>{{ comp.end_date|date:"d M Y" }}</td>
                         <td>{{ comp.teams.count }} / {{ comp.max_teams }}</td>
-                        <td>
+                        <td style="white-space:nowrap">
                             <a href="{% url 'competition_detail' comp.pk %}" class="btn btn-outline btn-sm">View</a>
+                            {% if user.role == 'competition_manager' or user.role == 'admin' or user.is_superuser %}
+                            <a href="{% url 'competition_standings' comp.pk %}" class="btn btn-outline btn-sm" style="color:#1565c0;border-color:#1565c0">Standings</a>
+                            <a href="{% url 'competition_reports' comp.pk %}" class="btn btn-outline btn-sm" style="color:#6A1B9A;border-color:#6A1B9A">Reports</a>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
@@ -63,7 +71,7 @@
         </div>
         {% else %}
         <div class="empty-state">
-            <div class="icon">🏆</div>
+            <div class="icon"><i class="bi bi-trophy"></i></div>
             <h3>No competitions yet</h3>
             <p>Competitions will appear here once created.</p>
         </div>

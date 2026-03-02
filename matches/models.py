@@ -127,22 +127,25 @@ class MatchReport(models.Model):
 
 
 class MatchEvent(models.Model):
-    """Goals, cards, substitutions recorded in the match report."""
+    """Goals, assists, cards, substitutions recorded in the match report."""
     EVENT_TYPES = [
         ("goal",    "Goal"),
+        ("assist",  "Assist"),
         ("yellow",  "Yellow Card"),
         ("red",     "Red Card"),
+        ("second_yellow", "Second Yellow (Red)"),
         ("sub_on",  "Substitution On"),
         ("sub_off", "Substitution Off"),
         ("injury",  "Injury"),
         ("penalty", "Penalty Goal"),
+        ("penalty_miss", "Penalty Missed"),
         ("og",      "Own Goal"),
     ]
     report     = models.ForeignKey(MatchReport, on_delete=models.CASCADE, related_name="events")
     team       = models.ForeignKey("teams.Team", on_delete=models.CASCADE)
     player     = models.ForeignKey("teams.Player", on_delete=models.SET_NULL, null=True, blank=True)
     event_type = models.CharField(max_length=20, choices=EVENT_TYPES)
-    minute     = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(120)])
+    minute     = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(130)])
     notes      = models.CharField(max_length=200, blank=True)
 
     class Meta:
@@ -150,3 +153,56 @@ class MatchEvent(models.Model):
 
     def __str__(self):
         return f"{self.event_type} @ {self.minute}' — {self.player}"
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#   PLAYER STATISTICS (aggregated from match events)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class PlayerStatistics(models.Model):
+    """
+    Aggregated player statistics for a specific competition.
+    Auto-updated when a match report is approved by the Competition Manager.
+    """
+    player       = models.ForeignKey("teams.Player", on_delete=models.CASCADE, related_name="statistics")
+    competition  = models.ForeignKey("competitions.Competition", on_delete=models.CASCADE, related_name="player_statistics")
+    team         = models.ForeignKey("teams.Team", on_delete=models.CASCADE, related_name="player_statistics")
+
+    # Appearance stats
+    matches_played   = models.PositiveIntegerField(default=0)
+    matches_started  = models.PositiveIntegerField(default=0)
+    matches_sub      = models.PositiveIntegerField(default=0, help_text="Appearances as substitute")
+    minutes_played   = models.PositiveIntegerField(default=0)
+
+    # Offensive stats
+    goals            = models.PositiveIntegerField(default=0)
+    assists          = models.PositiveIntegerField(default=0)
+    penalties_scored = models.PositiveIntegerField(default=0)
+    penalties_missed = models.PositiveIntegerField(default=0)
+    own_goals        = models.PositiveIntegerField(default=0)
+
+    # Disciplinary
+    yellow_cards     = models.PositiveIntegerField(default=0)
+    red_cards        = models.PositiveIntegerField(default=0)
+
+    # Goalkeeper stats
+    clean_sheets     = models.PositiveIntegerField(default=0, help_text="Matches where team conceded 0 goals (GK only)")
+    goals_conceded   = models.PositiveIntegerField(default=0, help_text="Goals conceded while playing (GK only)")
+
+    # Auto-calculated
+    goal_contributions = models.PositiveIntegerField(default=0, help_text="Goals + Assists")
+
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ["player", "competition"]
+        ordering = ["-goals", "-assists", "-matches_played"]
+        verbose_name = "Player Statistics"
+        verbose_name_plural = "Player Statistics"
+
+    def __str__(self):
+        return f"{self.player.get_full_name()} — {self.competition.name} (G:{self.goals} A:{self.assists})"
+
+    def save(self, *args, **kwargs):
+        self.goal_contributions = self.goals + self.assists
+        super().save(*args, **kwargs)

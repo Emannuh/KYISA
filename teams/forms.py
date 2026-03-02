@@ -26,14 +26,13 @@ class TeamRegistrationForm(forms.ModelForm):
     """
     competition = forms.ModelChoiceField(
         queryset=Competition.objects.filter(
-            sport_type=SportType.SOCCER,
             status__in=[CompetitionStatus.REGISTRATION, CompetitionStatus.UPCOMING],
         ),
         required=False,
         empty_label="— Select a competition (optional) —",
         widget=forms.Select(attrs={'class': 'form-control', 'id': 'id_competition'}),
         label="Competition",
-        help_text="Soccer competitions currently open for registration.",
+        help_text="Competitions currently open for registration.",
     )
 
     class Meta:
@@ -41,7 +40,17 @@ class TeamRegistrationForm(forms.ModelForm):
         fields = [
             'name', 'county', 'sport_type', 'competition',
             'contact_phone', 'contact_email',
-            'home_colour', 'away_colour', 'badge', 'county_logo',
+            # Home kit
+            'home_outfield_colour', 'home_shorts_colour', 'home_socks_colour',
+            'home_gk_colour', 'home_kit_image',
+            # Away kit
+            'away_outfield_colour', 'away_shorts_colour', 'away_socks_colour',
+            'away_gk_colour', 'away_kit_image',
+            # Third kit (optional)
+            'third_outfield_colour', 'third_shorts_colour', 'third_socks_colour',
+            'third_gk_colour', 'third_kit_image',
+            # Badge & logo
+            'badge', 'county_logo',
         ]
         widgets = {
             'name': forms.TextInput(attrs={
@@ -66,22 +75,27 @@ class TeamRegistrationForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'team@example.com',
             }),
-            'home_colour': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'e.g. Green',
-            }),
-            'away_colour': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'e.g. White',
-            }),
-            'badge': forms.FileInput(attrs={
-                'class': 'form-control',
-                'accept': 'image/*',
-            }),
-            'county_logo': forms.FileInput(attrs={
-                'class': 'form-control',
-                'accept': 'image/*',
-            }),
+            # Home kit
+            'home_outfield_colour': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Green'}),
+            'home_shorts_colour': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. White'}),
+            'home_socks_colour': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Green'}),
+            'home_gk_colour': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Yellow'}),
+            'home_kit_image': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
+            # Away kit
+            'away_outfield_colour': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. White'}),
+            'away_shorts_colour': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Black'}),
+            'away_socks_colour': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. White'}),
+            'away_gk_colour': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Orange'}),
+            'away_kit_image': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
+            # Third kit
+            'third_outfield_colour': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Optional'}),
+            'third_shorts_colour': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Optional'}),
+            'third_socks_colour': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Optional'}),
+            'third_gk_colour': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Optional'}),
+            'third_kit_image': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
+            # Badge & logo
+            'badge': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
+            'county_logo': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
         }
         labels = {
             'name': 'Team Name *',
@@ -89,8 +103,21 @@ class TeamRegistrationForm(forms.ModelForm):
             'sport_type': 'Sport *',
             'contact_phone': 'Contact Phone',
             'contact_email': 'Contact Email',
-            'home_colour': 'Home Kit Colour',
-            'away_colour': 'Away Kit Colour',
+            'home_outfield_colour': 'Home Jersey Colour *',
+            'home_shorts_colour': 'Home Shorts Colour *',
+            'home_socks_colour': 'Home Socks Colour *',
+            'home_gk_colour': 'Home GK Jersey Colour *',
+            'home_kit_image': 'Home Kit Photo',
+            'away_outfield_colour': 'Away Jersey Colour *',
+            'away_shorts_colour': 'Away Shorts Colour *',
+            'away_socks_colour': 'Away Socks Colour *',
+            'away_gk_colour': 'Away GK Jersey Colour *',
+            'away_kit_image': 'Away Kit Photo',
+            'third_outfield_colour': 'Third Jersey Colour',
+            'third_shorts_colour': 'Third Shorts Colour',
+            'third_socks_colour': 'Third Socks Colour',
+            'third_gk_colour': 'Third GK Jersey Colour',
+            'third_kit_image': 'Third Kit Photo',
             'badge': 'Team Badge / Logo',
             'county_logo': 'County Logo',
         }

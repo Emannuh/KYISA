@@ -2,7 +2,7 @@
 KYISA Competitions — Serializers
 """
 from rest_framework import serializers
-from .models import Competition, Venue, Pool, PoolTeam, Fixture
+from .models import Competition, Venue, Pool, PoolTeam, Fixture, CountyPayment, CountyRegistration
 
 
 class VenueSerializer(serializers.ModelSerializer):
@@ -15,16 +15,22 @@ class CompetitionSerializer(serializers.ModelSerializer):
     status_display     = serializers.CharField(source="get_status_display",     read_only=True)
     age_group_display  = serializers.CharField(source="get_age_group_display",  read_only=True)
     sport_type_display = serializers.CharField(source="get_sport_type_display", read_only=True)
+    gender_display     = serializers.CharField(source="get_gender_display",     read_only=True)
+    format_display     = serializers.CharField(source="get_format_type_display", read_only=True)
     team_count         = serializers.SerializerMethodField()
     fixture_count      = serializers.SerializerMethodField()
 
     class Meta:
         model  = Competition
         fields = [
-            "id", "name", "sport_type", "sport_type_display", "is_exhibition",
+            "id", "name", "sport_type", "sport_type_display",
+            "gender", "gender_display",
+            "format_type", "format_display",
+            "is_exhibition",
             "season", "age_group", "age_group_display",
-            "status", "status_display", "description",
+            "status", "status_display", "description", "rules",
             "start_date", "end_date", "max_teams",
+            "teams_per_group", "qualify_from_group",
             "team_count", "fixture_count",
             "created_by", "created_at",
         ]
@@ -103,6 +109,11 @@ class FixtureSerializer(serializers.ModelSerializer):
             "match_date", "kickoff_time",
             "status", "status_display",
             "home_score", "away_score",
+            "is_knockout", "knockout_round",
+            "bracket_position", "leg_number",
+            "home_score_et", "away_score_et",
+            "home_penalties", "away_penalties",
+            "winner",
             "round_number", "is_walkover",
             "referee", "squad_deadline",
             "home_squad_status", "away_squad_status",

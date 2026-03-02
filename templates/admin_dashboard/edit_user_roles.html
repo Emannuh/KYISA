@@ -1,130 +1,169 @@
 {% extends "base.html" %}
-{% block title %}Edit User Roles{% endblock %}
+{% block title %}Change Role: {{ edit_user.get_full_name }} - KYISA CMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .er-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .user-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem 1.5rem; }
+    .ui-field { margin-bottom: .6rem; }
+    .ui-field .label {
+        font-size: .72rem;
+        text-transform: uppercase;
+        letter-spacing: .8px;
+        color: #757575;
+        margin-bottom: .1rem;
+    }
+    .ui-field .value { font-weight: 600; font-size: .92rem; color: #212121; }
+    .role-option {
+        display: flex;
+        align-items: center;
+        gap: .65rem;
+        padding: .7rem .9rem;
+        border: 2px solid #E0E0E0;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all .2s ease;
+        margin-bottom: .5rem;
+    }
+    .role-option:hover { border-color: #4CAF50; background: #FAFAFA; }
+    .role-option.selected {
+        border-color: #1B5E20;
+        background: #E8F5E9;
+    }
+    .role-option input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        accent-color: #1B5E20;
+        flex-shrink: 0;
+    }
+    .role-option .role-name {
+        font-weight: 600;
+        font-size: .92rem;
+        color: #212121;
+    }
+    .role-option .role-desc {
+        font-size: .78rem;
+        color: #757575;
+        line-height: 1.3;
+    }
+    @media (max-width: 768px) {
+        .er-grid { grid-template-columns: 1fr; }
+        .user-info-grid { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1><i class="fas fa-user-tag"></i> Edit User Roles</h1>
-            <p class="text-muted">Manage role assignments for {{ edit_user.email }}</p>
+<div class="page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'manage_league_admins' %}">User Management</a>
+        <a href="{% url 'user_detail' user_id=edit_user.id %}">{{ edit_user.get_full_name }}</a>
+        <span>Change Role</span>
+    </div>
+    <h1>Change User Role</h1>
+</div>
+
+<div class="er-grid">
+    <!-- User Info -->
+    <div class="card">
+        <div class="card-header" style="background:#E3F2FD;">
+            <h3>User Information</h3>
         </div>
-        <a href="{% url 'manage_league_admins' %}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Back to Users
-        </a>
+        <div class="card-body">
+            <div class="user-info-grid">
+                <div class="ui-field">
+                    <div class="label">Full Name</div>
+                    <div class="value">{{ edit_user.get_full_name }}</div>
+                </div>
+                <div class="ui-field">
+                    <div class="label">Email</div>
+                    <div class="value">{{ edit_user.email }}</div>
+                </div>
+                <div class="ui-field">
+                    <div class="label">Current Role</div>
+                    <div class="value">
+                        <span style="display:inline-block;padding:.2rem .6rem;border-radius:6px;font-size:.82rem;font-weight:600;
+                            {% if edit_user.role == 'admin' %}background:#E3F2FD;color:#1565C0;
+                            {% elif edit_user.role == 'competition_manager' %}background:#F3E5F5;color:#6A1B9A;
+                            {% elif edit_user.role == 'referee_manager' %}background:#FFF3E0;color:#E65100;
+                            {% elif edit_user.role == 'referee' %}background:#E8F5E9;color:#1B5E20;
+                            {% elif edit_user.role == 'team_manager' %}background:#FCE4EC;color:#AD1457;
+                            {% elif edit_user.role == 'treasurer' %}background:#FFF8E1;color:#F57F17;
+                            {% else %}background:#ECEFF1;color:#455A64;{% endif %}">
+                            {{ edit_user.get_role_display }}
+                        </span>
+                    </div>
+                </div>
+                <div class="ui-field">
+                    <div class="label">Status</div>
+                    <div class="value">
+                        {% if edit_user.is_active %}<span class="badge badge-success">Active</span>{% else %}<span class="badge badge-danger">Inactive</span>{% endif %}
+                        {% if edit_user.is_staff %}<span class="badge badge-warning" style="margin-left:.2rem;">Staff</span>{% endif %}
+                    </div>
+                </div>
+                <div class="ui-field">
+                    <div class="label">Joined</div>
+                    <div class="value">{{ edit_user.date_joined|date:"d M Y" }}</div>
+                </div>
+                <div class="ui-field">
+                    <div class="label">Last Login</div>
+                    <div class="value">
+                        {% if edit_user.last_login %}{{ edit_user.last_login|date:"d M Y H:i" }}{% else %}<span style="color:#bbb;">Never</span>{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <!-- User Info Card -->
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="fas fa-user"></i> User Information</h5>
-                </div>
-                <div class="card-body">
-                    <table class="table table-borderless mb-0">
-                        <tr>
-                            <th width="120">Username:</th>
-                            <td><strong>{{ edit_user.email }}</strong></td>
-                        </tr>
-                        <tr>
-                            <th>Full Name:</th>
-                            <td>{{ edit_user.first_name }} {{ edit_user.last_name }}</td>
-                        </tr>
-                        <tr>
-                            <th>Email:</th>
-                            <td>{{ edit_user.email }}</td>
-                        </tr>
-                        <tr>
-                            <th>Status:</th>
-                            <td>
-                                {% if edit_user.is_active %}
-                                <span class="badge bg-success">Active</span>
-                                {% else %}
-                                <span class="badge bg-danger">Inactive</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Joined:</th>
-                            <td>{{ edit_user.date_joined|date:"M d, Y" }}</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
+    <!-- Role Selection -->
+    <div class="card">
+        <div class="card-header" style="background:#FFF3E0;">
+            <h3>Select New Role</h3>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <p style="color:#757575;font-size:.88rem;margin-bottom:1rem;">
+                    Choose the role for this user. This immediately changes what they can access.
+                </p>
 
-            <!-- Current Roles -->
-            <div class="card">
-                <div class="card-header bg-info text-white">
-                    <h6 class="mb-0"><i class="fas fa-list"></i> Current Roles</h6>
-                </div>
-                <div class="card-body">
-                    {% if user_groups %}
-                    <ul class="list-group">
-                        {% for group in user_groups %}
-                        <li class="list-group-item">
-                            <i class="fas fa-check-circle text-success"></i> {{ group.name }}
-                        </li>
-                        {% endfor %}
-                    </ul>
-                    {% else %}
-                    <p class="text-muted mb-0">No roles assigned yet</p>
+                {% for value, label in role_choices %}
+                <label class="role-option {% if edit_user.role == value %}selected{% endif %}" id="ro-{{ value }}">
+                    <input type="radio" name="role" value="{{ value }}"
+                           {% if edit_user.role == value %}checked{% endif %}
+                           onchange="document.querySelectorAll('.role-option').forEach(e=>e.classList.remove('selected'));document.getElementById('ro-{{ value }}').classList.add('selected');">
+                    <div>
+                        <div class="role-name">{{ label }}</div>
+                        <div class="role-desc">
+                            {% if value == 'admin' %}Full system control, all management features
+                            {% elif value == 'competition_manager' %}Create and manage competitions, fixtures, teams
+                            {% elif value == 'referee_manager' %}Appoint referees, review match reports
+                            {% elif value == 'referee' %}Accept appointments, submit match reports
+                            {% elif value == 'team_manager' %}Manage team players, squads, transfers
+                            {% elif value == 'treasurer' %}Verify payments, approve team registrations
+                            {% elif value == 'jury_chair' %}Handle appeals and disciplinary matters
+                            {% else %}{{ label }} role{% endif %}
+                        </div>
+                    </div>
+                </label>
+                {% endfor %}
+
+                <div class="alert alert-warning" style="margin-top:1rem;margin-bottom:1.25rem;">
+                    <strong>Warning:</strong> Changing the role will immediately affect what this user can see and do.
+                    {% if edit_user.role == 'referee' %}
+                    <br><span style="color:#C62828;">Moving away from Referee preserves their profile but removes access to referee features.</span>
                     {% endif %}
                 </div>
-            </div>
-        </div>
 
-        <div class="col-md-6">
-            <!-- Edit Roles Form -->
-            <div class="card">
-                <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0"><i class="fas fa-edit"></i> Update Roles</h5>
+                <div style="display:flex;gap:.8rem;">
+                    <button type="submit" class="btn btn-primary"
+                            onclick="return confirm('Change role for {{ edit_user.email }}?')">
+                        Save Role Change
+                    </button>
+                    <a href="{% url 'user_detail' user_id=edit_user.id %}" class="btn btn-outline">Cancel</a>
                 </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        <p class="text-muted">Select the roles you want to assign to this user:</p>
-                        
-                        <div class="list-group mb-3">
-                            {% for group in all_groups %}
-                            <label class="list-group-item">
-                                <input type="checkbox" name="groups" value="{{ group.name }}" 
-                                       class="form-check-input me-2"
-                                       {% if group in user_groups %}checked{% endif %}>
-                                <strong>{{ group.name }}</strong>
-                                <br>
-                                <small class="text-muted">
-                                    {% if group.name == 'League Admin' %}
-                                    Full system control, manage all teams/players/matches
-                                    {% elif group.name == 'Team Managers' %}
-                                    Manage own team, players, and transfers
-                                    {% elif group.name == 'Referee' %}
-                                    Submit match reports and view appointments
-                                    {% elif group.name == 'Referees Manager' %}
-                                    Assign referees to matches
-                                    {% else %}
-                                    {{ group.name }} role
-                                    {% endif %}
-                                </small>
-                            </label>
-                            {% endfor %}
-                        </div>
-
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle"></i> 
-                            <strong>Warning:</strong> Changing roles will immediately affect what this user can access.
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-save"></i> Save Role Changes
-                            </button>
-                            <a href="{% url 'manage_league_admins' %}" class="btn btn-secondary">
-                                <i class="fas fa-times"></i> Cancel
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
 </div>

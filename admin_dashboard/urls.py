@@ -47,8 +47,17 @@ urlpatterns = [
     # User Management (Super Admin Only)
     path('users/', views.manage_league_admins, name='manage_league_admins'),
     path('users/create/', views.create_league_admin, name='create_league_admin'),
-    path('users/toggle/<int:user_id>/', views.toggle_league_admin_status, name='toggle_league_admin_status'),
-    path('users/reset-password/<int:user_id>/', views.reset_league_admin_password, name='reset_league_admin_password'),
-    path('users/edit-roles/<int:user_id>/', views.edit_user_roles, name='edit_user_roles'),
-    path('users/delete/<int:user_id>/', views.delete_user, name='delete_user'),
+    path('users/<int:user_id>/', views.user_detail_view, name='user_detail'),
+    path('users/<int:user_id>/edit/', views.user_edit_profile, name='user_edit_profile'),
+    path('users/<int:user_id>/toggle/', views.toggle_league_admin_status, name='toggle_league_admin_status'),
+    path('users/<int:user_id>/reset-password/', views.reset_league_admin_password, name='reset_league_admin_password'),
+    path('users/<int:user_id>/set-password/', views.user_force_password, name='user_force_password'),
+    path('users/<int:user_id>/edit-roles/', views.edit_user_roles, name='edit_user_roles'),
+    path('users/<int:user_id>/suspend/', views.user_suspend_toggle, name='user_suspend_toggle'),
+    path('users/<int:user_id>/toggle-staff/', views.user_toggle_staff, name='user_toggle_staff'),
+    path('users/<int:user_id>/delete/', views.delete_user, name='delete_user'),
+
+    # Per-user activity log exports
+    path('users/<int:user_id>/export/excel/', export_views.export_user_logs_excel, name='export_user_logs_excel'),
+    path('users/<int:user_id>/export/pdf/', export_views.export_user_logs_pdf, name='export_user_logs_pdf'),
 ]

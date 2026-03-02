@@ -6,11 +6,12 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
-COUNTY_REGISTRATION_FEE_CAP = 250_000  # KSh — maximum participation fee per county
+COUNTY_REGISTRATION_FEE_CAP = 250_000  # KSh — participation fee per county per season
 
 
 class SportType(models.TextChoices):
-    SOCCER             = "soccer",             "Soccer"
+    FOOTBALL_MEN       = "football_men",       "Football (Men)"
+    FOOTBALL_WOMEN     = "football_women",     "Football (Women)"
     VOLLEYBALL_MEN     = "volleyball_men",     "Volleyball (Men)"
     VOLLEYBALL_WOMEN   = "volleyball_women",   "Volleyball (Women)"
     BASKETBALL         = "basketball",         "Basketball"
@@ -23,9 +24,32 @@ class SportType(models.TextChoices):
 EXHIBITION_SPORTS = {SportType.BEACH_VOLLEYBALL, SportType.BEACH_HANDBALL}
 
 
+class GenderChoice(models.TextChoices):
+    MEN   = "men",   "Men"
+    WOMEN = "women", "Women"
+    MIXED = "mixed", "Mixed"
+
+
+class CompetitionFormat(models.TextChoices):
+    GROUP_STAGE       = "group_stage",       "Group Stage Only"
+    KNOCKOUT          = "knockout",          "Knockout Only"
+    GROUP_AND_KNOCKOUT = "group_and_knockout", "Group Stage + Knockout"
+
+
+class KnockoutRound(models.TextChoices):
+    ROUND_OF_32  = "round_of_32",  "Round of 32"
+    ROUND_OF_16  = "round_of_16",  "Round of 16"
+    QUARTERFINAL = "quarterfinal",  "Quarter-final"
+    SEMIFINAL    = "semifinal",     "Semi-final"
+    THIRD_PLACE  = "third_place",   "3rd Place Play-off"
+    FINAL        = "final",         "Final"
+
+
 class CompetitionStatus(models.TextChoices):
     REGISTRATION = "registration", "Registration Open"
     UPCOMING     = "upcoming",     "Upcoming"
+    GROUP_STAGE  = "group_stage",  "Group Stage"
+    KNOCKOUT     = "knockout",     "Knockout Stage"
     ACTIVE       = "active",       "Active / Ongoing"
     COMPLETED    = "completed",    "Completed"
     CANCELLED    = "cancelled",    "Cancelled"
@@ -43,8 +67,17 @@ class AgeGroup(models.TextChoices):
 class Competition(models.Model):
     name        = models.CharField(max_length=200, unique=True)
     sport_type  = models.CharField(
-        max_length=30, choices=SportType.choices, default=SportType.SOCCER,
+        max_length=30, choices=SportType.choices, default=SportType.FOOTBALL_MEN,
         help_text="Sport discipline for this competition"
+    )
+    gender      = models.CharField(
+        max_length=10, choices=GenderChoice.choices, default=GenderChoice.MEN,
+        help_text="Gender category for this competition"
+    )
+    format_type = models.CharField(
+        max_length=30, choices=CompetitionFormat.choices,
+        default=CompetitionFormat.GROUP_AND_KNOCKOUT,
+        help_text="Competition format: group stage, knockout, or both"
     )
     is_exhibition = models.BooleanField(
         default=False,
@@ -54,9 +87,16 @@ class Competition(models.Model):
     age_group   = models.CharField(max_length=10, choices=AgeGroup.choices, default=AgeGroup.U17)
     status      = models.CharField(max_length=20, choices=CompetitionStatus.choices, default=CompetitionStatus.REGISTRATION)
     description = models.TextField(blank=True)
+    rules       = models.TextField(blank=True, help_text="Competition rules, regulations, and format details")
     start_date  = models.DateField()
     end_date    = models.DateField()
     max_teams   = models.PositiveIntegerField(default=16)
+    teams_per_group = models.PositiveIntegerField(
+        default=4, help_text="Number of teams per group in group stage"
+    )
+    qualify_from_group = models.PositiveIntegerField(
+        default=2, help_text="Number of teams that qualify from each group to knockout"
+    )
     created_by  = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True,
         related_name="competitions_created"
@@ -72,10 +112,23 @@ class Competition(models.Model):
     def __str__(self):
         return f"{self.name} ({self.season})"
 
+    @property
+    def has_group_stage(self):
+        return self.format_type in (CompetitionFormat.GROUP_STAGE, CompetitionFormat.GROUP_AND_KNOCKOUT)
+
+    @property
+    def has_knockout(self):
+        return self.format_type in (CompetitionFormat.KNOCKOUT, CompetitionFormat.GROUP_AND_KNOCKOUT)
+
     def save(self, *args, **kwargs):
         # Auto-mark beach sports as exhibition
         if self.sport_type in EXHIBITION_SPORTS:
             self.is_exhibition = True
+        # Auto-set gender from sport type if football
+        if self.sport_type == SportType.FOOTBALL_WOMEN:
+            self.gender = GenderChoice.WOMEN
+        elif self.sport_type == SportType.FOOTBALL_MEN:
+            self.gender = GenderChoice.MEN
         super().save(*args, **kwargs)
 
 
@@ -123,6 +176,11 @@ class PoolTeam(models.Model):
     lost       = models.PositiveIntegerField(default=0)
     goals_for  = models.PositiveIntegerField(default=0)
     goals_against = models.PositiveIntegerField(default=0)
+
+    # Sport-specific stats (volleyball sets, basketball quarters etc.)
+    sets_won      = models.PositiveIntegerField(default=0, help_text="For volleyball: sets won")
+    sets_lost     = models.PositiveIntegerField(default=0, help_text="For volleyball: sets lost")
+    bonus_points  = models.IntegerField(default=0, help_text="Bonus/penalty points (e.g. deductions)")
 
     class Meta:
         unique_together = ["pool", "team"]
@@ -173,6 +231,21 @@ class Fixture(models.Model):
     status         = models.CharField(max_length=20, choices=FixtureStatus.choices, default=FixtureStatus.PENDING)
     round_number   = models.PositiveIntegerField(null=True, blank=True)
 
+    # ── Knockout stage fields ──────────────────────────────────────────────
+    is_knockout      = models.BooleanField(default=False, help_text="Knockout/elimination match")
+    knockout_round   = models.CharField(
+        max_length=20, choices=KnockoutRound.choices, blank=True, default="",
+        help_text="Applicable knockout round (R16, QF, SF, Final)"
+    )
+    bracket_position = models.PositiveIntegerField(
+        null=True, blank=True,
+        help_text="Position in bracket (1=first match of this round)"
+    )
+    leg_number       = models.PositiveIntegerField(
+        null=True, blank=True,
+        help_text="Leg number for two-legged ties (1 or 2)"
+    )
+
     # Results (filled after match)
     home_score     = models.PositiveIntegerField(null=True, blank=True)
     away_score     = models.PositiveIntegerField(null=True, blank=True)
@@ -180,6 +253,15 @@ class Fixture(models.Model):
     walkover_team  = models.ForeignKey(
         "teams.Team", on_delete=models.SET_NULL, null=True, blank=True,
         related_name="walkovers_won"
+    )
+    # Extra time & penalties (knockout matches)
+    home_score_et  = models.PositiveIntegerField(null=True, blank=True, help_text="Home score after extra time")
+    away_score_et  = models.PositiveIntegerField(null=True, blank=True, help_text="Away score after extra time")
+    home_penalties = models.PositiveIntegerField(null=True, blank=True, help_text="Home penalty shootout score")
+    away_penalties = models.PositiveIntegerField(null=True, blank=True, help_text="Away penalty shootout score")
+    winner         = models.ForeignKey(
+        "teams.Team", on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="fixtures_won", help_text="Winner (auto-set or set for knockout ties)"
     )
 
     created_by  = models.ForeignKey(
@@ -205,8 +287,31 @@ class Fixture(models.Model):
         if errors:
             raise ValidationError(errors)
 
+    def determine_winner(self):
+        """Determine and set the winner based on scores (used for knockout matches)."""
+        if self.home_score is None or self.away_score is None:
+            return None
+        if self.home_score > self.away_score:
+            self.winner = self.home_team
+        elif self.away_score > self.home_score:
+            self.winner = self.away_team
+        elif self.home_penalties is not None and self.away_penalties is not None:
+            if self.home_penalties > self.away_penalties:
+                self.winner = self.home_team
+            elif self.away_penalties > self.home_penalties:
+                self.winner = self.away_team
+        elif self.home_score_et is not None and self.away_score_et is not None:
+            if self.home_score_et > self.away_score_et:
+                self.winner = self.home_team
+            elif self.away_score_et > self.home_score_et:
+                self.winner = self.away_team
+        return self.winner
+
     def __str__(self):
-        return f"{self.home_team} vs {self.away_team} — {self.match_date}"
+        label = f"{self.home_team} vs {self.away_team} — {self.match_date}"
+        if self.is_knockout and self.knockout_round:
+            label = f"[{self.get_knockout_round_display()}] {label}"
+        return label
 
     @property
     def kickoff_datetime(self):
@@ -226,7 +331,8 @@ class Fixture(models.Model):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# County Registration & Participation Fee
+# County Payment & Registration
+# One payment per county per season (KSh 250,000) covers ALL sports
 # ─────────────────────────────────────────────────────────────────────────────
 
 class PaymentStatus(models.TextChoices):
@@ -235,19 +341,18 @@ class PaymentStatus(models.TextChoices):
     WAIVED   = "waived",   "Waived"
 
 
-class CountyRegistration(models.Model):
+class CountyPayment(models.Model):
     """
-    Tracks a county's registration for a competition.
-    One record per county per competition — participation fee capped at KSh 250,000.
+    A single county-level payment per season.
+    KSh 250,000 covers ALL sport disciplines for that county.
+    The Treasurer verifies and marks payment.
     """
-    competition     = models.ForeignKey(
-        Competition, on_delete=models.CASCADE, related_name="county_registrations"
-    )
     county          = models.CharField(max_length=100)
+    season          = models.CharField(max_length=10, default="2025")
     participation_fee = models.DecimalField(
         max_digits=10, decimal_places=2,
         default=COUNTY_REGISTRATION_FEE_CAP,
-        help_text="Participation fee in KSh (max 250,000)"
+        help_text="Participation fee in KSh (standard 250,000)"
     )
     payment_status  = models.CharField(
         max_length=20, choices=PaymentStatus.choices, default=PaymentStatus.PENDING
@@ -257,6 +362,55 @@ class CountyRegistration(models.Model):
         help_text="M-Pesa or bank reference number"
     )
     payment_date    = models.DateField(null=True, blank=True)
+    confirmed_by    = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="county_payments_confirmed",
+        help_text="Treasurer who confirmed the payment"
+    )
+    confirmed_at    = models.DateTimeField(null=True, blank=True)
+    notes           = models.TextField(blank=True)
+    created_at      = models.DateTimeField(auto_now_add=True)
+    updated_at      = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ["county", "season"]
+        ordering = ["season", "county"]
+        verbose_name = "County Payment"
+        verbose_name_plural = "County Payments"
+
+    def clean(self):
+        if self.participation_fee and self.participation_fee > COUNTY_REGISTRATION_FEE_CAP:
+            raise ValidationError(
+                f"Participation fee cannot exceed KSh {COUNTY_REGISTRATION_FEE_CAP:,}."
+            )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.county} — {self.season} ({self.get_payment_status_display()})"
+
+    @property
+    def is_paid(self):
+        return self.payment_status in (PaymentStatus.PAID, PaymentStatus.WAIVED)
+
+
+class CountyRegistration(models.Model):
+    """
+    Tracks a county's registration for a specific competition.
+    Links to CountyPayment — a county can only enter competitions
+    once their county-level payment is confirmed.
+    """
+    competition     = models.ForeignKey(
+        Competition, on_delete=models.CASCADE, related_name="county_registrations"
+    )
+    county          = models.CharField(max_length=100)
+    county_payment  = models.ForeignKey(
+        CountyPayment, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="registrations",
+        help_text="Link to county-level payment for this season"
+    )
     registered_by   = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True,
         related_name="county_registrations_created"
@@ -271,18 +425,30 @@ class CountyRegistration(models.Model):
         verbose_name_plural = "County Registrations"
 
     def clean(self):
-        if self.participation_fee and self.participation_fee > COUNTY_REGISTRATION_FEE_CAP:
-            raise ValidationError(
-                f"Participation fee cannot exceed KSh {COUNTY_REGISTRATION_FEE_CAP:,}."
-            )
+        # Ensure county has paid for this season before registering for competitions
+        if self.competition_id:
+            season = self.competition.season
+            payment = CountyPayment.objects.filter(
+                county=self.county, season=season
+            ).first()
+            if not payment or not payment.is_paid:
+                raise ValidationError(
+                    f"{self.county} has not paid the county participation fee for {season}. "
+                    f"Payment of KSh {COUNTY_REGISTRATION_FEE_CAP:,} must be confirmed by the Treasurer first."
+                )
 
     def save(self, *args, **kwargs):
+        # Auto-link county payment
+        if not self.county_payment_id and self.competition_id:
+            self.county_payment = CountyPayment.objects.filter(
+                county=self.county, season=self.competition.season
+            ).first()
         self.full_clean()
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.county} — {self.competition.name} ({self.get_payment_status_display()})"
+        return f"{self.county} — {self.competition.name}"
 
     @property
     def is_paid(self):
-        return self.payment_status in (PaymentStatus.PAID, PaymentStatus.WAIVED)
+        return self.county_payment and self.county_payment.is_paid

@@ -1,283 +1,444 @@
 {% extends "base.html" %}
-{% block title %}User Management{% endblock %}
+{% block title %}User Management - KYISA CMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .um-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    .um-header h1 { font-size: 1.6rem; font-weight: 700; }
+    .um-header p { color: #757575; font-size: .9rem; margin-top: .15rem; }
+
+    .um-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: .75rem;
+        margin-bottom: 1.5rem;
+    }
+    .um-stat-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: .85rem 1rem;
+        text-align: center;
+        box-shadow: 0 1px 4px rgba(0,0,0,.06);
+        border-top: 3px solid #E0E0E0;
+        transition: all .2s;
+    }
+    .um-stat-card:hover { transform: translateY(-2px); box-shadow: 0 3px 10px rgba(0,0,0,.1); }
+    .um-stat-card .num { font-size: 1.5rem; font-weight: 800; line-height: 1.2; }
+    .um-stat-card .lbl { font-size: .72rem; color: #757575; text-transform: uppercase; letter-spacing: .5px; }
+    .um-stat-card.green  { border-top-color: #1B5E20; }
+    .um-stat-card.green .num { color: #1B5E20; }
+    .um-stat-card.red    { border-top-color: #C62828; }
+    .um-stat-card.red .num { color: #C62828; }
+    .um-stat-card.blue   { border-top-color: #1565C0; }
+    .um-stat-card.blue .num { color: #1565C0; }
+    .um-stat-card.amber  { border-top-color: #E65100; }
+    .um-stat-card.amber .num { color: #E65100; }
+    .um-stat-card.purple { border-top-color: #6A1B9A; }
+    .um-stat-card.purple .num { color: #6A1B9A; }
+    .um-stat-card.teal   { border-top-color: #00695C; }
+    .um-stat-card.teal .num { color: #00695C; }
+
+    .create-form-grid {
+        display: grid;
+        grid-template-columns: 2fr 1.5fr 1.5fr 1.2fr 1.5fr auto;
+        gap: .75rem;
+        align-items: end;
+    }
+    .create-form-grid label {
+        font-size: .8rem;
+        font-weight: 600;
+        display: block;
+        margin-bottom: .3rem;
+        color: #333;
+    }
+    .create-form-grid .req { color: #C62828; }
+
+    .filter-bar {
+        display: grid;
+        grid-template-columns: 1fr 1fr 2fr;
+        gap: .75rem;
+        align-items: end;
+    }
+    .filter-bar label {
+        font-size: .8rem;
+        font-weight: 600;
+        display: block;
+        margin-bottom: .3rem;
+        color: #333;
+    }
+    .search-group {
+        display: flex;
+        gap: .4rem;
+    }
+    .search-group input { flex: 1; }
+
+    .user-row {
+        display: grid;
+        grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 1.2fr auto;
+        gap: .75rem;
+        align-items: center;
+        padding: .75rem 1rem;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background .15s;
+    }
+    .user-row:hover { background: #FAFAFA; }
+    .user-row-header {
+        background: #F5F5F5;
+        font-size: .75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        color: #757575;
+        border-bottom: 2px solid #E0E0E0;
+        border-radius: 8px 8px 0 0;
+    }
+    .user-row-header:hover { background: #F5F5F5; }
+
+    .user-email { font-weight: 600; font-size: .9rem; word-break: break-all; }
+    .user-name { font-size: .88rem; color: #333; }
+    .user-meta { font-size: .82rem; color: #757575; }
+
+    .role-pill {
+        display: inline-block;
+        padding: .15rem .55rem;
+        border-radius: 6px;
+        font-size: .75rem;
+        font-weight: 600;
+    }
+    .status-dot {
+        display: inline-flex;
+        align-items: center;
+        gap: .3rem;
+        font-size: .8rem;
+        font-weight: 600;
+    }
+    .status-dot::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+    .status-dot.active::before { background: #1B5E20; }
+    .status-dot.active { color: #1B5E20; }
+    .status-dot.inactive::before { background: #C62828; }
+    .status-dot.inactive { color: #C62828; }
+    .status-dot.suspended::before { background: #212121; }
+    .status-dot.suspended { color: #212121; }
+
+    .action-btns {
+        display: flex;
+        gap: .35rem;
+        flex-wrap: nowrap;
+    }
+    .act-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .85rem;
+        text-decoration: none;
+        transition: all .2s;
+        border: 1px solid #e0e0e0;
+        background: #fff;
+        color: #555;
+    }
+    .act-btn:hover { transform: scale(1.1); box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+    .act-btn.view  { color: #1565C0; border-color: #BBDEFB; }
+    .act-btn.view:hover { background: #E3F2FD; }
+    .act-btn.role  { color: #6A1B9A; border-color: #E1BEE7; }
+    .act-btn.role:hover { background: #F3E5F5; }
+    .act-btn.toggle { color: #E65100; border-color: #FFCC80; }
+    .act-btn.toggle:hover { background: #FFF3E0; }
+    .act-btn.key   { color: #1B5E20; border-color: #C8E6C9; }
+    .act-btn.key:hover { background: #E8F5E9; }
+    .act-btn.del   { color: #C62828; border-color: #FFCDD2; }
+    .act-btn.del:hover { background: #FFEBEE; }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    .info-grid h4 {
+        font-size: .9rem;
+        font-weight: 700;
+        margin-bottom: .5rem;
+        color: #333;
+    }
+    .info-grid ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .info-grid li {
+        font-size: .82rem;
+        color: #555;
+        padding: .25rem 0;
+        display: flex;
+        align-items: center;
+        gap: .35rem;
+    }
+    .info-grid li strong { color: #212121; }
+
+    @media (max-width: 1024px) {
+        .create-form-grid { grid-template-columns: 1fr 1fr 1fr; }
+        .user-row { grid-template-columns: 2fr 1fr 1fr auto; }
+        .user-row .user-meta-col { display: none; }
+        .filter-bar { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+        .create-form-grid { grid-template-columns: 1fr; }
+        .filter-bar { grid-template-columns: 1fr; }
+        .user-row { grid-template-columns: 1fr auto; }
+        .um-stats { grid-template-columns: repeat(3, 1fr); }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1><i class="fas fa-users-cog"></i> Complete User Management</h1>
-            <p class="text-muted">Manage all system users and their roles</p>
+<!-- Header -->
+<div class="um-header">
+    <div>
+        <div class="breadcrumb">
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <span>User Management</span>
         </div>
-        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
+        <h1>User Management</h1>
+        <p>Create and manage all system users, roles, and access</p>
     </div>
+    <a href="{% url 'dashboard' %}" class="btn btn-outline" style="border-radius:8px;">&larr; Dashboard</a>
+</div>
 
-    <!-- Statistics Cards -->
-    <div class="row mb-4">
-        <div class="col-md-2">
-            <div class="card bg-primary text-white">
-                <div class="card-body text-center">
-                    <h3>{{ user_stats.total }}</h3>
-                    <small>Total Users</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="card bg-success text-white">
-                <div class="card-body text-center">
-                    <h3>{{ user_stats.active }}</h3>
-                    <small>Active</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="card bg-danger text-white">
-                <div class="card-body text-center">
-                    <h3>{{ user_stats.inactive }}</h3>
-                    <small>Inactive</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="card bg-info text-white">
-                <div class="card-body text-center">
-                    <h3>{{ user_stats.team_managers }}</h3>
-                    <small>Team Managers</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="card bg-warning text-dark">
-                <div class="card-body text-center">
-                    <h3>{{ user_stats.referees }}</h3>
-                    <small>Referees</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="card bg-dark text-white">
-                <div class="card-body text-center">
-                    <h3>{{ user_stats.league_admins }}</h3>
-                    <small>League Admins</small>
-                </div>
-            </div>
-        </div>
+<!-- Stats -->
+<div class="um-stats">
+    <div class="um-stat-card green">
+        <div class="num">{{ user_stats.total }}</div>
+        <div class="lbl">Total Users</div>
     </div>
-
-    <!-- Create New User Form -->
-    <div class="card mb-4">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0"><i class="fas fa-plus-circle"></i> Create New User</h5>
-        </div>
-        <div class="card-body">
-            <form method="post" action="{% url 'create_league_admin' %}">
-                {% csrf_token %}
-                <div class="row g-3">
-                    <div class="col-md-3">
-                        <label class="form-label">Email <span class="text-danger">*</span></label>
-                        <input type="email" name="email" class="form-control" required placeholder="user@example.com">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">First Name <span class="text-danger">*</span></label>
-                        <input type="text" name="first_name" class="form-control" required placeholder="John">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Last Name <span class="text-danger">*</span></label>
-                        <input type="text" name="last_name" class="form-control" required placeholder="Doe">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Phone</label>
-                        <input type="text" name="phone" class="form-control" placeholder="+254...">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Role <span class="text-danger">*</span></label>
-                        <select name="role" class="form-select" required>
-                            <option value="">Select Role...</option>
-                            {% for value, label in role_choices %}
-                            <option value="{{ value }}">{{ label }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-1 d-flex align-items-end">
-                        <button type="submit" class="btn btn-success w-100">
-                            <i class="fas fa-user-plus"></i> Create
-                        </button>
-                    </div>
-                </div>
-                <div class="alert alert-info mt-3 mb-0">
-                    <i class="fas fa-info-circle"></i> A one-time password will be generated and emailed to the user. They must change it on first login.
-                </div>
-            </form>
-        </div>
+    <div class="um-stat-card blue">
+        <div class="num">{{ user_stats.active }}</div>
+        <div class="lbl">Active</div>
     </div>
+    <div class="um-stat-card red">
+        <div class="num">{{ user_stats.inactive }}</div>
+        <div class="lbl">Inactive</div>
+    </div>
+    <div class="um-stat-card purple">
+        <div class="num">{{ user_stats.admins }}</div>
+        <div class="lbl">Admins</div>
+    </div>
+    <div class="um-stat-card amber">
+        <div class="num">{{ user_stats.team_managers }}</div>
+        <div class="lbl">Team Mgrs</div>
+    </div>
+    <div class="um-stat-card teal">
+        <div class="num">{{ user_stats.referees }}</div>
+        <div class="lbl">Referees</div>
+    </div>
+</div>
 
-    <!-- Filters and Search -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <form method="get" class="row g-3">
-                <div class="col-md-3">
-                    <label class="form-label">Filter by Role</label>
-                    <select name="role" class="form-select" onchange="this.form.submit()">
-                        <option value="all" {% if role_filter == 'all' %}selected{% endif %}>All Roles</option>
+<!-- Create New User -->
+<div class="card" style="margin-bottom:1.5rem;">
+    <div class="card-header" style="background:linear-gradient(135deg,#1B5E20,#2E7D32);color:#fff;">
+        <h3 style="color:#fff;">+ Create New User</h3>
+    </div>
+    <div class="card-body">
+        <form method="post" action="{% url 'create_league_admin' %}">
+            {% csrf_token %}
+            <div class="create-form-grid">
+                <div>
+                    <label>Email <span class="req">*</span></label>
+                    <input type="email" name="email" class="form-control" required placeholder="user@example.com">
+                </div>
+                <div>
+                    <label>First Name <span class="req">*</span></label>
+                    <input type="text" name="first_name" class="form-control" required placeholder="John">
+                </div>
+                <div>
+                    <label>Last Name <span class="req">*</span></label>
+                    <input type="text" name="last_name" class="form-control" required placeholder="Doe">
+                </div>
+                <div>
+                    <label>Phone</label>
+                    <input type="text" name="phone" class="form-control" placeholder="+254...">
+                </div>
+                <div>
+                    <label>Role <span class="req">*</span></label>
+                    <select name="role" class="form-control" required>
+                        <option value="">Select Role...</option>
                         {% for value, label in role_choices %}
-                        <option value="{{ value }}" {% if role_filter == value %}selected{% endif %}>{{ label }}</option>
+                        <option value="{{ value }}">{{ label }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">Filter by Status</label>
-                    <select name="status" class="form-select" onchange="this.form.submit()">
-                        <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Status</option>
-                        <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active Only</option>
-                        <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive Only</option>
-                    </select>
+                <div>
+                    <button type="submit" class="btn btn-primary" style="white-space:nowrap;height:38px;">
+                        + Create
+                    </button>
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label">Search Users</label>
-                    <div class="input-group">
-                        <input type="text" name="search" class="form-control" placeholder="Search by username, email, or name..." value="{{ search_query }}">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search"></i> Search
-                        </button>
-                        <a href="{% url 'manage_league_admins' %}" class="btn btn-secondary">
-                            <i class="fas fa-times"></i> Clear
-                        </a>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Users Table -->
-    <div class="card">
-        <div class="card-header bg-dark text-white">
-            <h5 class="mb-0"><i class="fas fa-list"></i> All Users ({{ users.count }})</h5>
-        </div>
-        <div class="card-body">
-            {% if users %}
-            <div class="table-responsive">
-                <table class="table table-hover table-striped">
-                    <thead>
-                        <tr>
-                            <th>Email</th>
-                            <th>Name</th>
-                            <th>Role</th>
-                            <th>Status</th>
-                            <th>Joined</th>
-                            <th>Last Login</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for user in users %}
-                        <tr>
-                            <td>
-                                <strong>{{ user.email }}</strong>
-                                {% if user.is_superuser %}
-                                <span class="badge bg-danger ms-1">Superuser</span>
-                                {% endif %}
-                                {% if user.is_staff %}
-                                <span class="badge bg-warning text-dark ms-1">Staff</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ user.first_name }} {{ user.last_name }}</td>
-                            <td>
-                                <span class="badge bg-secondary">{{ user.get_role_display }}</span>
-                            </td>
-                            <td>
-                                {% if user.is_suspended %}
-                                <span class="badge bg-dark">Suspended</span>
-                                {% elif user.is_active %}
-                                <span class="badge bg-success">Active</span>
-                                {% else %}
-                                <span class="badge bg-danger">Inactive</span>
-                                {% endif %}
-                                {% if user.must_change_password %}
-                                <span class="badge bg-warning text-dark ms-1" title="Must change password">OTP</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ user.date_joined|date:"M d, Y" }}</td>
-                            <td>
-                                {% if user.last_login %}
-                                {{ user.last_login|date:"M d, Y H:i" }}
-                                {% else %}
-                                <span class="text-muted">Never</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <div class="btn-group" role="group">
-                                    <!-- Edit Roles -->
-                                    <a href="{% url 'edit_user_roles' user.id %}" 
-                                       class="btn btn-sm btn-info" title="Edit Roles">
-                                        <i class="fas fa-user-tag"></i>
-                                    </a>
-                                    
-                                    <!-- Toggle Status -->
-                                    <a href="{% url 'toggle_league_admin_status' user.id %}" 
-                                       class="btn btn-sm btn-{% if user.is_active %}warning{% else %}success{% endif %}"
-                                       onclick="return confirm('{% if user.is_active %}Deactivate{% else %}Activate{% endif %} {{ user.email }}?')"
-                                       title="{% if user.is_active %}Deactivate{% else %}Activate{% endif %}">
-                                        <i class="fas fa-{% if user.is_active %}ban{% else %}check{% endif %}"></i>
-                                    </a>
-                                    
-                                    <!-- Reset Password -->
-                                    <a href="{% url 'reset_league_admin_password' user.id %}" 
-                                       class="btn btn-sm btn-primary"
-                                       onclick="return confirm('Reset password for {{ user.email }}?')"
-                                       title="Reset Password">
-                                        <i class="fas fa-key"></i>
-                                    </a>
-                                    
-                                    <!-- Delete User -->
-                                    {% if not user.is_superuser and user != request.user %}
-                                    <a href="{% url 'delete_user' user.id %}" 
-                                       class="btn btn-sm btn-danger"
-                                       onclick="return confirm('⚠️ DELETE {{ user.email }}? This cannot be undone!')"
-                                       title="Delete User">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
-                                    {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
             </div>
-            {% else %}
-            <div class="alert alert-warning">
-                <i class="fas fa-exclamation-triangle"></i> No users found matching your filters.
+            <div class="alert alert-info" style="margin-top:.75rem;margin-bottom:0;">
+                A one-time password will be generated. The user must change it on first login.
             </div>
-            {% endif %}
-        </div>
+        </form>
     </div>
+</div>
 
-    <!-- Information Panel -->
-    <div class="card mt-4 border-info">
-        <div class="card-header bg-info text-white">
-            <h6 class="mb-0"><i class="fas fa-info-circle"></i> User Management Guide</h6>
+<!-- Filters & Search -->
+<div class="card" style="margin-bottom:1.5rem;">
+    <div class="card-body">
+        <form method="get" class="filter-bar">
+            <div>
+                <label>Filter by Role</label>
+                <select name="role" class="form-control" onchange="this.form.submit()">
+                    <option value="all" {% if role_filter == 'all' %}selected{% endif %}>All Roles</option>
+                    {% for value, label in role_choices %}
+                    <option value="{{ value }}" {% if role_filter == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label>Filter by Status</label>
+                <select name="status" class="form-control" onchange="this.form.submit()">
+                    <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Status</option>
+                    <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active Only</option>
+                    <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive Only</option>
+                </select>
+            </div>
+            <div>
+                <label>Search Users</label>
+                <div class="search-group">
+                    <input type="text" name="search" class="form-control" placeholder="Search by name or email..." value="{{ search_query }}">
+                    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+                    {% if search_query %}
+                    <a href="{% url 'manage_league_admins' %}" class="btn btn-outline btn-sm" title="Clear">&times;</a>
+                    {% endif %}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Users Table -->
+<div class="card" style="margin-bottom:1.5rem;">
+    <div class="card-header">
+        <h3>All Users ({{ users.count }})</h3>
+    </div>
+    <div style="overflow-x:auto;">
+        {% if users %}
+        <div class="user-row user-row-header">
+            <div>Email</div>
+            <div>Name</div>
+            <div>Role</div>
+            <div>Status</div>
+            <div class="user-meta-col">Joined</div>
+            <div class="user-meta-col">Last Login</div>
+            <div>Actions</div>
         </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <h6><strong>Available Roles:</strong></h6>
-                    <ul>
-                        <li><strong>League Admin:</strong> Full system control (like this dashboard)</li>
-                        <li><strong>Team Manager:</strong> Manage own team, players, transfers</li>
-                        <li><strong>Referee:</strong> Submit match reports</li>
-                        <li><strong>Referees Manager:</strong> Assign referees to matches</li>
-                    </ul>
-                </div>
-                <div class="col-md-6">
-                    <h6><strong>Actions:</strong></h6>
-                    <ul>
-                        <li><i class="fas fa-user-tag text-info"></i> <strong>Edit Roles:</strong> Change user's role assignments</li>
-                        <li><i class="fas fa-ban text-warning"></i> <strong>Deactivate:</strong> User cannot login (reversible)</li>
-                        <li><i class="fas fa-key text-primary"></i> <strong>Reset Password:</strong> Generate new password</li>
-                        <li><i class="fas fa-trash text-danger"></i> <strong>Delete:</strong> Permanently remove user</li>
-                    </ul>
-                </div>
+        {% for user in users %}
+        <div class="user-row">
+            <div class="user-email">
+                {{ user.email }}
+                {% if user.is_superuser %}
+                <span class="badge badge-danger" style="font-size:.65rem;vertical-align:middle;margin-left:.3rem;">SU</span>
+                {% endif %}
+                {% if user.is_staff %}
+                <span class="badge badge-warning" style="font-size:.65rem;vertical-align:middle;margin-left:.2rem;">Staff</span>
+                {% endif %}
+            </div>
+            <div class="user-name">{{ user.first_name }} {{ user.last_name }}</div>
+            <div>
+                <span class="role-pill" style="
+                    {% if user.role == 'admin' %}background:#E3F2FD;color:#1565C0;
+                    {% elif user.role == 'competition_manager' %}background:#F3E5F5;color:#6A1B9A;
+                    {% elif user.role == 'referee_manager' %}background:#FFF3E0;color:#E65100;
+                    {% elif user.role == 'referee' %}background:#E8F5E9;color:#1B5E20;
+                    {% elif user.role == 'team_manager' %}background:#FCE4EC;color:#AD1457;
+                    {% elif user.role == 'treasurer' %}background:#FFF8E1;color:#F57F17;
+                    {% elif user.role == 'jury_chair' %}background:#ECEFF1;color:#455A64;
+                    {% else %}background:#f5f5f5;color:#333;{% endif %}">
+                    {{ user.get_role_display }}
+                </span>
+            </div>
+            <div>
+                {% if user.is_suspended %}
+                <span class="status-dot suspended">Suspended</span>
+                {% elif user.is_active %}
+                <span class="status-dot active">Active</span>
+                {% else %}
+                <span class="status-dot inactive">Inactive</span>
+                {% endif %}
+                {% if user.must_change_password %}
+                <span style="background:#FFF8E1;color:#F57F17;padding:.1rem .35rem;border-radius:4px;font-size:.65rem;font-weight:700;margin-left:.2rem;">OTP</span>
+                {% endif %}
+            </div>
+            <div class="user-meta user-meta-col">{{ user.date_joined|date:"d M Y" }}</div>
+            <div class="user-meta user-meta-col">
+                {% if user.last_login %}{{ user.last_login|date:"d M Y" }}{% else %}<span style="color:#bbb;">Never</span>{% endif %}
+            </div>
+            <div class="action-btns">
+                <a href="{% url 'user_detail' user_id=user.id %}" class="act-btn view" title="View Details"><i class="bi bi-eye"></i></a>
+                <a href="{% url 'edit_user_roles' user_id=user.id %}" class="act-btn role" title="Change Role"><i class="bi bi-gear"></i></a>
+                <a href="{% url 'toggle_league_admin_status' user_id=user.id %}" class="act-btn toggle"
+                   onclick="return confirm('{% if user.is_active %}Deactivate{% else %}Activate{% endif %} {{ user.email }}?')"
+                   title="{% if user.is_active %}Deactivate{% else %}Activate{% endif %}">
+                    {% if user.is_active %}<i class="bi bi-pause-fill"></i>{% else %}<i class="bi bi-play-fill"></i>{% endif %}
+                </a>
+                <a href="{% url 'reset_league_admin_password' user_id=user.id %}" class="act-btn key"
+                   onclick="return confirm('Reset password for {{ user.email }}?')"
+                   title="Reset Password"><i class="bi bi-key"></i></a>
+                {% if not user.is_superuser and user != request.user %}
+                <a href="{% url 'delete_user' user_id=user.id %}" class="act-btn del"
+                   onclick="return confirm('WARNING: DELETE {{ user.email }}? This cannot be undone!')"
+                   title="Delete User"><i class="bi bi-trash"></i></a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div style="text-align:center;padding:2rem;color:#999;">
+            <div style="font-size:2rem;margin-bottom:.5rem;"><i class="bi bi-people"></i></div>
+            <p>No users found matching your filters.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Info Panel -->
+<div class="card">
+    <div class="card-header" style="background:#E3F2FD;">
+        <h3>User Management Guide</h3>
+    </div>
+    <div class="card-body">
+        <div class="info-grid">
+            <div>
+                <h4>Available Roles</h4>
+                <ul>
+                    <li><i class="bi bi-shield-check"></i> <strong>Admin:</strong> Full system control</li>
+                    <li><i class="bi bi-trophy"></i> <strong>Competition Manager:</strong> Manage competitions &amp; fixtures</li>
+                    <li><i class="bi bi-clipboard-data"></i> <strong>Referee Manager:</strong> Appoint referees to matches</li>
+                    <li><i class="bi bi-flag"></i> <strong>Referee:</strong> Match reports &amp; appointments</li>
+                    <li><i class="bi bi-people"></i> <strong>Team Manager:</strong> Manage own team &amp; players</li>
+                    <li><i class="bi bi-cash-stack"></i> <strong>Treasurer:</strong> Verify payments</li>
+                    <li><i class="bi bi-briefcase"></i> <strong>Jury Chair:</strong> Handle appeals</li>
+                </ul>
+            </div>
+            <div>
+                <h4>Quick Actions</h4>
+                <ul>
+                    <li><i class="bi bi-eye"></i> <strong>View:</strong> Full user profile &amp; management</li>
+                    <li><i class="bi bi-gear"></i> <strong>Role:</strong> Change user's role assignment</li>
+                    <li><i class="bi bi-pause-fill"></i> <strong>Toggle:</strong> Activate / deactivate account</li>
+                    <li><i class="bi bi-key"></i> <strong>Reset:</strong> Generate new random password</li>
+                    <li><i class="bi bi-trash"></i> <strong>Delete:</strong> Permanently remove user</li>
+                </ul>
             </div>
         </div>
     </div>

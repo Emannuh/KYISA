@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import SquadSubmission, SquadPlayer, MatchReport, MatchEvent
+from .models import SquadSubmission, SquadPlayer, MatchReport, MatchEvent, PlayerStatistics
 
 
 class SquadPlayerInline(admin.TabularInline):
@@ -37,3 +37,11 @@ class MatchReportAdmin(admin.ModelAdmin):
     search_fields = ["fixture__home_team__name", "fixture__away_team__name"]
     inlines       = [EventInline]
     readonly_fields = ["submitted_at", "reviewed_at"]
+
+
+@admin.register(PlayerStatistics)
+class PlayerStatisticsAdmin(admin.ModelAdmin):
+    list_display  = ["player", "competition", "team", "matches_played", "goals", "assists", "yellow_cards", "red_cards", "clean_sheets"]
+    list_filter   = ["competition", "team"]
+    search_fields = ["player__first_name", "player__last_name", "team__name"]
+    readonly_fields = ["goal_contributions", "updated_at"]
