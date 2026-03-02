@@ -135,7 +135,7 @@ def public_competition_detail_view(request, pk):
 
 
 def public_results_view(request):
-    """Public results page — completed matches and upcoming fixtures."""
+    """Public results page — completed matches, upcoming fixtures, and competition links."""
     now = timezone.now()
     completed = Fixture.objects.filter(
         status='completed'
@@ -151,10 +151,182 @@ def public_results_view(request):
         'competition', 'home_team', 'away_team', 'venue'
     ).order_by('match_date')[:15]
 
+    # Active & completed competitions for quick navigation
+    active_competitions = Competition.objects.filter(
+        status__in=['active', 'group_stage', 'knockout']
+    ).order_by('name')
+    completed_competitions = Competition.objects.filter(
+        status='completed'
+    ).order_by('-end_date')[:10]
+
     return render(request, 'public/results.html', {
         'active_page': 'results',
         'completed_fixtures': completed,
         'upcoming_fixtures': upcoming,
+        'active_competitions': active_competitions,
+        'completed_competitions': completed_competitions,
+    })
+
+
+def public_statistics_view(request):
+    """
+    Public statistics hub — top scorers, assist leaders, disciplinary,
+    and clean sheet leaders across all active/completed competitions.
+    Users can filter by competition.
+    """
+    from competitions.models import Pool, PoolTeam
+    from matches.models import PlayerStatistics
+    from matches.stats_engine import (
+        get_top_scorers, get_top_assisters,
+        get_disciplinary_table, get_clean_sheet_leaders,
+    )
+    from django.db.models import F, Sum
+
+    # Competitions available for filtering
+    competitions = Competition.objects.filter(
+        status__in=['active', 'group_stage', 'knockout', 'completed']
+    ).order_by('-start_date')
+
+    # Optional competition filter
+    comp_id = request.GET.get('competition', '')
+    selected_competition = None
+
+    if comp_id:
+        try:
+            selected_competition = Competition.objects.get(pk=comp_id)
+        except Competition.DoesNotExist:
+            pass
+
+    if selected_competition:
+        top_scorers = get_top_scorers(selected_competition, limit=20)
+        top_assisters = get_top_assisters(selected_competition, limit=20)
+        disciplinary = get_disciplinary_table(selected_competition, limit=20)
+        clean_sheets = get_clean_sheet_leaders(selected_competition, limit=10)
+    else:
+        # Aggregate across all active/completed competitions
+        top_scorers = PlayerStatistics.objects.filter(
+            goals__gt=0,
+            competition__status__in=['active', 'group_stage', 'knockout', 'completed'],
+        ).select_related('player', 'team', 'competition').order_by('-goals', '-assists')[:20]
+
+        top_assisters = PlayerStatistics.objects.filter(
+            assists__gt=0,
+            competition__status__in=['active', 'group_stage', 'knockout', 'completed'],
+        ).select_related('player', 'team', 'competition').order_by('-assists', '-goals')[:20]
+
+        disciplinary = PlayerStatistics.objects.filter(
+            competition__status__in=['active', 'group_stage', 'knockout', 'completed'],
+        ).annotate(
+            total_cards=F('yellow_cards') + F('red_cards')
+        ).filter(total_cards__gt=0).select_related(
+            'player', 'team', 'competition'
+        ).order_by('-red_cards', '-yellow_cards')[:20]
+
+        clean_sheets = PlayerStatistics.objects.filter(
+            clean_sheets__gt=0,
+            player__position='GK',
+            competition__status__in=['active', 'group_stage', 'knockout', 'completed'],
+        ).select_related('player', 'team', 'competition').order_by('-clean_sheets')[:10]
+
+    # Summary stats
+    total_goals = PlayerStatistics.objects.filter(
+        competition__status__in=['active', 'group_stage', 'knockout', 'completed'],
+    ).aggregate(total=Sum('goals'))['total'] or 0
+    total_matches = Fixture.objects.filter(status='completed').count()
+    total_cards = PlayerStatistics.objects.filter(
+        competition__status__in=['active', 'group_stage', 'knockout', 'completed'],
+    ).aggregate(
+        yellows=Sum('yellow_cards'),
+        reds=Sum('red_cards'),
+    )
+
+    return render(request, 'public/statistics.html', {
+        'active_page': 'results',
+        'competitions': competitions,
+        'selected_competition': selected_competition,
+        'top_scorers': top_scorers,
+        'top_assisters': top_assisters,
+        'disciplinary': disciplinary,
+        'clean_sheets': clean_sheets,
+        'total_goals': total_goals,
+        'total_matches': total_matches,
+        'total_yellows': total_cards['yellows'] or 0,
+        'total_reds': total_cards['reds'] or 0,
+    })
+
+
+def public_competition_standings_view(request, pk):
+    """
+    Public competition standings — pool tables, knockout bracket, and top stats.
+    Auto-updated from approved match reports.
+    """
+    from competitions.models import Pool, PoolTeam, KnockoutRound
+    from matches.stats_engine import (
+        get_top_scorers, get_top_assisters,
+        get_disciplinary_table, get_clean_sheet_leaders,
+    )
+
+    competition = get_object_or_404(Competition, pk=pk)
+
+    # Pool standings
+    pools = Pool.objects.filter(competition=competition).prefetch_related(
+        'pool_teams__team'
+    ).order_by('name')
+
+    pool_standings = []
+    for pool in pools:
+        teams = pool.pool_teams.select_related('team').all()
+        sorted_teams = sorted(
+            teams,
+            key=lambda pt: (pt.points, pt.goal_difference, pt.goals_for),
+            reverse=True,
+        )
+        pool_standings.append({'pool': pool, 'teams': sorted_teams})
+
+    # Knockout bracket
+    knockout_fixtures = Fixture.objects.filter(
+        competition=competition, is_knockout=True
+    ).select_related(
+        'home_team', 'away_team', 'venue', 'winner'
+    ).order_by('knockout_round', 'bracket_position', 'match_date')
+
+    knockout_rounds = {}
+    for f in knockout_fixtures:
+        round_name = f.get_knockout_round_display() if f.knockout_round else 'Unknown'
+        if round_name not in knockout_rounds:
+            knockout_rounds[round_name] = []
+        knockout_rounds[round_name].append(f)
+
+    # Recent results for this competition
+    recent_results = Fixture.objects.filter(
+        competition=competition, status='completed'
+    ).select_related('home_team', 'away_team', 'venue').order_by('-match_date')[:10]
+
+    # Upcoming fixtures
+    upcoming = Fixture.objects.filter(
+        competition=competition,
+        match_date__gte=timezone.now(),
+    ).exclude(status='completed').select_related(
+        'home_team', 'away_team', 'venue'
+    ).order_by('match_date')[:10]
+
+    # Statistics
+    top_scorers = get_top_scorers(competition, limit=10)
+    top_assisters = get_top_assisters(competition, limit=10)
+    disciplinary = get_disciplinary_table(competition, limit=10)
+    clean_sheets = get_clean_sheet_leaders(competition, limit=5)
+
+    return render(request, 'public/competition_standings.html', {
+        'active_page': 'results',
+        'competition': competition,
+        'pool_standings': pool_standings,
+        'knockout_rounds': knockout_rounds,
+        'recent_results': recent_results,
+        'upcoming_fixtures': upcoming,
+        'top_scorers': top_scorers,
+        'top_assisters': top_assisters,
+        'disciplinary': disciplinary,
+        'clean_sheets': clean_sheets,
     })
 
 

@@ -10,7 +10,9 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, Sp
 from .web_views import (
     # Public website
     home_view, about_view, public_competitions_view,
-    public_competition_detail_view, public_results_view, contact_view,
+    public_competition_detail_view, public_results_view,
+    public_statistics_view, public_competition_standings_view,
+    contact_view,
     # Public registration
     team_register_view, team_register_success_view,
     referee_register_view, referee_register_success_view,
@@ -66,6 +68,8 @@ urlpatterns = [
     path("competitions/public/",          public_competitions_view,       name="public_competitions"),
     path("competitions/public/<int:pk>/", public_competition_detail_view, name="public_competition_detail"),
     path("results/",                      public_results_view,            name="public_results"),
+    path("results/statistics/",            public_statistics_view,         name="public_statistics"),
+    path("results/competitions/<int:pk>/standings/", public_competition_standings_view, name="public_competition_standings"),
     path("contact/",                      contact_view,                   name="contact"),
 
     # ── PUBLIC REGISTRATION ───────────────────────────────────────────────────

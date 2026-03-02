@@ -1,17 +1,147 @@
 {% extends "public/base.html" %}
 {% load static %}
 
-{% block title %}Results{% endblock %}
+{% block title %}Results & Statistics{% endblock %}
+
+{% block extra_css %}
+<style>
+    .results-nav {
+        display: flex;
+        gap: .5rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+        justify-content: center;
+    }
+    .results-nav a {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        padding: .5rem 1.2rem;
+        border-radius: 30px;
+        font-size: .85rem;
+        font-weight: 600;
+        color: #333;
+        background: #F5F5F5;
+        transition: all .25s ease;
+        border: 1px solid transparent;
+    }
+    .results-nav a:hover, .results-nav a.active {
+        background: #1B5E20;
+        color: #fff;
+        border-color: #1B5E20;
+    }
+
+    .comp-links {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: .75rem;
+        margin-bottom: 2rem;
+    }
+    .comp-link-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,.06);
+        transition: all .25s ease;
+        border-left: 4px solid #1B5E20;
+    }
+    .comp-link-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0,0,0,.1);
+    }
+    .comp-link-card h4 {
+        font-size: .9rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: .2rem;
+    }
+    .comp-link-card .cl-meta {
+        font-size: .75rem;
+        color: #757575;
+        display: flex;
+        gap: .5rem;
+        flex-wrap: wrap;
+    }
+    .comp-link-card .cl-actions {
+        margin-top: .5rem;
+        display: flex;
+        gap: .4rem;
+    }
+    .cl-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .25rem;
+        padding: .25rem .65rem;
+        border-radius: 6px;
+        font-size: .72rem;
+        font-weight: 600;
+        color: #1B5E20;
+        background: #E8F5E9;
+        transition: all .2s;
+    }
+    .cl-btn:hover { background: #1B5E20; color: #fff; }
+    .cl-btn-stats { color: #1565C0; background: #E3F2FD; }
+    .cl-btn-stats:hover { background: #1565C0; color: #fff; }
+
+    .badge-status {
+        font-size: .68rem;
+        font-weight: 600;
+        padding: .1rem .5rem;
+        border-radius: 4px;
+    }
+    .badge-active { background: #E8F5E9; color: #1B5E20; }
+    .badge-completed { background: #ECEFF1; color: #455A64; }
+</style>
+{% endblock %}
 
 {% block content %}
 
 <!-- ── PAGE HERO ───────────────────────────────────────────────────────────── -->
 <section class="hero" style="padding:3rem 2rem;">
     <div class="hero-content">
-        <h1>Match Results</h1>
-        <h2>Latest scores and outcomes from KYISA competitions</h2>
+        <h1>Results & Statistics</h1>
+        <h2>Live scores, standings, and player leaderboards from KYISA competitions</h2>
     </div>
 </section>
+
+<!-- ── NAVIGATION TABS ────────────────────────────────────────────────────── -->
+<section class="section" style="padding-top:2rem;padding-bottom:0;">
+    <div class="container">
+        <div class="results-nav">
+            <a href="{% url 'public_results' %}" class="active"><i class="bi bi-trophy"></i> Results</a>
+            <a href="{% url 'public_statistics' %}"><i class="bi bi-bar-chart-line"></i> Statistics</a>
+        </div>
+    </div>
+</section>
+
+<!-- ── COMPETITION HUBS ───────────────────────────────────────────────────── -->
+{% if active_competitions %}
+<section class="section" style="padding-top:1rem;">
+    <div class="container">
+        <div class="section-header">
+            <h2>Active Competitions</h2>
+            <p>View standings, fixtures, and stats for ongoing competitions</p>
+            <div class="line"></div>
+        </div>
+        <div class="comp-links">
+            {% for comp in active_competitions %}
+            <a href="{% url 'public_competition_standings' pk=comp.pk %}" class="comp-link-card" style="text-decoration:none;">
+                <h4>{{ comp.name }}</h4>
+                <div class="cl-meta">
+                    <span><i class="bi bi-controller"></i> {{ comp.get_sport_type_display }}</span>
+                    <span><i class="bi bi-calendar3"></i> {{ comp.start_date|date:"d M Y" }}</span>
+                    <span class="badge-status badge-active">{{ comp.get_status_display }}</span>
+                </div>
+                <div class="cl-actions">
+                    <span class="cl-btn"><i class="bi bi-table"></i> Standings</span>
+                    <span class="cl-btn cl-btn-stats"><i class="bi bi-bar-chart"></i> Stats</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
 
 <!-- ── COMPLETED MATCHES ──────────────────────────────────────────────────── -->
 <section class="section">
@@ -26,30 +156,30 @@
             {% for fixture in completed_fixtures %}
             <div class="match-card">
                 <div class="match-card-header">
-                    <span>{{ fixture.competition.name }}</span>
+                    <span>{{ fixture.competition.name|truncatechars:30 }}</span>
                     <span>{{ fixture.match_date|date:"d M Y" }}</span>
                 </div>
                 <div class="match-card-body">
                     <div class="match-team">
-                        <div class="badge-icon">🛡️</div>
+                        <div class="badge-icon"><i class="bi bi-shield-fill" style="font-size:1.5rem;color:#1B5E20;"></i></div>
                         <h4>{{ fixture.home_team.name }}</h4>
                     </div>
                     <div class="match-score">{{ fixture.home_score|default:"0" }} - {{ fixture.away_score|default:"0" }}</div>
                     <div class="match-team">
-                        <div class="badge-icon">🛡️</div>
+                        <div class="badge-icon"><i class="bi bi-shield-fill" style="font-size:1.5rem;color:#455A64;"></i></div>
                         <h4>{{ fixture.away_team.name }}</h4>
                     </div>
                 </div>
                 <div class="match-card-footer">
-                    <span>📍 {{ fixture.venue.name|default:"—" }}</span>
-                    <span>✅ Full Time</span>
+                    <span><i class="bi bi-geo-alt"></i> {{ fixture.venue.name|default:"—" }}</span>
+                    <span><i class="bi bi-check-circle-fill"></i> Full Time</span>
                 </div>
             </div>
             {% endfor %}
         </div>
         {% else %}
         <div class="empty-state">
-            <div class="icon">📊</div>
+            <div class="icon"><i class="bi bi-clipboard-data" style="font-size:3rem;color:#ccc;"></i></div>
             <h3>No Results Available</h3>
             <p>Match results will appear here once competitions are underway.</p>
         </div>
@@ -71,35 +201,64 @@
             {% for fixture in upcoming_fixtures %}
             <div class="match-card">
                 <div class="match-card-header">
-                    <span>{{ fixture.competition.name }}</span>
+                    <span>{{ fixture.competition.name|truncatechars:30 }}</span>
                     <span>{{ fixture.match_date|date:"d M Y" }}</span>
                 </div>
                 <div class="match-card-body">
                     <div class="match-team">
-                        <div class="badge-icon">🛡️</div>
-                        <h4>{{ fixture.home_team.name }}</h4>
+                        <div class="badge-icon"><i class="bi bi-shield-fill" style="font-size:1.5rem;color:#1B5E20;"></i></div>
+                        <h4>{{ fixture.home_team.name|default:"TBD" }}</h4>
                     </div>
                     <div class="match-vs">VS</div>
                     <div class="match-team">
-                        <div class="badge-icon">🛡️</div>
-                        <h4>{{ fixture.away_team.name }}</h4>
+                        <div class="badge-icon"><i class="bi bi-shield-fill" style="font-size:1.5rem;color:#455A64;"></i></div>
+                        <h4>{{ fixture.away_team.name|default:"TBD" }}</h4>
                     </div>
                 </div>
                 <div class="match-card-footer">
-                    <span>📍 {{ fixture.venue.name|default:"TBD" }}</span>
-                    <span>🕐 {{ fixture.match_date|date:"H:i" }}</span>
+                    <span><i class="bi bi-geo-alt"></i> {{ fixture.venue.name|default:"TBD" }}</span>
+                    <span><i class="bi bi-clock"></i> {{ fixture.kickoff_time|time:"H:i"|default:"TBD" }}</span>
                 </div>
             </div>
             {% endfor %}
         </div>
         {% else %}
         <div class="empty-state">
-            <div class="icon">📅</div>
+            <div class="icon"><i class="bi bi-calendar-event" style="font-size:3rem;color:#ccc;"></i></div>
             <h3>No Upcoming Fixtures</h3>
             <p>Check back soon for scheduled matches.</p>
         </div>
         {% endif %}
     </div>
 </section>
+
+<!-- ── COMPLETED COMPETITIONS ─────────────────────────────────────────────── -->
+{% if completed_competitions %}
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Past Competitions</h2>
+            <p>View final standings and statistics from completed tournaments</p>
+            <div class="line"></div>
+        </div>
+        <div class="comp-links">
+            {% for comp in completed_competitions %}
+            <a href="{% url 'public_competition_standings' pk=comp.pk %}" class="comp-link-card" style="text-decoration:none;border-left-color:#9E9E9E;">
+                <h4>{{ comp.name }}</h4>
+                <div class="cl-meta">
+                    <span><i class="bi bi-controller"></i> {{ comp.get_sport_type_display }}</span>
+                    <span><i class="bi bi-calendar3"></i> {{ comp.end_date|date:"d M Y" }}</span>
+                    <span class="badge-status badge-completed">Completed</span>
+                </div>
+                <div class="cl-actions">
+                    <span class="cl-btn"><i class="bi bi-table"></i> Final Standings</span>
+                    <span class="cl-btn cl-btn-stats"><i class="bi bi-bar-chart"></i> Stats</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
 
 {% endblock %}
