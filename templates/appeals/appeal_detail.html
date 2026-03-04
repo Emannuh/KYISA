@@ -172,6 +172,61 @@
 
 <!-- Response Section -->
 {% if response %}
+
+<!-- Hearing Schedule Section -->
+{% if hearings %}
+<div class="card" style="margin-bottom:1.5rem; padding:1.5rem; border-left:4px solid #673ab7;">
+    <h3 style="margin:0 0 1rem;">📅 Scheduled Hearings</h3>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Location</th>
+                    <th>Scheduled By</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for h in hearings %}
+                <tr>
+                    <td>{{ h.hearing_date|date:"d M Y" }}</td>
+                    <td>{{ h.hearing_time|time:"H:i" }}</td>
+                    <td>{{ h.location|default:"TBC" }}</td>
+                    <td>{{ h.scheduled_by.get_full_name }}</td>
+                    <td>
+                        {% if h.is_upcoming %}
+                        <span class="badge bg-primary" style="padding:4px 8px; border-radius:4px; color:#fff;">Upcoming</span>
+                        {% else %}
+                        <span class="badge bg-secondary" style="padding:4px 8px; border-radius:4px; color:#fff;">Past</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% if h.notes %}
+                <tr>
+                    <td colspan="5" style="padding-left:2rem; color:#666; font-size:.9rem;">
+                        <em>Notes:</em> {{ h.notes }}
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if can_schedule_hearing %}
+    <a href="{% url 'schedule_hearing' pk=appeal.pk %}" class="btn btn-sm btn-primary" style="margin-top:.5rem;">+ Schedule Another Hearing</a>
+    {% endif %}
+</div>
+{% elif can_schedule_hearing %}
+<div class="card" style="margin-bottom:1.5rem; padding:1.5rem; background:#ede7f6; border-left:4px solid #673ab7;">
+    <h3 style="margin:0 0 .5rem;">📅 Schedule Hearing</h3>
+    <p>No hearing has been scheduled yet for this appeal.</p>
+    <a href="{% url 'schedule_hearing' pk=appeal.pk %}" class="btn btn-primary">Schedule Hearing</a>
+</div>
+{% endif %}
+
+{% if response %}
 <div class="card" style="margin-bottom:1.5rem; padding:1.5rem; border-left:4px solid #17a2b8;">
     <h3 style="margin:0 0 1rem;">📨 Respondent's Response</h3>
     <p><strong>By:</strong> {{ response.respondent_user.get_full_name }} ({{ appeal.respondent_team }})</p>

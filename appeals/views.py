@@ -18,14 +18,14 @@ from accounts.models import UserRole
 from teams.models import Team
 from .models import (
     Appeal, AppealEvidence, AppealResponse, ResponseEvidence,
-    JuryDecision, DecisionEvidence,
+    JuryDecision, DecisionEvidence, HearingSchedule,
     AppealStatus, AppealDecision, FeeStatus, APPEAL_FEE_KES,
 )
 from .forms import (
     AppealForm, AppealEvidenceForm, AppealFeeForm,
     AppealResponseForm, ResponseEvidenceForm,
     JuryDecisionForm, DecisionEvidenceForm,
-    FeeVerificationForm,
+    FeeVerificationForm, HearingScheduleForm,
 )
 
 
@@ -140,6 +140,7 @@ def appeal_detail_view(request, pk):
         pass
 
     decisions = appeal.decisions.all()
+    hearings = appeal.hearings.filter(is_cancelled=False)
 
     context = {
         "appeal": appeal,
@@ -147,6 +148,7 @@ def appeal_detail_view(request, pk):
         "response": response,
         "response_evidence": response_evidence,
         "decisions": decisions,
+        "hearings": hearings,
         "is_appellant": is_appellant,
         "is_respondent": is_respondent,
         "is_jury": is_jury,
@@ -154,6 +156,7 @@ def appeal_detail_view(request, pk):
         "is_treasurer": is_treasurer,
         "can_respond": is_respondent and appeal.status == AppealStatus.SUBMITTED and not appeal.has_response,
         "can_decide": is_jury and appeal.status in (AppealStatus.RESPONSE_RECEIVED, AppealStatus.UNDER_REVIEW, AppealStatus.SUBMITTED),
+        "can_schedule_hearing": is_jury and appeal.status not in (AppealStatus.DRAFT, AppealStatus.CLOSED),
         "can_reappeal": is_appellant and appeal.can_reappeal,
         "APPEAL_FEE": APPEAL_FEE_KES,
     }
@@ -301,10 +304,21 @@ def finalize_appeal_view(request, pk):
     if request.method == "POST":
         appeal.status = AppealStatus.SUBMITTED
         appeal.submitted_at = timezone.now()
-        # 5-day response deadline
-        appeal.response_deadline = timezone.now() + timezone.timedelta(days=5)
+        # 30-minute response deadline based on match status
+        appeal.response_deadline = appeal._calculate_response_deadline()
         appeal.save()
-        messages.success(request, "Appeal submitted successfully! The respondent team has 5 days to respond.")
+
+        # Determine deadline description for user feedback
+        if appeal.match and hasattr(appeal.match, 'status') and appeal.match.status == 'live':
+            deadline_msg = "The respondent team must respond within 30 minutes after the match ends."
+        else:
+            deadline_msg = "The respondent team must respond within 30 minutes."
+
+        # Send email notification to respondent team
+        from .notifications import notify_appeal_submitted
+        notify_appeal_submitted(appeal)
+
+        messages.success(request, f"Appeal submitted successfully! {deadline_msg}")
         return redirect("appeal_detail", pk=pk)
 
     return render(request, "appeals/finalize_appeal.html", {"appeal": appeal})
@@ -476,7 +490,12 @@ def publish_decision_view(request, pk, decision_pk):
 
     if request.method == "POST":
         decision.publish()
-        messages.success(request, "Decision published. Both teams can now see the outcome.")
+
+        # Send email notification to both teams
+        from .notifications import notify_decision_published
+        notify_decision_published(decision)
+
+        messages.success(request, "Decision published. Both teams have been notified by email.")
         return redirect("appeal_detail", pk=pk)
 
     context = {
@@ -484,6 +503,77 @@ def publish_decision_view(request, pk, decision_pk):
         "decision": decision,
     }
     return render(request, "appeals/publish_decision.html", context)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  HEARING SCHEDULE (Chair of the Jury)
+# ══════════════════════════════════════════════════════════════════════════════
+
+@jury_chair_required
+def schedule_hearing_view(request, pk):
+    """Chair of the Jury schedules a hearing date/time for an appeal."""
+    appeal = get_object_or_404(Appeal, pk=pk)
+
+    if appeal.status == AppealStatus.DRAFT:
+        messages.error(request, "Cannot schedule a hearing for a draft appeal.")
+        return redirect("appeal_detail", pk=pk)
+
+    if appeal.status == AppealStatus.CLOSED:
+        messages.error(request, "Cannot schedule a hearing for a closed appeal.")
+        return redirect("appeal_detail", pk=pk)
+
+    existing_hearings = appeal.hearings.filter(is_cancelled=False)
+
+    if request.method == "POST":
+        form = HearingScheduleForm(request.POST)
+        if form.is_valid():
+            hearing = form.save(commit=False)
+            hearing.appeal = appeal
+            hearing.scheduled_by = request.user
+            hearing.save()
+
+            # Send email notification to both teams
+            from .notifications import notify_hearing_scheduled
+            notify_hearing_scheduled(hearing)
+
+            messages.success(
+                request,
+                f"Hearing scheduled for {hearing.hearing_date.strftime('%d %b %Y')} "
+                f"at {hearing.hearing_time.strftime('%H:%M')}. Both teams have been notified."
+            )
+            return redirect("appeal_detail", pk=pk)
+    else:
+        form = HearingScheduleForm()
+
+    context = {
+        "form": form,
+        "appeal": appeal,
+        "existing_hearings": existing_hearings,
+    }
+    return render(request, "appeals/schedule_hearing.html", context)
+
+
+@jury_chair_required
+def cancel_hearing_view(request, pk, hearing_pk):
+    """Cancel a scheduled hearing."""
+    appeal = get_object_or_404(Appeal, pk=pk)
+    hearing = get_object_or_404(HearingSchedule, pk=hearing_pk, appeal=appeal)
+
+    if hearing.is_cancelled:
+        messages.info(request, "This hearing has already been cancelled.")
+        return redirect("appeal_detail", pk=pk)
+
+    if request.method == "POST":
+        hearing.is_cancelled = True
+        hearing.save()
+        messages.success(request, "Hearing cancelled.")
+        return redirect("appeal_detail", pk=pk)
+
+    context = {
+        "appeal": appeal,
+        "hearing": hearing,
+    }
+    return render(request, "appeals/cancel_hearing.html", context)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -591,7 +681,12 @@ def verify_fee_view(request, pk):
 
 @jury_chair_required
 def jury_dashboard_view(request):
-    """Dashboard for the Chair of the Jury showing appeal statistics."""
+    """Dashboard for the Chair of the Jury showing appeal statistics + competition overview."""
+    from teams.models import Team, Player
+    from competitions.models import Fixture
+    from matches.models import MatchReport, MatchEvent, SquadSubmission
+
+    # Appeal statistics
     total = Appeal.objects.count()
     pending_response = Appeal.objects.filter(status=AppealStatus.SUBMITTED).count()
     awaiting_decision = Appeal.objects.filter(
@@ -606,6 +701,17 @@ def jury_dashboard_view(request):
         "appellant_team", "respondent_team"
     ).order_by("-created_at")[:10]
 
+    # Competition data summaries
+    total_teams = Team.objects.filter(status="registered").count()
+    total_players = Player.objects.filter(verification_status="verified").count()
+    total_fixtures = Fixture.objects.count()
+    completed_fixtures = Fixture.objects.filter(status="completed").count()
+    total_reports = MatchReport.objects.count()
+    total_squads = SquadSubmission.objects.count()
+    card_types = ["yellow_card", "red_card", "second_yellow"]
+    total_yellows = MatchEvent.objects.filter(event_type="yellow_card").count()
+    total_reds = MatchEvent.objects.filter(event_type__in=["red_card", "second_yellow"]).count()
+
     context = {
         "total_appeals": total,
         "pending_response": pending_response,
@@ -613,5 +719,14 @@ def jury_dashboard_view(request):
         "decided": decided,
         "my_decisions": my_decisions,
         "recent_appeals": recent_appeals,
+        # New competition data stats
+        "total_teams": total_teams,
+        "total_players": total_players,
+        "total_fixtures": total_fixtures,
+        "completed_fixtures": completed_fixtures,
+        "total_reports": total_reports,
+        "total_squads": total_squads,
+        "total_yellows": total_yellows,
+        "total_reds": total_reds,
     }
     return render(request, "appeals/jury_dashboard.html", context)

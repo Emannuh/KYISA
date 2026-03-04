@@ -5,8 +5,8 @@ from django import forms
 from django.core.exceptions import ValidationError
 from .models import (
     Appeal, AppealEvidence, AppealResponse, ResponseEvidence,
-    JuryDecision, DecisionEvidence, EvidenceType, FeeStatus,
-    AppealDecision, APPEAL_FEE_KES,
+    JuryDecision, DecisionEvidence, HearingSchedule,
+    EvidenceType, FeeStatus, AppealDecision, APPEAL_FEE_KES,
 )
 
 
@@ -201,3 +201,41 @@ class FeeVerificationForm(forms.Form):
             "placeholder": "Optional notes about this fee action...",
         }),
     )
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  HEARING SCHEDULE FORM (Chair of the Jury)
+# ══════════════════════════════════════════════════════════════════════════════
+
+class HearingScheduleForm(forms.ModelForm):
+    """Form for the Jury Chair to schedule a hearing date/time for an appeal."""
+
+    class Meta:
+        model = HearingSchedule
+        fields = ["hearing_date", "hearing_time", "location", "notes"]
+        widgets = {
+            "hearing_date": forms.DateInput(attrs={
+                "class": "form-control",
+                "type": "date",
+            }),
+            "hearing_time": forms.TimeInput(attrs={
+                "class": "form-control",
+                "type": "time",
+            }),
+            "location": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": "e.g. KYISA Office, Nairobi or Zoom meeting link",
+            }),
+            "notes": forms.Textarea(attrs={
+                "class": "form-control",
+                "rows": 3,
+                "placeholder": "Additional hearing notes or agenda items...",
+            }),
+        }
+
+    def clean_hearing_date(self):
+        from django.utils import timezone
+        hearing_date = self.cleaned_data.get("hearing_date")
+        if hearing_date and hearing_date < timezone.now().date():
+            raise ValidationError("Hearing date cannot be in the past.")
+        return hearing_date

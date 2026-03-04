@@ -209,6 +209,39 @@ class Appeal(models.Model):
             if self.original_appeal.is_reappeal:
                 raise ValidationError("Cannot re-appeal a re-appeal. Only one re-appeal is allowed.")
 
+    def _calculate_response_deadline(self):
+        """
+        Calculate the response deadline based on the related match status.
+
+        Rules:
+        - If the match is LIVE (ongoing): deadline = 30 minutes after match ends.
+          Since the exact end time is unknown, we estimate 90 minutes from kickoff
+          plus 30 minutes → 120 minutes from kickoff_datetime. If kickoff has
+          already passed more than 120 min ago, deadline = now + 30 min.
+        - If the match is NOT ongoing (completed, pending, etc.) or no match is
+          linked: deadline = 30 minutes after the appeal is submitted.
+        """
+        from competitions.models import FixtureStatus
+        now = timezone.now()
+
+        if self.match:
+            if self.match.status == FixtureStatus.LIVE:
+                # Match is ongoing — estimate end time as kickoff + 90 min, then add 30 min
+                kickoff_dt = self.match.kickoff_datetime
+                if kickoff_dt:
+                    # Make naive datetime aware if needed
+                    if timezone.is_naive(kickoff_dt):
+                        kickoff_dt = timezone.make_aware(kickoff_dt)
+                    estimated_end = kickoff_dt + timezone.timedelta(minutes=90)
+                    deadline = estimated_end + timezone.timedelta(minutes=30)
+                    # If the estimated deadline is already past, give 30 min from now
+                    if deadline < now:
+                        deadline = now + timezone.timedelta(minutes=30)
+                    return deadline
+
+        # Default: 30 minutes from submission
+        return now + timezone.timedelta(minutes=30)
+
     def submit(self):
         """Transition from draft to submitted."""
         if not self.can_submit:
@@ -217,8 +250,8 @@ class Appeal(models.Model):
             )
         self.status = AppealStatus.SUBMITTED
         self.submitted_at = timezone.now()
-        # Set response deadline to 5 days from now
-        self.response_deadline = timezone.now() + timezone.timedelta(days=5)
+        # 30-minute response deadline based on match status
+        self.response_deadline = self._calculate_response_deadline()
         self.save()
 
 
@@ -401,3 +434,58 @@ class DecisionEvidence(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.get_evidence_type_display()})"
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  HEARING SCHEDULE
+# ══════════════════════════════════════════════════════════════════════════════
+
+class HearingSchedule(models.Model):
+    """
+    Hearing date/time scheduled by the Chair of the Jury for an appeal.
+    Multiple hearings may be scheduled (e.g. adjournment / rescheduling).
+    """
+    appeal = models.ForeignKey(
+        Appeal, on_delete=models.CASCADE, related_name="hearings",
+        help_text="Appeal this hearing is for"
+    )
+    hearing_date = models.DateField(help_text="Date of the hearing")
+    hearing_time = models.TimeField(help_text="Time of the hearing")
+    location = models.CharField(
+        max_length=300, blank=True,
+        help_text="Hearing venue or virtual meeting link"
+    )
+    notes = models.TextField(
+        blank=True,
+        help_text="Additional notes or agenda for the hearing"
+    )
+    scheduled_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        null=True, related_name="hearings_scheduled",
+        help_text="Jury Chair who scheduled this hearing"
+    )
+    is_cancelled = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-hearing_date", "-hearing_time"]
+        verbose_name = "Hearing Schedule"
+        verbose_name_plural = "Hearing Schedules"
+
+    def __str__(self):
+        return f"Hearing for Appeal #{self.appeal_id} on {self.hearing_date} at {self.hearing_time}"
+
+    @property
+    def hearing_datetime(self):
+        from datetime import datetime
+        return datetime.combine(self.hearing_date, self.hearing_time)
+
+    @property
+    def is_upcoming(self):
+        from datetime import datetime
+        return datetime.combine(self.hearing_date, self.hearing_time) > timezone.now().replace(tzinfo=None)
+
+    @property
+    def is_past(self):
+        return not self.is_upcoming

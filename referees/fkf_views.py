@@ -2770,15 +2770,17 @@ def export_appointments_excel(request):
 
 @login_required
 def export_appointments_pdf(request):
-    """Export appointments to PDF"""
+    """Export appointments to PDF with KYISA 11th edition logo"""
     from reportlab.lib import colors
     from reportlab.lib.pagesizes import A4, landscape
-    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    from reportlab.lib.units import inch
+    from reportlab.lib.units import inch, mm
     from django.http import HttpResponse
+    from django.conf import settings
     from datetime import datetime as dt, time
     import io
+    import os
     
     start_date_str = request.GET.get('start_date')
     end_date_str = request.GET.get('end_date')
@@ -2818,10 +2820,24 @@ def export_appointments_pdf(request):
     # Create PDF
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=landscape(A4), topMargin=0.5*inch, bottomMargin=0.5*inch)
+    
+    # Create elements list and add KYISA 11th edition logo
     elements = []
+    logo_path = os.path.join(settings.STATICFILES_DIRS[0] if settings.STATICFILES_DIRS else settings.STATIC_ROOT, 'img', 'kyisa_logo.png')
+    if os.path.exists(logo_path):
+        try:
+            logo = Image(logo_path, width=40*mm, height=40*mm)
+            logo.hAlign = 'LEFT'
+            elements.append(logo)
+            elements.append(Spacer(1, 2*mm))
+        except:
+            pass  # Logo load failed, continue without it
     
     # Styles
     styles = getSampleStyleSheet()
+    edition_style = ParagraphStyle("Edition", parent=styles["Heading2"], fontSize=10, textColor=colors.HexColor("#004D1A"), spaceAfter=6, alignment=1)
+    elements.append(Paragraph("⚽ KENYA YOUTH INTERCOUNTY SPORTS ASSOCIATION — 11TH EDITION", edition_style))
+    
     title_style = ParagraphStyle(
         'CustomTitle',
         parent=styles['Heading1'],

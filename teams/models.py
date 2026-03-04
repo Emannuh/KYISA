@@ -6,6 +6,50 @@ from django.conf import settings
 from competitions.models import SportType
 
 
+# ══════════════════════════════════════════════════════════════════════════════
+#  COUNTY MODEL
+# ══════════════════════════════════════════════════════════════════════════════
+
+class County(models.Model):
+    """Kenyan counties with sports officer contact information."""
+    name = models.CharField(max_length=100, unique=True, help_text="County name (e.g., Nairobi, Mombasa)")
+    code = models.CharField(max_length=10, unique=True, help_text="County code (e.g., NAI, MSA)")
+    capital = models.CharField(max_length=100, blank=True, help_text="County capital/headquarters")
+    
+    # Sports officer contact details
+    sports_officer_name = models.CharField(max_length=200, blank=True, help_text="Sports officer full name")
+    sports_officer_email = models.EmailField(blank=True, help_text="Sports officer email address")
+    sports_officer_phone = models.CharField(max_length=20, blank=True, help_text="Sports officer phone number")
+    
+    # Alternative contact (backup)
+    alt_contact_name = models.CharField(max_length=200, blank=True, help_text="Alternative contact name")
+    alt_contact_email = models.EmailField(blank=True, help_text="Alternative contact email")
+    alt_contact_phone = models.CharField(max_length=20, blank=True, help_text="Alternative contact phone")
+    
+    office_address = models.TextField(blank=True, help_text="County sports office address")
+    is_active = models.BooleanField(default=True, help_text="County is active and participating")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['name']
+        verbose_name_plural = 'Counties'
+    
+    def __str__(self):
+        return self.name
+    
+    @property
+    def primary_contact_email(self):
+        """Return sports officer email, fallback to alternative contact email."""
+        return self.sports_officer_email or self.alt_contact_email
+    
+    @property
+    def primary_contact_name(self):
+        """Return sports officer name, fallback to alternative contact name."""
+        return self.sports_officer_name or self.alt_contact_name
+
+
 class TeamStatus(models.TextChoices):
     PENDING    = "pending",    "Pending Approval"
     REGISTERED = "registered", "Registered"
@@ -14,7 +58,7 @@ class TeamStatus(models.TextChoices):
 
 class Team(models.Model):
     name        = models.CharField(max_length=200, unique=True)
-    county      = models.CharField(max_length=100)
+    county      = models.ForeignKey(County, on_delete=models.CASCADE, related_name="teams", help_text="County this team represents")
     sport_type  = models.CharField(
         max_length=30, choices=SportType.choices, default=SportType.FOOTBALL_MEN,
         help_text="Sport this team competes in"

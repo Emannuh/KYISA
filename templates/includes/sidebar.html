@@ -143,6 +143,27 @@
             <span class="icon"><i class="bi bi-briefcase"></i></span> All Appeals
         </a>
     </div>
+    <div class="sidebar-section">
+        <h4>Competition Data</h4>
+        <a href="{% url 'jury_teams' %}" class="sidebar-link {% if request.resolver_match.url_name == 'jury_teams' %}active{% endif %}">
+            <span class="icon"><i class="bi bi-people-fill"></i></span> Teams
+        </a>
+        <a href="{% url 'jury_players' %}" class="sidebar-link {% if request.resolver_match.url_name == 'jury_players' %}active{% endif %}">
+            <span class="icon"><i class="bi bi-person-check-fill"></i></span> Approved Players
+        </a>
+        <a href="{% url 'jury_fixtures' %}" class="sidebar-link {% if request.resolver_match.url_name == 'jury_fixtures' %}active{% endif %}">
+            <span class="icon"><i class="bi bi-calendar-event"></i></span> Fixtures
+        </a>
+        <a href="{% url 'jury_match_reports' %}" class="sidebar-link {% if request.resolver_match.url_name == 'jury_match_reports' %}active{% endif %}">
+            <span class="icon"><i class="bi bi-file-earmark-text"></i></span> Match Reports
+        </a>
+        <a href="{% url 'jury_squads' %}" class="sidebar-link {% if request.resolver_match.url_name == 'jury_squads' or request.resolver_match.url_name == 'jury_squad_detail' %}active{% endif %}">
+            <span class="icon"><i class="bi bi-list-check"></i></span> Match Day Squads
+        </a>
+        <a href="{% url 'jury_disciplinary' %}" class="sidebar-link {% if request.resolver_match.url_name == 'jury_disciplinary' %}active{% endif %}">
+            <span class="icon"><i class="bi bi-exclamation-triangle-fill"></i></span> Disciplinary
+        </a>
+    </div>
     {% endif %}
 
     <div class="sidebar-section" style="margin-top: auto;">

@@ -1761,6 +1761,11 @@ def treasurer_teams_view(request):
                 team.payment_confirmed_by = request.user
                 team.payment_confirmed_at = timezone.now()
                 team.save()
+                
+                # Send payment receipt notification
+                from teams.notifications import send_payment_receipt
+                send_payment_receipt(team, request.user)
+                
                 # Log this action explicitly for audit
                 from admin_dashboard.models import ActivityLog as AuditLog
                 AuditLog.objects.create(
@@ -1770,7 +1775,7 @@ def treasurer_teams_view(request):
                     object_repr=str(team),
                     ip_address=request.META.get('REMOTE_ADDR', ''),
                 )
-                messages.success(request, f'✅ Payment confirmed for <strong>{team.name}</strong> (Ref: {ref})')
+                messages.success(request, f'✅ Payment confirmed for <strong>{team.name}</strong> (Ref: {ref}). Receipt sent to sports officer and team contact.')
 
         elif action == 'approve':
             if not team.payment_confirmed:
