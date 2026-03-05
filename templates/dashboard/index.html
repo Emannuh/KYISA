@@ -4,7 +4,7 @@
 {% block content %}
 <div class="page-header">
     <h1>Welcome, {{ user.first_name }}!</h1>
-    <p>{{ user.get_role_display }} Dashboard — Overview of your KYISA portal</p>
+    <p>{{ user.get_role_display }} Dashboard</p>
 </div>
 
 <!-- Stats -->
@@ -57,7 +57,7 @@
 </div>
 
 <!-- Quick Actions -->
-<div class="card" style="margin-bottom:2rem;">
+<div class="card mb-1">
     <div class="card-header"><h3>Quick Actions</h3></div>
     <div class="card-body">
         <div class="quick-actions">
@@ -80,7 +80,7 @@
             {% endif %}
 
             {% if user.role == 'competition_manager' or user.role == 'admin' %}
-            <a href="{% url 'competitions_list' %}" class="action-card" style="border-left:3px solid #6A1B9A">
+            <a href="{% url 'competitions_list' %}" class="action-card accent-purple">
                 <div class="action-icon"><i class="bi bi-bar-chart-line"></i></div>
                 <h4>Standings &amp; Stats</h4>
                 <p>View standings via competition</p>

@@ -229,7 +229,8 @@
     </div>
 </div>
 
-<div style="margin-top:1.5rem">
+<div style="margin-top:1.5rem;display:flex;gap:1.5rem">
     <a href="{% url 'player_verification_list' %}" style="color:#1B5E20;font-weight:600;text-decoration:none">← Back to Verification List</a>
+    <a href="{% url 'player_clearance_detail' player_pk=player.pk %}" style="color:#1565C0;font-weight:600;text-decoration:none">🛡️ View Full Clearance (Huduma + FIFA Connect) →</a>
 </div>
 {% endblock %}

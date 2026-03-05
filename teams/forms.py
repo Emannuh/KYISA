@@ -155,6 +155,7 @@ class PlayerRegistrationForm(forms.ModelForm):
             'first_name', 'last_name', 'date_of_birth',
             'position', 'shirt_number',
             'national_id_number', 'birth_cert_number',
+            'fifa_connect_id',
             'photo', 'id_document', 'birth_certificate',
         ]
         widgets = {
@@ -186,6 +187,10 @@ class PlayerRegistrationForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'e.g. 0123456789',
             }),
+            'fifa_connect_id': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'FIFA Connect ID (if known)',
+            }),
             'photo': forms.FileInput(attrs={
                 'class': 'form-control',
                 'accept': 'image/*',
@@ -207,6 +212,7 @@ class PlayerRegistrationForm(forms.ModelForm):
             'shirt_number': 'Shirt Number *',
             'national_id_number': 'National ID Number',
             'birth_cert_number': 'Birth Certificate Number',
+            'fifa_connect_id': 'FIFA Connect ID (optional)',
             'photo': 'Passport-Size Photo *',
             'id_document': 'Copy of National ID *',
             'birth_certificate': 'Copy of Birth Certificate *',

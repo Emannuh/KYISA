@@ -546,6 +546,42 @@ def add_player_view(request, team_pk):
                 messages.error(request, f'A player with National ID {player.national_id_number} is already registered.')
             else:
                 player.save()
+
+                # ── Auto-trigger FIFA Connect pre-screening ──────────────
+                try:
+                    from teams.fifa_connect_service import FIFAConnectService
+                    from teams.models import FIFAConnectStatus, PlayerVerificationLog, VerificationStep
+                    svc = FIFAConnectService()
+                    fc_result = svc.check_player(player)
+                    if fc_result.is_flagged:
+                        player.fifa_connect_status = FIFAConnectStatus.FLAGGED
+                        player.fifa_connect_leagues = fc_result.leagues_found
+                        player.fifa_connect_notes = fc_result.flag_reason
+                        if fc_result.fifa_connect_id:
+                            player.fifa_connect_id = fc_result.fifa_connect_id
+                        player.save()
+                        PlayerVerificationLog.objects.create(
+                            player=player,
+                            step=VerificationStep.FIFA_CONNECT,
+                            action='auto_screen_on_add',
+                            result='flagged',
+                            details={'leagues_found': fc_result.leagues_found},
+                            notes=fc_result.flag_reason,
+                        )
+                        messages.warning(request, (
+                            f'🚩 FIFA Connect WARNING: {player.get_full_name()} '
+                            f'may be registered in a higher-level league. '
+                            f'Requires clearance review before participation.'
+                        ))
+                    elif fc_result.is_clear:
+                        player.fifa_connect_status = FIFAConnectStatus.CLEAR
+                        if fc_result.fifa_connect_id:
+                            player.fifa_connect_id = fc_result.fifa_connect_id
+                        player.fifa_connect_notes = "Auto-screened on registration — clear."
+                        player.save()
+                except Exception:
+                    pass  # Don't block player registration on API errors
+
                 if not player.is_age_eligible:
                     messages.warning(request, (
                         f'{player.get_full_name()} added but AUTO-REJECTED — '
@@ -1024,6 +1060,14 @@ def verify_player_view(request, player_pk):
             player.verified_at = timezone.now()
             player.status = 'eligible'
             player.save()
+            # Log to audit trail
+            from teams.models import PlayerVerificationLog, VerificationStep
+            PlayerVerificationLog.objects.create(
+                player=player, step=VerificationStep.DOCUMENT,
+                action='verified', result='verified',
+                notes='Documents verified by admin.',
+                performed_by=request.user,
+            )
             messages.success(request, f'✅ {player.get_full_name()} has been verified.')
 
         elif action == 'reject':
@@ -1036,6 +1080,14 @@ def verify_player_view(request, player_pk):
             player.verified_by = request.user
             player.verified_at = timezone.now()
             player.save()
+            from teams.models import PlayerVerificationLog, VerificationStep
+            PlayerVerificationLog.objects.create(
+                player=player, step=VerificationStep.DOCUMENT,
+                action='rejected', result='rejected',
+                details={'reason': reason},
+                notes=notes,
+                performed_by=request.user,
+            )
             messages.warning(request, f'❌ {player.get_full_name()} has been rejected: {player.get_rejection_reason_display()}')
 
         elif action == 'reset':
@@ -1047,6 +1099,13 @@ def verify_player_view(request, player_pk):
             player.verified_at = None
             player.status = 'eligible'
             player.save()
+            from teams.models import PlayerVerificationLog, VerificationStep
+            PlayerVerificationLog.objects.create(
+                player=player, step=VerificationStep.DOCUMENT,
+                action='reset', result='pending',
+                notes='Reset to pending by admin.',
+                performed_by=request.user,
+            )
             messages.info(request, f'🔄 {player.get_full_name()} reset to pending verification.')
 
         return redirect('player_verification_list')
@@ -1091,9 +1150,17 @@ def squad_select_view(request, fixture_pk):
     # Existing submission
     existing = SquadSubmission.objects.filter(fixture=fixture, team=team).first()
 
-    # Only verified & eligible players
+    # Only FULLY CLEARED players (docs verified + Huduma verified + FIFA Connect clear + eligible status)
     players = Player.objects.filter(
-        team=team, status='eligible', verification_status='verified'
+        team=team, status='eligible', verification_status='verified',
+        huduma_status='verified', fifa_connect_status='clear',
+    ).order_by('shirt_number')
+
+    # Also get partially-cleared players for information
+    partially_cleared = Player.objects.filter(
+        team=team, status='eligible', verification_status='verified',
+    ).exclude(
+        huduma_status='verified', fifa_connect_status='clear',
     ).order_by('shirt_number')
 
     starter_ids = []

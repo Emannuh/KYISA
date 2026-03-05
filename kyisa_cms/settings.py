@@ -220,3 +220,16 @@ SQUAD_MAX_SUBS     = 5
 # ── CRISPY FORMS ───────────────────────────────────────────────────────────────
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# ── PLAYER VERIFICATION APIs ──────────────────────────────────────────────────
+# FIFA Connect Integration (set API key in .env for production)
+FIFA_CONNECT_API_URL = env("FIFA_CONNECT_API_URL", default="https://api.fifaconnect.ke/v1")
+FIFA_CONNECT_API_KEY = env("FIFA_CONNECT_API_KEY", default="")
+FIFA_CONNECT_ENABLED = env.bool("FIFA_CONNECT_ENABLED", default=True)
+FIFA_CONNECT_TIMEOUT = env.int("FIFA_CONNECT_TIMEOUT", default=30)
+
+# Huduma Kenya / IPRS Integration (set API key in .env for production)
+HUDUMA_API_URL  = env("HUDUMA_API_URL", default="https://api.hudumakenya.go.ke/v1")
+HUDUMA_API_KEY  = env("HUDUMA_API_KEY", default="")
+HUDUMA_ENABLED  = env.bool("HUDUMA_ENABLED", default=True)
+HUDUMA_TIMEOUT  = env.int("HUDUMA_TIMEOUT", default=30)

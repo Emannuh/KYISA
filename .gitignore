@@ -1,8 +1,3 @@
-# In your project directory
-touch .gitignore
-```
-Add this content to it:
-```
 # Python
 __pycache__/
 *.py[cod]
@@ -12,13 +7,12 @@ __pycache__/
 
 # Virtual Environment
 venv/
+.venv/
 env/
-*.env
 
 # Django
 *.log
 local_settings.py
-db.sqlite3
 db.sqlite3-journal
 media/
 
@@ -32,4 +26,8 @@ media/
 
 # OS
 .DS_Store
-Thumbs.dbnul
+Thumbs.db
+nul
+
+# Compiled/build
+staticfiles/

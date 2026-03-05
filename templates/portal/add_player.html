@@ -44,7 +44,18 @@
                         {% if field.name == 'first_name' or field.name == 'last_name' or field.name == 'date_of_birth' or field.name == 'position' or field.name == 'shirt_number' or field.name == 'national_id_number' or field.name == 'birth_cert_number' %}
                         <div style="margin-bottom:1rem">
                             <label for="{{ field.id_for_label }}" style="display:block;font-weight:600;color:#333;margin-bottom:.3rem;font-size:.9rem">{{ field.label }}</label>
+                            {% if field.name == 'national_id_number' %}
+                            <div style="display:flex;gap:.5rem;align-items:flex-start">
+                                <div style="flex:1">{{ field }}</div>
+                                <button type="button" id="iprs-lookup-btn" onclick="lookupIPRS()" style="padding:.45rem 1rem;background:#1565c0;color:#fff;border:none;border-radius:6px;font-size:.85rem;cursor:pointer;white-space:nowrap;margin-top:1px;display:flex;align-items:center;gap:.35rem" title="Look up name & DOB from IPRS">
+                                    <span id="iprs-btn-icon">🔍</span>
+                                    <span id="iprs-btn-text">IPRS Lookup</span>
+                                </button>
+                            </div>
+                            <div id="iprs-status" style="margin-top:.35rem;font-size:.83rem;display:none"></div>
+                            {% else %}
                             {{ field }}
+                            {% endif %}
                             {% if field.help_text %}<small style="color:#888;font-size:.8rem">{{ field.help_text }}</small>{% endif %}
                             {% for error in field.errors %}<div style="color:#C62828;font-size:.85rem;margin-top:.2rem">{{ error }}</div>{% endfor %}
                         </div>
@@ -153,4 +164,103 @@
         </div>
     </div>
 </div>
+
+<script>
+function lookupIPRS() {
+    const idField = document.getElementById('id_national_id_number');
+    const btn = document.getElementById('iprs-lookup-btn');
+    const btnIcon = document.getElementById('iprs-btn-icon');
+    const btnText = document.getElementById('iprs-btn-text');
+    const statusDiv = document.getElementById('iprs-status');
+
+    if (!idField) return;
+    const idNumber = idField.value.trim();
+    if (!idNumber) {
+        showStatus('⚠️ Enter a National ID number first.', '#e65100', '#fff3e0');
+        idField.focus();
+        return;
+    }
+
+    // Validate format
+    if (!/^\d{7,8}$/.test(idNumber)) {
+        showStatus('⚠️ National ID must be 7-8 digits.', '#e65100', '#fff3e0');
+        idField.focus();
+        return;
+    }
+
+    // Show loading state
+    btn.disabled = true;
+    btnIcon.textContent = '⏳';
+    btnText.textContent = 'Looking up...';
+    showStatus('⏳ Querying IPRS...', '#1565c0', '#e3f2fd');
+
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const formData = new FormData();
+    formData.append('national_id', idNumber);
+
+    fetch("{% url 'api_iprs_lookup' %}", {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrfToken },
+        body: formData,
+    })
+    .then(resp => resp.json())
+    .then(data => {
+        if (data.success && data.person_found) {
+            // Auto-fill form fields
+            const firstName = document.getElementById('id_first_name');
+            const lastName = document.getElementById('id_last_name');
+            const dob = document.getElementById('id_date_of_birth');
+
+            if (firstName && data.first_name) firstName.value = data.first_name;
+            if (lastName && data.last_name) lastName.value = data.last_name;
+            if (dob && data.date_of_birth) dob.value = data.date_of_birth;
+
+            // Highlight filled fields briefly
+            [firstName, lastName, dob].forEach(el => {
+                if (el) {
+                    el.style.transition = 'background .3s';
+                    el.style.background = '#e8f5e9';
+                    setTimeout(() => el.style.background = '', 2000);
+                }
+            });
+
+            let msg = '✅ <strong>' + escapeHtml(data.full_name) + '</strong>';
+            if (data.age !== null) msg += ' — Age: <strong>' + data.age + '</strong>';
+            if (data.gender) msg += ' — ' + escapeHtml(data.gender);
+            if (data.is_simulation) msg += ' <em style="opacity:.7">(Simulation)</em>';
+            showStatus(msg, '#1B5E20', '#e8f5e9');
+        } else if (data.success && !data.person_found) {
+            showStatus('❌ No person found with this National ID.', '#C62828', '#fce4ec');
+        } else {
+            showStatus('❌ ' + escapeHtml(data.error_message || 'Lookup failed.'), '#C62828', '#fce4ec');
+        }
+    })
+    .catch(err => {
+        showStatus('❌ Network error — please try again.', '#C62828', '#fce4ec');
+        console.error('IPRS lookup error:', err);
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btnIcon.textContent = '🔍';
+        btnText.textContent = 'IPRS Lookup';
+    });
+}
+
+function showStatus(html, color, bg) {
+    const el = document.getElementById('iprs-status');
+    el.innerHTML = html;
+    el.style.display = 'block';
+    el.style.color = color;
+    el.style.background = bg;
+    el.style.padding = '.5rem .75rem';
+    el.style.borderRadius = '6px';
+    el.style.borderLeft = '3px solid ' + color;
+}
+
+function escapeHtml(text) {
+    const d = document.createElement('div');
+    d.textContent = text;
+    return d.innerHTML;
+}
+</script>
 {% endblock %}

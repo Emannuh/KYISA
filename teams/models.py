@@ -174,7 +174,33 @@ class RejectionReason(models.TextChoices):
     PHOTO_MISMATCH  = "photo_mismatch",  "Photo Does Not Match"
     AGE_OUTSIDE     = "age_outside",     "Outside Age Bracket (18-23)"
     INCOMPLETE_DOCS = "incomplete_docs", "Incomplete Documents"
+    FIFA_CONNECT_FLAGGED = "fifa_connect_flagged", "Flagged by FIFA Connect (Higher League)"
+    HUDUMA_FAILED   = "huduma_failed",   "Huduma Kenya Verification Failed"
     OTHER           = "other",           "Other"
+
+
+class HudumaVerificationStatus(models.TextChoices):
+    NOT_CHECKED = "not_checked", "Not Checked"
+    PENDING     = "pending",     "Pending Verification"
+    VERIFIED    = "verified",    "Verified"
+    FAILED      = "failed",      "Failed"
+    EXPIRED     = "expired",     "Expired"
+
+
+class FIFAConnectStatus(models.TextChoices):
+    NOT_CHECKED = "not_checked", "Not Checked"
+    PENDING     = "pending",     "Pending Check"
+    CLEAR       = "clear",       "Clear — No Higher League"
+    FLAGGED     = "flagged",     "Flagged — Higher League Found"
+    ERROR       = "error",       "API Error"
+
+
+class HigherLeague(models.TextChoices):
+    REGIONAL_LEAGUE      = "regional_league",      "Regional League"
+    DIVISION_TWO         = "division_two",         "Division Two"
+    DIVISION_ONE         = "division_one",         "Division One"
+    NATIONAL_SUPER_LEAGUE = "national_super_league", "National Super League"
+    FKF_PREMIER_LEAGUE   = "fkf_premier_league",   "Kenya FKF Premier League"
 
 
 # Age bracket constants
@@ -219,6 +245,42 @@ class Player(models.Model):
     )
     verified_at      = models.DateTimeField(null=True, blank=True)
 
+    # ── Huduma Kenya Verification (Age) ───────────────────────────────────
+    huduma_status = models.CharField(
+        max_length=20, choices=HudumaVerificationStatus.choices,
+        default=HudumaVerificationStatus.NOT_CHECKED,
+        help_text="Huduma Kenya age verification status",
+    )
+    huduma_verified_at  = models.DateTimeField(null=True, blank=True)
+    huduma_verified_by  = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name="huduma_verified_players",
+    )
+    huduma_reference    = models.CharField(max_length=100, blank=True, default="",
+                                           help_text="Huduma Kenya verification reference")
+    huduma_notes        = models.TextField(blank=True, default="",
+                                           help_text="Notes from Huduma verification")
+
+    # ── FIFA Connect Verification (Higher League Check) ───────────────────
+    fifa_connect_id     = models.CharField(max_length=50, blank=True, default="",
+                                           help_text="FIFA Connect Player ID")
+    fifa_connect_status = models.CharField(
+        max_length=20, choices=FIFAConnectStatus.choices,
+        default=FIFAConnectStatus.NOT_CHECKED,
+        help_text="FIFA Connect higher-league check status",
+    )
+    fifa_connect_leagues = models.JSONField(
+        default=list, blank=True,
+        help_text="List of higher-level leagues found in FIFA Connect",
+    )
+    fifa_connect_checked_at = models.DateTimeField(null=True, blank=True)
+    fifa_connect_checked_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name="fifa_connect_checked_players",
+    )
+    fifa_connect_notes = models.TextField(blank=True, default="",
+                                          help_text="Notes from FIFA Connect check")
+
     status         = models.CharField(max_length=20, choices=PlayerStatus.choices, default=PlayerStatus.ELIGIBLE)
     registered_at  = models.DateTimeField(auto_now_add=True)
 
@@ -249,6 +311,53 @@ class Player(models.Model):
         """True if all three required documents are present."""
         return bool(self.photo and self.id_document and self.birth_certificate)
 
+    @property
+    def is_huduma_verified(self):
+        """True if Huduma Kenya age verification has passed."""
+        return self.huduma_status == HudumaVerificationStatus.VERIFIED
+
+    @property
+    def is_fifa_connect_clear(self):
+        """True if FIFA Connect check found no higher-league registration."""
+        return self.fifa_connect_status == FIFAConnectStatus.CLEAR
+
+    @property
+    def is_fully_cleared(self):
+        """
+        True ONLY if the player passes ALL verification steps:
+        1. Document verification (admin verified)
+        2. Huduma Kenya age verification
+        3. FIFA Connect higher-league check is clear
+        """
+        return (
+            self.verification_status == VerificationStatus.VERIFIED
+            and self.is_huduma_verified
+            and self.is_fifa_connect_clear
+        )
+
+    @property
+    def clearance_summary(self):
+        """Return a dict summarising each verification step."""
+        return {
+            'documents': {
+                'status': self.verification_status,
+                'display': self.get_verification_status_display(),
+                'passed': self.verification_status == VerificationStatus.VERIFIED,
+            },
+            'huduma': {
+                'status': self.huduma_status,
+                'display': self.get_huduma_status_display(),
+                'passed': self.is_huduma_verified,
+            },
+            'fifa_connect': {
+                'status': self.fifa_connect_status,
+                'display': self.get_fifa_connect_status_display(),
+                'passed': self.is_fifa_connect_clear,
+                'leagues_found': self.fifa_connect_leagues,
+            },
+            'fully_cleared': self.is_fully_cleared,
+        }
+
     def auto_check_age(self):
         """
         Automatically lock out players outside the 18-23 bracket.
@@ -269,3 +378,37 @@ class Player(models.Model):
         # Auto-reject players outside the age bracket on every save
         self.auto_check_age()
         super().save(*args, **kwargs)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  PLAYER VERIFICATION LOG — Audit Trail
+# ══════════════════════════════════════════════════════════════════════════════
+
+class VerificationStep(models.TextChoices):
+    DOCUMENT   = "document",     "Document Verification"
+    HUDUMA     = "huduma",       "Huduma Kenya (Age)"
+    FIFA_CONNECT = "fifa_connect", "FIFA Connect (League Check)"
+    CLEARANCE  = "clearance",    "Final Clearance"
+
+
+class PlayerVerificationLog(models.Model):
+    """Records every verification action for audit trail."""
+    player      = models.ForeignKey(Player, on_delete=models.CASCADE, related_name="verification_logs")
+    step        = models.CharField(max_length=20, choices=VerificationStep.choices)
+    action      = models.CharField(max_length=50, help_text="e.g. 'verified', 'rejected', 'flagged', 'cleared'")
+    result      = models.CharField(max_length=50, help_text="Outcome of the action")
+    details     = models.JSONField(default=dict, blank=True, help_text="Detailed data from the verification")
+    notes       = models.TextField(blank=True, default="")
+    performed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name="verification_actions",
+    )
+    performed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-performed_at"]
+        verbose_name = "Verification Log"
+        verbose_name_plural = "Verification Logs"
+
+    def __str__(self):
+        return f"{self.player.get_full_name()} — {self.get_step_display()} — {self.action}"

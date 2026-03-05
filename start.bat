@@ -1,3 +1,4 @@
 @echo off
-call .venv\Scripts\activate
+set PYTHONNOUSERSITE=1
+call venv\Scripts\activate
 python manage.py runserver

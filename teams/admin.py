@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Team, Player
+from .models import Team, Player, PlayerVerificationLog
 
 
 class PlayerInline(admin.TabularInline):
@@ -24,6 +24,14 @@ class TeamAdmin(admin.ModelAdmin):
 
 @admin.register(Player)
 class PlayerAdmin(admin.ModelAdmin):
-    list_display  = ["__str__", "position", "age", "status"]
-    list_filter   = ["position", "status", "team__county"]
-    search_fields = ["first_name", "last_name", "team__name"]
+    list_display  = ["__str__", "position", "age", "status", "huduma_status", "fifa_connect_status"]
+    list_filter   = ["position", "status", "huduma_status", "fifa_connect_status", "team__county"]
+    search_fields = ["first_name", "last_name", "team__name", "national_id_number", "fifa_connect_id"]
+
+
+@admin.register(PlayerVerificationLog)
+class PlayerVerificationLogAdmin(admin.ModelAdmin):
+    list_display  = ["player", "step", "action", "result", "performed_by", "performed_at"]
+    list_filter   = ["step", "action", "result"]
+    search_fields = ["player__first_name", "player__last_name", "notes"]
+    readonly_fields = ["player", "step", "action", "result", "details", "notes", "performed_by", "performed_at"]

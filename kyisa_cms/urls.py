@@ -7,6 +7,19 @@ from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
+from teams.verification_views import (
+    player_clearance_dashboard as _clearance_dashboard,
+    player_clearance_detail as _clearance_detail,
+    huduma_verify_player as _huduma_verify,
+    fifa_connect_check_player as _fifa_connect_check,
+    player_final_clearance as _final_clearance,
+    player_verification_logs as _verification_logs,
+    bulk_huduma_check as _bulk_huduma,
+    bulk_fifa_connect_check as _bulk_fifa,
+    api_fifa_connect_quick_check as _api_fifa_quick,
+    api_iprs_lookup as _api_iprs_lookup,
+)
+
 from .web_views import (
     # Public website
     home_view, about_view, public_competitions_view,
@@ -101,6 +114,18 @@ urlpatterns = [
     # ── PORTAL: PLAYER VERIFICATION ─────────────────────────────────────
     path("portal/players/verification/",              player_verification_list_view, name="player_verification_list"),
     path("portal/players/<int:player_pk>/verify/",    verify_player_view,            name="verify_player"),
+
+    # ── PORTAL: PLAYER CLEARANCE (Huduma Kenya + FIFA Connect) ────────────
+    path("portal/players/clearance/",                             _clearance_dashboard,       name="player_clearance_dashboard"),
+    path("portal/players/<int:player_pk>/clearance/",             _clearance_detail,          name="player_clearance_detail"),
+    path("portal/players/<int:player_pk>/huduma-verify/",         _huduma_verify,             name="huduma_verify_player"),
+    path("portal/players/<int:player_pk>/fifa-connect-check/",    _fifa_connect_check,        name="fifa_connect_check_player"),
+    path("portal/players/<int:player_pk>/final-clearance/",       _final_clearance,           name="player_final_clearance"),
+    path("portal/players/<int:player_pk>/verification-logs/",     _verification_logs,         name="player_verification_logs"),
+    path("portal/players/bulk-huduma-check/",                     _bulk_huduma,               name="bulk_huduma_check"),
+    path("portal/players/bulk-fifa-connect-check/",               _bulk_fifa,                 name="bulk_fifa_connect_check"),
+    path("api/v1/fifa-connect/quick-check/",                      _api_fifa_quick,            name="api_fifa_connect_quick_check"),
+    path("api/v1/iprs/lookup/",                                   _api_iprs_lookup,           name="api_iprs_lookup"),
 
     # ── PORTAL: SQUAD SELECTION & APPROVAL ────────────────────────────────
     path("portal/fixtures/<int:fixture_pk>/squad/",       squad_select_view,      name="squad_select"),
