@@ -7,6 +7,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
+from .spa_views import spa_view
+
 from teams.verification_views import (
     player_clearance_dashboard as _clearance_dashboard,
     player_clearance_detail as _clearance_detail,
@@ -188,11 +190,18 @@ urlpatterns = [
     path("api/v1/referees/",     include("referees.urls")),
     path("api/v1/teams/",        include("teams.urls")),
     path("api/v1/matches/",      include("matches.urls")),
+    path("api/v1/portal/",       include("kyisa_cms.portal_api_urls")),
 
     # ── API DOCUMENTATION ─────────────────────────────────────────────────────
     path("api/schema/", SpectacularAPIView.as_view(),                        name="schema"),
     path("api/docs/",   SpectacularSwaggerView.as_view(url_name="schema"),   name="swagger-ui"),
     path("api/redoc/",  SpectacularRedocView.as_view(url_name="schema"),     name="redoc"),
+
+    # ── REACT SPA (catch-all for client-side routing) ─────────────────────
+    # Serves the React index.html for any path under /app/ so React Router
+    # can handle the routing.  In development, use Vite on :5173 instead.
+    path("app/",   spa_view, name="spa_root"),
+    path("app/<path:path>", spa_view, name="spa_catchall"),
 ]
 
 # ── SERVE MEDIA IN DEVELOPMENT ────────────────────────────────────────────────
