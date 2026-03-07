@@ -137,6 +137,23 @@
             <a href="{% url 'submit_appeal' %}" class="sidebar-link"><span class="icon"><i class="bi bi-pencil-square"></i></span> File Appeal</a>
         </div>
     </div>
+    {% elif user.role == 'county_sports_admin' %}
+    <!-- COUNTY SPORTS ADMIN SIDEBAR -->
+    <div class="sidebar-section">
+        <div class="sidebar-section-toggle"><h4>County Portal</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
+        <div class="sidebar-section-body">
+            <a href="{% url 'county_admin_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'county_admin_dashboard' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-speedometer2"></i></span> Dashboard
+            </a>
+            <a href="{% url 'county_admin_payment' %}" class="sidebar-link {% if request.resolver_match.url_name == 'county_admin_payment' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-credit-card"></i></span> Payment
+            </a>
+            <a href="{% url 'county_admin_add_discipline' %}" class="sidebar-link {% if request.resolver_match.url_name == 'county_admin_add_discipline' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-trophy"></i></span> Disciplines
+            </a>
+        </div>
+    </div>
+
     {% elif user.role == 'treasurer' %}
     <!-- TREASURER SIDEBAR -->
     <div class="sidebar-section">
@@ -147,6 +164,9 @@
             </a>
             <a href="{% url 'treasurer_county_payments' %}" class="sidebar-link {% if 'treasurer_county_payments' in request.resolver_match.url_name %}active{% endif %}">
                 <span class="icon"><i class="bi bi-building"></i></span> County Payments
+            </a>
+            <a href="{% url 'treasurer_county_registrations' %}" class="sidebar-link {% if 'treasurer_county_registrations' in request.resolver_match.url_name %}active{% endif %}">
+                <span class="icon"><i class="bi bi-person-badge"></i></span> County Admin Registrations
             </a>
             <a href="{% url 'treasurer_teams' %}" class="sidebar-link {% if 'treasurer_teams' in request.resolver_match.url_name %}active{% endif %}">
                 <span class="icon"><i class="bi bi-people"></i></span> Team Registrations

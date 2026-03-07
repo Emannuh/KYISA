@@ -1,8 +1,0 @@
-export { default as HomePage } from './HomePage'
-export { default as CompetitionsPage } from './CompetitionsPage'
-export { default as CompetitionDetailPage } from './CompetitionDetailPage'
-export { default as ResultsPage } from './ResultsPage'
-export { default as StandingsPage } from './StandingsPage'
-export { default as StatisticsPage } from './StatisticsPage'
-export { default as ContactPage } from './ContactPage'
-export { default as AboutPage } from './AboutPage'

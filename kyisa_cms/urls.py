@@ -7,8 +7,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
-from .spa_views import spa_view
-
 from teams.verification_views import (
     player_clearance_dashboard as _clearance_dashboard,
     player_clearance_detail as _clearance_detail,
@@ -31,6 +29,7 @@ from .web_views import (
     # Public registration
     team_register_view, team_register_success_view,
     referee_register_view, referee_register_success_view,
+    county_admin_register_view, county_admin_register_success_view,
     # CMS portal
     web_login_view, web_logout_view, dashboard_view,
     force_change_password_view,
@@ -58,6 +57,7 @@ from .web_views import (
     treasurer_dashboard_view,
     treasurer_teams_view,
     treasurer_county_payments_view,
+    treasurer_county_registrations_view,
     # Competition Manager specific views
     competition_standings_view,
     competition_reports_view,
@@ -74,6 +74,13 @@ from .web_views import (
     cm_edit_standings_view,
     cm_edit_fixture_view,
     cm_competition_rules_view,
+    # County Sports Admin portal
+    county_admin_dashboard_view,
+    county_admin_payment_view,
+    county_admin_add_discipline_view,
+    county_admin_discipline_players_view,
+    county_admin_add_player_view,
+    county_admin_delete_player_view,
 )
 
 urlpatterns = [
@@ -92,6 +99,8 @@ urlpatterns = [
     path("register/team/success/",    team_register_success_view,  name="team_register_success"),
     path("register/referee/",         referee_register_view,       name="referee_register"),
     path("register/referee/success/", referee_register_success_view, name="referee_register_success"),
+    path("register/county-admin/",           county_admin_register_view,         name="county_admin_register"),
+    path("register/county-admin/success/",   county_admin_register_success_view, name="county_admin_register_success"),
 
     # ── CMS PORTAL (Authenticated) ───────────────────────────────────────────
     path("portal/login/",                   web_login_view,         name="web_login"),
@@ -154,6 +163,15 @@ urlpatterns = [
     path("portal/treasurer/",                treasurer_dashboard_view,       name="treasurer_dashboard"),
     path("portal/treasurer/teams/",          treasurer_teams_view,           name="treasurer_teams"),
     path("portal/treasurer/county-payments/", treasurer_county_payments_view, name="treasurer_county_payments"),
+    path("portal/treasurer/county-registrations/", treasurer_county_registrations_view, name="treasurer_county_registrations"),
+
+    # ── COUNTY SPORTS ADMIN PORTAL ────────────────────────────────────────
+    path("portal/county-admin/",                              county_admin_dashboard_view,          name="county_admin_dashboard"),
+    path("portal/county-admin/payment/",                      county_admin_payment_view,            name="county_admin_payment"),
+    path("portal/county-admin/add-discipline/",               county_admin_add_discipline_view,     name="county_admin_add_discipline"),
+    path("portal/county-admin/discipline/<int:discipline_pk>/", county_admin_discipline_players_view, name="county_admin_discipline_players"),
+    path("portal/county-admin/discipline/<int:discipline_pk>/add-player/", county_admin_add_player_view, name="county_admin_add_player"),
+    path("portal/county-admin/player/<int:player_pk>/delete/", county_admin_delete_player_view,     name="county_admin_delete_player"),
 
     # ── COMPETITION MANAGER PORTAL ────────────────────────────────────────
     path("portal/competitions/<int:pk>/standings/",   competition_standings_view,      name="competition_standings"),
@@ -190,18 +208,11 @@ urlpatterns = [
     path("api/v1/referees/",     include("referees.urls")),
     path("api/v1/teams/",        include("teams.urls")),
     path("api/v1/matches/",      include("matches.urls")),
-    path("api/v1/portal/",       include("kyisa_cms.portal_api_urls")),
 
     # ── API DOCUMENTATION ─────────────────────────────────────────────────────
     path("api/schema/", SpectacularAPIView.as_view(),                        name="schema"),
     path("api/docs/",   SpectacularSwaggerView.as_view(url_name="schema"),   name="swagger-ui"),
     path("api/redoc/",  SpectacularRedocView.as_view(url_name="schema"),     name="redoc"),
-
-    # ── REACT SPA (catch-all for client-side routing) ─────────────────────
-    # Serves the React index.html for any path under /app/ so React Router
-    # can handle the routing.  In development, use Vite on :5173 instead.
-    path("app/",   spa_view, name="spa_root"),
-    path("app/<path:path>", spa_view, name="spa_catchall"),
 ]
 
 # ── SERVE MEDIA IN DEVELOPMENT ────────────────────────────────────────────────

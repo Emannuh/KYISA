@@ -4,6 +4,154 @@ KYISA Teams — Models
 from django.db import models
 from django.conf import settings
 from competitions.models import SportType
+from accounts.models import KenyaCounty
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  SQUAD SIZE LIMITS  (per discipline)
+# ══════════════════════════════════════════════════════════════════════════════
+SQUAD_LIMITS = {
+    SportType.FOOTBALL_MEN:       30,
+    SportType.FOOTBALL_WOMEN:     30,
+    SportType.VOLLEYBALL_MEN:     16,
+    SportType.VOLLEYBALL_WOMEN:   16,
+    SportType.HANDBALL_MEN:       16,
+    SportType.HANDBALL_WOMEN:     16,
+    SportType.BASKETBALL_MEN:     12,
+    SportType.BASKETBALL_WOMEN:   12,
+    SportType.BASKETBALL_3X3_MEN: 8,
+    SportType.BASKETBALL_3X3_WOMEN: 8,
+}
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  COUNTY REGISTRATION  (County Sports Admin workflow)
+# ══════════════════════════════════════════════════════════════════════════════
+
+class CountyRegStatus(models.TextChoices):
+    PENDING_PAYMENT   = "pending_payment",   "Pending Payment"
+    PAYMENT_SUBMITTED = "payment_submitted", "Payment Submitted"
+    APPROVED          = "approved",          "Approved"
+    REJECTED          = "rejected",          "Rejected"
+
+
+class CountyRegistration(models.Model):
+    """
+    One-per-county registration.  The county sports admin creates this at
+    sign-up; a treasurer later approves payment.
+    """
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="county_registration",
+    )
+    county = models.CharField(
+        max_length=100,
+        choices=KenyaCounty.choices,
+        unique=True,
+        help_text="Kenyan county (only one admin per county)",
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=CountyRegStatus.choices,
+        default=CountyRegStatus.PENDING_PAYMENT,
+    )
+
+    # Payment evidence
+    mpesa_reference = models.CharField(max_length=100, blank=True, default="")
+    bank_slip = models.FileField(upload_to="county_reg/bank_slips/", null=True, blank=True)
+    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    payment_submitted_at = models.DateTimeField(null=True, blank=True)
+
+    # Approval
+    approved_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name="county_approvals",
+    )
+    approved_at = models.DateTimeField(null=True, blank=True)
+    rejection_reason = models.TextField(blank=True, default="")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["county"]
+
+    def __str__(self):
+        return f"{self.county} — {self.get_status_display()}"
+
+    @property
+    def is_approved(self):
+        return self.status == CountyRegStatus.APPROVED
+
+
+class CountyDiscipline(models.Model):
+    """
+    A discipline (sport) that a county has opted to participate in.
+    Created only after the county registration is approved.
+    """
+    registration = models.ForeignKey(
+        CountyRegistration, on_delete=models.CASCADE,
+        related_name="disciplines",
+    )
+    sport_type = models.CharField(max_length=30, choices=SportType.choices)
+
+    class Meta:
+        unique_together = ["registration", "sport_type"]
+        ordering = ["sport_type"]
+
+    def __str__(self):
+        return f"{self.registration.county} — {self.get_sport_type_display()}"
+
+    @property
+    def squad_limit(self):
+        return SQUAD_LIMITS.get(self.sport_type, 30)
+
+    @property
+    def player_count(self):
+        return self.players.count()
+
+    @property
+    def can_add_player(self):
+        return self.player_count < self.squad_limit
+
+
+class CountyPlayer(models.Model):
+    """
+    A player registered under a county discipline.
+    A player (by national_id) can only belong to one discipline and one county.
+    """
+    discipline = models.ForeignKey(
+        CountyDiscipline, on_delete=models.CASCADE,
+        related_name="players",
+    )
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    date_of_birth = models.DateField()
+    national_id_number = models.CharField(
+        max_length=20, unique=True,
+        help_text="National ID — unique across all counties and disciplines",
+    )
+    phone = models.CharField(max_length=20, blank=True, default="")
+    photo = models.ImageField(upload_to="county_players/photos/", null=True, blank=True)
+    id_document = models.ImageField(upload_to="county_players/ids/", null=True, blank=True)
+
+    registered_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["last_name", "first_name"]
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} ({self.discipline})"
+
+    @property
+    def age(self):
+        from django.utils import timezone
+        today = timezone.now().date()
+        dob = self.date_of_birth
+        return today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
 
 
 # ══════════════════════════════════════════════════════════════════════════════

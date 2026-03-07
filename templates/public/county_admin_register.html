@@ -1,0 +1,131 @@
+{% extends 'public/base.html' %}
+{% load static %}
+
+{% block title %}County Sports Admin Registration{% endblock %}
+
+{% block content %}
+<section style="padding:120px 0 60px;background:linear-gradient(135deg,#f5f7f5 0%,#e8f5e9 100%);min-height:100vh">
+<div class="container" style="max-width:700px">
+
+    <div style="text-align:center;margin-bottom:2rem">
+        <h1 style="font-family:'Outfit',sans-serif;font-size:2.2rem;font-weight:800;color:#1B5E20">
+            <i class="bi bi-building"></i> County Sports Admin Registration
+        </h1>
+        <p style="color:#555;margin-top:.5rem">Register as the sports administrator for your county. Only one admin per county is allowed.</p>
+    </div>
+
+    <!-- Fee notice -->
+    <div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:12px;padding:1rem 1.4rem;margin-bottom:2rem;display:flex;align-items:center;gap:1rem">
+        <span style="font-size:2rem"><i class="bi bi-credit-card"></i></span>
+        <div>
+            <strong style="color:#1B5E20;font-size:1rem">County Registration Fee</strong>
+            <div style="font-size:1.6rem;font-weight:800;color:#1B5E20;line-height:1.2">KSh {{ registration_fee|floatformat:0 }}</div>
+            <div style="font-size:.82rem;color:#555;margin-top:.2rem">Paid once per county. After registration, log in and submit payment proof. The KYISA Treasurer will approve your account.</div>
+        </div>
+    </div>
+
+    <div style="background:#fff;border-radius:16px;padding:2.5rem;box-shadow:0 4px 24px rgba(0,0,0,.06)">
+
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" style="margin-bottom:1.5rem;padding:1rem;border-radius:8px;background:{% if message.tags == 'success' %}#e8f5e9{% elif message.tags == 'error' %}#fce4ec{% else %}#fff3e0{% endif %};border-left:4px solid {% if message.tags == 'success' %}#1B5E20{% elif message.tags == 'error' %}#C62828{% else %}#f57c00{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <h3 style="font-size:1.1rem;font-weight:700;color:#1B5E20;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:2px solid #e8f5e9">
+                <i class="bi bi-person"></i> Personal Information
+            </h3>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem">
+                <div>
+                    <label for="id_first_name" style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">{{ form.first_name.label }}</label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}<div style="color:#C62828;font-size:.82rem;margin-top:.3rem">{{ form.first_name.errors.0 }}</div>{% endif %}
+                </div>
+                <div>
+                    <label for="id_last_name" style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">{{ form.last_name.label }}</label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}<div style="color:#C62828;font-size:.82rem;margin-top:.3rem">{{ form.last_name.errors.0 }}</div>{% endif %}
+                </div>
+            </div>
+
+            <div style="margin-bottom:1.25rem">
+                <label for="id_email" style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">{{ form.email.label }}</label>
+                {{ form.email }}
+                {% if form.email.errors %}<div style="color:#C62828;font-size:.82rem;margin-top:.3rem">{{ form.email.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div style="margin-bottom:1.25rem">
+                <label for="id_phone" style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">{{ form.phone.label }}</label>
+                {{ form.phone }}
+                {% if form.phone.errors %}<div style="color:#C62828;font-size:.82rem;margin-top:.3rem">{{ form.phone.errors.0 }}</div>{% endif %}
+            </div>
+
+            <h3 style="font-size:1.1rem;font-weight:700;color:#1B5E20;margin:1.5rem 0 1rem;padding-bottom:.5rem;border-bottom:2px solid #e8f5e9">
+                <i class="bi bi-geo-alt"></i> County Selection
+            </h3>
+
+            <div style="margin-bottom:1.25rem">
+                <label for="id_county" style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">{{ form.county.label }}</label>
+                {{ form.county }}
+                <small style="color:#888;font-size:.8rem">Counties already taken are not available for selection.</small>
+                {% if form.county.errors %}<div style="color:#C62828;font-size:.82rem;margin-top:.3rem">{{ form.county.errors.0 }}</div>{% endif %}
+            </div>
+
+            <h3 style="font-size:1.1rem;font-weight:700;color:#1B5E20;margin:1.5rem 0 1rem;padding-bottom:.5rem;border-bottom:2px solid #e8f5e9">
+                <i class="bi bi-lock"></i> Account Password
+            </h3>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem">
+                <div>
+                    <label for="id_password" style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">{{ form.password.label }}</label>
+                    {{ form.password }}
+                    {% if form.password.errors %}<div style="color:#C62828;font-size:.82rem;margin-top:.3rem">{{ form.password.errors.0 }}</div>{% endif %}
+                </div>
+                <div>
+                    <label for="id_password_confirm" style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">{{ form.password_confirm.label }}</label>
+                    {{ form.password_confirm }}
+                    {% if form.password_confirm.errors %}<div style="color:#C62828;font-size:.82rem;margin-top:.3rem">{{ form.password_confirm.errors.0 }}</div>{% endif %}
+                </div>
+            </div>
+
+            {% if form.non_field_errors %}
+            <div style="color:#C62828;font-size:.9rem;margin-bottom:1rem;padding:.8rem;background:#fce4ec;border-radius:8px">
+                {% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}
+            </div>
+            {% endif %}
+
+            <button type="submit" style="width:100%;padding:.9rem;background:#1B5E20;color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;transition:background .2s">
+                <i class="bi bi-check-circle"></i> Register as County Admin
+            </button>
+        </form>
+
+        <div style="text-align:center;margin-top:1.5rem;font-size:.88rem;color:#888">
+            Already registered? <a href="{% url 'web_login' %}" style="color:#1B5E20;font-weight:600">Log in to the portal</a>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- Disable already-taken counties in the dropdown -->
+{{ taken_counties|json_script:"taken-counties-data" }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const taken = JSON.parse(document.getElementById('taken-counties-data').textContent);
+    const takenSet = new Set(taken);
+    const sel = document.getElementById('id_county');
+    if (!sel) return;
+    for (const opt of sel.options) {
+        if (opt.value && takenSet.has(opt.value)) {
+            opt.disabled = true;
+            opt.textContent += ' (already registered)';
+        }
+    }
+});
+</script>
+{% endblock %}

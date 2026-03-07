@@ -6,88 +6,129 @@
 {% block content %}
 
 <!-- ══════════════════════════════════════════════════════════════════════════
-     HERO — FULL-SCREEN CINEMATIC
+     HERO — DARK CINEMATIC WITH INTEGRATED COUNTDOWN
      ══════════════════════════════════════════════════════════════════════════ -->
-<section class="hero" id="hero">
-    <!-- Background layers -->
-    <div class="hero-bg">
-        <div class="hero-gradient"></div>
+<section class="hero hero--dark" id="hero">
+    <div class="hero-bg hero-bg--dark">
         <canvas class="hero-canvas" id="heroCanvas"></canvas>
     </div>
 
-    <!-- Content — Phase A (text) -->
-    <div class="hero-content hero-phase hero-phase--active" id="heroPhaseA">
-        <div class="hero-logo-wrap anim-zoom">
-            <div class="hero-logo-ring"></div>
-            <img src="{% static 'img/kyisa_logo.png' %}" alt="KYISA" class="hero-logo-img">
-        </div>
-
-        <h1 class="hero-title">
-            <span class="hero-line anim-up" style="--delay:.25s">Kenya Youth</span>
-            <span class="hero-line anim-up" style="--delay:.45s">Intercounty Sports</span>
-            <span class="hero-line hero-line--accent anim-up" style="--delay:.65s">Association</span>
-        </h1>
-
-        <p class="hero-tagline anim-up" style="--delay:.85s">THE HOME OF KENYAN YOUTH SPORTS</p>
-
-        <p class="hero-quote anim-up" style="--delay:1s">
-            "Champions are built through discipline, teamwork,<br>and the relentless pursuit of excellence."
-        </p>
-
-        <div class="hero-actions anim-up" style="--delay:1.15s">
-            <a href="{% url 'public_competitions' %}" class="btn btn--primary btn--lg">
-                View Competitions
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-            <a href="{% url 'about' %}" class="btn btn--outline btn--lg">Learn More</a>
-        </div>
-
-        <div class="hero-scroll anim-up" style="--delay:1.5s">
-            <div class="scroll-indicator">
-                <div class="scroll-dot"></div>
+    <div class="hero-split">
+        <!-- LEFT: Cycling hero phases -->
+        <div class="hero-left">
+            <!-- Phase A (text) -->
+            <div class="hero-phase hero-phase--active" id="heroPhaseA">
+                <div class="hero-logo-wrap anim-zoom">
+                    <div class="hero-logo-ring"></div>
+                    <img src="{% static 'img/kyisa_logo.png' %}" alt="KYISA" class="hero-logo-img">
+                </div>
+                <h1 class="hero-title">
+                    <span class="hero-line anim-up" style="--delay:.25s">Kenya Youth</span>
+                    <span class="hero-line anim-up" style="--delay:.45s">Intercounty Sports</span>
+                    <span class="hero-line hero-line--accent anim-up" style="--delay:.65s">Association</span>
+                </h1>
+                <p class="hero-tagline anim-up" style="--delay:.85s">THE HOME OF KENYAN YOUTH SPORTS</p>
+                <p class="hero-quote anim-up" style="--delay:1s">
+                    &ldquo;Champions are built through discipline, teamwork, and the relentless pursuit of excellence.&rdquo;
+                </p>
+                <div class="hero-actions anim-up" style="--delay:1.15s">
+                    <a href="{% url 'public_competitions' %}" class="btn btn--gold btn--lg">
+                        View Competitions
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                    <a href="{% url 'about' %}" class="btn btn--outline-light btn--lg">Learn More</a>
+                </div>
             </div>
-            <span>Scroll</span>
-        </div>
-    </div>
 
-    <!-- Content — Phase B (logo showcase) -->
-    <div class="hero-content hero-phase" id="heroPhaseB">
-        <div class="hero-showcase">
-            <div class="hero-showcase__orbit">
-                <div class="hero-showcase__ring hero-showcase__ring--1"></div>
-                <div class="hero-showcase__ring hero-showcase__ring--2"></div>
-                <div class="hero-showcase__ring hero-showcase__ring--3"></div>
+            <!-- Phase B (logo showcase) -->
+            <div class="hero-phase" id="heroPhaseB">
+                <div class="hero-showcase">
+                    <div class="hero-showcase__orbit">
+                        <div class="hero-showcase__ring hero-showcase__ring--1"></div>
+                        <div class="hero-showcase__ring hero-showcase__ring--2"></div>
+                        <div class="hero-showcase__ring hero-showcase__ring--3"></div>
+                    </div>
+                    <img src="{% static 'img/kyisa_logo.png' %}" alt="KYISA" class="hero-showcase__logo">
+                </div>
+                <h2 class="hero-showcase__text">KYISA</h2>
+                <p class="hero-showcase__sub">Empowering Youth Through Sports</p>
+                <div class="hero-actions">
+                    <a href="{% url 'public_competitions' %}" class="btn btn--gold btn--lg">View Competitions</a>
+                    <a href="{% url 'about' %}" class="btn btn--outline-light btn--lg">Learn More</a>
+                </div>
             </div>
-            <img src="{% static 'img/kyisa_logo.png' %}" alt="KYISA" class="hero-showcase__logo">
-        </div>
-        <h2 class="hero-showcase__text">KYISA</h2>
-        <p class="hero-showcase__sub">Empowering Youth Through Sports</p>
-        <div class="hero-actions">
-            <a href="{% url 'public_competitions' %}" class="btn btn--primary btn--lg">
-                View Competitions
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-            <a href="{% url 'about' %}" class="btn btn--outline btn--lg">Learn More</a>
-        </div>
-    </div>
 
-    <!-- Content — Phase C (Kenyan flag) -->
-    <div class="hero-content hero-phase" id="heroPhaseC">
-        <div class="kenya-flag-wrap">
-            <!-- Flag pole -->
-            <div class="flag-pole">
-                <div class="flag-pole-cap"></div>
-            </div>
-            <!-- Flag fabric — real image with wind animation -->
-            <div class="kenya-flag">
-                <img src="{% static 'img/kenya_flag.png' %}" alt="Flag of Kenya" class="flag-img">
+            <!-- Phase C (Kenyan flag) -->
+            <div class="hero-phase" id="heroPhaseC">
+                <div class="kenya-flag-wrap">
+                    <div class="flag-pole"><div class="flag-pole-cap"></div></div>
+                    <div class="kenya-flag">
+                        <img src="{% static 'img/kenya_flag.png' %}" alt="Flag of Kenya" class="flag-img">
+                    </div>
+                </div>
+                <div class="flag-text-block">
+                    <p class="flag-quote">&ldquo;Our children may learn about heroes of the past. Our task is to make ourselves architects of the future.&rdquo;</p>
+                    <span class="flag-author">&mdash; Mzee Jomo Kenyatta, <em>First President of Kenya</em></span>
+                </div>
             </div>
         </div>
-        <div class="flag-text-block">
-            <p class="flag-quote">
-                &ldquo;Our children may learn about heroes of the past. Our task is to make ourselves architects of the future.&rdquo;
-            </p>
-            <span class="flag-author">&mdash; Mzee Jomo Kenyatta, <em>First President of Kenya</em></span>
+
+        <!-- RIGHT: Countdown — modern glass card -->
+        <div class="hero-right">
+            <div class="cd-card">
+                <div class="cd-card__glow"></div>
+                <div class="cd-card__inner">
+                    <span class="cd-edition">11th Edition</span>
+                    <h2 class="cd-title">KYISA 2026</h2>
+                    <p class="cd-host">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        Laikipia County
+                    </p>
+
+                    <div class="cd-timer" id="countdownTimer">
+                        <div class="cd-unit">
+                            <div class="cd-ring">
+                                <svg viewBox="0 0 80 80"><circle class="cd-ring__track" cx="40" cy="40" r="36"/><circle class="cd-ring__fill cd-ring__fill--days" cx="40" cy="40" r="36"/></svg>
+                                <span class="cd-num" id="cdDays">00</span>
+                            </div>
+                            <span class="cd-label">Days</span>
+                        </div>
+                        <div class="cd-unit">
+                            <div class="cd-ring">
+                                <svg viewBox="0 0 80 80"><circle class="cd-ring__track" cx="40" cy="40" r="36"/><circle class="cd-ring__fill cd-ring__fill--hrs" cx="40" cy="40" r="36"/></svg>
+                                <span class="cd-num" id="cdHours">00</span>
+                            </div>
+                            <span class="cd-label">Hours</span>
+                        </div>
+                        <div class="cd-unit">
+                            <div class="cd-ring">
+                                <svg viewBox="0 0 80 80"><circle class="cd-ring__track" cx="40" cy="40" r="36"/><circle class="cd-ring__fill cd-ring__fill--min" cx="40" cy="40" r="36"/></svg>
+                                <span class="cd-num" id="cdMins">00</span>
+                            </div>
+                            <span class="cd-label">Min</span>
+                        </div>
+                        <div class="cd-unit">
+                            <div class="cd-ring">
+                                <svg viewBox="0 0 80 80"><circle class="cd-ring__track" cx="40" cy="40" r="36"/><circle class="cd-ring__fill cd-ring__fill--sec" cx="40" cy="40" r="36"/></svg>
+                                <span class="cd-num" id="cdSecs">00</span>
+                            </div>
+                            <span class="cd-label">Sec</span>
+                        </div>
+                    </div>
+
+                    <div class="cd-meta">
+                        <p class="cd-date">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            11 Apr — 17 Apr 2026
+                        </p>
+                    </div>
+
+                    <div class="cd-cta">
+                        <span class="cd-live"><span class="cd-live__dot"></span> Registration Open</span>
+                        <a href="{% url 'team_register' %}" class="btn btn--gold btn--sm">Register Your Team →</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -95,357 +136,172 @@
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════════════════
-     STATS TICKER
+     STORIES — IMMERSIVE FULLSCREEN WITH LOGO WATERMARK
      ══════════════════════════════════════════════════════════════════════════ -->
-<div class="ticker">
-    <div class="ticker-track">
-        <div class="ticker-content" id="tickerContent">
-            <span class="ticker-item"><strong>{{ stats.competitions|default:"0" }}</strong> Competitions</span>
-            <span class="ticker-sep">&#x2022;</span>
-            <span class="ticker-item"><strong>{{ stats.teams|default:"0" }}</strong> Teams</span>
-            <span class="ticker-sep">&#x2022;</span>
-            <span class="ticker-item"><strong>{{ stats.players|default:"0" }}</strong> Players</span>
-            <span class="ticker-sep">&#x2022;</span>
-            <span class="ticker-item"><strong>47</strong> Counties</span>
-            <span class="ticker-sep">&#x2022;</span>
-            <span class="ticker-item"><strong>{{ stats.competitions|default:"0" }}</strong> Competitions</span>
-            <span class="ticker-sep">&#x2022;</span>
-            <span class="ticker-item"><strong>{{ stats.teams|default:"0" }}</strong> Teams</span>
-            <span class="ticker-sep">&#x2022;</span>
-            <span class="ticker-item"><strong>{{ stats.players|default:"0" }}</strong> Players</span>
-            <span class="ticker-sep">&#x2022;</span>
-            <span class="ticker-item"><strong>47</strong> Counties</span>
-            <span class="ticker-sep">&#x2022;</span>
+<section class="stories-hero" id="news">
+    <!-- Watermark logo -->
+    <div class="stories-hero__watermark">
+        <img src="{% static 'img/kyisa_logo.png' %}" alt="">
+    </div>
+
+    <!-- Story panels (fullscreen bg images) -->
+    <div class="stories-hero__slides" id="storySlides">
+        <div class="story-panel story-panel--active" data-idx="0">
+            <img src="{% static 'img/kyisa_women_football.jpg' %}" alt="Women's football" class="story-panel__bg">
+            <div class="story-panel__overlay"></div>
+            <div class="story-panel__content">
+                <span class="story-panel__tag">Women's Football</span>
+                <h3 class="story-panel__title">High-intensity action on the pitch</h3>
+            </div>
+        </div>
+        <div class="story-panel" data-idx="1">
+            <img src="{% static 'img/kyisa_men_football.jpg' %}" alt="Men's football" class="story-panel__bg">
+            <div class="story-panel__overlay"></div>
+            <div class="story-panel__content">
+                <span class="story-panel__tag">KYISA 2025 · Homa Bay</span>
+                <h3 class="story-panel__title">Makueni County Dominates at KYISA Games</h3>
+                <p class="story-panel__desc">A stunning 1-0 victory against defending champions Busia sealed their place in history. The women footballers produced a commanding 2-0 win over Kajiado.</p>
+            </div>
+        </div>
+        <div class="story-panel" data-idx="2">
+            <img src="{% static 'img/kyisa_basketball.jpg' %}" alt="Basketball" class="story-panel__bg">
+            <div class="story-panel__overlay"></div>
+            <div class="story-panel__content">
+                <span class="story-panel__tag">Basketball</span>
+                <h3 class="story-panel__title">Thrilling court action across counties</h3>
+            </div>
+        </div>
+        <div class="story-panel" data-idx="3">
+            <img src="{% static 'img/kyisa_champions.jpg' %}" alt="Champions" class="story-panel__bg">
+            <div class="story-panel__overlay"></div>
+            <div class="story-panel__content">
+                <span class="story-panel__tag">Champions · 10th Edition</span>
+                <h3 class="story-panel__title">Makueni's Historic Triple Crown</h3>
+                <p class="story-panel__desc">Women's football title defended for the third consecutive year, defeating Kajiado 5-4 on penalties in a thrilling final.</p>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- ══════════════════════════════════════════════════════════════════════════
-     COUNTDOWN — NEXT EDITION
-     ══════════════════════════════════════════════════════════════════════════ -->
-<section class="countdown-section" id="countdown">
-    <div class="container">
-        <div class="countdown-inner reveal">
-            <div class="countdown-info">
-                <span class="badge badge--red">11th Edition</span>
-                <h2 class="countdown-title">KYISA 2026<br><span>Laikipia County</span></h2>
-                <p class="countdown-dates">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C62828" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    11th April — 17th April 2026
-                </p>
-                <p class="countdown-venue">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B5E20" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                    Nyahururu Town, Laikipia County, Kenya
-                </p>
-                <div style="margin-top:1.25rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
-                    <span class="badge" style="border-color:rgba(76,175,80,.5);color:#A5D6A7;background:rgba(76,175,80,.18);font-size:.85rem;padding:.35rem .9rem;animation:pulse-glow 2s ease-in-out infinite;">🟢 Registration Open</span>
-                    <a href="{% url 'team_register' %}" class="btn btn--primary" style="font-size:.85rem;padding:.55rem 1.4rem;">Register Your Team →</a>
-                </div>
-            </div>
-            <div class="countdown-timer" id="countdownTimer">
-                <div class="countdown-unit">
-                    <span class="countdown-num" id="cdDays">00</span>
-                    <span class="countdown-label">Days</span>
-                </div>
-                <div class="countdown-sep">:</div>
-                <div class="countdown-unit">
-                    <span class="countdown-num" id="cdHours">00</span>
-                    <span class="countdown-label">Hours</span>
-                </div>
-                <div class="countdown-sep">:</div>
-                <div class="countdown-unit">
-                    <span class="countdown-num" id="cdMins">00</span>
-                    <span class="countdown-label">Minutes</span>
-                </div>
-                <div class="countdown-sep">:</div>
-                <div class="countdown-unit">
-                    <span class="countdown-num" id="cdSecs">00</span>
-                    <span class="countdown-label">Seconds</span>
-                </div>
-            </div>
+    <!-- Navigation -->
+    <div class="stories-hero__nav">
+        <div class="stories-hero__dots" id="storyDots">
+            <button class="sh-dot sh-dot--active" data-idx="0"></button>
+            <button class="sh-dot" data-idx="1"></button>
+            <button class="sh-dot" data-idx="2"></button>
+            <button class="sh-dot" data-idx="3"></button>
         </div>
+        <div class="stories-hero__progress" id="storyProgress"></div>
+    </div>
+
+    <!-- Slide counter -->
+    <div class="stories-hero__counter">
+        <span id="storyCounter">01</span> / 04
     </div>
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════════════════
-     WHAT WE DO
+     MATCH CENTER — FIXTURES + STATS + RESULTS
      ══════════════════════════════════════════════════════════════════════════ -->
-<section class="sec" id="about">
-    <div class="container">
-        <div class="sec-head reveal">
-            <span class="badge">What We Do</span>
-            <h2 class="sec-title">The Annual Youth Championship<br>For Ages 18 – 23</h2>
-            <div class="sec-line"></div>
-            <p style="max-width:680px;margin:.8rem auto 0;color:#555;font-size:1.05rem;line-height:1.7;">
-                KYISA is Kenya's premier annual intercounty sports championship, bringing together talented young athletes aged <strong>18 to 23</strong> from all 47 counties to compete at the highest level.
-            </p>
-        </div>
-
-        <div class="features-grid">
-            <div class="feature reveal" style="--delay:.05s">
-                <span class="feature-num">01</span>
-                <h3>Annual Championship</h3>
-                <p>Every year, KYISA hosts a week-long multi-sport championship where counties field their best youth athletes to compete for glory.</p>
-            </div>
-            <div class="feature reveal" style="--delay:.12s">
-                <span class="feature-num">02</span>
-                <h3>Youth Ages 18 – 23</h3>
-                <p>Exclusively for young Kenyans aged 18 to 23 — identifying, developing, and celebrating the next generation of sporting talent.</p>
-            </div>
-            <div class="feature reveal" style="--delay:.19s">
-                <span class="feature-num">03</span>
-                <h3>Intercounty Competition</h3>
-                <p>Teams representing all 47 counties go head-to-head in football, basketball, volleyball, handball and more.</p>
-            </div>
-            <div class="feature reveal" style="--delay:.26s">
-                <span class="feature-num">04</span>
-                <h3>Results & Stats</h3>
-                <p>Real-time tracking of fixtures, results, standings, and player statistics across all competitions.</p>
+<section class="match-center" id="fixtures">
+    <!-- Stats strip -->
+    <div class="mc-stats">
+        <div class="container">
+            <div class="mc-stats__row">
+                <div class="mc-stat reveal">
+                    <span class="mc-stat__num" data-count="{{ stats.competitions|default:'0' }}">0</span>
+                    <span class="mc-stat__label">Competitions</span>
+                </div>
+                <div class="mc-stat reveal" style="--delay:.06s">
+                    <span class="mc-stat__num" data-count="{{ stats.teams|default:'0' }}">0</span>
+                    <span class="mc-stat__label">Teams</span>
+                </div>
+                <div class="mc-stat reveal" style="--delay:.12s">
+                    <span class="mc-stat__num" data-count="{{ stats.players|default:'0' }}">0</span>
+                    <span class="mc-stat__label">Players</span>
+                </div>
+                <div class="mc-stat reveal" style="--delay:.18s">
+                    <span class="mc-stat__num" data-count="47">0</span>
+                    <span class="mc-stat__label">Counties</span>
+                </div>
             </div>
         </div>
     </div>
-</section>
 
-<!-- ══════════════════════════════════════════════════════════════════════════
-     UPCOMING FIXTURES
-     ══════════════════════════════════════════════════════════════════════════ -->
-<section class="sec sec--dark" id="fixtures">
-    <div class="container">
-        <div class="sec-head reveal">
-            <span class="badge badge--red">Match Day</span>
-            <h2 class="sec-title">Upcoming Fixtures</h2>
-            <div class="sec-line"></div>
-        </div>
-
-        {% if upcoming_fixtures %}
-        <div class="card-grid card-grid--3">
-            {% for match in upcoming_fixtures %}
-            <div class="match-card reveal" style="--delay:{{ forloop.counter0 }}0ms">
-                <div class="match-card__comp">{{ match.competition.name }}</div>
-                <div class="match-card__body">
-                    <div class="match-card__team">
-                        <div class="team-badge">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1B5E20" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <!-- Fixtures + Results grid -->
+    <div class="mc-content">
+        <div class="container">
+            <div class="mc-grid">
+                <!-- Fixtures column -->
+                <div class="mc-col">
+                    <div class="mc-col__head reveal">
+                        <span class="mc-badge mc-badge--red">Live</span>
+                        <h3 class="mc-col__title">Upcoming Fixtures</h3>
+                    </div>
+                    {% if upcoming_fixtures %}
+                    <div class="mc-cards">
+                        {% for match in upcoming_fixtures %}
+                        <div class="mc-card reveal" style="--delay:{{ forloop.counter0 }}0ms">
+                            <div class="mc-card__comp">{{ match.competition.name }}</div>
+                            <div class="mc-card__body">
+                                <span class="mc-card__team">{{ match.home_team.name }}</span>
+                                <div class="mc-card__vs">
+                                    <strong>VS</strong>
+                                    <small>{{ match.match_date|date:"d M · H:i" }}</small>
+                                </div>
+                                <span class="mc-card__team">{{ match.away_team.name }}</span>
+                            </div>
+                            <div class="mc-card__foot">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                {{ match.venue.name|default:"TBD" }}
+                            </div>
                         </div>
-                        <span>{{ match.home_team.name }}</span>
+                        {% endfor %}
                     </div>
-                    <div class="match-card__vs">
-                        <strong>VS</strong>
-                        <small>{{ match.match_date|date:"d M · H:i" }}</small>
+                    {% else %}
+                    <div class="mc-empty reveal">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(249,168,37,.3)" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <p>No upcoming fixtures</p>
                     </div>
-                    <div class="match-card__team">
-                        <div class="team-badge">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1B5E20" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    {% endif %}
+                </div>
+
+                <!-- Results column -->
+                <div class="mc-col">
+                    <div class="mc-col__head reveal">
+                        <span class="mc-badge">Results</span>
+                        <h3 class="mc-col__title">Recent Scores</h3>
+                    </div>
+                    {% if recent_results %}
+                    <div class="mc-cards">
+                        {% for match in recent_results %}
+                        <div class="mc-result reveal" style="--delay:{{ forloop.counter0 }}0ms">
+                            <div class="mc-result__head">
+                                <span>{{ match.competition.name }}</span>
+                                <span>{{ match.match_date|date:"d M" }}</span>
+                            </div>
+                            <div class="mc-result__body">
+                                <span>{{ match.home_team.name }}</span>
+                                <div class="mc-result__score">
+                                    <strong>{{ match.home_score|default:"0" }}</strong>
+                                    <em>–</em>
+                                    <strong>{{ match.away_score|default:"0" }}</strong>
+                                </div>
+                                <span>{{ match.away_team.name }}</span>
+                            </div>
+                            <div class="mc-result__ft">FT</div>
                         </div>
-                        <span>{{ match.away_team.name }}</span>
+                        {% endfor %}
                     </div>
-                </div>
-                <div class="match-card__foot">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                    {{ match.venue.name|default:"TBD" }}
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class="empty-state reveal">
-            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(27,94,32,.25)" stroke-width="1"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <h3>No Upcoming Fixtures</h3>
-            <p>Check back soon for scheduled matches.</p>
-        </div>
-        {% endif %}
-    </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════════════════
-     COUNTER STATS
-     ══════════════════════════════════════════════════════════════════════════ -->
-<section class="stats-bar">
-    <div class="container">
-        <div class="stats-row">
-            <div class="stat-item reveal" style="--delay:0s">
-                <span class="stat-num" data-count="{{ stats.competitions|default:'0' }}">0</span>
-                <span class="stat-label">Competitions</span>
-            </div>
-            <div class="stat-item reveal" style="--delay:.08s">
-                <span class="stat-num" data-count="{{ stats.teams|default:'0' }}">0</span>
-                <span class="stat-label">Registered Teams</span>
-            </div>
-            <div class="stat-item reveal" style="--delay:.16s">
-                <span class="stat-num" data-count="{{ stats.players|default:'0' }}">0</span>
-                <span class="stat-label">Active Players</span>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════════════════
-     RECENT RESULTS
-     ══════════════════════════════════════════════════════════════════════════ -->
-<section class="sec" id="results">
-    <div class="container">
-        <div class="sec-head reveal">
-            <span class="badge">Scoreboard</span>
-            <h2 class="sec-title">Recent Results</h2>
-            <div class="sec-line"></div>
-        </div>
-
-        {% if recent_results %}
-        <div class="card-grid card-grid--3">
-            {% for match in recent_results %}
-            <div class="result-card reveal" style="--delay:{{ forloop.counter0 }}0ms">
-                <div class="result-card__head">
-                    <span>{{ match.competition.name }}</span>
-                    <span>{{ match.match_date|date:"d M Y" }}</span>
-                </div>
-                <div class="result-card__body">
-                    <span class="result-card__team">{{ match.home_team.name }}</span>
-                    <div class="result-card__score">
-                        <span>{{ match.home_score|default:"0" }}</span>
-                        <em>–</em>
-                        <span>{{ match.away_score|default:"0" }}</span>
+                    <div style="text-align:center;margin-top:1rem" class="reveal">
+                        <a href="{% url 'public_results' %}" class="btn btn--outline btn--sm">All Results →</a>
                     </div>
-                    <span class="result-card__team">{{ match.away_team.name }}</span>
+                    {% else %}
+                    <div class="mc-empty reveal">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(249,168,37,.3)" stroke-width="1.5"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                        <p>No results yet</p>
+                    </div>
+                    {% endif %}
                 </div>
-                <div class="result-card__ft">Full Time</div>
-            </div>
-            {% endfor %}
-        </div>
-        <div style="text-align:center;margin-top:2rem" class="reveal">
-            <a href="{% url 'public_results' %}" class="btn btn--primary">View All Results &rarr;</a>
-        </div>
-        {% else %}
-        <div class="empty-state reveal">
-            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(27,94,32,.25)" stroke-width="1"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-            <h3>No Results Yet</h3>
-            <p>Match results will appear here once competitions begin.</p>
-        </div>
-        {% endif %}
-    </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════════════════
-     STORIES CAROUSEL
-     ══════════════════════════════════════════════════════════════════════════ -->
-<section class="stories-section sec sec--dark" id="news">
-    <div class="container">
-        <div class="sec-head reveal">
-            <span class="badge badge--red">Newsroom</span>
-            <h2 class="sec-title">Stories &amp; Highlights</h2>
-            <div class="sec-line"></div>
-        </div>
-
-        <div class="stories-carousel reveal">
-            <div class="stories-progress" id="storiesProgress"></div>
-            <div class="story-slide story-slide--active">
-                <div class="story-slide__img">
-                    <img src="{% static 'img/kyisa_women_football.jpg' %}" alt="Women's football action at KYISA">
-                    <div class="story-slide__overlay">
-                        <span class="story-slide__tag">Women's Football</span>
-                        <h3>High-intensity action on the pitch</h3>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Slide 2 — story + image -->
-            <div class="story-slide">
-                <div class="story-slide__split">
-                    <div class="story-slide__text">
-                        <span class="story-slide__tag">KYISA 2025 &middot; Homa Bay</span>
-                        <h3>Makueni County Dominates at KYISA Games</h3>
-                        <p>Makueni made an emphatic statement at the KYISA games in Homa Bay. The men's football team pulled off a stunning 1-0 victory against defending champions Busia, while the women footballers produced a commanding 2-0 victory over Kajiado to book their semifinal spot.</p>
-                        <p>On the basketball court, the women's team edged Siaya 48-47 in a nail-biting encounter that went down to the wire.</p>
-                    </div>
-                    <div class="story-slide__img">
-                        <img src="{% static 'img/kyisa_men_football.jpg' %}" alt="Men's football action at KYISA">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Slide 3 — image only -->
-            <div class="story-slide">
-                <div class="story-slide__img">
-                    <img src="{% static 'img/kyisa_basketball.jpg' %}" alt="Basketball action at KYISA">
-                    <div class="story-slide__overlay">
-                        <span class="story-slide__tag">Basketball</span>
-                        <h3>Thrilling court action across counties</h3>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Slide 4 — story + image -->
-            <div class="story-slide">
-                <div class="story-slide__split">
-                    <div class="story-slide__text">
-                        <span class="story-slide__tag">Champions &middot; 10th Edition</span>
-                        <h3>Makueni's Historic Triple Crown</h3>
-                        <p>Makueni County recorded their most successful performance at the 10th edition of KYISA Games. The women's football team defended their title for the third consecutive year, defeating Kajiado 5-4 on penalties in a thrilling final.</p>
-                        <p>Makueni also claimed victory in men's basketball, overpowering hosts Homa Bay 78-52. Overall, the county reached five finals — showcasing its emergence as a sporting giant.</p>
-                    </div>
-                    <div class="story-slide__img">
-                        <img src="{% static 'img/kyisa_champions.jpg' %}" alt="Makueni women's team celebrating with trophy">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Carousel controls -->
-        <div class="stories-controls reveal">
-            <button class="stories-btn stories-btn--prev" id="storiesPrev" aria-label="Previous">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
-            </button>
-            <div class="stories-dots" id="storiesDots">
-                <button class="stories-dot stories-dot--active" data-idx="0"></button>
-                <button class="stories-dot" data-idx="1"></button>
-                <button class="stories-dot" data-idx="2"></button>
-                <button class="stories-dot" data-idx="3"></button>
-            </div>
-            <button class="stories-btn stories-btn--next" id="storiesNext" aria-label="Next">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
-            </button>
-        </div>
-    </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════════════════
-     AFFILIATIONS
-     ══════════════════════════════════════════════════════════════════════════ -->
-<section class="affiliations-section" id="affiliations">
-    <div class="container">
-        <p class="affil-label reveal">Proudly affiliated with</p>
-        <div class="affil-row reveal">
-            <div class="affil-item">
-                <img src="{% static 'img/fkf_logo.png' %}" alt="Football Kenya Federation">
-                <span>Football Kenya Federation</span>
-            </div>
-            <div class="affil-item">
-                <img src="{% static 'img/kbf_logo.png' %}" alt="Kenya Basketball Federation">
-                <span>Kenya Basketball Federation</span>
-            </div>
-            <div class="affil-item">
-                <img src="{% static 'img/kvf_logo.png' %}" alt="Kenya Volleyball Federation">
-                <span>Kenya Volleyball Federation</span>
-            </div>
-            <div class="affil-item">
-                <img src="{% static 'img/khf_logo.png' %}" alt="Kenya Handball Federation">
-                <span>Kenya Handball Federation</span>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════════════════
-     CTA
-     ══════════════════════════════════════════════════════════════════════════ -->
-<section class="cta-section">
-    <div class="container">
-        <div class="cta-box reveal">
-            <img src="{% static 'img/kyisa_logo.png' %}" alt="KYISA" class="cta-logo">
-            <h2>Join the Movement</h2>
-            <p>Whether you're a team or a supporter — KYISA is your home for youth sports in Kenya.</p>
-            <div class="cta-actions">
-                <a href="{% url 'public_competitions' %}" class="btn btn--primary btn--lg">Browse Competitions</a>
-                <a href="{% url 'contact' %}" class="btn btn--outline btn--lg">Contact Us</a>
             </div>
         </div>
     </div>
@@ -471,21 +327,32 @@
         }
     }, 100);
 
-    /* ── Countdown timer ──────────────────────────────────────────── */
+    /* ── Countdown timer + ring animation ─────────────────────────── */
     var targetDate = new Date('2026-04-11T08:00:00+03:00').getTime();
     var cdDays = document.getElementById('cdDays');
     var cdHours = document.getElementById('cdHours');
     var cdMins = document.getElementById('cdMins');
     var cdSecs = document.getElementById('cdSecs');
+    var CIRC = 2 * Math.PI * 36; // ~226.2 matches stroke-dasharray
+    var ringFills = {
+        days: document.querySelector('.cd-ring__fill--days'),
+        hrs:  document.querySelector('.cd-ring__fill--hrs'),
+        min:  document.querySelector('.cd-ring__fill--min'),
+        sec:  document.querySelector('.cd-ring__fill--sec')
+    };
+
+    function setRing(el, fraction) {
+        if (el) el.style.strokeDashoffset = CIRC * (1 - fraction);
+    }
 
     function updateCountdown() {
         var now = new Date().getTime();
         var diff = targetDate - now;
         if (diff <= 0) {
-            cdDays.textContent = '00';
-            cdHours.textContent = '00';
-            cdMins.textContent = '00';
-            cdSecs.textContent = '00';
+            cdDays.textContent = '00'; cdHours.textContent = '00';
+            cdMins.textContent = '00'; cdSecs.textContent = '00';
+            setRing(ringFills.days, 0); setRing(ringFills.hrs, 0);
+            setRing(ringFills.min, 0); setRing(ringFills.sec, 0);
             return;
         }
         var d = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -496,6 +363,10 @@
         cdHours.textContent = h < 10 ? '0' + h : h;
         cdMins.textContent = m < 10 ? '0' + m : m;
         cdSecs.textContent = s < 10 ? '0' + s : s;
+        setRing(ringFills.days, Math.min(d / 365, 1));
+        setRing(ringFills.hrs, h / 24);
+        setRing(ringFills.min, m / 60);
+        setRing(ringFills.sec, s / 60);
     }
     updateCountdown();
     setInterval(updateCountdown, 1000);
@@ -530,7 +401,7 @@
             }
         });
     }, {threshold: 0.5});
-    document.querySelectorAll('.stat-num').forEach(function(el){ counterObs.observe(el); });
+    document.querySelectorAll('.mc-stat__num').forEach(function(el){ counterObs.observe(el); });
 
     /* ── Navbar solid on scroll ─────────────────────────────────────── */
     var nav = document.getElementById('fkfNav');
@@ -547,7 +418,6 @@
             toggle.classList.toggle('open');
             links.classList.toggle('open');
         });
-        // Close menu when clicking a link
         links.querySelectorAll('a').forEach(function(a){
             a.addEventListener('click', function(){
                 toggle.classList.remove('open');
@@ -562,65 +432,59 @@
     var phaseC = document.getElementById('heroPhaseC');
     if (phaseA && phaseB && phaseC) {
         var heroPhases = [phaseA, phaseB, phaseC];
-        var phaseDurations = [8000, 8000, 9000]; // text, logo, flag
+        var phaseDurations = [8000, 8000, 9000];
         var activePhase = 0;
-        var initialDelay = 4000;
 
         function switchHeroPhase() {
             heroPhases[activePhase].classList.remove('hero-phase--active');
             activePhase = (activePhase + 1) % heroPhases.length;
             heroPhases[activePhase].classList.add('hero-phase--active');
-            // schedule next switch with per-phase duration
             setTimeout(switchHeroPhase, phaseDurations[activePhase]);
         }
-
-        setTimeout(function() {
+        setTimeout(function(){
             setTimeout(switchHeroPhase, phaseDurations[activePhase]);
-        }, initialDelay);
+        }, 4000);
     }
 
-    /* ── Stories carousel ─────────────────────────────────────────────── */
-    var slides = document.querySelectorAll('.story-slide');
-    var dots = document.querySelectorAll('.stories-dot');
-    var prevBtn = document.getElementById('storiesPrev');
-    var nextBtn = document.getElementById('storiesNext');
-    var progressBar = document.getElementById('storiesProgress');
-    var currentSlide = 0;
-    var slideCount = slides.length;
-    var autoInterval;
+    /* ── Stories fullscreen carousel ──────────────────────────────────── */
+    var panels = document.querySelectorAll('.story-panel');
+    var shDots = document.querySelectorAll('.sh-dot');
+    var storyCounter = document.getElementById('storyCounter');
+    var storyProgress = document.getElementById('storyProgress');
+    var curPanel = 0;
+    var panelCount = panels.length;
+    var storyAutoInt;
 
-    function goToSlide(idx) {
-        slides[currentSlide].classList.remove('story-slide--active');
-        dots[currentSlide].classList.remove('stories-dot--active');
-        currentSlide = (idx + slideCount) % slideCount;
-        slides[currentSlide].classList.add('story-slide--active');
-        dots[currentSlide].classList.add('stories-dot--active');
-        // restart progress bar
-        if (progressBar) {
-            progressBar.style.animation = 'none';
-            progressBar.offsetHeight;
-            progressBar.style.animation = '';
+    function goToPanel(idx) {
+        panels[curPanel].classList.remove('story-panel--active');
+        shDots[curPanel].classList.remove('sh-dot--active');
+        curPanel = (idx + panelCount) % panelCount;
+        panels[curPanel].classList.add('story-panel--active');
+        shDots[curPanel].classList.add('sh-dot--active');
+        if (storyCounter) storyCounter.textContent = (curPanel + 1 < 10 ? '0' : '') + (curPanel + 1);
+        if (storyProgress) {
+            storyProgress.style.animation = 'none';
+            storyProgress.offsetHeight;
+            storyProgress.style.animation = '';
         }
     }
 
-    function startAuto() {
-        autoInterval = setInterval(function(){ goToSlide(currentSlide + 1); }, 6000);
+    function startStoryAuto() {
+        storyAutoInt = setInterval(function(){ goToPanel(curPanel + 1); }, 5000);
     }
-    function resetAuto() {
-        clearInterval(autoInterval);
-        startAuto();
+    function resetStoryAuto() {
+        clearInterval(storyAutoInt);
+        startStoryAuto();
     }
 
-    if (prevBtn && nextBtn && slideCount > 0) {
-        nextBtn.addEventListener('click', function(){ goToSlide(currentSlide + 1); resetAuto(); });
-        prevBtn.addEventListener('click', function(){ goToSlide(currentSlide - 1); resetAuto(); });
-        dots.forEach(function(dot) {
+    if (panelCount > 0) {
+        shDots.forEach(function(dot) {
             dot.addEventListener('click', function(){
-                goToSlide(parseInt(dot.getAttribute('data-idx')));
-                resetAuto();
+                goToPanel(parseInt(dot.getAttribute('data-idx')));
+                resetStoryAuto();
             });
         });
-        startAuto();
+        startStoryAuto();
     }
 
     /* ── Canvas particles ───────────────────────────────────────────── */
@@ -652,7 +516,7 @@
                 if(d.y<0||d.y>h) d.dy*=-1;
                 ctx.beginPath();
                 ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
-                ctx.fillStyle='rgba(27,94,32,'+d.o+')';
+                ctx.fillStyle='rgba(76,175,80,'+d.o+')';
                 ctx.fill();
             }
             requestAnimationFrame(draw);

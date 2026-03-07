@@ -5,17 +5,11 @@ Adapted from FKFSYS teams registration workflow.
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from .models import Team, Player, PLAYER_MIN_AGE, PLAYER_MAX_AGE
-
-
-"""
-KYISA Teams — Django Forms for Registration & Management
-Adapted from FKFSYS teams registration workflow.
-"""
-from django import forms
-from django.core.exceptions import ValidationError
-from django.utils import timezone
-from .models import Team, Player, PLAYER_MIN_AGE, PLAYER_MAX_AGE
+from .models import (
+    Team, Player, PLAYER_MIN_AGE, PLAYER_MAX_AGE,
+    CountyRegistration, CountyPlayer, CountyDiscipline, SQUAD_LIMITS,
+)
+from accounts.models import KenyaCounty, User
 from competitions.models import Competition, CompetitionStatus, SportType
 
 
@@ -240,4 +234,151 @@ class PlayerRegistrationForm(forms.ModelForm):
                     f'Player is {age} years old. Maximum age is {PLAYER_MAX_AGE}. '
                     f'Registration is not allowed.'
                 )
+        return dob
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  COUNTY SPORTS ADMIN — Registration Form (public, no login)
+# ══════════════════════════════════════════════════════════════════════════════
+
+class CountyAdminRegistrationForm(forms.Form):
+    """Public form for a county sports admin to sign up."""
+    first_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First name'}),
+        label='First Name *',
+    )
+    last_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last name'}),
+        label='Last Name *',
+    )
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'you@example.com'}),
+        label='Email Address *',
+    )
+    phone = forms.CharField(
+        max_length=20,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+254712345678'}),
+        label='Phone Number *',
+    )
+    county = forms.ChoiceField(
+        choices=[('', '— Select your county —')] + list(KenyaCounty.choices),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label='County *',
+    )
+    password = forms.CharField(
+        min_length=8,
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Min 8 characters'}),
+        label='Password *',
+    )
+    password_confirm = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Repeat password'}),
+        label='Confirm Password *',
+    )
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if User.objects.filter(email__iexact=email).exists():
+            raise ValidationError('An account with this email already exists.')
+        return email.lower()
+
+    def clean_county(self):
+        county = self.cleaned_data['county']
+        if CountyRegistration.objects.filter(county=county).exists():
+            raise ValidationError('A county sports admin has already registered for this county.')
+        return county
+
+    def clean(self):
+        cd = super().clean()
+        pw1 = cd.get('password')
+        pw2 = cd.get('password_confirm')
+        if pw1 and pw2 and pw1 != pw2:
+            self.add_error('password_confirm', 'Passwords do not match.')
+        return cd
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  COUNTY SPORTS ADMIN — Payment Submission
+# ══════════════════════════════════════════════════════════════════════════════
+
+class CountyPaymentForm(forms.Form):
+    """County admin submits M-Pesa ref or bank slip as payment proof."""
+    mpesa_reference = forms.CharField(
+        max_length=100, required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. RIA7K8QX3P'}),
+        label='M-Pesa Reference',
+    )
+    bank_slip = forms.FileField(
+        required=False,
+        widget=forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*,.pdf'}),
+        label='Bank Slip (image or PDF)',
+    )
+    payment_amount = forms.DecimalField(
+        max_digits=10, decimal_places=2,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '250000'}),
+        label='Amount Paid (KSh) *',
+    )
+
+    def clean(self):
+        cd = super().clean()
+        if not cd.get('mpesa_reference') and not cd.get('bank_slip'):
+            raise ValidationError('Please provide either an M-Pesa reference or upload a bank slip.')
+        return cd
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  COUNTY SPORTS ADMIN — Add Player Form
+# ══════════════════════════════════════════════════════════════════════════════
+
+class CountyPlayerForm(forms.ModelForm):
+    """Form for county admin to register a player under a discipline."""
+
+    class Meta:
+        model = CountyPlayer
+        fields = [
+            'first_name', 'last_name', 'date_of_birth',
+            'national_id_number', 'phone', 'photo', 'id_document',
+        ]
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First name'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last name'}),
+            'date_of_birth': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'national_id_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 12345678'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+254712345678'}),
+            'photo': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
+            'id_document': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*,.pdf'}),
+        }
+        labels = {
+            'first_name': 'First Name *',
+            'last_name': 'Last Name *',
+            'date_of_birth': 'Date of Birth *',
+            'national_id_number': 'National ID Number *',
+            'phone': 'Phone Number',
+            'photo': 'Passport Photo',
+            'id_document': 'Copy of National ID',
+        }
+
+    def clean_national_id_number(self):
+        nid = self.cleaned_data['national_id_number']
+        qs = CountyPlayer.objects.filter(national_id_number=nid)
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            existing = qs.first()
+            raise ValidationError(
+                f'This National ID is already registered under '
+                f'{existing.discipline.registration.county} — {existing.discipline.get_sport_type_display()}.'
+            )
+        return nid
+
+    def clean_date_of_birth(self):
+        dob = self.cleaned_data.get('date_of_birth')
+        if dob:
+            today = timezone.now().date()
+            age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+            if age < PLAYER_MIN_AGE:
+                raise ValidationError(f'Player is {age} — minimum age is {PLAYER_MIN_AGE}.')
+            if age > PLAYER_MAX_AGE:
+                raise ValidationError(f'Player is {age} — maximum age is {PLAYER_MAX_AGE}.')
         return dob

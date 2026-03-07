@@ -17,8 +17,14 @@ from competitions.models import (
     Competition, Fixture, SportType, EXHIBITION_SPORTS, COUNTY_REGISTRATION_FEE_CAP,
     CountyPayment, PaymentStatus, CompetitionStatus,
 )
-from teams.models import Team, Player, VerificationStatus, RejectionReason, PLAYER_MIN_AGE, PLAYER_MAX_AGE
-from teams.forms import TeamRegistrationForm, PlayerRegistrationForm
+from teams.models import (
+    Team, Player, VerificationStatus, RejectionReason, PLAYER_MIN_AGE, PLAYER_MAX_AGE,
+    CountyRegistration, CountyRegStatus, CountyDiscipline, CountyPlayer, SQUAD_LIMITS,
+)
+from teams.forms import (
+    TeamRegistrationForm, PlayerRegistrationForm,
+    CountyAdminRegistrationForm, CountyPaymentForm, CountyPlayerForm,
+)
 from referees.models import (
     RefereeProfile, RefereeAppointment, RefereeAvailability,
     AppointmentStatus, AvailabilityStatus,
@@ -96,17 +102,57 @@ def public_competitions_view(request):
     upcoming  = all_comps.filter(status__in=['upcoming', 'registration'])
     completed = all_comps.filter(status='completed')
 
-    # KYISA sports catalogue — order matters for display
+    # Flat catalogue — used for per-sport competition sections
     SPORT_CATALOGUE = [
-        {'key': SportType.FOOTBALL_MEN,     'label': 'Football (Men)',        'icon': '&#9917;', 'exhibition': False},
-        {'key': SportType.FOOTBALL_WOMEN,   'label': 'Football (Women)',      'icon': '&#9917;', 'exhibition': False},
-        {'key': SportType.VOLLEYBALL_MEN,   'label': 'Volleyball (Men)',      'icon': '&#127952;', 'exhibition': False},
-        {'key': SportType.VOLLEYBALL_WOMEN, 'label': 'Volleyball (Women)',    'icon': '&#127952;', 'exhibition': False},
-        {'key': SportType.BASKETBALL,       'label': 'Basketball',            'icon': '&#127936;', 'exhibition': False},
-        {'key': SportType.BASKETBALL_3X3,   'label': 'Basketball 3x3',        'icon': '&#127936;', 'exhibition': False},
-        {'key': SportType.HANDBALL,         'label': 'Handball',              'icon': '&#129342;', 'exhibition': False},
-        {'key': SportType.BEACH_VOLLEYBALL, 'label': 'Beach Volleyball',      'icon': '&#127958;', 'exhibition': True},
-        {'key': SportType.BEACH_HANDBALL,   'label': 'Beach Handball',        'icon': '&#127958;', 'exhibition': True},
+        {'key': SportType.FOOTBALL_MEN,       'label': 'Football (Men)',          'icon': '\u26BD', 'exhibition': False},
+        {'key': SportType.FOOTBALL_WOMEN,     'label': 'Football (Women)',        'icon': '\u26BD', 'exhibition': False},
+        {'key': SportType.VOLLEYBALL_MEN,     'label': 'Volleyball (Men)',        'icon': '\U0001F3D0', 'exhibition': False},
+        {'key': SportType.VOLLEYBALL_WOMEN,   'label': 'Volleyball (Women)',      'icon': '\U0001F3D0', 'exhibition': False},
+        {'key': SportType.BASKETBALL_MEN,     'label': 'Basketball 5\u00D75 (Men)',   'icon': '\U0001F3C0', 'exhibition': False},
+        {'key': SportType.BASKETBALL_WOMEN,   'label': 'Basketball 5\u00D75 (Women)', 'icon': '\U0001F3C0', 'exhibition': False},
+        {'key': SportType.BASKETBALL_3X3_MEN,   'label': 'Basketball 3\u00D73 (Men)',   'icon': '\U0001F3C0', 'exhibition': False},
+        {'key': SportType.BASKETBALL_3X3_WOMEN, 'label': 'Basketball 3\u00D73 (Women)', 'icon': '\U0001F3C0', 'exhibition': False},
+        {'key': SportType.HANDBALL_MEN,       'label': 'Handball (Men)',          'icon': '\U0001F93E', 'exhibition': False},
+        {'key': SportType.HANDBALL_WOMEN,     'label': 'Handball (Women)',        'icon': '\U0001F93E', 'exhibition': False},
+    ]
+
+    # Grouped disciplines — for the top tile grid with dropdowns
+    DISCIPLINES = [
+        {
+            'name': 'Football', 'icon': '\u26BD', 'exhibition': False,
+            'variants': [
+                {'key': SportType.FOOTBALL_MEN,   'label': 'Men'},
+                {'key': SportType.FOOTBALL_WOMEN, 'label': 'Women'},
+            ],
+        },
+        {
+            'name': 'Volleyball', 'icon': '\U0001F3D0', 'exhibition': False,
+            'variants': [
+                {'key': SportType.VOLLEYBALL_MEN,   'label': 'Men'},
+                {'key': SportType.VOLLEYBALL_WOMEN, 'label': 'Women'},
+            ],
+        },
+        {
+            'name': 'Basketball 5\u00D75', 'icon': '\U0001F3C0', 'exhibition': False,
+            'variants': [
+                {'key': SportType.BASKETBALL_MEN,   'label': 'Men'},
+                {'key': SportType.BASKETBALL_WOMEN, 'label': 'Women'},
+            ],
+        },
+        {
+            'name': 'Basketball 3\u00D73', 'icon': '\U0001F3C0', 'exhibition': False,
+            'variants': [
+                {'key': SportType.BASKETBALL_3X3_MEN,   'label': 'Men'},
+                {'key': SportType.BASKETBALL_3X3_WOMEN, 'label': 'Women'},
+            ],
+        },
+        {
+            'name': 'Handball', 'icon': '\U0001F93E', 'exhibition': False,
+            'variants': [
+                {'key': SportType.HANDBALL_MEN,   'label': 'Men'},
+                {'key': SportType.HANDBALL_WOMEN, 'label': 'Women'},
+            ],
+        },
     ]
 
     return render(request, 'public/competitions.html', {
@@ -115,6 +161,7 @@ def public_competitions_view(request):
         'upcoming_competitions': upcoming,
         'completed_competitions': completed,
         'sport_catalogue': SPORT_CATALOGUE,
+        'disciplines': DISCIPLINES,
         'all_competitions': all_comps,
     })
 
@@ -137,27 +184,36 @@ def public_competition_detail_view(request, pk):
 def public_results_view(request):
     """Public results page — completed matches, upcoming fixtures, and competition links."""
     now = timezone.now()
-    completed = Fixture.objects.filter(
-        status='completed'
-    ).select_related(
+    sport_filter = request.GET.get('sport', '').strip()
+    valid_sports = {c.value for c in SportType}
+    sport_filter = sport_filter if sport_filter in valid_sports else ''
+
+    completed_qs = Fixture.objects.filter(status='completed')
+    upcoming_qs = Fixture.objects.filter(match_date__gte=now).exclude(status='completed')
+    active_comps_qs = Competition.objects.filter(status__in=['active', 'group_stage', 'knockout'])
+    completed_comps_qs = Competition.objects.filter(status='completed')
+
+    if sport_filter:
+        completed_qs = completed_qs.filter(competition__sport_type=sport_filter)
+        upcoming_qs = upcoming_qs.filter(competition__sport_type=sport_filter)
+        active_comps_qs = active_comps_qs.filter(sport_type=sport_filter)
+        completed_comps_qs = completed_comps_qs.filter(sport_type=sport_filter)
+
+    completed = completed_qs.select_related(
         'competition', 'home_team', 'away_team', 'venue'
     ).order_by('-match_date')[:30]
 
-    upcoming = Fixture.objects.filter(
-        match_date__gte=now
-    ).exclude(
-        status='completed'
-    ).select_related(
+    upcoming = upcoming_qs.select_related(
         'competition', 'home_team', 'away_team', 'venue'
     ).order_by('match_date')[:15]
 
-    # Active & completed competitions for quick navigation
-    active_competitions = Competition.objects.filter(
-        status__in=['active', 'group_stage', 'knockout']
-    ).order_by('name')
-    completed_competitions = Competition.objects.filter(
-        status='completed'
-    ).order_by('-end_date')[:10]
+    active_competitions = active_comps_qs.order_by('name')
+    completed_competitions = completed_comps_qs.order_by('-end_date')[:10]
+
+    # Build display label for active filter
+    sport_display = ''
+    if sport_filter:
+        sport_display = dict(SportType.choices).get(sport_filter, sport_filter)
 
     return render(request, 'public/results.html', {
         'active_page': 'results',
@@ -165,6 +221,9 @@ def public_results_view(request):
         'upcoming_fixtures': upcoming,
         'active_competitions': active_competitions,
         'completed_competitions': completed_competitions,
+        'sport_filter': sport_filter,
+        'sport_display': sport_display,
+        'sport_choices': SportType.choices,
     })
 
 
@@ -435,6 +494,9 @@ def dashboard_view(request):
 
     if user.role == 'competition_manager':
         return redirect('cm_dashboard')
+
+    if user.role == 'county_sports_admin':
+        return redirect('county_admin_dashboard')
 
     if user.role == 'team_manager':
         stats['teams'] = Team.objects.filter(manager=user).count()
@@ -3141,4 +3203,260 @@ def cm_competition_rules_view(request, pk):
 
     return render(request, 'portal/cm/edit_rules.html', {
         'competition': competition,
+    })
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   COUNTY SPORTS ADMIN — PUBLIC REGISTRATION
+# ══════════════════════════════════════════════════════════════════════════════
+
+def county_admin_register_view(request):
+    """Public registration for a county sports admin (one per county)."""
+    # Build list of already-taken counties for the template
+    taken_counties = list(
+        CountyRegistration.objects.values_list('county', flat=True)
+    )
+
+    if request.method == 'POST':
+        form = CountyAdminRegistrationForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            user = User.objects.create_user(
+                email=cd['email'],
+                password=cd['password'],
+                first_name=cd['first_name'],
+                last_name=cd['last_name'],
+                phone=cd['phone'],
+                county=cd['county'],
+                role=UserRole.COUNTY_SPORTS_ADMIN,
+            )
+            CountyRegistration.objects.create(
+                user=user,
+                county=cd['county'],
+            )
+            messages.success(request, mark_safe(
+                f'<strong>Registration Successful!</strong><br>'
+                f'Welcome, <strong>{cd["first_name"]} {cd["last_name"]}</strong> '
+                f'({cd["county"]} County).<br><br>'
+                f'<strong>Next steps:</strong><br>'
+                f'1. Log in to the portal<br>'
+                f'2. Submit payment (M-Pesa or bank slip)<br>'
+                f'3. Once the treasurer approves, you can add disciplines and players'
+            ))
+            return redirect('county_admin_register_success')
+    else:
+        form = CountyAdminRegistrationForm()
+
+    return render(request, 'public/county_admin_register.html', {
+        'form': form,
+        'taken_counties': taken_counties,
+        'active_page': 'register',
+        'registration_fee': COUNTY_REGISTRATION_FEE_CAP,
+    })
+
+
+def county_admin_register_success_view(request):
+    return render(request, 'public/county_admin_register_success.html', {
+        'active_page': 'register',
+    })
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   COUNTY SPORTS ADMIN — PORTAL DASHBOARD
+# ══════════════════════════════════════════════════════════════════════════════
+
+@role_required('county_sports_admin')
+def county_admin_dashboard_view(request):
+    """County admin home — registration status, payment, disciplines, players."""
+    reg = get_object_or_404(CountyRegistration, user=request.user)
+    disciplines = reg.disciplines.all()
+    player_count = sum(d.player_count for d in disciplines)
+
+    return render(request, 'portal/county_admin/dashboard.html', {
+        'reg': reg,
+        'disciplines': disciplines,
+        'player_count': player_count,
+        'registration_fee': COUNTY_REGISTRATION_FEE_CAP,
+    })
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   COUNTY SPORTS ADMIN — PAYMENT SUBMISSION
+# ══════════════════════════════════════════════════════════════════════════════
+
+@role_required('county_sports_admin')
+def county_admin_payment_view(request):
+    """County admin submits payment proof (M-Pesa or bank slip)."""
+    reg = get_object_or_404(CountyRegistration, user=request.user)
+
+    if reg.status not in (CountyRegStatus.PENDING_PAYMENT, CountyRegStatus.REJECTED):
+        messages.info(request, 'Payment has already been submitted.')
+        return redirect('county_admin_dashboard')
+
+    if request.method == 'POST':
+        form = CountyPaymentForm(request.POST, request.FILES)
+        if form.is_valid():
+            cd = form.cleaned_data
+            reg.mpesa_reference = cd.get('mpesa_reference', '')
+            if cd.get('bank_slip'):
+                reg.bank_slip = cd['bank_slip']
+            reg.payment_amount = cd['payment_amount']
+            reg.payment_submitted_at = timezone.now()
+            reg.status = CountyRegStatus.PAYMENT_SUBMITTED
+            reg.save()
+            messages.success(request, 'Payment proof submitted! The treasurer will review it shortly.')
+            return redirect('county_admin_dashboard')
+    else:
+        form = CountyPaymentForm()
+
+    return render(request, 'portal/county_admin/payment.html', {
+        'form': form,
+        'reg': reg,
+        'registration_fee': COUNTY_REGISTRATION_FEE_CAP,
+    })
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   COUNTY SPORTS ADMIN — DISCIPLINE MANAGEMENT
+# ══════════════════════════════════════════════════════════════════════════════
+
+@role_required('county_sports_admin')
+def county_admin_add_discipline_view(request):
+    """County admin chooses which disciplines to participate in."""
+    reg = get_object_or_404(CountyRegistration, user=request.user)
+
+    if not reg.is_approved:
+        messages.warning(request, 'You must be approved before adding disciplines.')
+        return redirect('county_admin_dashboard')
+
+    existing = set(reg.disciplines.values_list('sport_type', flat=True))
+    available = [(k, v) for k, v in SQUAD_LIMITS.items() if k not in existing]
+
+    if request.method == 'POST':
+        sport = request.POST.get('sport_type', '')
+        if sport in dict(SQUAD_LIMITS) and sport not in existing:
+            CountyDiscipline.objects.create(registration=reg, sport_type=sport)
+            messages.success(request, f'{dict(SportType.choices).get(sport, sport)} added.')
+        else:
+            messages.error(request, 'Invalid discipline or already added.')
+        return redirect('county_admin_dashboard')
+
+    return render(request, 'portal/county_admin/add_discipline.html', {
+        'reg': reg,
+        'available': [(k, dict(SportType.choices).get(k, k), v) for k, v in available],
+    })
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   COUNTY SPORTS ADMIN — PLAYER MANAGEMENT
+# ══════════════════════════════════════════════════════════════════════════════
+
+@role_required('county_sports_admin')
+def county_admin_discipline_players_view(request, discipline_pk):
+    """View players in a discipline and add new ones."""
+    reg = get_object_or_404(CountyRegistration, user=request.user)
+    discipline = get_object_or_404(CountyDiscipline, pk=discipline_pk, registration=reg)
+    players = discipline.players.all()
+
+    return render(request, 'portal/county_admin/discipline_players.html', {
+        'reg': reg,
+        'discipline': discipline,
+        'players': players,
+    })
+
+
+@role_required('county_sports_admin')
+def county_admin_add_player_view(request, discipline_pk):
+    """Add a player to a discipline."""
+    reg = get_object_or_404(CountyRegistration, user=request.user)
+    discipline = get_object_or_404(CountyDiscipline, pk=discipline_pk, registration=reg)
+
+    if not reg.is_approved:
+        messages.warning(request, 'Registration must be approved before adding players.')
+        return redirect('county_admin_dashboard')
+
+    if not discipline.can_add_player:
+        messages.error(
+            request,
+            f'Squad limit reached ({discipline.squad_limit}) for '
+            f'{discipline.get_sport_type_display()}.'
+        )
+        return redirect('county_admin_discipline_players', discipline_pk=discipline_pk)
+
+    if request.method == 'POST':
+        form = CountyPlayerForm(request.POST, request.FILES)
+        if form.is_valid():
+            player = form.save(commit=False)
+            player.discipline = discipline
+            player.save()
+            messages.success(
+                request,
+                f'{player.first_name} {player.last_name} registered '
+                f'({discipline.player_count}/{discipline.squad_limit}).'
+            )
+            return redirect('county_admin_discipline_players', discipline_pk=discipline_pk)
+    else:
+        form = CountyPlayerForm()
+
+    return render(request, 'portal/county_admin/add_player.html', {
+        'form': form,
+        'discipline': discipline,
+        'reg': reg,
+    })
+
+
+@role_required('county_sports_admin')
+def county_admin_delete_player_view(request, player_pk):
+    """Remove a player from a discipline."""
+    reg = get_object_or_404(CountyRegistration, user=request.user)
+    player = get_object_or_404(CountyPlayer, pk=player_pk, discipline__registration=reg)
+    discipline_pk = player.discipline.pk
+
+    if request.method == 'POST':
+        name = f'{player.first_name} {player.last_name}'
+        player.delete()
+        messages.success(request, f'{name} removed.')
+    return redirect('county_admin_discipline_players', discipline_pk=discipline_pk)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   TREASURER — COUNTY REGISTRATION APPROVALS
+# ══════════════════════════════════════════════════════════════════════════════
+
+@role_required('treasurer', 'admin')
+def treasurer_county_registrations_view(request):
+    """Treasurer reviews county admin registrations and approves/rejects."""
+    if request.method == 'POST':
+        reg_id = request.POST.get('registration_id')
+        action = request.POST.get('action')
+        reg = get_object_or_404(CountyRegistration, pk=reg_id)
+
+        if action == 'approve':
+            reg.status = CountyRegStatus.APPROVED
+            reg.approved_by = request.user
+            reg.approved_at = timezone.now()
+            reg.save()
+            messages.success(request, f'{reg.county} county registration approved.')
+        elif action == 'reject':
+            reason = request.POST.get('rejection_reason', '')
+            reg.status = CountyRegStatus.REJECTED
+            reg.rejection_reason = reason
+            reg.save()
+            messages.warning(request, f'{reg.county} county registration rejected.')
+
+        return redirect('treasurer_county_registrations')
+
+    pending = CountyRegistration.objects.filter(
+        status=CountyRegStatus.PAYMENT_SUBMITTED
+    ).order_by('-payment_submitted_at')
+    approved = CountyRegistration.objects.filter(
+        status=CountyRegStatus.APPROVED
+    ).order_by('-approved_at')
+    all_regs = CountyRegistration.objects.all().order_by('-created_at')
+
+    return render(request, 'portal/treasurer/county_registrations.html', {
+        'pending': pending,
+        'approved': approved,
+        'all_regs': all_regs,
+        'registration_fee': COUNTY_REGISTRATION_FEE_CAP,
     })

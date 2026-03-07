@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}Submit Payment &mdash; KYISA{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'county_admin_dashboard' %}">County Admin</a>
+        <span>Submit Payment</span>
+    </div>
+    <h1><i class="bi bi-credit-card"></i> Submit Payment Proof</h1>
+    <p>Provide your M-Pesa transaction code or upload a bank deposit slip.</p>
+</div>
+
+<div style="max-width:600px">
+    <!-- Fee reminder -->
+    <div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:10px;padding:1rem 1.4rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem">
+        <span style="font-size:1.5rem"><i class="bi bi-cash-stack"></i></span>
+        <span style="font-size:.92rem"><strong style="color:#1b5e20">County Registration Fee: KSh {{ registration_fee|floatformat:0 }}</strong></span>
+    </div>
+
+    <div class="card" style="padding:2rem">
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div style="color:#C62828;font-size:.9rem;margin-bottom:1rem;padding:.8rem;background:#fce4ec;border-radius:8px">
+                {% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}
+            </div>
+            {% endif %}
+
+            <div style="margin-bottom:1.25rem">
+                <label for="id_mpesa_reference" style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">{{ form.mpesa_reference.label }}</label>
+                {{ form.mpesa_reference }}
+                <small style="color:#888;font-size:.8rem">Enter the M-Pesa transaction code from your confirmation SMS.</small>
+                {% if form.mpesa_reference.errors %}<div style="color:#C62828;font-size:.82rem;margin-top:.3rem">{{ form.mpesa_reference.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div style="text-align:center;color:#999;margin:1rem 0;font-size:.85rem;font-weight:600">— OR —</div>
+
+            <div style="margin-bottom:1.25rem">
+                <label for="id_bank_slip" style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">{{ form.bank_slip.label }}</label>
+                {{ form.bank_slip }}
+                <small style="color:#888;font-size:.8rem">Upload a photo or PDF of the bank deposit slip.</small>
+                {% if form.bank_slip.errors %}<div style="color:#C62828;font-size:.82rem;margin-top:.3rem">{{ form.bank_slip.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div style="margin-bottom:1.5rem">
+                <label for="id_payment_amount" style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">{{ form.payment_amount.label }}</label>
+                {{ form.payment_amount }}
+                {% if form.payment_amount.errors %}<div style="color:#C62828;font-size:.82rem;margin-top:.3rem">{{ form.payment_amount.errors.0 }}</div>{% endif %}
+            </div>
+
+            <button type="submit" style="width:100%;padding:.9rem;background:#1B5E20;color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer">
+                <i class="bi bi-send"></i> Submit Payment Proof
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
