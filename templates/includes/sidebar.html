@@ -40,6 +40,16 @@
             <a href="{% url 'appeals_list' %}" class="sidebar-link"><span class="icon"><i class="bi bi-briefcase"></i></span> Appeals</a>
         </div>
     </div>
+    <div class="sidebar-section">
+        <div class="sidebar-section-toggle"><h4>News &amp; Media</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
+        <div class="sidebar-section-body">
+            <a href="{% url 'media_dashboard' %}" class="sidebar-link {% if 'media_dashboard' in request.resolver_match.url_name %}active{% endif %}"><span class="icon"><i class="bi bi-camera-reels"></i></span> Media Dashboard</a>
+            <a href="{% url 'media_article_list' %}" class="sidebar-link {% if 'media_article' in request.resolver_match.url_name %}active{% endif %}"><span class="icon"><i class="bi bi-newspaper"></i></span> Articles</a>
+            <a href="{% url 'media_album_list' %}" class="sidebar-link {% if 'media_album' in request.resolver_match.url_name %}active{% endif %}"><span class="icon"><i class="bi bi-images"></i></span> Photo Albums</a>
+            <a href="{% url 'media_video_list' %}" class="sidebar-link {% if 'media_video' in request.resolver_match.url_name %}active{% endif %}"><span class="icon"><i class="bi bi-play-circle"></i></span> Videos</a>
+            <a href="{% url 'media_categories' %}" class="sidebar-link {% if 'media_categories' in request.resolver_match.url_name %}active{% endif %}"><span class="icon"><i class="bi bi-tags"></i></span> Categories</a>
+        </div>
+    </div>
 
     {% elif user.role == 'competition_manager' %}
     <!-- COMPETITION MANAGER SIDEBAR -->
@@ -75,6 +85,16 @@
             <a href="{% url 'player_verification_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'player_verification_list' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-person-vcard"></i></span> Player Verification
             </a>
+        </div>
+    </div>
+    <div class="sidebar-section">
+        <div class="sidebar-section-toggle"><h4>News &amp; Media</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
+        <div class="sidebar-section-body">
+            <a href="{% url 'media_dashboard' %}" class="sidebar-link {% if 'media_dashboard' in request.resolver_match.url_name %}active{% endif %}"><span class="icon"><i class="bi bi-camera-reels"></i></span> Media Dashboard</a>
+            <a href="{% url 'media_article_list' %}" class="sidebar-link {% if 'media_article' in request.resolver_match.url_name %}active{% endif %}"><span class="icon"><i class="bi bi-newspaper"></i></span> Articles</a>
+            <a href="{% url 'media_album_list' %}" class="sidebar-link {% if 'media_album' in request.resolver_match.url_name %}active{% endif %}"><span class="icon"><i class="bi bi-images"></i></span> Photo Albums</a>
+            <a href="{% url 'media_video_list' %}" class="sidebar-link {% if 'media_video' in request.resolver_match.url_name %}active{% endif %}"><span class="icon"><i class="bi bi-play-circle"></i></span> Videos</a>
+            <a href="{% url 'media_categories' %}" class="sidebar-link {% if 'media_categories' in request.resolver_match.url_name %}active{% endif %}"><span class="icon"><i class="bi bi-tags"></i></span> Categories</a>
         </div>
     </div>
 
@@ -208,6 +228,18 @@
             <a href="{% url 'jury_disciplinary' %}" class="sidebar-link {% if request.resolver_match.url_name == 'jury_disciplinary' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-exclamation-triangle-fill"></i></span> Disciplinary
             </a>
+        </div>
+    </div>
+    {% elif user.role == 'media_manager' %}
+    <!-- MEDIA MANAGER SIDEBAR -->
+    <div class="sidebar-section">
+        <div class="sidebar-section-toggle"><h4>Media Manager</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
+        <div class="sidebar-section-body">
+            <a href="{% url 'media_dashboard' %}" class="sidebar-link {% if 'media_dashboard' in request.resolver_match.url_name %}active{% endif %}"><span class="icon"><i class="bi bi-camera-reels"></i></span> Media Dashboard</a>
+            <a href="{% url 'media_article_list' %}" class="sidebar-link {% if 'media_article' in request.resolver_match.url_name %}active{% endif %}"><span class="icon"><i class="bi bi-newspaper"></i></span> Articles</a>
+            <a href="{% url 'media_album_list' %}" class="sidebar-link {% if 'media_album' in request.resolver_match.url_name %}active{% endif %}"><span class="icon"><i class="bi bi-images"></i></span> Photo Albums</a>
+            <a href="{% url 'media_video_list' %}" class="sidebar-link {% if 'media_video' in request.resolver_match.url_name %}active{% endif %}"><span class="icon"><i class="bi bi-play-circle"></i></span> Videos</a>
+            <a href="{% url 'media_categories' %}" class="sidebar-link {% if 'media_categories' in request.resolver_match.url_name %}active{% endif %}"><span class="icon"><i class="bi bi-tags"></i></span> Categories</a>
         </div>
     </div>
     {% endif %}

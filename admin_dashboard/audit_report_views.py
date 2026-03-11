@@ -63,6 +63,7 @@ ACTION_CATEGORIES = OrderedDict([
     ("System & Config", [
         "CONFIG_CHANGE", "REGISTRATION_TOGGLE", "ADMIN_ACTION", "OTHER",
     ]),
+    ("Other Actions", []),
 ])
 
 # Flat reverse lookup
@@ -82,8 +83,15 @@ def _filtered_audit(request):
     date_to = request.GET.get("date_to", "")
     search = request.GET.get("search", "")
 
+    # Loosen filter: show all logs if no category is selected
     if category and category in ACTION_CATEGORIES:
-        qs = qs.filter(action__in=ACTION_CATEGORIES[category])
+        if ACTION_CATEGORIES[category]:
+            qs = qs.filter(action__in=ACTION_CATEGORIES[category])
+        else:
+            # 'Other Actions' category: show logs with actions not in any category
+            known_actions = [act for acts in ACTION_CATEGORIES.values() for act in acts]
+            qs = qs.exclude(action__in=known_actions)
+    # If no filter is set, show all logs (do not filter by action)
     if user_id:
         qs = qs.filter(user_id=user_id)
     if date_from:
@@ -126,9 +134,14 @@ def audit_report(request):
     this_month = logs.filter(timestamp__gte=now.replace(day=1)).count()
 
     # ── Per-category breakdown ────────────────────────────────────────────
+    known_actions = [act for acts in ACTION_CATEGORIES.values() for act in acts]
     category_stats = []
     for cat_name, cat_actions in ACTION_CATEGORIES.items():
-        count = logs.filter(action__in=cat_actions).count()
+        if cat_actions:
+            count = logs.filter(action__in=cat_actions).count()
+        else:
+            # 'Other Actions': count logs with actions not in any category
+            count = logs.exclude(action__in=known_actions).count()
         if count > 0:
             category_stats.append({"name": cat_name, "count": count})
 

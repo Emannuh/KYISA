@@ -14,6 +14,7 @@ class UserRole(models.TextChoices):
     COUNTY_SPORTS_ADMIN = "county_sports_admin", "County Sports Admin"
     TREASURER           = "treasurer",           "Treasurer"
     JURY_CHAIR          = "jury_chair",          "Chair of the Jury"
+    MEDIA_MANAGER       = "media_manager",       "Media Manager"
     ADMIN               = "admin",               "System Admin"
 
 

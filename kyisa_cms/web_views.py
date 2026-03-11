@@ -95,6 +95,63 @@ def about_view(request):
     })
 
 
+def leadership_view(request):
+    """Public leadership page — KYISA officials and their messages."""
+    leaders = [
+        {
+            'name': 'Ambrose Kisoi',
+            'title': 'Secretary General',
+            'image': 'img/leadership/ambrose_kisoi.jpg',
+            'message': (
+                'Welcome to the Kenya Youth Intercounty Sports Association. '
+                'As Secretary General, it is my privilege to lead an organisation '
+                'that is dedicated to nurturing the next generation of Kenyan '
+                'sporting talent. KYISA exists to provide a platform where young '
+                'athletes from all 47 counties can showcase their abilities, '
+                'build lifelong friendships, and develop the discipline that '
+                'sport instils.\n\n'
+                'Our annual championship has grown into one of Kenya\'s most '
+                'anticipated youth sporting events, bringing together thousands '
+                'of talented young men and women aged 18 to 23. We believe that '
+                'every county has untapped potential, and through fair, '
+                'competitive, and well-organised tournaments, we aim to uncover '
+                'and develop that talent.\n\n'
+                'I invite you to explore our programmes, follow our competitions, '
+                'and join us in building a stronger, more united Kenya through sport.'
+            ),
+            'has_photo': True,
+        },
+        {
+            'name': 'Chairman',
+            'title': 'Chairman',
+            'image': None,
+            'message': None,
+            'has_photo': False,
+            'placeholder': True,
+        },
+        {
+            'name': 'Vice Chairman',
+            'title': 'Vice Chairman',
+            'image': None,
+            'message': None,
+            'has_photo': False,
+            'placeholder': True,
+        },
+        {
+            'name': 'Treasurer',
+            'title': 'Treasurer',
+            'image': None,
+            'message': None,
+            'has_photo': False,
+            'placeholder': True,
+        },
+    ]
+    return render(request, 'public/leadership.html', {
+        'active_page': 'leadership',
+        'leaders': leaders,
+    })
+
+
 def public_competitions_view(request):
     """Public competitions listing — grouped by sport, with exhibition marker."""
     all_comps = Competition.objects.all()

@@ -20,9 +20,28 @@ from teams.verification_views import (
     api_iprs_lookup as _api_iprs_lookup,
 )
 
+from news_media.portal_views import (
+    media_dashboard_view,
+    article_list_view as media_article_list_view,
+    article_create_view as media_article_create_view,
+    article_edit_view as media_article_edit_view,
+    article_delete_view as media_article_delete_view,
+    category_manage_view as media_category_manage_view,
+    category_delete_view as media_category_delete_view,
+    album_list_view as media_album_list_view,
+    album_create_view as media_album_create_view,
+    album_edit_view as media_album_edit_view,
+    album_delete_view as media_album_delete_view,
+    photo_delete_view as media_photo_delete_view,
+    video_list_view as media_video_list_view,
+    video_create_view as media_video_create_view,
+    video_edit_view as media_video_edit_view,
+    video_delete_view as media_video_delete_view,
+)
+
 from .web_views import (
     # Public website
-    home_view, about_view, public_competitions_view,
+    home_view, about_view, leadership_view, public_competitions_view,
     public_competition_detail_view, public_results_view,
     public_statistics_view, public_competition_standings_view,
     contact_view,
@@ -87,12 +106,16 @@ urlpatterns = [
     # ── PUBLIC WEBSITE ────────────────────────────────────────────────────────
     path("",                              home_view,                      name="home"),
     path("about/",                        about_view,                     name="about"),
+    path("leadership/",                   leadership_view,                name="leadership"),
     path("competitions/public/",          public_competitions_view,       name="public_competitions"),
     path("competitions/public/<int:pk>/", public_competition_detail_view, name="public_competition_detail"),
     path("results/",                      public_results_view,            name="public_results"),
     path("results/statistics/",            public_statistics_view,         name="public_statistics"),
     path("results/competitions/<int:pk>/standings/", public_competition_standings_view, name="public_competition_standings"),
     path("contact/",                      contact_view,                   name="contact"),
+
+    # ── NEWS & MEDIA ──────────────────────────────────────────────────────────
+    path("media-hub/", include("news_media.urls")),
 
     # ── PUBLIC REGISTRATION ───────────────────────────────────────────────────
     path("register/team/",            team_register_view,          name="team_register"),
@@ -192,6 +215,24 @@ urlpatterns = [
          cm_edit_fixture_view, name="cm_edit_fixture"),
     path("portal/cm/competitions/<int:pk>/rules/",         cm_competition_rules_view,     name="cm_competition_rules"),
     path("portal/cm/venues/",                              cm_manage_venues_view,         name="cm_venues"),
+
+    # ── MEDIA MANAGER PORTAL ─────────────────────────────────────────────────
+    path("portal/media/",                          media_dashboard_view,          name="media_dashboard"),
+    path("portal/media/articles/",                  media_article_list_view,       name="media_article_list"),
+    path("portal/media/articles/create/",           media_article_create_view,     name="media_article_create"),
+    path("portal/media/articles/<int:pk>/edit/",    media_article_edit_view,       name="media_article_edit"),
+    path("portal/media/articles/<int:pk>/delete/",  media_article_delete_view,     name="media_article_delete"),
+    path("portal/media/categories/",                media_category_manage_view,    name="media_categories"),
+    path("portal/media/categories/<int:pk>/delete/",media_category_delete_view,    name="media_category_delete"),
+    path("portal/media/albums/",                    media_album_list_view,         name="media_album_list"),
+    path("portal/media/albums/create/",             media_album_create_view,       name="media_album_create"),
+    path("portal/media/albums/<int:pk>/edit/",      media_album_edit_view,         name="media_album_edit"),
+    path("portal/media/albums/<int:pk>/delete/",    media_album_delete_view,       name="media_album_delete"),
+    path("portal/media/photos/<int:pk>/delete/",    media_photo_delete_view,       name="media_photo_delete"),
+    path("portal/media/videos/",                    media_video_list_view,         name="media_video_list"),
+    path("portal/media/videos/create/",             media_video_create_view,       name="media_video_create"),
+    path("portal/media/videos/<int:pk>/edit/",      media_video_edit_view,         name="media_video_edit"),
+    path("portal/media/videos/<int:pk>/delete/",    media_video_delete_view,       name="media_video_delete"),
 
     # ── ADMIN DASHBOARD ───────────────────────────────────────────────────────
     path("portal/admin-dashboard/", include("admin_dashboard.urls")),

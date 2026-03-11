@@ -158,19 +158,19 @@ class ActivityLog(models.Model):
     
     @property
     def action_icon(self):
-        """Return icon class based on action type"""
+        """Return Bootstrap Icon name based on action type"""
         icon_map = {
-            'LOGIN': 'sign-in-alt',
-            'LOGOUT': 'sign-out-alt',
+            'LOGIN': 'box-arrow-in-right',
+            'LOGOUT': 'box-arrow-right',
             'CREATE': 'plus-circle',
-            'UPDATE': 'edit',
+            'UPDATE': 'pencil-square',
             'DELETE': 'trash',
             'APPROVE': 'check-circle',
-            'REJECT': 'times-circle',
-            'SUSPEND': 'ban',
-            'TRANSFER': 'exchange-alt',
-            'GENERATE': 'random',
-            'PAYMENT': 'money-bill',
+            'REJECT': 'x-circle',
+            'SUSPEND': 'slash-circle',
+            'TRANSFER': 'arrow-left-right',
+            'GENERATE': 'shuffle',
+            'PAYMENT': 'cash-stack',
         }
         
         for key, icon in icon_map.items():

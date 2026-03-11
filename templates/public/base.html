@@ -69,8 +69,17 @@
         <ul class="fkf-nav-links" id="navLinks">
             <li><a href="{% url 'home' %}" class="{% if active_page == 'home' %}active{% endif %}">Home</a></li>
             <li><a href="{% url 'about' %}" class="{% if active_page == 'about' %}active{% endif %}">About</a></li>
+            <li><a href="{% url 'leadership' %}" class="{% if active_page == 'leadership' %}active{% endif %}">Leadership</a></li>
             <li><a href="{% url 'public_competitions' %}" class="{% if active_page == 'competitions' %}active{% endif %}">Competitions</a></li>
             <li><a href="{% url 'public_results' %}" class="{% if active_page == 'results' %}active{% endif %}">Results</a></li>
+            <li class="nav-dropdown">
+                <a href="#" class="{% if active_page == 'news_media' %}active{% endif %}" onclick="this.parentElement.classList.toggle('open');return false;">News & Media ▾</a>
+                <ul class="dropdown-menu">
+                    <li><a href="{% url 'news_media:news_list' %}">📰 News & Highlights</a></li>
+                    <li><a href="{% url 'news_media:gallery_list' %}">📸 Gallery</a></li>
+                    <li><a href="{% url 'news_media:videos_list' %}">🎬 Videos</a></li>
+                </ul>
+            </li>
             <li><a href="{% url 'contact' %}" class="{% if active_page == 'contact' %}active{% endif %}">Contact</a></li>
             <li class="nav-dropdown">
                 <a href="#" class="{% if active_page == 'register' %}active{% endif %}" onclick="this.parentElement.classList.toggle('open');return false;">Register ▾</a>

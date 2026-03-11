@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "matches",
     "admin_dashboard",
     "appeals",
+    "news_media",
 ]
 
 # ── MIDDLEWARE ─────────────────────────────────────────────────────────────────

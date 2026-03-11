@@ -2,7 +2,7 @@
 KYISA Teams — Payment Receipt Notifications
 
 Sends email receipts when payments are confirmed by the treasurer.
-Recipients:
+Recipients:Z
 1. Sports officer for the respective county
 2. The person who registered (team contact email)
 """

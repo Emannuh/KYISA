@@ -1,3 +1,19 @@
+def seed_test_log():
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    user = User.objects.filter(is_superuser=True).first()
+    if user:
+        ActivityLog.objects.create(
+            user=user,
+            action='TEAM_APPROVE',
+            description='Seeded test log for TEAM_APPROVE',
+            ip_address='127.0.0.1',
+            user_agent='seed-script',
+            extra_data={}
+        )
+        print('Seeded test log.')
+    else:
+        print('No superuser found to seed log.')
 # admin_dashboard/activity_logger.py
 from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
