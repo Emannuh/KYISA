@@ -100,6 +100,27 @@ from .web_views import (
     county_admin_discipline_players_view,
     county_admin_add_player_view,
     county_admin_delete_player_view,
+    # County Sports Director — technical bench & verification
+    county_admin_add_bench_member_view,
+    county_admin_delete_bench_member_view,
+    county_admin_verification_view,
+    # Player profile
+    player_profile_view,
+    # Team Manager portal
+    team_manager_dashboard_view,
+    team_manager_match_squad_view,
+    team_manager_opponent_view,
+    team_manager_sanctions_view,
+    team_manager_file_appeal_view,
+    # PDF download
+    team_list_pdf_view,
+    # Secretary General portal
+    sg_dashboard_view,
+    sg_verifications_view,
+    sg_appeals_view,
+    sg_treasurer_actions_view,
+    sg_user_actions_view,
+    sg_verified_players_view,
 )
 
 urlpatterns = [
@@ -195,6 +216,20 @@ urlpatterns = [
     path("portal/county-admin/discipline/<int:discipline_pk>/", county_admin_discipline_players_view, name="county_admin_discipline_players"),
     path("portal/county-admin/discipline/<int:discipline_pk>/add-player/", county_admin_add_player_view, name="county_admin_add_player"),
     path("portal/county-admin/player/<int:player_pk>/delete/", county_admin_delete_player_view,     name="county_admin_delete_player"),
+    path("portal/county-admin/discipline/<int:discipline_pk>/add-bench-member/", county_admin_add_bench_member_view, name="county_admin_add_bench_member"),
+    path("portal/county-admin/bench-member/<int:member_pk>/delete/", county_admin_delete_bench_member_view, name="county_admin_delete_bench_member"),
+    path("portal/county-admin/verification/", county_admin_verification_view, name="county_admin_verification"),
+    path("portal/county-admin/discipline/<int:discipline_pk>/team-list.pdf", team_list_pdf_view, name="team_list_pdf"),
+
+    # ── PLAYER PROFILE ────────────────────────────────────────────────────
+    path("portal/players/<int:player_pk>/profile/", player_profile_view, name="player_profile"),
+
+    # ── TEAM MANAGER PORTAL ───────────────────────────────────────────────
+    path("portal/team-manager/",                                    team_manager_dashboard_view,    name="team_manager_dashboard"),
+    path("portal/team-manager/fixtures/<int:fixture_pk>/squad/",    team_manager_match_squad_view,  name="team_manager_match_squad"),
+    path("portal/team-manager/fixtures/<int:fixture_pk>/opponent/", team_manager_opponent_view,     name="team_manager_opponent"),
+    path("portal/team-manager/sanctions/",                          team_manager_sanctions_view,    name="team_manager_sanctions"),
+    path("portal/team-manager/appeal/",                             team_manager_file_appeal_view,  name="team_manager_file_appeal"),
 
     # ── COMPETITION MANAGER PORTAL ────────────────────────────────────────
     path("portal/competitions/<int:pk>/standings/",   competition_standings_view,      name="competition_standings"),
@@ -215,6 +250,14 @@ urlpatterns = [
          cm_edit_fixture_view, name="cm_edit_fixture"),
     path("portal/cm/competitions/<int:pk>/rules/",         cm_competition_rules_view,     name="cm_competition_rules"),
     path("portal/cm/venues/",                              cm_manage_venues_view,         name="cm_venues"),
+
+    # ── SECRETARY GENERAL PORTAL ───────────────────────────────────────────────
+    path("portal/sg/",                          sg_dashboard_view,          name="sg_dashboard"),
+    path("portal/sg/verifications/",             sg_verifications_view,      name="sg_verifications"),
+    path("portal/sg/appeals/",                   sg_appeals_view,            name="sg_appeals"),
+    path("portal/sg/treasurer-actions/",         sg_treasurer_actions_view,  name="sg_treasurer_actions"),
+    path("portal/sg/user-actions/",              sg_user_actions_view,       name="sg_user_actions"),
+    path("portal/sg/verified-players/",          sg_verified_players_view,   name="sg_verified_players"),
 
     # ── MEDIA MANAGER PORTAL ─────────────────────────────────────────────────
     path("portal/media/",                          media_dashboard_view,          name="media_dashboard"),

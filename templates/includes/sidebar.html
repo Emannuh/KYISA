@@ -143,22 +143,27 @@
     <div class="sidebar-section">
         <div class="sidebar-section-toggle"><h4>My Team</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
         <div class="sidebar-section-body">
-            <a href="{% url 'dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-                <span class="icon"><i class="bi bi-bar-chart-line"></i></span> Dashboard
+            <a href="{% url 'team_manager_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'team_manager_dashboard' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-speedometer2"></i></span> Dashboard
             </a>
             <a href="{% url 'teams_list' %}" class="sidebar-link"><span class="icon"><i class="bi bi-people"></i></span> My Team</a>
             <a href="{% url 'matches_list' %}" class="sidebar-link"><span class="icon"><i class="bi bi-clipboard-data"></i></span> Fixtures &amp; Squads</a>
         </div>
     </div>
     <div class="sidebar-section">
-        <div class="sidebar-section-toggle"><h4>Appeals</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
+        <div class="sidebar-section-toggle"><h4>Disciplinary</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
         <div class="sidebar-section-body">
-            <a href="{% url 'appeals_list' %}" class="sidebar-link"><span class="icon"><i class="bi bi-briefcase"></i></span> My Appeals</a>
-            <a href="{% url 'submit_appeal' %}" class="sidebar-link"><span class="icon"><i class="bi bi-pencil-square"></i></span> File Appeal</a>
+            <a href="{% url 'team_manager_sanctions' %}" class="sidebar-link {% if request.resolver_match.url_name == 'team_manager_sanctions' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-exclamation-triangle"></i></span> Sanctions
+            </a>
+            <a href="{% url 'team_manager_file_appeal' %}" class="sidebar-link {% if request.resolver_match.url_name == 'team_manager_file_appeal' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-briefcase"></i></span> File Appeal
+            </a>
+            <a href="{% url 'appeals_list' %}" class="sidebar-link"><span class="icon"><i class="bi bi-list-ul"></i></span> My Appeals</a>
         </div>
     </div>
     {% elif user.role == 'county_sports_admin' %}
-    <!-- COUNTY SPORTS ADMIN SIDEBAR -->
+    <!-- COUNTY SPORTS DIRECTOR SIDEBAR -->
     <div class="sidebar-section">
         <div class="sidebar-section-toggle"><h4>County Portal</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
         <div class="sidebar-section-body">
@@ -170,6 +175,9 @@
             </a>
             <a href="{% url 'county_admin_add_discipline' %}" class="sidebar-link {% if request.resolver_match.url_name == 'county_admin_add_discipline' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-trophy"></i></span> Disciplines
+            </a>
+            <a href="{% url 'county_admin_verification' %}" class="sidebar-link {% if request.resolver_match.url_name == 'county_admin_verification' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-shield-check"></i></span> Verification Status
             </a>
         </div>
     </div>
@@ -227,6 +235,42 @@
             </a>
             <a href="{% url 'jury_disciplinary' %}" class="sidebar-link {% if request.resolver_match.url_name == 'jury_disciplinary' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-exclamation-triangle-fill"></i></span> Disciplinary
+            </a>
+        </div>
+    </div>
+    {% elif user.role == 'secretary_general' %}
+    <!-- SECRETARY GENERAL SIDEBAR -->
+    <div class="sidebar-section">
+        <div class="sidebar-section-toggle"><h4>Secretary General</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
+        <div class="sidebar-section-body">
+            <a href="{% url 'sg_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'sg_dashboard' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-speedometer2"></i></span> Dashboard
+            </a>
+            <a href="{% url 'sg_verifications' %}" class="sidebar-link {% if request.resolver_match.url_name == 'sg_verifications' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-person-vcard"></i></span> Verifications
+            </a>
+            <a href="{% url 'sg_appeals' %}" class="sidebar-link {% if request.resolver_match.url_name == 'sg_appeals' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-briefcase"></i></span> Appeals
+            </a>
+            <a href="{% url 'sg_treasurer_actions' %}" class="sidebar-link {% if request.resolver_match.url_name == 'sg_treasurer_actions' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-cash-stack"></i></span> Treasurer Actions
+            </a>
+            <a href="{% url 'sg_user_actions' %}" class="sidebar-link {% if request.resolver_match.url_name == 'sg_user_actions' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-journal-text"></i></span> User Activity
+            </a>
+            <a href="{% url 'sg_verified_players' %}" class="sidebar-link {% if request.resolver_match.url_name == 'sg_verified_players' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-patch-check-fill"></i></span> Verified Players
+            </a>
+        </div>
+    </div>
+    <div class="sidebar-section">
+        <div class="sidebar-section-toggle"><h4>Reports</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
+        <div class="sidebar-section-body">
+            <a href="{% url 'audit_report' %}" class="sidebar-link {% if request.resolver_match.url_name == 'audit_report' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-shield-check"></i></span> Audit Report
+            </a>
+            <a href="{% url 'activity_logs' %}" class="sidebar-link {% if request.resolver_match.url_name == 'activity_logs' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-list-ul"></i></span> Activity Logs
             </a>
         </div>
     </div>

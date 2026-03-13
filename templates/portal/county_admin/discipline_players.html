@@ -17,12 +17,28 @@
 </div>
 
 {% if discipline.can_add_player %}
-<a href="{% url 'county_admin_add_player' discipline_pk=discipline.pk %}" class="btn btn--primary" style="margin-bottom:1.5rem;display:inline-block;padding:.5rem 1.2rem;font-size:.9rem">
-    <i class="bi bi-person-plus"></i> Add Player
-</a>
+<div style="display:flex;gap:.8rem;margin-bottom:1.5rem;flex-wrap:wrap">
+    <a href="{% url 'county_admin_add_player' discipline_pk=discipline.pk %}" class="btn btn--primary" style="display:inline-block;padding:.5rem 1.2rem;font-size:.9rem">
+        <i class="bi bi-person-plus"></i> Add Player
+    </a>
+    <a href="{% url 'county_admin_add_bench_member' discipline_pk=discipline.pk %}" style="display:inline-block;padding:.5rem 1.2rem;font-size:.9rem;background:#7b1fa2;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">
+        <i class="bi bi-person-badge"></i> Technical Bench
+    </a>
+    <a href="{% url 'team_list_pdf' discipline_pk=discipline.pk %}" style="display:inline-block;padding:.5rem 1.2rem;font-size:.9rem;background:#1565c0;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">
+        <i class="bi bi-file-earmark-pdf"></i> Download Team List
+    </a>
+</div>
 {% else %}
-<div style="background:#fce4ec;border:1px solid #ef9a9a;border-radius:8px;padding:.8rem 1.2rem;margin-bottom:1.5rem;font-size:.9rem;color:#C62828;display:inline-block">
-    <i class="bi bi-exclamation-circle"></i> Squad limit reached ({{ discipline.squad_limit }}).
+<div style="display:flex;gap:.8rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center">
+    <div style="background:#fce4ec;border:1px solid #ef9a9a;border-radius:8px;padding:.8rem 1.2rem;font-size:.9rem;color:#C62828;display:inline-block">
+        <i class="bi bi-exclamation-circle"></i> Squad limit reached ({{ discipline.squad_limit }}).
+    </div>
+    <a href="{% url 'county_admin_add_bench_member' discipline_pk=discipline.pk %}" style="display:inline-block;padding:.5rem 1.2rem;font-size:.9rem;background:#7b1fa2;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">
+        <i class="bi bi-person-badge"></i> Technical Bench
+    </a>
+    <a href="{% url 'team_list_pdf' discipline_pk=discipline.pk %}" style="display:inline-block;padding:.5rem 1.2rem;font-size:.9rem;background:#1565c0;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">
+        <i class="bi bi-file-earmark-pdf"></i> Download Team List
+    </a>
 </div>
 {% endif %}
 

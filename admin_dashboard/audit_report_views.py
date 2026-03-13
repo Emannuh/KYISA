@@ -21,7 +21,7 @@ User = get_user_model()
 
 
 def superadmin_required(user):
-    return user.is_superuser or user.role == 'admin'
+    return user.is_superuser or user.role in ('admin', 'secretary_general')
 
 
 # ── Action category mapping ─────────────────────────────────────────────────

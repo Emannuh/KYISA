@@ -113,7 +113,7 @@
                 <div class="comp-card__actions">
                     <a href="{% url 'public_competition_detail' comp.pk %}" class="btn btn--primary btn--sm">View Details →</a>
                     {% if sport.key == "soccer" %}
-                    <a href="{% url 'team_register' %}" class="btn btn--gold btn--sm">Register Team</a>
+                    <a href="{% url 'county_admin_register' %}" class="btn btn--gold btn--sm">Register County</a>
                     {% endif %}
                 </div>
             </div>
@@ -151,7 +151,7 @@
                 </div>
                 <div class="comp-card__actions">
                     {% if sport.key == "soccer" and comp.status == "registration" %}
-                    <a href="{% url 'team_register' %}" class="btn btn--gold btn--sm">Register Team</a>
+                    <a href="{% url 'county_admin_register' %}" class="btn btn--gold btn--sm">Register County</a>
                     {% endif %}
                 </div>
             </div>
@@ -202,7 +202,7 @@
                     <p style="font-size:.85rem;color:#aaa;margin:0;">Check back soon for new tournaments</p>
                     {% endif %}
                     {% if sport.key == "soccer" %}
-                    <a href="{% url 'team_register' %}" class="btn btn--primary btn--sm" style="margin-top:1rem;">Register Your Soccer Team</a>
+                    <a href="{% url 'county_admin_register' %}" class="btn btn--primary btn--sm" style="margin-top:1rem;">Register Your County</a>
                     {% endif %}
                 </div>
             </div>

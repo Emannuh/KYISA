@@ -51,6 +51,17 @@ class CountyRegistration(models.Model):
         unique=True,
         help_text="Kenyan county (only one admin per county)",
     )
+
+    # Director of Sports — county contact person
+    director_name = models.CharField(
+        max_length=200, blank=True, default="",
+        help_text="Full name of the Director of Sports for this county",
+    )
+    director_phone = models.CharField(
+        max_length=20, blank=True, default="",
+        help_text="Phone number of the Director of Sports",
+    )
+
     status = models.CharField(
         max_length=20,
         choices=CountyRegStatus.choices,
@@ -134,9 +145,64 @@ class CountyPlayer(models.Model):
         max_length=20, unique=True,
         help_text="National ID — unique across all counties and disciplines",
     )
+    huduma_number = models.CharField(
+        max_length=30, blank=True, default="",
+        help_text="Huduma Namba / Huduma Kenya number",
+    )
     phone = models.CharField(max_length=20, blank=True, default="")
-    photo = models.ImageField(upload_to="county_players/photos/", null=True, blank=True)
-    id_document = models.ImageField(upload_to="county_players/ids/", null=True, blank=True)
+    position = models.CharField(max_length=10, blank=True, default="",
+                                help_text="Player position (where applicable)")
+    jersey_number = models.PositiveIntegerField(null=True, blank=True,
+                                                help_text="Jersey number")
+    photo = models.ImageField(upload_to="county_players/photos/", null=True, blank=True,
+                              help_text="Passport-size photo (required)")
+    id_document = models.ImageField(upload_to="county_players/ids/", null=True, blank=True,
+                                    help_text="Copy of National ID (required)")
+    birth_certificate = models.ImageField(
+        upload_to="county_players/birth_certs/", null=True, blank=True,
+        help_text="Copy of Birth Certificate (optional)",
+    )
+
+    # ── Verification workflow ─────────────────────────────────────────────
+    verification_status = models.CharField(
+        max_length=20,
+        choices=[
+            ("pending", "Pending Verification"),
+            ("verified", "Verified / Approved"),
+            ("rejected", "Rejected"),
+            ("resubmit", "Requires Resubmission"),
+        ],
+        default="pending",
+    )
+    rejection_reason = models.TextField(blank=True, default="")
+
+    # ── Huduma Kenya Age Verification ─────────────────────────────────────
+    huduma_status = models.CharField(
+        max_length=20,
+        choices=[
+            ("not_checked", "Not Checked"),
+            ("verified", "Verified"),
+            ("failed", "Failed"),
+        ],
+        default="not_checked",
+    )
+    huduma_verified_at = models.DateTimeField(null=True, blank=True)
+
+    # ── Higher League / National Team Check (non-football disciplines) ────
+    higher_league_status = models.CharField(
+        max_length=20,
+        choices=[
+            ("not_checked", "Not Checked"),
+            ("clear", "Clear"),
+            ("flagged", "Flagged — Higher League / National Team"),
+        ],
+        default="not_checked",
+        help_text="For non-football disciplines: check if player is in higher league or national team",
+    )
+    higher_league_details = models.TextField(
+        blank=True, default="",
+        help_text="Details of higher league / national team participation if flagged",
+    )
 
     registered_at = models.DateTimeField(auto_now_add=True)
 
@@ -152,6 +218,71 @@ class CountyPlayer(models.Model):
         today = timezone.now().date()
         dob = self.date_of_birth
         return today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+
+    @property
+    def is_verified(self):
+        return self.verification_status == "verified"
+
+    @property
+    def is_football(self):
+        return self.discipline.sport_type in (
+            SportType.FOOTBALL_MEN, SportType.FOOTBALL_WOMEN
+        )
+
+    @property
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}"
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  TECHNICAL BENCH MEMBER (per discipline per county)
+# ══════════════════════════════════════════════════════════════════════════════
+
+class TechnicalBenchRole(models.TextChoices):
+    TEAM_MANAGER    = "team_manager",    "Team Manager"
+    HEAD_COACH      = "head_coach",      "Head Coach"
+    ASSISTANT_COACH = "assistant_coach", "Assistant Coach"
+
+
+class TechnicalBenchMember(models.Model):
+    """
+    A delegation / technical bench member for a county discipline.
+    Each discipline requires: Team Manager, Head Coach, Assistant Coach.
+    The Team Manager gets a dedicated portal with match-day squad selection capabilities.
+    """
+    discipline = models.ForeignKey(
+        CountyDiscipline, on_delete=models.CASCADE,
+        related_name="technical_bench",
+    )
+    role = models.CharField(max_length=20, choices=TechnicalBenchRole.choices)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField(blank=True, default="")
+    phone = models.CharField(max_length=20, blank=True, default="")
+    national_id_number = models.CharField(max_length=20, blank=True, default="")
+    photo = models.ImageField(upload_to="technical_bench/photos/", null=True, blank=True)
+    id_document = models.ImageField(upload_to="technical_bench/ids/", null=True, blank=True)
+
+    # Link to user account (created when Team Manager is added)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name="technical_bench_profile",
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ["discipline", "role"]
+        ordering = ["discipline", "role"]
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} — {self.get_role_display()} ({self.discipline})"
+
+    @property
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}"
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -456,8 +587,8 @@ class Player(models.Model):
 
     @property
     def documents_uploaded(self):
-        """True if all three required documents are present."""
-        return bool(self.photo and self.id_document and self.birth_certificate)
+        """True if required documents (photo + ID) are present. Birth certificate is optional."""
+        return bool(self.photo and self.id_document)
 
     @property
     def is_huduma_verified(self):

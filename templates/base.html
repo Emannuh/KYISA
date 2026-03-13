@@ -54,6 +54,9 @@
             {% if user.role == 'county_sports_admin' %}
             <li><a href="{% url 'county_admin_dashboard' %}" class="{% if 'county_admin' in request.resolver_match.url_name %}active{% endif %}"><i class="bi bi-building"></i> My County</a></li>
             {% endif %}
+            {% if user.role == 'team_manager' %}
+            <li><a href="{% url 'team_manager_dashboard' %}" class="{% if 'team_manager' in request.resolver_match.url_name %}active{% endif %}"><i class="bi bi-people"></i> My Team</a></li>
+            {% endif %}
             {% if user.role == 'admin' or user.role == 'referee_manager' or user.role == 'referee' %}
             <li>
                 <a href="{% url 'referees_list' %}" class="{% if 'referee' in request.resolver_match.url_name %}active{% endif %}"><i class="bi bi-flag"></i> Referees <i class="bi bi-chevron-down" style="font-size:.6rem;margin-left:.1rem"></i></a>

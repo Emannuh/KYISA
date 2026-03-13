@@ -84,8 +84,7 @@
             <li class="nav-dropdown">
                 <a href="#" class="{% if active_page == 'register' %}active{% endif %}" onclick="this.parentElement.classList.toggle('open');return false;">Register ▾</a>
                 <ul class="dropdown-menu">
-                    <li><a href="{% url 'county_admin_register' %}">🏛️ County Sports Admin</a></li>
-                    <li><a href="{% url 'team_register' %}">⚽ Register Team</a></li>
+                    <li><a href="{% url 'county_admin_register' %}">🏛️ County Registration</a></li>
                     <li><a href="{% url 'referee_register' %}">🏁 Register as Referee</a></li>
                 </ul>
             </li>
@@ -144,8 +143,7 @@
                 <div>
                     <h4>Resources</h4>
                     <ul>
-                        <li><a href="{% url 'county_admin_register' %}">County Sports Admin</a></li>
-                        <li><a href="{% url 'team_register' %}">Register Team</a></li>
+                            <li><a href="{% url 'county_admin_register' %}">County Registration</a></li>
                         <li><a href="{% url 'referee_register' %}">Register Referee</a></li>
                         <li><a href="{% url 'web_login' %}">Staff Portal</a></li>
                         <li><a href="/api/docs/">API Docs</a></li>

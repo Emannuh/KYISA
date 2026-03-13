@@ -80,7 +80,7 @@ def appeals_list_view(request):
     """
     user = request.user
 
-    if user.is_admin or user.role == UserRole.JURY_CHAIR:
+    if user.is_admin or user.role == UserRole.JURY_CHAIR or user.role == UserRole.SECRETARY_GENERAL:
         appeals = Appeal.objects.all()
     elif user.role == UserRole.TEAM_MANAGER:
         managed_teams = Team.objects.filter(manager=user)

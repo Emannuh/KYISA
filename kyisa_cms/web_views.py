@@ -20,10 +20,12 @@ from competitions.models import (
 from teams.models import (
     Team, Player, VerificationStatus, RejectionReason, PLAYER_MIN_AGE, PLAYER_MAX_AGE,
     CountyRegistration, CountyRegStatus, CountyDiscipline, CountyPlayer, SQUAD_LIMITS,
+    TechnicalBenchMember, TechnicalBenchRole, PlayerStatus,
 )
 from teams.forms import (
-    TeamRegistrationForm, PlayerRegistrationForm,
+    PlayerRegistrationForm,
     CountyAdminRegistrationForm, CountyPaymentForm, CountyPlayerForm,
+    TechnicalBenchForm,
 )
 from referees.models import (
     RefereeProfile, RefereeAppointment, RefereeAvailability,
@@ -556,15 +558,14 @@ def dashboard_view(request):
         return redirect('county_admin_dashboard')
 
     if user.role == 'team_manager':
-        stats['teams'] = Team.objects.filter(manager=user).count()
-        my_teams = Team.objects.filter(manager=user)
-        recent_fixtures = Fixture.objects.filter(
-            Q(home_team__in=my_teams) | Q(away_team__in=my_teams)
-        ).order_by('-match_date')[:10]
-    else:
-        recent_fixtures = Fixture.objects.select_related(
-            'competition', 'home_team', 'away_team'
-        ).order_by('-match_date')[:10]
+        return redirect('team_manager_dashboard')
+
+    if user.role == 'secretary_general':
+        return redirect('sg_dashboard')
+
+    recent_fixtures = Fixture.objects.select_related(
+        'competition', 'home_team', 'away_team'
+    ).order_by('-match_date')[:10]
 
     return render(request, 'dashboard/index.html', {
         'stats': stats,
@@ -922,35 +923,13 @@ def change_password_view(request):
 # ══════════════════════════════════════════════════════════════════════════════
 
 def team_register_view(request):
-    """Public team registration — creates team with 'pending' status."""
-    if request.method == 'POST':
-        form = TeamRegistrationForm(request.POST, request.FILES)
-        if form.is_valid():
-            team = form.save(commit=False)
-            team.status = 'pending'
-            team.save()
-            messages.success(request, mark_safe(
-                f'<strong>Team Registration Successful!</strong><br>'
-                f'Team: <strong>{team.name}</strong><br>'
-                f'County: {team.county}<br><br>'
-                f'Your registration is now <strong>pending approval</strong>.<br>'
-                f'You will be notified once an administrator reviews your application.'
-            ))
-            return redirect('team_register_success')
-    else:
-        form = TeamRegistrationForm()
-    return render(request, 'public/team_register.html', {
-        'form': form,
-        'active_page': 'register',
-        'registration_fee': COUNTY_REGISTRATION_FEE_CAP,
-    })
+    """Deprecated — team registration is now handled via county registration."""
+    return redirect('county_admin_register')
 
 
 def team_register_success_view(request):
-    """Success page after team registration."""
-    return render(request, 'public/team_register_success.html', {
-        'active_page': 'register',
-    })
+    """Deprecated — redirects to county registration."""
+    return redirect('county_admin_register')
 
 
 def referee_register_view(request):
@@ -1128,7 +1107,7 @@ def pending_referees_view(request):
 #   ADMIN — PLAYER VERIFICATION VIEWS
 # ══════════════════════════════════════════════════════════════════════════════
 
-@role_required('admin', 'competition_manager')
+@role_required('admin', 'competition_manager', 'secretary_general')
 def player_verification_list_view(request):
     """
     Admin view showing players grouped by verification status.
@@ -3264,11 +3243,11 @@ def cm_competition_rules_view(request, pk):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-#   COUNTY SPORTS ADMIN — PUBLIC REGISTRATION
+#   COUNTY SPORTS DIRECTOR — PUBLIC REGISTRATION
 # ══════════════════════════════════════════════════════════════════════════════
 
 def county_admin_register_view(request):
-    """Public registration for a county sports admin (one per county)."""
+    """Public county registration for KYISA 11th Edition."""
     # Build list of already-taken counties for the template
     taken_counties = list(
         CountyRegistration.objects.values_list('county', flat=True)
@@ -3278,27 +3257,40 @@ def county_admin_register_view(request):
         form = CountyAdminRegistrationForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
+            # Auto-generate a secure temporary password
+            temp_password = ''.join(
+                secrets.choice(string.ascii_letters + string.digits)
+                for _ in range(12)
+            )
             user = User.objects.create_user(
                 email=cd['email'],
-                password=cd['password'],
+                password=temp_password,
                 first_name=cd['first_name'],
                 last_name=cd['last_name'],
                 phone=cd['phone'],
                 county=cd['county'],
-                role=UserRole.COUNTY_SPORTS_ADMIN,
+                role=UserRole.COUNTY_SPORTS_DIRECTOR,
             )
+            user.must_change_password = True
+            user.save(update_fields=['must_change_password'])
+
             CountyRegistration.objects.create(
                 user=user,
                 county=cd['county'],
+                director_name=cd['director_name'],
+                director_phone=cd['director_phone'],
             )
             messages.success(request, mark_safe(
-                f'<strong>Registration Successful!</strong><br>'
-                f'Welcome, <strong>{cd["first_name"]} {cd["last_name"]}</strong> '
-                f'({cd["county"]} County).<br><br>'
+                f'<strong>County Registration Successful!</strong><br>'
+                f'County: <strong>{cd["county"]}</strong><br>'
+                f'Director of Sports: <strong>{cd["director_name"]}</strong><br><br>'
+                f'Your temporary password is: <code>{temp_password}</code><br>'
+                f'<strong>Please save this password.</strong> You will be required to change it on first login.<br><br>'
                 f'<strong>Next steps:</strong><br>'
-                f'1. Log in to the portal<br>'
-                f'2. Submit payment (M-Pesa or bank slip)<br>'
-                f'3. Once the treasurer approves, you can add disciplines and players'
+                f'1. Log in to the portal with your email and the temporary password above<br>'
+                f'2. Change your password when prompted<br>'
+                f'3. Submit payment (M-Pesa or bank slip)<br>'
+                f'4. Once the treasurer approves, you can add disciplines and players'
             ))
             return redirect('county_admin_register_success')
     else:
@@ -3516,4 +3508,831 @@ def treasurer_county_registrations_view(request):
         'approved': approved,
         'all_regs': all_regs,
         'registration_fee': COUNTY_REGISTRATION_FEE_CAP,
+    })
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   COUNTY SPORTS DIRECTOR — TECHNICAL BENCH MANAGEMENT
+# ══════════════════════════════════════════════════════════════════════════════
+
+@role_required('county_sports_admin')
+def county_admin_add_bench_member_view(request, discipline_pk):
+    """County sports director adds a technical bench member to a discipline."""
+    reg = get_object_or_404(CountyRegistration, user=request.user)
+    discipline = get_object_or_404(CountyDiscipline, pk=discipline_pk, registration=reg)
+
+    if not reg.is_approved:
+        messages.warning(request, 'Registration must be approved first.')
+        return redirect('county_admin_dashboard')
+
+    if request.method == 'POST':
+        form = TechnicalBenchForm(request.POST, request.FILES)
+        if form.is_valid():
+            member = form.save(commit=False)
+            member.discipline = discipline
+
+            # Check if role is already filled
+            if TechnicalBenchMember.objects.filter(discipline=discipline, role=member.role).exists():
+                messages.error(request, f'{member.get_role_display()} is already assigned for this discipline.')
+            else:
+                member.save()
+
+                # If this is a Team Manager, create a user account for them
+                if member.role == TechnicalBenchRole.TEAM_MANAGER and member.email:
+                    try:
+                        import secrets, string
+                        temp_pw = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(10))
+                        tm_user = User.objects.create_user(
+                            email=member.email,
+                            password=temp_pw,
+                            first_name=member.first_name,
+                            last_name=member.last_name,
+                            phone=member.phone,
+                            county=reg.county,
+                            role=UserRole.TEAM_MANAGER,
+                            must_change_password=True,
+                        )
+                        member.user = tm_user
+                        member.save(update_fields=['user'])
+                        messages.success(request, mark_safe(
+                            f'<strong>{member.get_full_name}</strong> added as {member.get_role_display()}.<br>'
+                            f'Login: <code>{member.email}</code><br>'
+                            f'Temp password: <code>{temp_pw}</code><br>'
+                            f'<em>They must change password on first login.</em>'
+                        ))
+                    except Exception as e:
+                        member.save()
+                        messages.warning(request, f'{member.get_full_name} added but account creation failed: {e}')
+                else:
+                    messages.success(request, f'{member.get_full_name} added as {member.get_role_display()}.')
+
+            return redirect('county_admin_discipline_players', discipline_pk=discipline_pk)
+    else:
+        form = TechnicalBenchForm()
+
+    existing_bench = discipline.technical_bench.all()
+    filled_roles = set(existing_bench.values_list('role', flat=True))
+    available_roles = [(k, v) for k, v in TechnicalBenchRole.choices if k not in filled_roles]
+
+    return render(request, 'portal/county_admin/add_bench_member.html', {
+        'form': form,
+        'discipline': discipline,
+        'reg': reg,
+        'existing_bench': existing_bench,
+        'available_roles': available_roles,
+    })
+
+
+@role_required('county_sports_admin')
+def county_admin_delete_bench_member_view(request, member_pk):
+    """Remove a technical bench member."""
+    reg = get_object_or_404(CountyRegistration, user=request.user)
+    member = get_object_or_404(TechnicalBenchMember, pk=member_pk, discipline__registration=reg)
+    discipline_pk = member.discipline.pk
+
+    if request.method == 'POST':
+        name = member.get_full_name
+        member.delete()
+        messages.success(request, f'{name} removed from technical bench.')
+    return redirect('county_admin_discipline_players', discipline_pk=discipline_pk)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   COUNTY SPORTS DIRECTOR — PLAYER VERIFICATION OVERVIEW
+# ══════════════════════════════════════════════════════════════════════════════
+
+@role_required('county_sports_admin')
+def county_admin_verification_view(request):
+    """County sports director views verification status of all their players."""
+    reg = get_object_or_404(CountyRegistration, user=request.user)
+    disciplines = reg.disciplines.prefetch_related('players').all()
+
+    approved_players = []
+    rejected_players = []
+    resubmit_players = []
+    pending_players = []
+
+    for disc in disciplines:
+        for player in disc.players.all():
+            entry = {'player': player, 'discipline': disc}
+            if player.verification_status == 'verified':
+                approved_players.append(entry)
+            elif player.verification_status == 'rejected':
+                rejected_players.append(entry)
+            elif player.verification_status == 'resubmit':
+                resubmit_players.append(entry)
+            else:
+                pending_players.append(entry)
+
+    return render(request, 'portal/county_admin/verification_status.html', {
+        'reg': reg,
+        'approved_players': approved_players,
+        'rejected_players': rejected_players,
+        'resubmit_players': resubmit_players,
+        'pending_players': pending_players,
+    })
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   PLAYER PROFILE VIEW (public within portal)
+# ══════════════════════════════════════════════════════════════════════════════
+
+@login_required(login_url='web_login')
+def player_profile_view(request, player_pk):
+    """
+    Player profile view showing full details, verification status,
+    discipline(s), and passport photo. Accessible to authorized roles.
+    """
+    # Try CountyPlayer first, then Player (team-based)
+    player = None
+    player_type = None
+    try:
+        player = CountyPlayer.objects.select_related('discipline__registration').get(pk=player_pk)
+        player_type = 'county'
+    except CountyPlayer.DoesNotExist:
+        pass
+
+    if not player:
+        player = get_object_or_404(Player.objects.select_related('team'), pk=player_pk)
+        player_type = 'team'
+
+    # Access control
+    user = request.user
+    can_view = (
+        user.is_superuser or
+        user.role in ('admin', 'competition_manager', 'referee', 'referee_manager', 'jury_chair')
+    )
+    if player_type == 'county':
+        # County sports director can view their own county's players
+        if user.role == 'county_sports_admin':
+            try:
+                reg = CountyRegistration.objects.get(user=user)
+                if player.discipline.registration == reg:
+                    can_view = True
+            except CountyRegistration.DoesNotExist:
+                pass
+        # Team manager can view verified players in their county
+        if user.role == 'team_manager':
+            try:
+                bench = TechnicalBenchMember.objects.get(user=user)
+                if bench.discipline.registration == player.discipline.registration:
+                    can_view = True
+            except TechnicalBenchMember.DoesNotExist:
+                pass
+    elif player_type == 'team':
+        if user.role == 'team_manager' and player.team.manager == user:
+            can_view = True
+
+    if not can_view:
+        messages.error(request, 'You do not have permission to view this player profile.')
+        return redirect('dashboard')
+
+    return render(request, 'portal/player_profile.html', {
+        'player': player,
+        'player_type': player_type,
+    })
+
+
+@login_required(login_url='web_login')
+def county_player_profile_view(request, player_pk):
+    """County player profile view — redirect to the unified player profile."""
+    return player_profile_view(request, player_pk)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   TEAM MANAGER PORTAL (dedicated portal for match management)
+# ══════════════════════════════════════════════════════════════════════════════
+
+@role_required('team_manager')
+def team_manager_dashboard_view(request):
+    """
+    Team Manager dedicated dashboard showing:
+    - Verified players (organized per discipline)
+    - Upcoming matches
+    - Disciplinary sanctions for own + opponent teams
+    """
+    user = request.user
+
+    # Find the technical bench member linked to this user
+    try:
+        bench = TechnicalBenchMember.objects.select_related(
+            'discipline__registration'
+        ).get(user=user, role=TechnicalBenchRole.TEAM_MANAGER)
+    except TechnicalBenchMember.DoesNotExist:
+        bench = None
+
+    # Fall back to old Team-based manager role
+    my_teams = Team.objects.filter(manager=user)
+
+    # Verified county players (if bench member)
+    verified_players = []
+    discipline = None
+    county_reg = None
+    if bench:
+        discipline = bench.discipline
+        county_reg = discipline.registration
+        verified_players = CountyPlayer.objects.filter(
+            discipline=discipline,
+            verification_status='verified',
+        ).order_by('last_name', 'first_name')
+
+    # Verified team players (old flow)
+    team_players = {}
+    for team in my_teams:
+        team_players[team] = Player.objects.filter(
+            team=team,
+            verification_status=VerificationStatus.VERIFIED,
+            huduma_status='verified',
+            fifa_connect_status='clear',
+        ).order_by('shirt_number')
+
+    # Upcoming fixtures
+    upcoming_fixtures = []
+    if my_teams.exists():
+        upcoming_fixtures = Fixture.objects.filter(
+            Q(home_team__in=my_teams) | Q(away_team__in=my_teams),
+            match_date__gte=timezone.now(),
+        ).select_related(
+            'competition', 'home_team', 'away_team', 'venue'
+        ).order_by('match_date')[:10]
+
+    # Disciplinary sanctions
+    from matches.models import PlayerStatistics
+    own_sanctions = []
+    opponent_sanctions = []
+    if my_teams.exists():
+        own_sanctions = PlayerStatistics.objects.filter(
+            team__in=my_teams,
+        ).filter(
+            Q(yellow_cards__gt=0) | Q(red_cards__gt=0)
+        ).select_related('player', 'team', 'competition').order_by('-red_cards', '-yellow_cards')[:20]
+
+    return render(request, 'portal/team_manager/dashboard.html', {
+        'bench': bench,
+        'discipline': discipline,
+        'county_reg': county_reg,
+        'verified_players': verified_players,
+        'my_teams': my_teams,
+        'team_players': team_players,
+        'upcoming_fixtures': upcoming_fixtures,
+        'own_sanctions': own_sanctions,
+    })
+
+
+@role_required('team_manager')
+def team_manager_match_squad_view(request, fixture_pk):
+    """
+    Team Manager selects match day squad (starting 11 + subs).
+    - Only verified players can be selected
+    - Suspended players are blocked
+    - Cannot edit after match start
+    - Post-referee-approval edits require re-approval
+    """
+    from django.conf import settings as conf
+
+    fixture = get_object_or_404(Fixture.objects.select_related(
+        'home_team', 'away_team', 'competition', 'venue'
+    ), pk=fixture_pk)
+    user = request.user
+
+    # Determine the manager's team
+    my_teams = Team.objects.filter(manager=user)
+    team = None
+    if fixture.home_team in my_teams:
+        team = fixture.home_team
+    elif fixture.away_team in my_teams:
+        team = fixture.away_team
+
+    if not team:
+        messages.error(request, 'Your team is not involved in this fixture.')
+        return redirect('team_manager_dashboard')
+
+    # Check match hasn't started
+    if fixture.status in ('live', 'completed'):
+        messages.error(request, 'Cannot edit squad — match has already started or completed.')
+        return redirect('team_manager_dashboard')
+
+    # Get existing submission
+    existing = SquadSubmission.objects.filter(fixture=fixture, team=team).first()
+
+    # If squad already approved by referee, warn that changes need re-approval
+    needs_re_approval = existing and existing.status == SquadStatus.APPROVED
+
+    # Get fully verified players only — suspended ones flagged
+    eligible_players = Player.objects.filter(
+        team=team,
+        verification_status=VerificationStatus.VERIFIED,
+        huduma_status='verified',
+        fifa_connect_status='clear',
+    ).order_by('shirt_number')
+
+    suspended_ids = set(
+        Player.objects.filter(
+            team=team, status=PlayerStatus.SUSPENDED
+        ).values_list('pk', flat=True)
+    )
+
+    starter_ids = []
+    sub_ids = []
+    if existing:
+        starter_ids = list(existing.squad_players.filter(is_starter=True).values_list('player_id', flat=True))
+        sub_ids = list(existing.squad_players.filter(is_starter=False).values_list('player_id', flat=True))
+
+    if request.method == 'POST':
+        selected_starters = request.POST.getlist('starters')
+        selected_subs = request.POST.getlist('subs')
+
+        starters_int = [int(x) for x in selected_starters if x]
+        subs_int = [int(x) for x in selected_subs if x]
+
+        # Validate no suspended players
+        selected_suspended = (set(starters_int) | set(subs_int)) & suspended_ids
+        if selected_suspended:
+            messages.error(request, 'Cannot select suspended players.')
+        elif set(starters_int) & set(subs_int):
+            messages.error(request, 'A player cannot be both a starter and a substitute.')
+        elif len(starters_int) != 11:
+            messages.error(request, f'Exactly 11 starters required. You selected {len(starters_int)}.')
+        else:
+            if existing:
+                existing.squad_players.all().delete()
+                submission = existing
+            else:
+                submission = SquadSubmission.objects.create(fixture=fixture, team=team)
+
+            # If was previously approved and now re-submitted, needs re-approval
+            submission.status = SquadStatus.SUBMITTED
+            submission.submitted_at = timezone.now()
+            submission.rejection_reason = ''
+            submission.reviewed_by = None
+            submission.reviewed_at = None
+            submission.save()
+
+            for pid in starters_int:
+                p = Player.objects.get(pk=pid, team=team)
+                SquadPlayer.objects.create(submission=submission, player=p, is_starter=True, shirt_number=p.shirt_number)
+            for pid in subs_int:
+                p = Player.objects.get(pk=pid, team=team)
+                SquadPlayer.objects.create(submission=submission, player=p, is_starter=False, shirt_number=p.shirt_number)
+
+            messages.success(request, f'Squad submitted for {fixture}.')
+            return redirect('team_manager_dashboard')
+
+    return render(request, 'portal/team_manager/match_squad.html', {
+        'fixture': fixture,
+        'team': team,
+        'eligible_players': eligible_players,
+        'suspended_ids': suspended_ids,
+        'existing': existing,
+        'starter_ids': starter_ids,
+        'sub_ids': sub_ids,
+        'needs_re_approval': needs_re_approval,
+    })
+
+
+@role_required('team_manager')
+def team_manager_opponent_view(request, fixture_pk):
+    """
+    View opponent team list — ONLY after referee has approved both squads.
+    """
+    fixture = get_object_or_404(Fixture.objects.select_related(
+        'home_team', 'away_team', 'competition'
+    ), pk=fixture_pk)
+    user = request.user
+
+    my_teams = Team.objects.filter(manager=user)
+    if fixture.home_team in my_teams:
+        my_team = fixture.home_team
+        opponent = fixture.away_team
+    elif fixture.away_team in my_teams:
+        my_team = fixture.away_team
+        opponent = fixture.home_team
+    else:
+        messages.error(request, 'Your team is not involved in this fixture.')
+        return redirect('team_manager_dashboard')
+
+    # Check both squads are approved
+    my_squad = SquadSubmission.objects.filter(fixture=fixture, team=my_team).first()
+    opp_squad = SquadSubmission.objects.filter(fixture=fixture, team=opponent).first()
+
+    both_approved = (
+        my_squad and my_squad.status == SquadStatus.APPROVED and
+        opp_squad and opp_squad.status == SquadStatus.APPROVED
+    )
+
+    if not both_approved:
+        messages.warning(request, 'Opponent team list is only visible after referee approves both squads.')
+        return redirect('team_manager_dashboard')
+
+    opp_players = opp_squad.squad_players.select_related('player').order_by('-is_starter', 'shirt_number')
+
+    return render(request, 'portal/team_manager/opponent_view.html', {
+        'fixture': fixture,
+        'my_team': my_team,
+        'opponent': opponent,
+        'opp_players': opp_players,
+    })
+
+
+@role_required('team_manager')
+def team_manager_sanctions_view(request):
+    """View disciplinary sanctions for own team and opponents."""
+    user = request.user
+    my_teams = Team.objects.filter(manager=user)
+    from matches.models import PlayerStatistics
+
+    own_sanctions = PlayerStatistics.objects.filter(
+        team__in=my_teams,
+    ).filter(
+        Q(yellow_cards__gt=0) | Q(red_cards__gt=0)
+    ).select_related('player', 'team', 'competition').order_by('-red_cards', '-yellow_cards')
+
+    # Opponent sanctions: get from recent fixtures
+    opponent_team_ids = set()
+    recent_fixtures = Fixture.objects.filter(
+        Q(home_team__in=my_teams) | Q(away_team__in=my_teams),
+    ).select_related('home_team', 'away_team')[:20]
+
+    for f in recent_fixtures:
+        if f.home_team in my_teams:
+            opponent_team_ids.add(f.away_team_id)
+        else:
+            opponent_team_ids.add(f.home_team_id)
+
+    opponent_sanctions = PlayerStatistics.objects.filter(
+        team_id__in=opponent_team_ids,
+    ).filter(
+        Q(yellow_cards__gt=0) | Q(red_cards__gt=0)
+    ).select_related('player', 'team', 'competition').order_by('-red_cards', '-yellow_cards')[:30]
+
+    return render(request, 'portal/team_manager/sanctions.html', {
+        'own_sanctions': own_sanctions,
+        'opponent_sanctions': opponent_sanctions,
+        'my_teams': my_teams,
+    })
+
+
+@role_required('team_manager')
+def team_manager_file_appeal_view(request):
+    """
+    Team Manager files a disciplinary appeal.
+    Appeals must be reviewed and approved by the County Sports Director before proceeding.
+    """
+    from appeals.forms import AppealForm
+    user = request.user
+    my_teams = Team.objects.filter(manager=user)
+
+    if not my_teams.exists():
+        messages.error(request, 'No team found for your account.')
+        return redirect('team_manager_dashboard')
+
+    team = my_teams.first()
+
+    if request.method == 'POST':
+        form = AppealForm(request.POST)
+        if form.is_valid():
+            from appeals.models import Appeal, AppealStatus
+            respondent_team_id = request.POST.get('respondent_team')
+            if not respondent_team_id:
+                messages.error(request, 'Please select a respondent team.')
+            else:
+                appeal = Appeal(
+                    appellant_team=team,
+                    appellant_user=user,
+                    respondent_team_id=int(respondent_team_id),
+                    subject=form.cleaned_data['subject'],
+                    details=form.cleaned_data['details'],
+                    status=AppealStatus.DRAFT,
+                )
+                match_id = request.POST.get('match')
+                if match_id:
+                    appeal.match_id = int(match_id)
+                appeal.save()
+                messages.success(request, 'Appeal drafted. It will be reviewed by your County Sports Director before submission.')
+                return redirect('team_manager_dashboard')
+    else:
+        form = AppealForm()
+
+    # Get possible opponent teams
+    other_teams = Team.objects.exclude(pk__in=my_teams).filter(status='registered').order_by('name')
+
+    return render(request, 'portal/team_manager/file_appeal.html', {
+        'form': form,
+        'team': team,
+        'other_teams': other_teams,
+    })
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   TEAM LIST — DOWNLOADABLE PDF
+# ══════════════════════════════════════════════════════════════════════════════
+
+@login_required(login_url='web_login')
+def team_list_pdf_view(request, discipline_pk):
+    """
+    Generate and return a downloadable PDF of the team list.
+    Accessible to Team Manager and County Sports Director.
+    """
+    from django.http import HttpResponse
+    from io import BytesIO
+
+    discipline = get_object_or_404(
+        CountyDiscipline.objects.select_related('registration'),
+        pk=discipline_pk,
+    )
+
+    # Permission check
+    user = request.user
+    can_download = (
+        user.is_superuser or
+        user.role in ('admin', 'competition_manager')
+    )
+    if user.role == 'county_sports_admin':
+        try:
+            reg = CountyRegistration.objects.get(user=user)
+            if discipline.registration == reg:
+                can_download = True
+        except CountyRegistration.DoesNotExist:
+            pass
+    if user.role == 'team_manager':
+        try:
+            bench = TechnicalBenchMember.objects.get(user=user)
+            if bench.discipline == discipline:
+                can_download = True
+        except TechnicalBenchMember.DoesNotExist:
+            pass
+
+    if not can_download:
+        messages.error(request, 'Permission denied.')
+        return redirect('dashboard')
+
+    players = discipline.players.filter(verification_status='verified').order_by('jersey_number', 'last_name')
+    bench_members = discipline.technical_bench.all().order_by('role')
+
+    # Generate PDF using reportlab
+    try:
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib import colors
+        from reportlab.platypus import (
+            SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image as RLImage
+        )
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.units import cm, mm
+
+        buffer = BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=1.5*cm, bottomMargin=1.5*cm)
+        styles = getSampleStyleSheet()
+        elements = []
+
+        # Title
+        title_style = ParagraphStyle(
+            'CustomTitle', parent=styles['Title'],
+            fontSize=16, spaceAfter=6,
+        )
+        elements.append(Paragraph(
+            f"{discipline.registration.county} County — {discipline.get_sport_type_display()}",
+            title_style,
+        ))
+        elements.append(Paragraph("Official Team List", styles['Heading2']))
+        elements.append(Spacer(1, 0.5*cm))
+
+        # Technical bench section
+        if bench_members.exists():
+            elements.append(Paragraph("Technical Bench / Delegation", styles['Heading3']))
+            bench_data = [['Role', 'Name', 'Phone']]
+            for m in bench_members:
+                bench_data.append([m.get_role_display(), m.get_full_name, m.phone])
+            bench_table = Table(bench_data, colWidths=[5*cm, 7*cm, 5*cm])
+            bench_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1B5E20')),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, -1), 9),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+                ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#F5F5F5')]),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ('LEFTPADDING', (0, 0), (-1, -1), 6),
+            ]))
+            elements.append(bench_table)
+            elements.append(Spacer(1, 0.5*cm))
+
+        # Players section
+        elements.append(Paragraph(f"Players ({players.count()})", styles['Heading3']))
+
+        if players.exists():
+            player_data = [['#', 'Name', 'Age', 'Position', 'Jersey']]
+            for p in players:
+                player_data.append([
+                    str(players.filter(pk__lte=p.pk).count()),
+                    p.get_full_name,
+                    str(p.age),
+                    p.position or '—',
+                    str(p.jersey_number) if p.jersey_number else '—',
+                ])
+
+            player_table = Table(player_data, colWidths=[1.5*cm, 7*cm, 2*cm, 3*cm, 2.5*cm])
+            player_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1B5E20')),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, -1), 9),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+                ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#F5F5F5')]),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ('LEFTPADDING', (0, 0), (-1, -1), 6),
+            ]))
+            elements.append(player_table)
+        else:
+            elements.append(Paragraph("No verified players.", styles['Normal']))
+
+        elements.append(Spacer(1, 1*cm))
+        elements.append(Paragraph(
+            f"Generated on {timezone.now().strftime('%d %B %Y at %H:%M')} — KYISA CMS",
+            styles['Normal'],
+        ))
+
+        doc.build(elements)
+        buffer.seek(0)
+
+        county = discipline.registration.county
+        sport = discipline.get_sport_type_display().replace(' ', '_')
+        filename = f"KYISA_{county}_{sport}_Team_List.pdf"
+
+        response = HttpResponse(buffer, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
+
+    except ImportError:
+        messages.error(request, 'PDF generation requires the reportlab package. Install it with: pip install reportlab')
+        return redirect('county_admin_dashboard')
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   SECRETARY GENERAL — READ-ONLY OVERSIGHT PORTAL
+# ══════════════════════════════════════════════════════════════════════════════
+
+@role_required('secretary_general')
+def sg_dashboard_view(request):
+    """Secretary General overview: stats, recent actions, quick links."""
+    from admin_dashboard.models import ActivityLog
+
+    total_players = CountyPlayer.objects.count()
+    verified_players = CountyPlayer.objects.filter(verification_status='verified').count()
+    pending_players = CountyPlayer.objects.filter(verification_status='pending').count()
+    rejected_players = CountyPlayer.objects.filter(verification_status='rejected').count()
+
+    from appeals.models import Appeal, AppealStatus
+    total_appeals = Appeal.objects.count()
+    pending_appeals = Appeal.objects.filter(status=AppealStatus.SUBMITTED).count()
+    decided_appeals = Appeal.objects.filter(status=AppealStatus.DECIDED).count()
+
+    recent_activity = ActivityLog.objects.select_related('user').order_by('-timestamp')[:15]
+
+    disciplines = CountyDiscipline.objects.select_related('registration').all()
+    sport_breakdown = {}
+    for d in disciplines:
+        sport = d.get_sport_type_display()
+        if sport not in sport_breakdown:
+            sport_breakdown[sport] = {'total': 0, 'verified': 0}
+        sport_breakdown[sport]['total'] += d.players.count()
+        sport_breakdown[sport]['verified'] += d.players.filter(verification_status='verified').count()
+
+    return render(request, 'portal/secretary_general/dashboard.html', {
+        'total_players': total_players,
+        'verified_players': verified_players,
+        'pending_players': pending_players,
+        'rejected_players': rejected_players,
+        'total_appeals': total_appeals,
+        'pending_appeals': pending_appeals,
+        'decided_appeals': decided_appeals,
+        'recent_activity': recent_activity,
+        'sport_breakdown': sport_breakdown,
+        'total_counties': CountyRegistration.objects.count(),
+    })
+
+
+@role_required('secretary_general')
+def sg_verifications_view(request):
+    """SG: View all player verifications across all disciplines (read-only)."""
+    tab = request.GET.get('tab', 'verified')
+    discipline_filter = request.GET.get('discipline', '')
+
+    players = CountyPlayer.objects.select_related(
+        'discipline', 'discipline__registration', 'verified_by',
+    ).order_by('-verified_at', 'last_name')
+
+    if discipline_filter:
+        players = players.filter(discipline__sport_type=discipline_filter)
+
+    verified = players.filter(verification_status='verified')
+    pending = players.filter(verification_status='pending')
+    rejected = players.filter(verification_status='rejected')
+
+    disciplines = CountyDiscipline.objects.values_list(
+        'sport_type', flat=True
+    ).distinct()
+
+    return render(request, 'portal/secretary_general/verifications.html', {
+        'tab': tab,
+        'verified_players': verified,
+        'pending_players': pending,
+        'rejected_players': rejected,
+        'disciplines': disciplines,
+        'discipline_filter': discipline_filter,
+        'stats': {
+            'verified': verified.count(),
+            'pending': pending.count(),
+            'rejected': rejected.count(),
+        },
+    })
+
+
+@role_required('secretary_general')
+def sg_appeals_view(request):
+    """SG: View all appeals and their decisions (read-only)."""
+    from appeals.models import Appeal, AppealStatus, JuryDecision
+
+    status_filter = request.GET.get('status', '')
+    appeals = Appeal.objects.select_related(
+        'appellant_team', 'respondent_team', 'appellant_user', 'competition',
+    ).order_by('-created_at')
+
+    if status_filter:
+        appeals = appeals.filter(status=status_filter)
+
+    return render(request, 'portal/secretary_general/appeals.html', {
+        'appeals': appeals,
+        'status_choices': AppealStatus.choices,
+        'current_status': status_filter,
+    })
+
+
+@role_required('secretary_general')
+def sg_treasurer_actions_view(request):
+    """SG: View all actions performed by the Treasurer."""
+    from admin_dashboard.models import ActivityLog
+
+    treasurer_logs = ActivityLog.objects.filter(
+        user__role='treasurer',
+    ).select_related('user').order_by('-timestamp')
+
+    return render(request, 'portal/secretary_general/treasurer_actions.html', {
+        'logs': treasurer_logs,
+    })
+
+
+@role_required('secretary_general')
+def sg_user_actions_view(request):
+    """SG: View all user activity — filterable by user and action type."""
+    from admin_dashboard.models import ActivityLog
+
+    user_filter = request.GET.get('user', '')
+    action_filter = request.GET.get('action', '')
+
+    logs = ActivityLog.objects.select_related('user').order_by('-timestamp')
+
+    if user_filter:
+        logs = logs.filter(user_id=user_filter)
+    if action_filter:
+        logs = logs.filter(action=action_filter)
+
+    users = User.objects.filter(is_active=True).order_by('first_name', 'last_name')
+    action_choices = ActivityLog.ACTION_CHOICES
+
+    return render(request, 'portal/secretary_general/user_actions.html', {
+        'logs': logs[:200],
+        'users': users,
+        'action_choices': action_choices,
+        'user_filter': user_filter,
+        'action_filter': action_filter,
+    })
+
+
+@role_required('secretary_general')
+def sg_verified_players_view(request):
+    """SG: View verified players for all disciplines — who verified, when, where."""
+    discipline_filter = request.GET.get('discipline', '')
+    county_filter = request.GET.get('county', '')
+
+    players = CountyPlayer.objects.filter(
+        verification_status='verified',
+    ).select_related(
+        'discipline', 'discipline__registration', 'verified_by',
+    ).order_by('discipline__sport_type', 'discipline__registration__county', 'last_name')
+
+    if discipline_filter:
+        players = players.filter(discipline__sport_type=discipline_filter)
+    if county_filter:
+        players = players.filter(discipline__registration__county=county_filter)
+
+    disciplines = CountyDiscipline.objects.values_list('sport_type', flat=True).distinct()
+    counties = CountyRegistration.objects.values_list('county', flat=True).order_by('county')
+
+    return render(request, 'portal/secretary_general/verified_players.html', {
+        'players': players,
+        'disciplines': disciplines,
+        'counties': counties,
+        'discipline_filter': discipline_filter,
+        'county_filter': county_filter,
+        'total': players.count(),
     })

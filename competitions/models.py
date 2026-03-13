@@ -27,7 +27,7 @@ class SportType(models.TextChoices):
     BEACH_HANDBALL     = "beach_handball",     "Beach Handball"
 
 
-EXHIBITION_SPORTS = {SportType.BEACH_VOLLEYBALL, SportType.BEACH_HANDBALL}
+EXHIBITION_SPORTS = {SportType.HANDBALL_MEN, SportType.HANDBALL_WOMEN, SportType.BEACH_VOLLEYBALL, SportType.BEACH_HANDBALL}
 
 
 class GenderChoice(models.TextChoices):

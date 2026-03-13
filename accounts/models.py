@@ -11,10 +11,11 @@ class UserRole(models.TextChoices):
     REFEREE_MANAGER     = "referee_manager",     "Referees Manager"
     REFEREE             = "referee",             "Referee"
     TEAM_MANAGER        = "team_manager",        "Team Manager"
-    COUNTY_SPORTS_ADMIN = "county_sports_admin", "County Sports Admin"
+    COUNTY_SPORTS_DIRECTOR = "county_sports_admin", "County Sports Director"
     TREASURER           = "treasurer",           "Treasurer"
     JURY_CHAIR          = "jury_chair",          "Chair of the Jury"
     MEDIA_MANAGER       = "media_manager",       "Media Manager"
+    SECRETARY_GENERAL   = "secretary_general",   "Secretary General"
     ADMIN               = "admin",               "System Admin"
 
 
@@ -82,11 +83,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_team_manager(self): return self.role == UserRole.TEAM_MANAGER
     @property
-    def is_county_sports_admin(self): return self.role == UserRole.COUNTY_SPORTS_ADMIN
+    def is_county_sports_director(self): return self.role == UserRole.COUNTY_SPORTS_DIRECTOR
+    @property
+    def is_county_sports_admin(self): return self.is_county_sports_director  # backwards compat
     @property
     def is_treasurer(self): return self.role == UserRole.TREASURER
     @property
     def is_jury_chair(self): return self.role == UserRole.JURY_CHAIR
+    @property
+    def is_secretary_general(self): return self.role == UserRole.SECRETARY_GENERAL
     @property
     def is_admin(self): return self.role == UserRole.ADMIN or self.is_superuser
 

@@ -8,6 +8,7 @@ from django.utils import timezone
 from .models import (
     Team, Player, PLAYER_MIN_AGE, PLAYER_MAX_AGE,
     CountyRegistration, CountyPlayer, CountyDiscipline, SQUAD_LIMITS,
+    TechnicalBenchMember, TechnicalBenchRole,
 )
 from accounts.models import KenyaCounty, User
 from competitions.models import Competition, CompetitionStatus, SportType
@@ -209,7 +210,7 @@ class PlayerRegistrationForm(forms.ModelForm):
             'fifa_connect_id': 'FIFA Connect ID (optional)',
             'photo': 'Passport-Size Photo *',
             'id_document': 'Copy of National ID *',
-            'birth_certificate': 'Copy of Birth Certificate *',
+            'birth_certificate': 'Copy of Birth Certificate (optional)',
         }
         help_texts = {
             'photo': 'Clear passport-size photograph',
@@ -242,7 +243,7 @@ class PlayerRegistrationForm(forms.ModelForm):
 # ══════════════════════════════════════════════════════════════════════════════
 
 class CountyAdminRegistrationForm(forms.Form):
-    """Public form for a county sports admin to sign up."""
+    """Public county registration for KYISA 11th Edition."""
     first_name = forms.CharField(
         max_length=100,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First name'}),
@@ -267,14 +268,17 @@ class CountyAdminRegistrationForm(forms.Form):
         widget=forms.Select(attrs={'class': 'form-control'}),
         label='County *',
     )
-    password = forms.CharField(
-        min_length=8,
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Min 8 characters'}),
-        label='Password *',
+
+    # Director of Sports — contact person for the county
+    director_name = forms.CharField(
+        max_length=200,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Full name of Director of Sports'}),
+        label='Director of Sports — Full Name *',
     )
-    password_confirm = forms.CharField(
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Repeat password'}),
-        label='Confirm Password *',
+    director_phone = forms.CharField(
+        max_length=20,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+254712345678'}),
+        label='Director of Sports — Phone Number *',
     )
 
     def clean_email(self):
@@ -286,16 +290,8 @@ class CountyAdminRegistrationForm(forms.Form):
     def clean_county(self):
         county = self.cleaned_data['county']
         if CountyRegistration.objects.filter(county=county).exists():
-            raise ValidationError('A county sports admin has already registered for this county.')
+            raise ValidationError('A county sports director has already registered for this county.')
         return county
-
-    def clean(self):
-        cd = super().clean()
-        pw1 = cd.get('password')
-        pw2 = cd.get('password_confirm')
-        if pw1 and pw2 and pw1 != pw2:
-            self.add_error('password_confirm', 'Passwords do not match.')
-        return cd
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -332,31 +328,41 @@ class CountyPaymentForm(forms.Form):
 # ══════════════════════════════════════════════════════════════════════════════
 
 class CountyPlayerForm(forms.ModelForm):
-    """Form for county admin to register a player under a discipline."""
+    """Form for county sports director to register a player under a discipline."""
 
     class Meta:
         model = CountyPlayer
         fields = [
             'first_name', 'last_name', 'date_of_birth',
-            'national_id_number', 'phone', 'photo', 'id_document',
+            'national_id_number', 'huduma_number', 'phone',
+            'position', 'jersey_number',
+            'photo', 'id_document', 'birth_certificate',
         ]
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First name'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last name'}),
             'date_of_birth': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'national_id_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 12345678'}),
+            'huduma_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Huduma Namba'}),
             'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+254712345678'}),
+            'position': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. GK, CB, CM, ST'}),
+            'jersey_number': forms.NumberInput(attrs={'class': 'form-control', 'min': '1', 'max': '99'}),
             'photo': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
             'id_document': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*,.pdf'}),
+            'birth_certificate': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*,.pdf'}),
         }
         labels = {
             'first_name': 'First Name *',
             'last_name': 'Last Name *',
             'date_of_birth': 'Date of Birth *',
             'national_id_number': 'National ID Number *',
+            'huduma_number': 'Huduma Namba *',
             'phone': 'Phone Number',
-            'photo': 'Passport Photo',
-            'id_document': 'Copy of National ID',
+            'position': 'Position',
+            'jersey_number': 'Jersey Number',
+            'photo': 'Passport Photo *',
+            'id_document': 'Copy of National ID *',
+            'birth_certificate': 'Birth Certificate (optional)',
         }
 
     def clean_national_id_number(self):
@@ -382,3 +388,38 @@ class CountyPlayerForm(forms.ModelForm):
             if age > PLAYER_MAX_AGE:
                 raise ValidationError(f'Player is {age} — maximum age is {PLAYER_MAX_AGE}.')
         return dob
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  TECHNICAL BENCH — Add / Edit Form
+# ══════════════════════════════════════════════════════════════════════════════
+
+class TechnicalBenchForm(forms.ModelForm):
+    """Form for county sports director to add a technical bench member."""
+
+    class Meta:
+        model = TechnicalBenchMember
+        fields = [
+            'role', 'first_name', 'last_name', 'email', 'phone',
+            'national_id_number', 'photo', 'id_document',
+        ]
+        widgets = {
+            'role': forms.Select(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First name'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last name'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'email@example.com'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+254712345678'}),
+            'national_id_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'National ID'}),
+            'photo': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
+            'id_document': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*,.pdf'}),
+        }
+        labels = {
+            'role': 'Role *',
+            'first_name': 'First Name *',
+            'last_name': 'Last Name *',
+            'email': 'Email Address',
+            'phone': 'Phone Number *',
+            'national_id_number': 'National ID Number',
+            'photo': 'Passport Photo',
+            'id_document': 'Copy of National ID',
+        }

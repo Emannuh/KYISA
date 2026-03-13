@@ -15,7 +15,7 @@ User = get_user_model()
 
 
 def superadmin_required(user):
-    return user.is_superuser
+    return user.is_superuser or user.role in ('admin', 'secretary_general')
 
 
 @staff_member_required

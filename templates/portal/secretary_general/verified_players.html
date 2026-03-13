@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}Verified Players &mdash; Secretary General{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'sg_dashboard' %}">Secretary General</a>
+        <span>Verified Players</span>
+    </div>
+    <h1><i class="bi bi-patch-check-fill"></i> Verified Players</h1>
+    <p>All verified players across disciplines &mdash; who was verified, when, and by whom (read-only)</p>
+</div>
+
+<!-- Stats -->
+<div class="d-flex gap-3 mb-3 flex-wrap">
+    <div class="card p-3 text-center" style="min-width:140px;background:#d1e7dd;">
+        <div style="font-size:1.6rem;font-weight:700;color:#0f5132;">{{ total }}</div>
+        <div style="font-size:.8rem;font-weight:600;color:#0f5132;">Total Verified</div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card p-3 mb-3" style="background:#f9f9f9;">
+    <form method="get" class="d-flex gap-3 align-items-end flex-wrap">
+        <div>
+            <label class="form-label mb-1" style="font-size:.82rem;font-weight:600;">Discipline</label>
+            <select name="discipline" class="form-select form-select-sm" onchange="this.form.submit()">
+                <option value="">All Disciplines</option>
+                {% for val, label in disciplines %}
+                <option value="{{ val }}" {% if val == discipline_filter %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label class="form-label mb-1" style="font-size:.82rem;font-weight:600;">County</label>
+            <select name="county" class="form-select form-select-sm" onchange="this.form.submit()">
+                <option value="">All Counties</option>
+                {% for c in counties %}
+                <option value="{{ c }}" {% if c == county_filter %}selected{% endif %}>{{ c }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% if discipline_filter or county_filter %}
+        <a href="{% url 'sg_verified_players' %}" class="btn btn-sm btn-outline-secondary" style="margin-bottom:2px;">Clear</a>
+        {% endif %}
+    </form>
+</div>
+
+<div class="card p-3">
+    <div class="table-responsive">
+        <table class="table table-sm table-hover mb-0">
+            <thead style="background:#f5f5f5;">
+                <tr>
+                    <th>#</th>
+                    <th>Player Name</th>
+                    <th>County</th>
+                    <th>Discipline</th>
+                    <th>National ID</th>
+                    <th>Verified By</th>
+                    <th>Verified At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in players %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ p.first_name }} {{ p.last_name }}</td>
+                    <td>{{ p.county_registration.county|default:"—" }}</td>
+                    <td>{{ p.get_sport_display }}</td>
+                    <td style="font-size:.85rem;">{{ p.national_id }}</td>
+                    <td>
+                        {% if p.verified_by %}
+                            {{ p.verified_by.get_full_name }}
+                            <span class="text-muted" style="font-size:.78rem;">({{ p.verified_by.get_role_display }})</span>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td style="font-size:.82rem;white-space:nowrap;">
+                        {% if p.verified_at %}
+                            {{ p.verified_at|date:"d M Y H:i" }}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-muted text-center">No verified players found</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
