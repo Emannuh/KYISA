@@ -13,12 +13,14 @@ class IsCompetitionManager(BasePermission):
                     request.user.role == UserRole.COMPETITION_MANAGER)
 
 
-class IsRefereeManager(BasePermission):
-    """Only the Referee Manager can access."""
-    message = "You must be a Referee Manager to perform this action."
+class IsCoordinator(BasePermission):
+    """Only a Discipline Coordinator can access."""
+    message = "You must be a Discipline Coordinator to perform this action."
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_authenticated and
-                    request.user.role == UserRole.REFEREE_MANAGER)
+                    request.user.role == UserRole.COORDINATOR)
+
+IsRefereeManager = IsCoordinator  # backwards compat
 
 
 class IsReferee(BasePermission):
@@ -72,13 +74,15 @@ class IsAdminOrCompetitionManager(BasePermission):
         )
 
 
-class IsRefereeManagerOrAdmin(BasePermission):
-    """Referee Manager or Admin."""
+class IsCoordinatorOrAdmin(BasePermission):
+    """Discipline Coordinator or Admin."""
     def has_permission(self, request, view):
         return bool(
             request.user and request.user.is_authenticated and
-            (request.user.is_staff or request.user.role == UserRole.REFEREE_MANAGER)
+            (request.user.is_staff or request.user.role == UserRole.COORDINATOR)
         )
+
+IsRefereeManagerOrAdmin = IsCoordinatorOrAdmin  # backwards compat
 
 
 class IsAnyStaff(BasePermission):
@@ -88,7 +92,7 @@ class IsAnyStaff(BasePermission):
             request.user and request.user.is_authenticated and
             request.user.role in [
                 UserRole.COMPETITION_MANAGER,
-                UserRole.REFEREE_MANAGER,
+                UserRole.COORDINATOR,
                 UserRole.TREASURER,
                 UserRole.ADMIN,
             ]
@@ -103,5 +107,5 @@ class ReadOnly(BasePermission):
         if request.method in ("GET", "HEAD", "OPTIONS"):
             return True
         return request.user.is_staff or request.user.role in [
-            UserRole.COMPETITION_MANAGER, UserRole.REFEREE_MANAGER
+            UserRole.COMPETITION_MANAGER, UserRole.COORDINATOR
         ]

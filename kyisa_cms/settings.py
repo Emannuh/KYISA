@@ -214,10 +214,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ── SQUAD RULES ────────────────────────────────────────────────────────────────
 SQUAD_SUBMISSION_HOURS_BEFORE_KICKOFF = 2
-SQUAD_MIN_PLAYERS  = 11
-SQUAD_MAX_PLAYERS  = 16
+SQUAD_MIN_STARTERS = 7      # Minimum starters required
+SQUAD_MIN_PLAYERS  = 7      # Absolute minimum players (starters only if no subs)
+SQUAD_MAX_PLAYERS  = 23
 SQUAD_MAX_STARTERS = 11
-SQUAD_MAX_SUBS     = 5
+SQUAD_MAX_SUBS     = 12
 
 # ── CRISPY FORMS ───────────────────────────────────────────────────────────────
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -230,8 +231,11 @@ FIFA_CONNECT_API_KEY = env("FIFA_CONNECT_API_KEY", default="")
 FIFA_CONNECT_ENABLED = env.bool("FIFA_CONNECT_ENABLED", default=True)
 FIFA_CONNECT_TIMEOUT = env.int("FIFA_CONNECT_TIMEOUT", default=30)
 
-# Huduma Kenya / IPRS Integration (set API key in .env for production)
-HUDUMA_API_URL  = env("HUDUMA_API_URL", default="https://api.hudumakenya.go.ke/v1")
-HUDUMA_API_KEY  = env("HUDUMA_API_KEY", default="")
-HUDUMA_ENABLED  = env.bool("HUDUMA_ENABLED", default=True)
-HUDUMA_TIMEOUT  = env.int("HUDUMA_TIMEOUT", default=30)
+# Smile Identity — IPRS / Enhanced KYC Verification
+# Sign up at smileidentity.com → Dashboard → API Keys
+# Use sandbox for testing (SMILE_ENVIRONMENT=sandbox)
+SMILE_PARTNER_ID = env("SMILE_PARTNER_ID", default="")
+SMILE_API_KEY    = env("SMILE_API_KEY", default="")
+SMILE_ENVIRONMENT = env("SMILE_ENVIRONMENT", default="sandbox")  # 'sandbox' or 'production'
+SMILE_TIMEOUT    = env.int("SMILE_TIMEOUT", default=30)
+IPRS_ENABLED     = env.bool("IPRS_ENABLED", default=True)

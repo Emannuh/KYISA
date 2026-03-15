@@ -8,7 +8,7 @@ from django.utils import timezone
 
 class UserRole(models.TextChoices):
     COMPETITION_MANAGER = "competition_manager", "Competition Manager"
-    REFEREE_MANAGER     = "referee_manager",     "Referees Manager"
+    COORDINATOR         = "coordinator",         "Discipline Coordinator"
     REFEREE             = "referee",             "Referee"
     TEAM_MANAGER        = "team_manager",        "Team Manager"
     COUNTY_SPORTS_DIRECTOR = "county_sports_admin", "County Sports Director"
@@ -50,6 +50,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active   = models.BooleanField(default=True)
     is_staff    = models.BooleanField(default=False)
     is_suspended = models.BooleanField(default=False, help_text="Admin-suspended account")
+    assigned_discipline = models.CharField(
+        max_length=30, blank=True, default="",
+        help_text="Sport discipline this coordinator manages (only for Coordinator role)",
+    )
     must_change_password = models.BooleanField(
         default=False,
         help_text="When True the user must set a new password on next login.",
@@ -77,7 +81,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_competition_manager(self): return self.role == UserRole.COMPETITION_MANAGER
     @property
-    def is_referee_manager(self): return self.role == UserRole.REFEREE_MANAGER
+    def is_coordinator(self): return self.role == UserRole.COORDINATOR
+    @property
+    def is_referee_manager(self): return self.is_coordinator  # backwards compat
     @property
     def is_referee(self): return self.role == UserRole.REFEREE
     @property

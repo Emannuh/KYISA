@@ -8,7 +8,7 @@
         <a href="{% url 'matches_list' %}">Matches</a>
         <span>Report Detail</span>
     </div>
-    <h1>📝 Match Report</h1>
+    <h1>📝 {{ sport_cfg.label }} Match Report</h1>
     <p>{{ report.fixture.home_team }} vs {{ report.fixture.away_team }} — {{ report.fixture.match_date|date:"d M Y" }}</p>
 </div>
 
@@ -22,7 +22,11 @@
 
 <!-- Score -->
 <div class="card" style="margin-bottom:1.5rem;">
-    <div class="card-header"><h3>⚽ Final Score</h3></div>
+    <div class="card-header">
+        <h3>{% if sport_cfg.label == 'Football' %}⚽{% elif sport_cfg.label == 'Volleyball' %}🏐{% elif sport_cfg.label == 'Handball' %}🤾{% else %}🏀{% endif %} Final Score
+            <span style="font-size:.8rem;font-weight:normal;color:#666;margin-left:.5rem;">({{ sport_cfg.score_unit }})</span>
+        </h3>
+    </div>
     <div class="card-body" style="text-align:center;">
         <div style="display:flex;justify-content:center;align-items:center;gap:2rem;">
             <div>
@@ -35,8 +39,44 @@
                 <div style="font-size:3rem;font-weight:bold;color:#1B5E20;">{{ report.away_score }}</div>
             </div>
         </div>
+        {% if sport_cfg.label == 'Volleyball' and report.home_sets is not None %}
+        <div style="margin-top:.5rem;color:#666;font-size:1rem;">Sets: {{ report.home_sets }} — {{ report.away_sets }}</div>
+        {% endif %}
+        {% if report.overtime_played %}
+        <div style="margin-top:.3rem;color:#FF8F00;font-size:.9rem;">⏱️ {% if sport_cfg.label == 'Football' %}After Extra Time{% else %}After Overtime ({{ report.overtime_periods }} OT period{{ report.overtime_periods|pluralize }}){% endif %}</div>
+        {% endif %}
     </div>
 </div>
+
+<!-- Period Scores -->
+{% if period_scores %}
+<div class="card" style="margin-bottom:1.5rem;">
+    <div class="card-header"><h3>📊 {{ sport_cfg.period_label }} Scores</h3></div>
+    <div class="card-body">
+        <table style="width:100%;border-collapse:collapse;text-align:center;">
+            <thead>
+                <tr style="border-bottom:2px solid #ddd;">
+                    <th style="padding:.5rem;text-align:left;">{{ sport_cfg.period_label }}</th>
+                    <th style="padding:.5rem;">{{ report.fixture.home_team.name }}</th>
+                    <th style="padding:.5rem;">{{ report.fixture.away_team.name }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ps in period_scores %}
+                <tr style="border-bottom:1px solid #eee;{% if ps.is_overtime %}background:#fff8e1;{% endif %}">
+                    <td style="padding:.5rem;text-align:left;font-weight:600;">
+                        {{ ps.period_label }}
+                        {% if ps.is_overtime %}<span style="font-size:.75rem;color:#FF8F00;"> (OT)</span>{% endif %}
+                    </td>
+                    <td style="padding:.5rem;font-size:1.1rem;font-weight:600;">{{ ps.home_score }}</td>
+                    <td style="padding:.5rem;font-size:1.1rem;font-weight:600;">{{ ps.away_score }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
 
 <!-- Disciplinary & Details -->
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
@@ -47,6 +87,9 @@
                 <tr><th></th><th>{{ report.fixture.home_team.name }}</th><th>{{ report.fixture.away_team.name }}</th></tr>
                 <tr><td>🟨 Yellow</td><td style="text-align:center;">{{ report.home_yellow_cards }}</td><td style="text-align:center;">{{ report.away_yellow_cards }}</td></tr>
                 <tr><td>🟥 Red</td><td style="text-align:center;">{{ report.home_red_cards }}</td><td style="text-align:center;">{{ report.away_red_cards }}</td></tr>
+                {% if sport_cfg.label == 'Handball' %}
+                <tr><td>⏱️ 2-Min Suspensions</td><td style="text-align:center;">{{ report.home_suspensions }}</td><td style="text-align:center;">{{ report.away_suspensions }}</td></tr>
+                {% endif %}
             </table>
         </div>
     </div>
@@ -54,10 +97,14 @@
         <div class="card-header"><h3>📊 Match Info</h3></div>
         <div class="card-body">
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;font-size:.9rem;">
+                {% if sport_cfg.default_duration %}
                 <div><strong>Duration:</strong></div><div>{{ report.match_duration }} mins</div>
+                {% endif %}
+                {% if sport_cfg.label == 'Football' %}
                 <div><strong>Added Time HT:</strong></div><div>{{ report.added_time_ht }} mins</div>
                 <div><strong>Added Time FT:</strong></div><div>{{ report.added_time_ft }} mins</div>
-                <div><strong>Pitch:</strong></div><div>{{ report.get_pitch_condition_display }}</div>
+                {% endif %}
+                <div><strong>{% if sport_cfg.label == 'Football' or sport_cfg.label == 'Handball' %}Pitch{% else %}Court{% endif %}:</strong></div><div>{{ report.get_pitch_condition_display }}</div>
                 <div><strong>Weather:</strong></div><div>{{ report.weather|default:"—" }}</div>
                 <div><strong>Attendance:</strong></div><div>{{ report.attendance|default:"—" }}</div>
             </div>
@@ -95,14 +142,21 @@
                     <tr>
                         <td><strong>{{ evt.minute }}'</strong></td>
                         <td>
-                            {% if evt.event_type == 'goal' %}⚽
+                            {% if evt.event_type == 'goal' or evt.event_type == 'seven_m_goal' %}⚽
                             {% elif evt.event_type == 'yellow' %}🟨
-                            {% elif evt.event_type == 'red' %}🟥
+                            {% elif evt.event_type == 'red' or evt.event_type == 'blue_card' or evt.event_type == 'expulsion' or evt.event_type == 'disqualifying' %}🟥
+                            {% elif evt.event_type == 'second_yellow' %}🟨🟥
                             {% elif evt.event_type == 'sub_on' %}🔼
                             {% elif evt.event_type == 'sub_off' %}🔽
-                            {% elif evt.event_type == 'penalty' %}🎯
+                            {% elif evt.event_type == 'penalty' or evt.event_type == 'free_throw' %}🎯
+                            {% elif evt.event_type == 'penalty_miss' or evt.event_type == 'seven_m_miss' or evt.event_type == 'free_throw_miss' %}❌
                             {% elif evt.event_type == 'og' %}🔴
                             {% elif evt.event_type == 'injury' %}🏥
+                            {% elif evt.event_type == 'two_pointer' or evt.event_type == 'three_pointer' or evt.event_type == 'one_pointer' %}🏀
+                            {% elif evt.event_type == 'foul' or evt.event_type == 'tech_foul' or evt.event_type == 'unsportsmanlike' %}⚠️
+                            {% elif evt.event_type == 'two_min' %}⏱️
+                            {% elif evt.event_type == 'timeout' %}⏸️
+                            {% elif evt.event_type == 'assist' %}👟
                             {% endif %}
                             {{ evt.get_event_type_display }}
                         </td>

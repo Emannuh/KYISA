@@ -206,7 +206,22 @@ class PoolTeam(models.Model):
 
     @property
     def points(self):
-        return (self.won * 3) + self.drawn
+        """
+        Sport-specific points calculation.
+        - Football: W×3 + D×1
+        - Volleyball: bonus_points (FIVB system: 3/2/1/0 based on set score)
+        - Basketball: bonus_points (FIBA: W=2, L=1)
+        - Handball: W×2 + D×1
+        """
+        sport = self.pool.competition.sport_type if self.pool and self.pool.competition else None
+        if sport:
+            from matches.models import get_sport_family
+            family = get_sport_family(sport)
+            if family in ("volleyball", "basketball_5x5", "basketball_3x3"):
+                return self.bonus_points
+            elif family == "handball":
+                return (self.won * 2) + self.drawn + self.bonus_points
+        return (self.won * 3) + self.drawn + self.bonus_points
 
     @property
     def goal_difference(self):

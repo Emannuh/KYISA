@@ -197,8 +197,9 @@ User.objects.create_user(
     password="StrongPassword123",
     first_name="Grace",
     last_name="Ochieng",
-    role="referee_manager",
-    county="Kisumu"
+    role="coordinator",
+    county="Kisumu",
+    assigned_discipline="football_men"
 )
 
 # Create a competition

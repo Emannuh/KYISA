@@ -85,6 +85,9 @@
             <a href="{% url 'player_verification_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'player_verification_list' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-person-vcard"></i></span> Player Verification
             </a>
+            <a href="{% url 'county_player_verification_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'county_player_verification_list' or request.resolver_match.url_name == 'verify_county_player' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-shield-check"></i></span> County Players
+            </a>
         </div>
     </div>
     <div class="sidebar-section">
@@ -98,20 +101,32 @@
         </div>
     </div>
 
-    {% elif user.role == 'referee_manager' %}
-    <!-- REFEREE MANAGER SIDEBAR -->
+    {% elif user.role == 'coordinator' %}
+    <!-- DISCIPLINE COORDINATOR SIDEBAR -->
     <div class="sidebar-section">
-        <div class="sidebar-section-toggle"><h4>Referee Management</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
+        <div class="sidebar-section-toggle"><h4>Coordinator Portal</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
         <div class="sidebar-section-body">
-            <a href="{% url 'dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-                <span class="icon"><i class="bi bi-bar-chart-line"></i></span> Dashboard
+            <a href="{% url 'coordinator_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'coordinator_dashboard' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-clipboard2-pulse"></i></span> Dashboard
             </a>
-            <a href="{% url 'referee_appointments' %}" class="sidebar-link {% if request.resolver_match.url_name == 'referee_appointments' or request.resolver_match.url_name == 'referee_appoint' %}active{% endif %}">
+            <a href="{% url 'coordinator_competitions' %}" class="sidebar-link {% if 'coordinator_competition' in request.resolver_match.url_name %}active{% endif %}">
+                <span class="icon"><i class="bi bi-trophy"></i></span> Competitions
+            </a>
+            <a href="{% url 'coordinator_appointments' %}" class="sidebar-link {% if request.resolver_match.url_name == 'coordinator_appointments' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-calendar-event"></i></span> Appointments
             </a>
-            <a href="{% url 'referees_list' %}" class="sidebar-link"><span class="icon"><i class="bi bi-flag"></i></span> Referees</a>
-            <a href="{% url 'matches_list' %}" class="sidebar-link"><span class="icon"><i class="bi bi-clipboard-data"></i></span> Match Reports</a>
-            <a href="{% url 'pending_referees' %}" class="sidebar-link"><span class="icon"><i class="bi bi-pencil-square"></i></span> Pending Referees</a>
+            <a href="{% url 'coordinator_referees' %}" class="sidebar-link {% if request.resolver_match.url_name == 'coordinator_referees' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-flag"></i></span> Referees
+            </a>
+            <a href="{% url 'coordinator_match_reports' %}" class="sidebar-link {% if request.resolver_match.url_name == 'coordinator_match_reports' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-clipboard-data"></i></span> Match Reports
+            </a>
+            <a href="{% url 'coordinator_squads' %}" class="sidebar-link {% if request.resolver_match.url_name == 'coordinator_squads' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-people"></i></span> Match Day Squads
+            </a>
+            <a href="{% url 'coordinator_venues' %}" class="sidebar-link {% if request.resolver_match.url_name == 'coordinator_venues' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-geo-alt"></i></span> Venues
+            </a>
         </div>
     </div>
 
@@ -123,11 +138,11 @@
             <a href="{% url 'referee_portal' %}" class="sidebar-link {% if request.resolver_match.url_name == 'referee_portal' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-bar-chart-line"></i></span> Dashboard
             </a>
+            <a href="{% url 'referee_edit_profile' %}" class="sidebar-link {% if request.resolver_match.url_name == 'referee_edit_profile' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-person-gear"></i></span> My Profile
+            </a>
             <a href="{% url 'referees_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'referees_list' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-calendar-event"></i></span> My Appointments
-            </a>
-            <a href="{% url 'referee_availability' %}" class="sidebar-link {% if request.resolver_match.url_name == 'referee_availability' %}active{% endif %}">
-                <span class="icon"><i class="bi bi-calendar-check"></i></span> Availability
             </a>
             <a href="{% url 'squad_review_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'squad_review_list' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-clipboard-check"></i></span> Squad Approval

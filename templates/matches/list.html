@@ -129,7 +129,7 @@
                             {% endif %}
 
                             {% comment %} REFEREE MANAGER — Review Report {% endcomment %}
-                            {% if user.role == 'referee_manager' or user.role == 'admin' %}
+                            {% if user.role == 'coordinator' or user.role == 'admin' %}
                                 {% if fd.report and fd.report.status == 'submitted' %}
                                 <a href="{% url 'match_report_review' report_pk=fd.report.pk %}" class="btn-action btn-action-warning">
                                     Review Report

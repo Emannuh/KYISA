@@ -464,7 +464,7 @@ def manage_league_admins(request):
         'team_managers': User.objects.filter(role='team_manager').count(),
         'admins': User.objects.filter(role='admin').count(),
         'referees': User.objects.filter(role='referee').count(),
-        'referee_managers': User.objects.filter(role='referee_manager').count(),
+        'coordinators': User.objects.filter(role='coordinator').count(),
         'competition_managers': User.objects.filter(role='competition_manager').count(),
     }
 

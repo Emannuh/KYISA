@@ -13,6 +13,11 @@ class RefereeLevel(models.TextChoices):
     COUNTY   = "County",   "County Level"
 
 
+class RefereeType(models.TextChoices):
+    REFEREE            = "referee",            "Referee"
+    ASSISTANT_REFEREE  = "assistant_referee",  "Assistant Referee"
+
+
 class RefereeProfile(models.Model):
     """
     Extended profile for users with role=REFEREE.
@@ -33,6 +38,11 @@ class RefereeProfile(models.Model):
     approved_at    = models.DateTimeField(null=True, blank=True)
     id_number      = models.CharField(max_length=20, blank=True, help_text="National ID / Passport")
     profile_picture = models.ImageField(upload_to="referee_photos/", null=True, blank=True, help_text="Passport-size photo")
+    referee_type    = models.CharField(
+        max_length=20, choices=RefereeType.choices,
+        default=RefereeType.REFEREE,
+        help_text="Whether this official is a Referee or Assistant Referee",
+    )
     bio            = models.TextField(blank=True)
     years_experience = models.PositiveIntegerField(default=0)
 
@@ -65,10 +75,80 @@ class RefereeCertification(models.Model):
 
 
 class AppointmentRole(models.TextChoices):
-    CENTRE  = "centre",  "Centre Referee"
-    AR1     = "ar1",     "Assistant Referee 1"
-    AR2     = "ar2",     "Assistant Referee 2"
-    FOURTH  = "fourth",  "4th Official"
+    # ── Football / Soccer (FIFA) ──
+    REFEREE    = "referee",    "Referee"
+    AR1        = "ar1",        "Assistant Referee 1"
+    AR2        = "ar2",        "Assistant Referee 2"
+    RESERVE    = "reserve",    "Reserve Referee"
+
+    # ── Volleyball / Beach Volleyball (FIVB) ──
+    FIRST_REF    = "first_ref",    "1st Referee"
+    SECOND_REF   = "second_ref",   "2nd Referee"
+    SCORER       = "scorer",       "Scorer"
+    LINE_JUDGE_1 = "line_judge_1", "Line Judge 1"
+    LINE_JUDGE_2 = "line_judge_2", "Line Judge 2"
+
+    # ── Basketball 5×5 / 3×3 (FIBA) ──
+    CREW_CHIEF   = "crew_chief",   "Crew Chief"
+    UMPIRE_1     = "umpire_1",     "Umpire 1"
+    UMPIRE_2     = "umpire_2",     "Umpire 2"
+    COMMISSIONER = "commissioner", "Commissioner"
+
+    # ── Handball / Beach Handball (IHF) ──
+    REFEREE_1    = "referee_1",    "Referee 1"
+    REFEREE_2    = "referee_2",    "Referee 2"
+    TIMEKEEPER   = "timekeeper",   "Timekeeper"
+    SCOREKEEPER  = "scorekeeper",  "Scorekeeper"
+
+
+# ── Sport → required official roles mapping ──
+SPORT_REQUIRED_ROLES = {
+    # Football
+    "football_men":     ["referee", "ar1", "ar2", "reserve"],
+    "football_women":   ["referee", "ar1", "ar2", "reserve"],
+    # Volleyball (FIVB)
+    "volleyball_men":   ["first_ref", "second_ref", "scorer", "line_judge_1", "line_judge_2"],
+    "volleyball_women": ["first_ref", "second_ref", "scorer", "line_judge_1", "line_judge_2"],
+    "beach_volleyball": ["first_ref", "second_ref", "scorer", "line_judge_1", "line_judge_2"],
+    # Basketball 5×5 (FIBA)
+    "basketball_men":   ["crew_chief", "umpire_1", "umpire_2", "commissioner"],
+    "basketball_women": ["crew_chief", "umpire_1", "umpire_2", "commissioner"],
+    "basketball":       ["crew_chief", "umpire_1", "umpire_2", "commissioner"],
+    # Basketball 3×3 (FIBA)
+    "basketball_3x3_men":   ["crew_chief", "umpire_1", "commissioner"],
+    "basketball_3x3_women": ["crew_chief", "umpire_1", "commissioner"],
+    "basketball_3x3":       ["crew_chief", "umpire_1", "commissioner"],
+    # Handball (IHF)
+    "handball_men":   ["referee_1", "referee_2", "timekeeper", "scorekeeper"],
+    "handball_women": ["referee_1", "referee_2", "timekeeper", "scorekeeper"],
+    "handball":       ["referee_1", "referee_2", "timekeeper", "scorekeeper"],
+    "beach_handball": ["referee_1", "referee_2", "timekeeper", "scorekeeper"],
+}
+
+# Head official role per sport (the official who reviews squads / files reports)
+SPORT_HEAD_OFFICIAL = {
+    "football_men": "referee", "football_women": "referee",
+    "volleyball_men": "first_ref", "volleyball_women": "first_ref", "beach_volleyball": "first_ref",
+    "basketball_men": "crew_chief", "basketball_women": "crew_chief", "basketball": "crew_chief",
+    "basketball_3x3_men": "crew_chief", "basketball_3x3_women": "crew_chief", "basketball_3x3": "crew_chief",
+    "handball_men": "referee_1", "handball_women": "referee_1", "handball": "referee_1", "beach_handball": "referee_1",
+}
+
+# All role keys that count as "head official" across sports
+HEAD_OFFICIAL_ROLES = ["referee", "first_ref", "crew_chief", "referee_1"]
+
+# Default fallback
+_DEFAULT_ROLES = ["referee", "ar1", "ar2", "reserve"]
+
+
+def get_required_roles(sport_type):
+    """Return the list of required appointment role keys for a sport."""
+    return SPORT_REQUIRED_ROLES.get(sport_type, _DEFAULT_ROLES)
+
+
+def get_head_official_role(sport_type):
+    """Return the head official role key for a sport type."""
+    return SPORT_HEAD_OFFICIAL.get(sport_type, "referee")
 
 
 class AppointmentStatus(models.TextChoices):
@@ -88,7 +168,7 @@ class RefereeAppointment(models.Model):
         RefereeProfile, on_delete=models.CASCADE,
         related_name="appointments"
     )
-    role      = models.CharField(max_length=20, choices=AppointmentRole.choices, default=AppointmentRole.CENTRE)
+    role      = models.CharField(max_length=20, choices=AppointmentRole.choices, default=AppointmentRole.REFEREE)
     status    = models.CharField(max_length=20, choices=AppointmentStatus.choices, default=AppointmentStatus.PENDING)
     appointed_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True,

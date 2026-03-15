@@ -69,7 +69,7 @@ from .web_views import (
     match_report_form_view, match_report_detail_view, match_report_review_view,
     # Referee appointments & portal
     appointment_action_view,
-    referee_dashboard_view, referee_availability_view,
+    referee_dashboard_view, referee_edit_profile_view,
     # Referee manager — appointment management
     referee_appointments_view, referee_appoint_view,
     # Treasurer portal
@@ -104,6 +104,25 @@ from .web_views import (
     county_admin_add_bench_member_view,
     county_admin_delete_bench_member_view,
     county_admin_verification_view,
+    # County player verification (Competition Manager)
+    county_player_verification_list_view,
+    verify_county_player_view,
+    # Discipline Coordinator portal
+    coordinator_dashboard_view,
+    coordinator_competitions_view,
+    coordinator_competition_manage_view,
+    coordinator_manage_pools_view,
+    coordinator_generate_fixtures_view,
+    coordinator_venues_view,
+    coordinator_allocate_venue_view,
+    coordinator_edit_fixture_view,
+    coordinator_edit_standings_view,
+    coordinator_match_reports_view,
+    coordinator_squads_view,
+    coordinator_statistics_view,
+    coordinator_referees_view,
+    coordinator_appointments_view,
+    coordinator_competition_rules_view,
     # Player profile
     player_profile_view,
     # Team Manager portal
@@ -199,9 +218,9 @@ urlpatterns = [
     path("portal/referee-manager/appointments/",                   referee_appointments_view, name="referee_appointments"),
     path("portal/referee-manager/appointments/<int:fixture_pk>/",  referee_appoint_view,      name="referee_appoint"),
 
-    # ── PORTAL: REFEREE DASHBOARD & AVAILABILITY ──────────────────────────
+    # ── PORTAL: REFEREE DASHBOARD & PROFILE ──────────────────────────────
     path("portal/referee/",                               referee_dashboard_view,     name="referee_portal"),
-    path("portal/referee/availability/",                  referee_availability_view,  name="referee_availability"),
+    path("portal/referee/profile/",                       referee_edit_profile_view,  name="referee_edit_profile"),
 
     # ── TREASURER PORTAL ────────────────────────────────────────────────────
     path("portal/treasurer/",                treasurer_dashboard_view,       name="treasurer_dashboard"),
@@ -251,7 +270,29 @@ urlpatterns = [
     path("portal/cm/competitions/<int:pk>/rules/",         cm_competition_rules_view,     name="cm_competition_rules"),
     path("portal/cm/venues/",                              cm_manage_venues_view,         name="cm_venues"),
 
-    # ── SECRETARY GENERAL PORTAL ───────────────────────────────────────────────
+    # ── CM: COUNTY PLAYER VERIFICATION ────────────────────────────────────
+    path("portal/cm/county-players/",                       county_player_verification_list_view, name="county_player_verification_list"),
+    path("portal/cm/county-players/<int:player_pk>/verify/", verify_county_player_view,            name="verify_county_player"),
+
+    # ── DISCIPLINE COORDINATOR PORTAL ─────────────────────────────────────
+    path("portal/coordinator/",                                          coordinator_dashboard_view,           name="coordinator_dashboard"),
+    path("portal/coordinator/competitions/",                             coordinator_competitions_view,        name="coordinator_competitions"),
+    path("portal/coordinator/competitions/<int:pk>/",                    coordinator_competition_manage_view,  name="coordinator_competition_manage"),
+    path("portal/coordinator/competitions/<int:pk>/pools/",              coordinator_manage_pools_view,        name="coordinator_manage_pools"),
+    path("portal/coordinator/competitions/<int:pk>/fixtures/generate/",  coordinator_generate_fixtures_view,   name="coordinator_generate_fixtures"),
+    path("portal/coordinator/competitions/<int:pk>/venues/",             coordinator_allocate_venue_view,      name="coordinator_allocate_venues"),
+    path("portal/coordinator/competitions/<int:pk>/standings/edit/",     coordinator_edit_standings_view,      name="coordinator_edit_standings"),
+    path("portal/coordinator/competitions/<int:pk>/fixtures/<int:fixture_pk>/edit/",
+         coordinator_edit_fixture_view, name="coordinator_edit_fixture"),
+    path("portal/coordinator/competitions/<int:pk>/stats/",              coordinator_statistics_view,          name="coordinator_statistics"),
+    path("portal/coordinator/competitions/<int:pk>/rules/",              coordinator_competition_rules_view,   name="coordinator_competition_rules"),
+    path("portal/coordinator/venues/",                                   coordinator_venues_view,              name="coordinator_venues"),
+    path("portal/coordinator/match-reports/",                            coordinator_match_reports_view,       name="coordinator_match_reports"),
+    path("portal/coordinator/squads/",                                   coordinator_squads_view,              name="coordinator_squads"),
+    path("portal/coordinator/referees/",                                 coordinator_referees_view,            name="coordinator_referees"),
+    path("portal/coordinator/appointments/",                             coordinator_appointments_view,        name="coordinator_appointments"),
+
+    # ── SECRETARY GENERAL PORTAL ─────────────────────────────────────────────
     path("portal/sg/",                          sg_dashboard_view,          name="sg_dashboard"),
     path("portal/sg/verifications/",             sg_verifications_view,      name="sg_verifications"),
     path("portal/sg/appeals/",                   sg_appeals_view,            name="sg_appeals"),

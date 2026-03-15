@@ -2,6 +2,7 @@
 KYISA Matches — Stats Engine
 Automatically updates pool standings and player statistics
 when a match report is approved.
+Supports sport-specific scoring: football, volleyball, basketball, handball.
 """
 import logging
 from django.db import transaction
@@ -16,7 +17,7 @@ def process_approved_report(report):
     """
     fixture = report.fixture
     with transaction.atomic():
-        update_pool_standings(fixture)
+        update_pool_standings(fixture, report)
         update_player_statistics(report)
         # For knockout matches, determine the winner
         if fixture.is_knockout:
@@ -24,12 +25,13 @@ def process_approved_report(report):
             fixture.save(update_fields=["winner"])
 
 
-def update_pool_standings(fixture):
+def update_pool_standings(fixture, report=None):
     """
     Recalculate pool team standings after a completed fixture.
-    Works for group-stage matches (those assigned to a pool).
+    Sport-aware: uses correct points system for each sport family.
     """
     from competitions.models import PoolTeam
+    from matches.models import get_sport_family, SPORT_CONFIG
 
     pool = fixture.pool
     if not pool:
@@ -50,6 +52,10 @@ def update_pool_standings(fixture):
         )
         return
 
+    sport_family = get_sport_family(fixture.competition.sport_type)
+    cfg = SPORT_CONFIG.get(sport_family, SPORT_CONFIG["football"])
+    pts_cfg = cfg["standings_points"]
+
     home_pt.played += 1
     away_pt.played += 1
     home_pt.goals_for += hs
@@ -57,33 +63,87 @@ def update_pool_standings(fixture):
     away_pt.goals_for += as_
     away_pt.goals_against += hs
 
-    if hs > as_:
-        home_pt.won += 1
-        away_pt.lost += 1
-    elif as_ > hs:
-        away_pt.won += 1
-        home_pt.lost += 1
+    if sport_family == "volleyball":
+        # Volleyball uses set-score-based points (FIVB system)
+        home_sets = report.home_sets if report else 0
+        away_sets = report.away_sets if report else 0
+        home_pt.sets_won += home_sets
+        home_pt.sets_lost += away_sets
+        away_pt.sets_won += away_sets
+        away_pt.sets_lost += home_sets
+
+        if home_sets > away_sets:
+            home_pt.won += 1
+            away_pt.lost += 1
+            key_w = f"win_{home_sets}_{away_sets}"
+            key_l = f"loss_{away_sets}_{home_sets}"
+            home_pt.bonus_points += pts_cfg.get(key_w, 3)
+            away_pt.bonus_points += pts_cfg.get(key_l, 0)
+        else:
+            away_pt.won += 1
+            home_pt.lost += 1
+            key_w = f"win_{away_sets}_{home_sets}"
+            key_l = f"loss_{home_sets}_{away_sets}"
+            away_pt.bonus_points += pts_cfg.get(key_w, 3)
+            home_pt.bonus_points += pts_cfg.get(key_l, 0)
+
+    elif sport_family in ("basketball_5x5", "basketball_3x3"):
+        # Basketball: no draws; winner gets 2, loser gets 1 (FIBA)
+        if hs > as_:
+            home_pt.won += 1
+            away_pt.lost += 1
+            home_pt.bonus_points += pts_cfg.get("win", 2)
+            away_pt.bonus_points += pts_cfg.get("loss", 1)
+        else:
+            away_pt.won += 1
+            home_pt.lost += 1
+            away_pt.bonus_points += pts_cfg.get("win", 2)
+            home_pt.bonus_points += pts_cfg.get("loss", 1)
+
+    elif sport_family == "handball":
+        # Handball: 2 pts win, 1 pt draw, 0 pts loss (IHF)
+        if hs > as_:
+            home_pt.won += 1
+            away_pt.lost += 1
+        elif as_ > hs:
+            away_pt.won += 1
+            home_pt.lost += 1
+        else:
+            home_pt.drawn += 1
+            away_pt.drawn += 1
+
     else:
-        home_pt.drawn += 1
-        away_pt.drawn += 1
+        # Football: 3 pts win, 1 pt draw, 0 pts loss
+        if hs > as_:
+            home_pt.won += 1
+            away_pt.lost += 1
+        elif as_ > hs:
+            away_pt.won += 1
+            home_pt.lost += 1
+        else:
+            home_pt.drawn += 1
+            away_pt.drawn += 1
 
     home_pt.save()
     away_pt.save()
-    logger.info(f"Pool standings updated for fixture {fixture.id}")
+    logger.info(f"Pool standings updated for fixture {fixture.id} (sport: {sport_family})")
 
 
 def update_player_statistics(report):
     """
     Update PlayerStatistics records for all players involved in a match.
     Creates stat records on the fly if they don't exist yet.
+    Sport-aware event tallying for football, volleyball, basketball, handball.
     """
-    from matches.models import SquadSubmission, SquadPlayer, MatchEvent, PlayerStatistics
+    from matches.models import SquadSubmission, SquadPlayer, MatchEvent, PlayerStatistics, get_sport_family
     from teams.models import Player
 
     fixture = report.fixture
     competition = fixture.competition
     if not competition:
         return
+
+    sport_family = get_sport_family(competition.sport_type)
 
     # Get squads for both teams
     squads = SquadSubmission.objects.filter(
@@ -118,25 +178,68 @@ def update_player_statistics(report):
                 "penalties_missed": 0, "own_goals": 0,
             }
         t = event_tallies[pid]
-        if event.event_type == "goal":
-            t["goals"] += 1
-        elif event.event_type == "assist":
-            t["assists"] += 1
-        elif event.event_type == "yellow":
-            t["yellow_cards"] += 1
-        elif event.event_type in ("red", "second_yellow"):
-            t["red_cards"] += 1
-        elif event.event_type == "penalty":
-            t["penalties_scored"] += 1
-            t["goals"] += 1  # Penalty is also a goal
-        elif event.event_type == "penalty_miss":
-            t["penalties_missed"] += 1
-        elif event.event_type == "og":
-            t["own_goals"] += 1
+        et = event.event_type
 
-    # Determine clean sheet info
-    home_conceded = report.away_score  # home GK conceded away_score goals
-    away_conceded = report.home_score  # away GK conceded home_score goals
+        if sport_family == "football":
+            if et == "goal":
+                t["goals"] += 1
+            elif et == "assist":
+                t["assists"] += 1
+            elif et == "yellow":
+                t["yellow_cards"] += 1
+            elif et in ("red", "second_yellow"):
+                t["red_cards"] += 1
+            elif et == "penalty":
+                t["penalties_scored"] += 1
+                t["goals"] += 1
+            elif et == "penalty_miss":
+                t["penalties_missed"] += 1
+            elif et == "og":
+                t["own_goals"] += 1
+
+        elif sport_family == "volleyball":
+            if et == "yellow":
+                t["yellow_cards"] += 1
+            elif et in ("red", "expulsion"):
+                t["red_cards"] += 1
+
+        elif sport_family in ("basketball_5x5", "basketball_3x3"):
+            if et == "two_pointer":
+                t["goals"] += 2
+            elif et == "three_pointer":
+                t["goals"] += 3
+            elif et == "one_pointer":
+                t["goals"] += 1
+            elif et == "free_throw":
+                t["goals"] += 1
+                t["penalties_scored"] += 1
+            elif et == "free_throw_miss":
+                t["penalties_missed"] += 1
+            elif et == "foul":
+                t["yellow_cards"] += 1  # personal fouls mapped to yellow
+            elif et in ("tech_foul", "unsportsmanlike", "disqualifying"):
+                t["red_cards"] += 1
+
+        elif sport_family == "handball":
+            if et == "goal":
+                t["goals"] += 1
+            elif et == "assist":
+                t["assists"] += 1
+            elif et == "seven_m_goal":
+                t["goals"] += 1
+                t["penalties_scored"] += 1
+            elif et == "seven_m_miss":
+                t["penalties_missed"] += 1
+            elif et == "yellow":
+                t["yellow_cards"] += 1
+            elif et in ("red", "blue_card"):
+                t["red_cards"] += 1
+            elif et == "two_min":
+                t["yellow_cards"] += 1  # suspensions tracked as yellow equivalent
+
+    # Determine clean sheet info (football/handball goalkeepers)
+    home_conceded = report.away_score
+    away_conceded = report.home_score
 
     # Update or create PlayerStatistics for each player
     for pid, info in players_in_match.items():
@@ -150,7 +253,7 @@ def update_player_statistics(report):
             defaults={"team": team}
         )
         if not created and stats.team != team:
-            stats.team = team  # Update in case of transfer
+            stats.team = team
 
         # Appearance
         stats.matches_played += 1
@@ -159,7 +262,7 @@ def update_player_statistics(report):
         else:
             stats.matches_sub += 1
 
-        # Estimate minutes (simplified: starters get full match, subs get half)
+        # Estimate minutes
         match_duration = getattr(report, "match_duration", 90) or 90
         if is_starter:
             stats.minutes_played += match_duration
@@ -176,8 +279,8 @@ def update_player_statistics(report):
         stats.penalties_missed += tally.get("penalties_missed", 0)
         stats.own_goals += tally.get("own_goals", 0)
 
-        # Goalkeeper clean sheet check
-        if player.position == "GK" and is_starter:
+        # Goalkeeper clean sheet check (football & handball)
+        if sport_family in ("football", "handball") and player.position == "GK" and is_starter:
             if team == fixture.home_team:
                 conceded = home_conceded or 0
             else:
@@ -186,62 +289,42 @@ def update_player_statistics(report):
             if conceded == 0:
                 stats.clean_sheets += 1
 
-        stats.save()  # save() auto-calculates goal_contributions
+        stats.save()
 
     logger.info(
         f"Player statistics updated for {len(players_in_match)} players "
-        f"(fixture {fixture.id}, competition {competition.name})"
+        f"(fixture {fixture.id}, competition {competition.name}, sport: {sport_family})"
     )
 
 
 def recalculate_pool_standings(pool):
     """
     Full recalculation of pool standings from scratch.
-    Useful for corrections / after undoing a result.
+    Sport-aware: uses correct points system.
     """
     from competitions.models import PoolTeam, Fixture, FixtureStatus
+    from matches.models import MatchReport, get_sport_family, SPORT_CONFIG
 
     # Reset all standings
     PoolTeam.objects.filter(pool=pool).update(
         played=0, won=0, drawn=0, lost=0,
         goals_for=0, goals_against=0,
-        sets_won=0, sets_lost=0,
+        sets_won=0, sets_lost=0, bonus_points=0,
     )
 
     # Replay all completed fixtures in this pool
     completed = Fixture.objects.filter(
         pool=pool, status=FixtureStatus.COMPLETED
-    ).select_related("home_team", "away_team")
+    ).select_related("home_team", "away_team", "competition")
 
     for fixture in completed:
         if fixture.home_score is None or fixture.away_score is None:
             continue
         try:
-            home_pt = PoolTeam.objects.get(pool=pool, team=fixture.home_team)
-            away_pt = PoolTeam.objects.get(pool=pool, team=fixture.away_team)
-        except PoolTeam.DoesNotExist:
-            continue
-
-        hs, as_ = fixture.home_score, fixture.away_score
-        home_pt.played += 1
-        away_pt.played += 1
-        home_pt.goals_for += hs
-        home_pt.goals_against += as_
-        away_pt.goals_for += as_
-        away_pt.goals_against += hs
-
-        if hs > as_:
-            home_pt.won += 1
-            away_pt.lost += 1
-        elif as_ > hs:
-            away_pt.won += 1
-            home_pt.lost += 1
-        else:
-            home_pt.drawn += 1
-            away_pt.drawn += 1
-
-        home_pt.save()
-        away_pt.save()
+            report = MatchReport.objects.get(fixture=fixture, status="approved")
+        except MatchReport.DoesNotExist:
+            report = None
+        update_pool_standings(fixture, report)
 
     logger.info(f"Pool standings fully recalculated for {pool}")
 

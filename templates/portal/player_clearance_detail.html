@@ -94,6 +94,24 @@
         <div class="card-body">
             <p style="color:#666;font-size:.9rem;margin-bottom:1rem">Verify player's age through Huduma Kenya / IPRS using National ID or Birth Certificate number.</p>
 
+            <!-- IPRS Photo vs Uploaded Photo comparison -->
+            {% if player.iprs_photo or player.photo %}
+            <div style="display:flex;gap:1.5rem;margin-bottom:1rem;flex-wrap:wrap">
+                {% if player.photo %}
+                <div style="text-align:center">
+                    <p style="font-weight:600;font-size:.85rem;color:#1B5E20;margin-bottom:.35rem">📸 Uploaded Photo</p>
+                    <img src="{{ player.photo.url }}" alt="Uploaded Photo" style="width:110px;height:140px;object-fit:cover;border-radius:8px;border:2px solid #4CAF50;background:#f5f7f5">
+                </div>
+                {% endif %}
+                {% if player.iprs_photo %}
+                <div style="text-align:center">
+                    <p style="font-weight:600;font-size:.85rem;color:#1565C0;margin-bottom:.35rem">🏛️ IPRS Photo</p>
+                    <img src="{{ player.iprs_photo.url }}" alt="IPRS Photo" style="width:110px;height:140px;object-fit:cover;border-radius:8px;border:2px solid #1565C0;background:#f5f7f5">
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
             {% if player.huduma_reference %}
             <div style="margin-bottom:1rem;padding:.5rem 1rem;background:#f5f7f5;border-radius:6px;font-size:.85rem">
                 <strong>Reference:</strong> {{ player.huduma_reference }}

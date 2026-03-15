@@ -27,7 +27,7 @@
         </div>
     </div>
 
-    {% if user.role == 'admin' or user.role == 'referee_manager' or user.role == 'referee' %}
+    {% if user.role == 'admin' or user.role == 'coordinator' or user.role == 'referee' %}
     <div class="stat-card yellow">
         <div class="stat-icon yellow"><i class="bi bi-flag"></i></div>
         <div class="stat-info">
@@ -87,21 +87,11 @@
             </a>
             {% endif %}
 
-            {% if user.role == 'referee_manager' %}
-            <a href="{% url 'referee_appointments' %}" class="action-card">
-                <div class="action-icon"><i class="bi bi-calendar-event"></i></div>
-                <h4>Match Appointments</h4>
-                <p>Assign referees to fixtures</p>
-            </a>
-            <a href="{% url 'referees_list' %}" class="action-card">
-                <div class="action-icon"><i class="bi bi-flag"></i></div>
-                <h4>Manage Referees</h4>
-                <p>Approve and assign referees</p>
-            </a>
-            <a href="{% url 'matches_list' %}" class="action-card">
-                <div class="action-icon"><i class="bi bi-clipboard-data"></i></div>
-                <h4>Match Reports</h4>
-                <p>Review submitted reports</p>
+            {% if user.role == 'coordinator' %}
+            <a href="{% url 'coordinator_dashboard' %}" class="action-card">
+                <div class="action-icon"><i class="bi bi-clipboard2-pulse"></i></div>
+                <h4>Coordinator Portal</h4>
+                <p>Manage your discipline</p>
             </a>
             {% endif %}
 

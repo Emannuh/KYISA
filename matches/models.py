@@ -7,6 +7,159 @@ from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+#   SPORT-SPECIFIC CONFIGURATION
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def _football_sports():
+    return {"football_men", "football_women"}
+
+def _volleyball_sports():
+    return {"volleyball_men", "volleyball_women", "beach_volleyball"}
+
+def _basketball5_sports():
+    return {"basketball_men", "basketball_women", "basketball"}
+
+def _basketball3_sports():
+    return {"basketball_3x3_men", "basketball_3x3_women", "basketball_3x3"}
+
+def _handball_sports():
+    return {"handball_men", "handball_women", "handball", "beach_handball"}
+
+
+def get_sport_family(sport_type):
+    """Return the sport family string for a given sport_type value."""
+    if sport_type in _football_sports():
+        return "football"
+    if sport_type in _volleyball_sports():
+        return "volleyball"
+    if sport_type in _basketball5_sports():
+        return "basketball_5x5"
+    if sport_type in _basketball3_sports():
+        return "basketball_3x3"
+    if sport_type in _handball_sports():
+        return "handball"
+    return "football"  # default fallback
+
+
+# Per-sport match configuration
+SPORT_CONFIG = {
+    "football": {
+        "label": "Football",
+        "periods": 2,
+        "period_label": "Half",
+        "period_labels": ["1st Half", "2nd Half"],
+        "default_duration": 90,
+        "has_extra_time": True,
+        "has_penalties": True,
+        "score_unit": "goals",
+        "event_types": [
+            ("goal", "Goal"), ("assist", "Assist"),
+            ("yellow", "Yellow Card"), ("red", "Red Card"),
+            ("second_yellow", "Second Yellow (Red)"),
+            ("sub_on", "Substitution On"), ("sub_off", "Substitution Off"),
+            ("injury", "Injury"),
+            ("penalty", "Penalty Goal"), ("penalty_miss", "Penalty Missed"),
+            ("og", "Own Goal"),
+        ],
+        "standings_points": {"win": 3, "draw": 1, "loss": 0},
+    },
+    "volleyball": {
+        "label": "Volleyball",
+        "periods": 5,
+        "period_label": "Set",
+        "period_labels": ["Set 1", "Set 2", "Set 3", "Set 4", "Set 5"],
+        "default_duration": 0,  # no fixed duration
+        "has_extra_time": False,
+        "has_penalties": False,
+        "score_unit": "points",
+        "event_types": [
+            ("yellow", "Yellow Card (Warning)"),
+            ("red", "Red Card (Penalty)"),
+            ("expulsion", "Expulsion"),
+            ("sub_on", "Substitution On"), ("sub_off", "Substitution Off"),
+            ("injury", "Injury"), ("timeout", "Timeout"),
+        ],
+        "standings_points": {
+            "win_3_0": 3, "win_3_1": 3,
+            "win_3_2": 2, "loss_2_3": 1,
+            "loss_1_3": 0, "loss_0_3": 0,
+        },
+    },
+    "basketball_5x5": {
+        "label": "Basketball 5×5",
+        "periods": 4,
+        "period_label": "Quarter",
+        "period_labels": ["Q1", "Q2", "Q3", "Q4"],
+        "default_duration": 40,
+        "has_extra_time": True,  # overtime periods
+        "has_penalties": False,
+        "score_unit": "points",
+        "event_types": [
+            ("two_pointer", "2-Point Field Goal"), ("three_pointer", "3-Point Field Goal"),
+            ("free_throw", "Free Throw Made"), ("free_throw_miss", "Free Throw Missed"),
+            ("foul", "Personal Foul"), ("tech_foul", "Technical Foul"),
+            ("unsportsmanlike", "Unsportsmanlike Foul"), ("disqualifying", "Disqualifying Foul"),
+            ("sub_on", "Substitution On"), ("sub_off", "Substitution Off"),
+            ("timeout", "Timeout"), ("injury", "Injury"),
+        ],
+        "standings_points": {"win": 2, "loss": 1},
+    },
+    "basketball_3x3": {
+        "label": "Basketball 3×3",
+        "periods": 1,
+        "period_label": "Period",
+        "period_labels": ["Regulation"],
+        "default_duration": 10,
+        "has_extra_time": True,  # OT first to 2
+        "has_penalties": False,
+        "score_unit": "points",
+        "event_types": [
+            ("one_pointer", "1-Point Shot (Inside Arc)"),
+            ("two_pointer", "2-Point Shot (Outside Arc)"),
+            ("free_throw", "Free Throw Made"), ("free_throw_miss", "Free Throw Missed"),
+            ("foul", "Personal Foul"), ("tech_foul", "Technical Foul"),
+            ("sub_on", "Substitution On"), ("sub_off", "Substitution Off"),
+            ("timeout", "Timeout"), ("injury", "Injury"),
+        ],
+        "standings_points": {"win": 2, "loss": 1},
+    },
+    "handball": {
+        "label": "Handball",
+        "periods": 2,
+        "period_label": "Half",
+        "period_labels": ["1st Half", "2nd Half"],
+        "default_duration": 60,
+        "has_extra_time": True,   # 2×5 min
+        "has_penalties": True,    # 7-metre throw shootout
+        "score_unit": "goals",
+        "event_types": [
+            ("goal", "Goal"), ("assist", "Assist"),
+            ("seven_m_goal", "7m Throw Goal"), ("seven_m_miss", "7m Throw Missed"),
+            ("yellow", "Yellow Card (Warning)"),
+            ("two_min", "2-Minute Suspension"),
+            ("red", "Red Card (Disqualification)"),
+            ("blue_card", "Blue Card (Report)"),
+            ("sub_on", "Substitution On"), ("sub_off", "Substitution Off"),
+            ("injury", "Injury"), ("timeout", "Team Timeout"),
+        ],
+        "standings_points": {"win": 2, "draw": 1, "loss": 0},
+    },
+}
+
+
+def get_sport_config(sport_type):
+    """Return sport config dict for a given sport_type value."""
+    family = get_sport_family(sport_type)
+    return SPORT_CONFIG.get(family, SPORT_CONFIG["football"])
+
+
+def get_event_types_for_sport(sport_type):
+    """Return the list of event type tuples for a sport."""
+    cfg = get_sport_config(sport_type)
+    return cfg["event_types"]
+
+
 class SquadStatus(models.TextChoices):
     DRAFT     = "draft",     "Draft"
     SUBMITTED = "submitted", "Submitted"
@@ -19,6 +172,12 @@ class SquadSubmission(models.Model):
     Team Manager submits squad; Referee approves it before kick-off.
     Must be submitted at least 4 hours before kick-off (enforced in serializer).
     """
+    KIT_CHOICES = [
+        ("home", "Home Kit"),
+        ("away", "Away Kit"),
+        ("third", "Third Kit"),
+    ]
+
     fixture     = models.ForeignKey(
         "competitions.Fixture", on_delete=models.CASCADE,
         related_name="squads"
@@ -28,6 +187,14 @@ class SquadSubmission(models.Model):
         related_name="squad_submissions"
     )
     status      = models.CharField(max_length=20, choices=SquadStatus.choices, default=SquadStatus.DRAFT)
+    formation   = models.CharField(
+        max_length=20, blank=True, default="",
+        help_text="Playing formation / units (e.g. 4-3-3, 4-4-2)",
+    )
+    kit_choice  = models.CharField(
+        max_length=10, choices=KIT_CHOICES, default="home",
+        help_text="Which kit the team will wear",
+    )
     submitted_at = models.DateTimeField(null=True, blank=True)
     reviewed_by  = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
@@ -82,9 +249,13 @@ class MatchReport(models.Model):
     )
     status       = models.CharField(max_length=20, choices=MatchReportStatus.choices, default=MatchReportStatus.DRAFT)
 
-    # Final Score
+    # Final Score (total / aggregate — all sports)
     home_score   = models.PositiveIntegerField()
     away_score   = models.PositiveIntegerField()
+
+    # Volleyball: sets won (e.g. 3-2)
+    home_sets    = models.PositiveIntegerField(default=0, help_text="Sets/periods won by home team")
+    away_sets    = models.PositiveIntegerField(default=0, help_text="Sets/periods won by away team")
 
     # Disciplinary
     home_yellow_cards = models.PositiveIntegerField(default=0)
@@ -92,10 +263,16 @@ class MatchReport(models.Model):
     home_red_cards    = models.PositiveIntegerField(default=0)
     away_red_cards    = models.PositiveIntegerField(default=0)
 
+    # Handball: 2-minute suspensions
+    home_suspensions  = models.PositiveIntegerField(default=0, help_text="2-minute suspensions (handball)")
+    away_suspensions  = models.PositiveIntegerField(default=0, help_text="2-minute suspensions (handball)")
+
     # Report details
     match_duration  = models.PositiveIntegerField(default=90, help_text="Actual minutes played")
     added_time_ht   = models.PositiveIntegerField(default=0, help_text="Added time 1st half (mins)")
     added_time_ft   = models.PositiveIntegerField(default=0, help_text="Added time 2nd half (mins)")
+    overtime_played = models.BooleanField(default=False, help_text="Was overtime/extra time played?")
+    overtime_periods = models.PositiveIntegerField(default=0, help_text="Number of overtime periods played (basketball)")
     pitch_condition = models.CharField(max_length=20, choices=[
         ("excellent","Excellent"),("good","Good"),("fair","Fair"),("poor","Poor")
     ], default="good")
@@ -125,27 +302,79 @@ class MatchReport(models.Model):
     def __str__(self):
         return f"Report: {self.fixture}"
 
+    @property
+    def sport_config(self):
+        return get_sport_config(self.fixture.competition.sport_type)
+
+    @property
+    def sport_family(self):
+        return get_sport_family(self.fixture.competition.sport_type)
+
+
+class PeriodScore(models.Model):
+    """
+    Per-period scores for multi-period sports.
+    - Volleyball: per-set scores (e.g. Set 1: 25-23, Set 2: 22-25, ...)
+    - Basketball 5×5: per-quarter scores (Q1: 22-18, Q2: 20-25, ...)
+    - Basketball 3×3: single period + OT
+    - Handball: per-half scores (1H: 14-12, 2H: 16-15)
+    - Football: per-half scores (optional tracking)
+    """
+    report       = models.ForeignKey(MatchReport, on_delete=models.CASCADE, related_name="period_scores")
+    period_number = models.PositiveIntegerField(help_text="1-based period number (set, quarter, half)")
+    period_label  = models.CharField(max_length=30, blank=True, help_text="e.g. Set 1, Q1, 1st Half, OT1")
+    home_score   = models.PositiveIntegerField(default=0)
+    away_score   = models.PositiveIntegerField(default=0)
+    is_overtime  = models.BooleanField(default=False, help_text="Whether this is an overtime/extra period")
+
+    class Meta:
+        ordering = ["period_number"]
+        unique_together = ["report", "period_number"]
+
+    def __str__(self):
+        return f"{self.period_label}: {self.home_score}-{self.away_score}"
+
 
 class MatchEvent(models.Model):
     """Goals, assists, cards, substitutions recorded in the match report."""
+    # Combined event types across all sports
     EVENT_TYPES = [
-        ("goal",    "Goal"),
-        ("assist",  "Assist"),
-        ("yellow",  "Yellow Card"),
-        ("red",     "Red Card"),
-        ("second_yellow", "Second Yellow (Red)"),
-        ("sub_on",  "Substitution On"),
-        ("sub_off", "Substitution Off"),
-        ("injury",  "Injury"),
-        ("penalty", "Penalty Goal"),
-        ("penalty_miss", "Penalty Missed"),
-        ("og",      "Own Goal"),
+        # ── Football & universal ──
+        ("goal",           "Goal"),
+        ("assist",         "Assist"),
+        ("yellow",         "Yellow Card"),
+        ("red",            "Red Card"),
+        ("second_yellow",  "Second Yellow (Red)"),
+        ("sub_on",         "Substitution On"),
+        ("sub_off",        "Substitution Off"),
+        ("injury",         "Injury"),
+        ("penalty",        "Penalty Goal"),
+        ("penalty_miss",   "Penalty Missed"),
+        ("og",             "Own Goal"),
+        # ── Volleyball ──
+        ("expulsion",      "Expulsion"),
+        ("timeout",        "Timeout"),
+        # ── Basketball ──
+        ("one_pointer",    "1-Point Shot"),
+        ("two_pointer",    "2-Point Field Goal"),
+        ("three_pointer",  "3-Point Field Goal"),
+        ("free_throw",     "Free Throw Made"),
+        ("free_throw_miss","Free Throw Missed"),
+        ("foul",           "Personal Foul"),
+        ("tech_foul",      "Technical Foul"),
+        ("unsportsmanlike","Unsportsmanlike Foul"),
+        ("disqualifying",  "Disqualifying Foul"),
+        # ── Handball ──
+        ("seven_m_goal",   "7m Throw Goal"),
+        ("seven_m_miss",   "7m Throw Missed"),
+        ("two_min",        "2-Minute Suspension"),
+        ("blue_card",      "Blue Card (Report)"),
     ]
     report     = models.ForeignKey(MatchReport, on_delete=models.CASCADE, related_name="events")
     team       = models.ForeignKey("teams.Team", on_delete=models.CASCADE)
     player     = models.ForeignKey("teams.Player", on_delete=models.SET_NULL, null=True, blank=True)
     event_type = models.CharField(max_length=20, choices=EVENT_TYPES)
-    minute     = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(130)])
+    minute     = models.PositiveIntegerField(validators=[MinValueValidator(0), MaxValueValidator(200)])
     notes      = models.CharField(max_length=200, blank=True)
 
     class Meta:

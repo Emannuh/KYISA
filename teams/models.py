@@ -156,6 +156,10 @@ class CountyPlayer(models.Model):
                                                 help_text="Jersey number")
     photo = models.ImageField(upload_to="county_players/photos/", null=True, blank=True,
                               help_text="Passport-size photo (required)")
+    iprs_photo = models.ImageField(
+        upload_to="county_players/iprs_photos/", null=True, blank=True,
+        help_text="Passport photo returned from IPRS lookup (auto-populated)",
+    )
     id_document = models.ImageField(upload_to="county_players/ids/", null=True, blank=True,
                                     help_text="Copy of National ID (required)")
     birth_certificate = models.ImageField(

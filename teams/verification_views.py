@@ -26,6 +26,7 @@ from teams.models import (
 )
 from teams.fifa_connect_service import FIFAConnectService
 from teams.huduma_service import HudumaKenyaService
+from teams.utils import save_base64_photo
 
 
 # ── Role decorator ────────────────────────────────────────────────────────────
@@ -174,6 +175,9 @@ def huduma_verify_player(request, player_pk):
                 player.huduma_notes = f"Auto-verified. Name: {result.verified_name}"
                 if result.verified_dob:
                     player.huduma_notes += f", DOB: {result.verified_dob}"
+                # Save IPRS passport photo if returned
+                if result.photo:
+                    save_base64_photo(player, result.photo)
                 messages.success(request, f'✅ Huduma Kenya verification passed for {player.get_full_name()}.')
             elif result.success and not result.person_found:
                 player.huduma_status = HudumaVerificationStatus.FAILED

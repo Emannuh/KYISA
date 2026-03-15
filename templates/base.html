@@ -57,12 +57,12 @@
             {% if user.role == 'team_manager' %}
             <li><a href="{% url 'team_manager_dashboard' %}" class="{% if 'team_manager' in request.resolver_match.url_name %}active{% endif %}"><i class="bi bi-people"></i> My Team</a></li>
             {% endif %}
-            {% if user.role == 'admin' or user.role == 'referee_manager' or user.role == 'referee' %}
+            {% if user.role == 'admin' or user.role == 'coordinator' or user.role == 'referee' %}
             <li>
                 <a href="{% url 'referees_list' %}" class="{% if 'referee' in request.resolver_match.url_name %}active{% endif %}"><i class="bi bi-flag"></i> Referees <i class="bi bi-chevron-down" style="font-size:.6rem;margin-left:.1rem"></i></a>
                 <div class="nav-dropdown-menu">
                     <a href="{% url 'referees_list' %}"><i class="bi bi-flag"></i> All Referees</a>
-                    {% if user.role == 'admin' or user.role == 'referee_manager' %}
+                    {% if user.role == 'admin' or user.role == 'coordinator' %}
                     <a href="{% url 'pending_referees' %}"><i class="bi bi-clock"></i> Pending Approval</a>
                     <a href="{% url 'referee_appointments' %}"><i class="bi bi-calendar-event"></i> Appointments</a>
                     {% endif %}
