@@ -587,7 +587,7 @@
             <h3>Player Statistics</h3>
         </div>
 
-        {% if not top_scorers and not top_assisters and not disciplinary and not clean_sheets %}
+        {% if not top_scorers and not top_assisters and not disciplinary and not clean_sheets and not fair_play_table %}
         <div class="empty-state">
             <i class="bi bi-bar-chart-line"></i>
             <p>No statistics available yet for this competition.<br>
@@ -726,6 +726,38 @@
                 </table>
                 {% else %}
                 <div class="lb-empty">No clean sheets recorded yet</div>
+                {% endif %}
+            </div>
+
+            <!-- FAIR PLAY -->
+            <div class="leaderboard">
+                <div class="lb-head" style="background:#E8F5E9;color:#1B5E20;"><i class="bi bi-award"></i> Fair Play Table</div>
+                {% if fair_play_table %}
+                <table class="lb-table">
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th><i class="bi bi-square-fill" style="color:#F57F17;font-size:.55rem;"></i> Y</th>
+                            <th><i class="bi bi-square-fill" style="color:#C62828;font-size:.55rem;"></i> R</th>
+                            <th>FP Pts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in fair_play_table %}
+                        <tr>
+                            <td>
+                                <span class="rank-badge {% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% else %}rank-other{% endif %}">{{ forloop.counter }}</span>
+                                <span class="player-name">{{ row.team__name }}</span>
+                            </td>
+                            <td style="color:#F57F17;font-weight:700;">{{ row.yellow_total }}</td>
+                            <td style="color:#C62828;font-weight:700;">{{ row.red_total }}</td>
+                            <td class="stat-highlight" style="color:#1B5E20;">{{ row.fair_play_points }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="lb-empty">No sanctions recorded yet</div>
                 {% endif %}
             </div>
         </div>

@@ -300,6 +300,56 @@ class TechnicalBenchMember(models.Model):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  COUNTY DELEGATION MEMBERS (county-wide officials accompanying delegation)
+# ══════════════════════════════════════════════════════════════════════════════
+
+class CountyDelegationRole(models.TextChoices):
+    CECM_SPORTS = "cecm_sports", "CECM - Sports"
+    CHIEF_OFFICER_SPORTS = "chief_officer_sports", "Chief Officer - Sports"
+    COUNTY_SECRETARY = "county_secretary", "County Secretary"
+    COUNTY_ATTORNEY = "county_attorney", "County Attorney"
+    COUNTY_PROTOCOL = "county_protocol", "County Protocol Officer"
+    COUNTY_LIAISON = "county_liaison", "County Liaison Officer"
+    COUNTY_MEDIA = "county_media", "County Media Officer"
+    COUNTY_MEDICAL = "county_medical", "County Medical Officer"
+    OTHER = "other", "Other"
+
+
+class CountyDelegationMember(models.Model):
+    """County-level delegation officials not tied to a specific discipline."""
+    registration = models.ForeignKey(
+        CountyRegistration, on_delete=models.CASCADE,
+        related_name="delegation_members",
+    )
+    role = models.CharField(max_length=40, choices=CountyDelegationRole.choices)
+    full_name = models.CharField(max_length=200)
+    phone = models.CharField(max_length=13, validators=[kenya_phone_validator])
+    national_id_number = models.CharField(max_length=20)
+    email = models.EmailField(blank=True, default="")
+
+    # Optional linked user account (mandatory for CECM role)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name="county_delegation_profile",
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["registration", "role", "full_name"]
+        unique_together = ["registration", "national_id_number"]
+
+    def __str__(self):
+        return f"{self.full_name} - {self.get_role_display()} ({self.registration.county})"
+
+    @property
+    def is_cecm(self):
+        return self.role == CountyDelegationRole.CECM_SPORTS
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  COUNTY MODEL
 # ══════════════════════════════════════════════════════════════════════════════
 

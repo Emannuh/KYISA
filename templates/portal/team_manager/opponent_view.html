@@ -15,12 +15,12 @@
     <span style="font-size:1.5rem"><i class="bi bi-check-circle"></i></span>
     <div>
         <strong style="color:#1B5E20">Both Squads Approved</strong>
-        <div style="font-size:.88rem;color:#555">The referee has approved both squads. You can now view the opponent team list.</div>
+        <div style="font-size:.88rem;color:#555">The referee has approved both squads. You can now view the opponent starting players for confirmation and possible appeals.</div>
     </div>
 </div>
 
 <div class="card" style="padding:1.5rem">
-    <h2 style="font-size:1.1rem;color:#333;margin-bottom:1rem"><i class="bi bi-people"></i> {{ opponent.name }} — Match Day Squad</h2>
+    <h2 style="font-size:1.1rem;color:#333;margin-bottom:1rem"><i class="bi bi-people"></i> {{ opponent.name }} — Starting Players</h2>
 
     <!-- Starters -->
     <h3 style="font-size:.95rem;color:#1B5E20;margin-bottom:.6rem"><i class="bi bi-star"></i> Starting XI</h3>
@@ -45,28 +45,6 @@
         </table>
     </div>
 
-    <!-- Substitutes -->
-    <h3 style="font-size:.95rem;color:#1565c0;margin-bottom:.6rem"><i class="bi bi-arrow-repeat"></i> Substitutes</h3>
-    <div style="overflow-x:auto">
-        <table style="width:100%;border-collapse:collapse;font-size:.88rem">
-            <thead>
-                <tr style="background:#e3f2fd;text-align:left">
-                    <th style="padding:.5rem .8rem">Shirt</th>
-                    <th style="padding:.5rem .8rem">Name</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for sp in opp_players %}
-                {% if not sp.is_starter %}
-                <tr style="border-bottom:1px solid #eee">
-                    <td style="padding:.5rem .8rem;font-weight:700">#{{ sp.shirt_number }}</td>
-                    <td style="padding:.5rem .8rem;font-weight:600">{{ sp.player.first_name }} {{ sp.player.last_name }}</td>
-                </tr>
-                {% endif %}
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
 </div>
 
 <div style="margin-top:1.5rem">

@@ -4,8 +4,26 @@ Adapted from FKFSYS referee registration workflow.
 """
 from django import forms
 from django.core.exceptions import ValidationError
+import re
 from .models import RefereeProfile, RefereeLevel
 from accounts.models import KenyaCounty
+
+
+def normalize_kenya_phone(raw_phone: str) -> str:
+    phone = (raw_phone or '').strip().replace(' ', '')
+    if not phone:
+        return ''
+
+    if phone.startswith('+254') and len(phone) == 13:
+        return phone
+    if phone.startswith('254') and len(phone) == 12:
+        return f'+{phone}'
+    if phone.startswith('0') and len(phone) == 10:
+        return f'+254{phone[1:]}'
+    if phone.startswith('7') and len(phone) == 9:
+        return f'+254{phone}'
+
+    return phone
 
 
 class RefereeRegistrationForm(forms.Form):
@@ -56,12 +74,12 @@ class RefereeRegistrationForm(forms.Form):
         required=True,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': '+254712345678',
-            'pattern': '\\+254\\d{9}',
+            'placeholder': '712345678',
+            'pattern': '(?:\\+?254|0)?\\d{9}',
             'maxlength': '13',
         }),
         label='Phone Number *',
-        help_text='Format: +254XXXXXXXXX',
+        help_text='You can type 7XXXXXXXX, 07XXXXXXXX or +254XXXXXXXXX.',
     )
     county = forms.ChoiceField(
         choices=[('', '-- Select County --')] + list(KenyaCounty.choices),
@@ -120,3 +138,9 @@ class RefereeRegistrationForm(forms.Form):
         if RefereeProfile.objects.filter(license_number=lic).exists():
             raise ValidationError('This license number is already registered.')
         return lic
+
+    def clean_phone(self):
+        phone = normalize_kenya_phone(self.cleaned_data.get('phone'))
+        if not re.match(r'^\+254\d{9}$', phone):
+            raise ValidationError('Phone number must be valid. Use 7XXXXXXXX, 07XXXXXXXX or +254XXXXXXXXX.')
+        return phone

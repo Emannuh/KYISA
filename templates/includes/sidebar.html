@@ -25,9 +25,9 @@
     <div class="sidebar-section">
         <div class="sidebar-section-toggle"><h4>Approvals</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
         <div class="sidebar-section-body">
-            <a href="{% url 'pending_teams' %}" class="sidebar-link"><span class="icon"><i class="bi bi-pencil-square"></i></span> Pending Teams</a>
+            <a href="{% url 'pending_teams' %}" class="sidebar-link"><span class="icon"><i class="bi bi-pencil-square"></i></span> County Registrations</a>
             <a href="{% url 'pending_referees' %}" class="sidebar-link"><span class="icon"><i class="bi bi-pencil-square"></i></span> Pending Referees</a>
-            <a href="{% url 'player_verification_list' %}" class="sidebar-link"><span class="icon"><i class="bi bi-search"></i></span> Player Verification</a>
+            <a href="{% url 'county_player_verification_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'county_player_verification_list' or request.resolver_match.url_name == 'verify_county_player' or request.resolver_match.url_name == 'player_verification_list' %}active{% endif %}"><span class="icon"><i class="bi bi-search"></i></span> Player Verification</a>
             <a href="{% url 'squad_review_list' %}" class="sidebar-link"><span class="icon"><i class="bi bi-clipboard-check"></i></span> Squad Approval</a>
         </div>
     </div>
@@ -80,13 +80,10 @@
                 <span class="icon"><i class="bi bi-clipboard-data"></i></span> Fixtures &amp; Matches
             </a>
             <a href="{% url 'pending_teams' %}" class="sidebar-link {% if request.resolver_match.url_name == 'pending_teams' %}active{% endif %}">
-                <span class="icon"><i class="bi bi-pencil-square"></i></span> Pending Teams
+                <span class="icon"><i class="bi bi-pencil-square"></i></span> County Registrations
             </a>
-            <a href="{% url 'player_verification_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'player_verification_list' %}active{% endif %}">
+            <a href="{% url 'county_player_verification_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'county_player_verification_list' or request.resolver_match.url_name == 'verify_county_player' or request.resolver_match.url_name == 'player_verification_list' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-person-vcard"></i></span> Player Verification
-            </a>
-            <a href="{% url 'county_player_verification_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'county_player_verification_list' or request.resolver_match.url_name == 'verify_county_player' %}active{% endif %}">
-                <span class="icon"><i class="bi bi-shield-check"></i></span> County Players
             </a>
             <a href="{% url 'cec_sports_portal' %}" class="sidebar-link {% if request.resolver_match.url_name == 'cec_sports_portal' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-people-fill"></i></span> CEC Sports (View Only)
@@ -194,8 +191,22 @@
             <a href="{% url 'county_admin_add_discipline' %}" class="sidebar-link {% if request.resolver_match.url_name == 'county_admin_add_discipline' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-trophy"></i></span> Disciplines
             </a>
+            <a href="{% url 'county_admin_delegation_members' %}" class="sidebar-link {% if request.resolver_match.url_name == 'county_admin_delegation_members' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-person-badge"></i></span> Delegation Members
+            </a>
             <a href="{% url 'county_admin_verification' %}" class="sidebar-link {% if request.resolver_match.url_name == 'county_admin_verification' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-shield-check"></i></span> Verification Status
+            </a>
+        </div>
+    </div>
+
+    {% elif user.role == 'cec_sports' %}
+    <!-- COUNTY CECM (SPORTS) SIDEBAR -->
+    <div class="sidebar-section">
+        <div class="sidebar-section-toggle"><h4>CECM Sports</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
+        <div class="sidebar-section-body">
+            <a href="{% url 'cec_sports_portal' %}" class="sidebar-link {% if request.resolver_match.url_name == 'cec_sports_portal' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-people-fill"></i></span> CEC Sports Portal
             </a>
         </div>
     </div>
@@ -214,8 +225,8 @@
             <a href="{% url 'treasurer_county_registrations' %}" class="sidebar-link {% if 'treasurer_county_registrations' in request.resolver_match.url_name %}active{% endif %}">
                 <span class="icon"><i class="bi bi-person-badge"></i></span> County Admin Registrations
             </a>
-            <a href="{% url 'treasurer_teams' %}" class="sidebar-link {% if 'treasurer_teams' in request.resolver_match.url_name %}active{% endif %}">
-                <span class="icon"><i class="bi bi-people"></i></span> Team Registrations
+            <a href="{% url 'treasurer_county_registrations' %}" class="sidebar-link {% if 'treasurer_county_registrations' in request.resolver_match.url_name or 'treasurer_teams' in request.resolver_match.url_name %}active{% endif %}">
+                <span class="icon"><i class="bi bi-people"></i></span> County Registrations
             </a>
             <a href="{% url 'appeals_list' %}" class="sidebar-link"><span class="icon"><i class="bi bi-briefcase"></i></span> Appeal Fees</a>
         </div>
@@ -275,6 +286,9 @@
             </a>
             <a href="{% url 'sg_user_actions' %}" class="sidebar-link {% if request.resolver_match.url_name == 'sg_user_actions' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-journal-text"></i></span> User Activity
+            </a>
+            <a href="{% url 'sg_exceptional_overrides' %}" class="sidebar-link {% if request.resolver_match.url_name == 'sg_exceptional_overrides' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-shield-exclamation"></i></span> Exceptional Overrides
             </a>
             <a href="{% url 'sg_verified_players' %}" class="sidebar-link {% if request.resolver_match.url_name == 'sg_verified_players' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-patch-check-fill"></i></span> Verified Players

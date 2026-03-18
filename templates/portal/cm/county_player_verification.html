@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
-{% block title %}County Player Verification — KYISA CMS{% endblock %}
+{% block title %}Player Verification — KYISA CMS{% endblock %}
 
 {% block content %}
 <div class="page-header">
     <div class="breadcrumb">
         <a href="{% url 'dashboard' %}">Dashboard</a>
-        <span>County Player Verification</span>
+        <span>Player Verification</span>
     </div>
-    <h1><i class="bi bi-shield-check"></i> County Player Verification</h1>
-    <p>Verification Officers and Organising Secretary portal for county player checks.</p>
+    <h1><i class="bi bi-shield-check"></i> Player Verification</h1>
+    <p>Verify players across all counties and disciplines.</p>
 </div>
 
 <!-- Stats -->
@@ -57,8 +57,26 @@
                 {% endfor %}
             </select>
         </div>
+        <div>
+            <label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:.25rem;">Huduma</label>
+            <select name="huduma" class="form-control" style="min-width:160px;" onchange="this.form.submit()">
+                <option value="">All</option>
+                <option value="not_checked" {% if huduma_filter == 'not_checked' %}selected{% endif %}>Not Checked</option>
+                <option value="verified" {% if huduma_filter == 'verified' %}selected{% endif %}>Verified</option>
+                <option value="failed" {% if huduma_filter == 'failed' %}selected{% endif %}>Failed</option>
+            </select>
+        </div>
+        <div>
+            <label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:.25rem;">FIFA/Higher League</label>
+            <select name="clearance" class="form-control" style="min-width:190px;" onchange="this.form.submit()">
+                <option value="">All</option>
+                <option value="not_checked" {% if clearance_filter == 'not_checked' %}selected{% endif %}>Not Checked</option>
+                <option value="clear" {% if clearance_filter == 'clear' %}selected{% endif %}>Clear</option>
+                <option value="flagged" {% if clearance_filter == 'flagged' %}selected{% endif %}>Flagged</option>
+            </select>
+        </div>
         <button type="submit" class="btn btn-outline btn-sm" style="padding:.45rem .9rem;">Search</button>
-        {% if discipline_filter or county_filter %}
+        {% if discipline_filter or county_filter or huduma_filter or clearance_filter %}
         <a href="?tab={{ tab }}" style="font-size:.85rem;color:#C62828;text-decoration:none;font-weight:600;">✕ Clear Filters</a>
         {% elif player_query %}
         <a href="?tab={{ tab }}" style="font-size:.85rem;color:#C62828;text-decoration:none;font-weight:600;">✕ Clear Search</a>
@@ -68,16 +86,16 @@
 
 <!-- Tabs -->
 <div style="display:flex;gap:0;margin-bottom:0;border-bottom:2px solid #e0e0e0">
-    <a href="?tab=pending{% if discipline_filter %}&discipline={{ discipline_filter }}{% endif %}{% if county_filter %}&county={{ county_filter }}{% endif %}" style="padding:.75rem 1.5rem;text-decoration:none;font-weight:600;border-bottom:3px solid {% if tab == 'pending' %}#E65100{% else %}transparent{% endif %};color:{% if tab == 'pending' %}#E65100{% else %}#888{% endif %};margin-bottom:-2px">
+    <a href="?tab=pending{% if discipline_filter %}&discipline={{ discipline_filter }}{% endif %}{% if county_filter %}&county={{ county_filter }}{% endif %}{% if huduma_filter %}&huduma={{ huduma_filter }}{% endif %}{% if clearance_filter %}&clearance={{ clearance_filter }}{% endif %}" style="padding:.75rem 1.5rem;text-decoration:none;font-weight:600;border-bottom:3px solid {% if tab == 'pending' %}#E65100{% else %}transparent{% endif %};color:{% if tab == 'pending' %}#E65100{% else %}#888{% endif %};margin-bottom:-2px">
         ⏳ Pending ({{ stats.pending }})
     </a>
-    <a href="?tab=verified{% if discipline_filter %}&discipline={{ discipline_filter }}{% endif %}{% if county_filter %}&county={{ county_filter }}{% endif %}" style="padding:.75rem 1.5rem;text-decoration:none;font-weight:600;border-bottom:3px solid {% if tab == 'verified' %}#1B5E20{% else %}transparent{% endif %};color:{% if tab == 'verified' %}#1B5E20{% else %}#888{% endif %};margin-bottom:-2px">
+    <a href="?tab=verified{% if discipline_filter %}&discipline={{ discipline_filter }}{% endif %}{% if county_filter %}&county={{ county_filter }}{% endif %}{% if huduma_filter %}&huduma={{ huduma_filter }}{% endif %}{% if clearance_filter %}&clearance={{ clearance_filter }}{% endif %}" style="padding:.75rem 1.5rem;text-decoration:none;font-weight:600;border-bottom:3px solid {% if tab == 'verified' %}#1B5E20{% else %}transparent{% endif %};color:{% if tab == 'verified' %}#1B5E20{% else %}#888{% endif %};margin-bottom:-2px">
         ✅ Verified ({{ stats.verified }})
     </a>
-    <a href="?tab=rejected{% if discipline_filter %}&discipline={{ discipline_filter }}{% endif %}{% if county_filter %}&county={{ county_filter }}{% endif %}" style="padding:.75rem 1.5rem;text-decoration:none;font-weight:600;border-bottom:3px solid {% if tab == 'rejected' %}#C62828{% else %}transparent{% endif %};color:{% if tab == 'rejected' %}#C62828{% else %}#888{% endif %};margin-bottom:-2px">
+    <a href="?tab=rejected{% if discipline_filter %}&discipline={{ discipline_filter }}{% endif %}{% if county_filter %}&county={{ county_filter }}{% endif %}{% if huduma_filter %}&huduma={{ huduma_filter }}{% endif %}{% if clearance_filter %}&clearance={{ clearance_filter }}{% endif %}" style="padding:.75rem 1.5rem;text-decoration:none;font-weight:600;border-bottom:3px solid {% if tab == 'rejected' %}#C62828{% else %}transparent{% endif %};color:{% if tab == 'rejected' %}#C62828{% else %}#888{% endif %};margin-bottom:-2px">
         ❌ Rejected ({{ stats.rejected }})
     </a>
-    <a href="?tab=resubmit{% if discipline_filter %}&discipline={{ discipline_filter }}{% endif %}{% if county_filter %}&county={{ county_filter }}{% endif %}" style="padding:.75rem 1.5rem;text-decoration:none;font-weight:600;border-bottom:3px solid {% if tab == 'resubmit' %}#E65100{% else %}transparent{% endif %};color:{% if tab == 'resubmit' %}#E65100{% else %}#888{% endif %};margin-bottom:-2px">
+    <a href="?tab=resubmit{% if discipline_filter %}&discipline={{ discipline_filter }}{% endif %}{% if county_filter %}&county={{ county_filter }}{% endif %}{% if huduma_filter %}&huduma={{ huduma_filter }}{% endif %}{% if clearance_filter %}&clearance={{ clearance_filter }}{% endif %}" style="padding:.75rem 1.5rem;text-decoration:none;font-weight:600;border-bottom:3px solid {% if tab == 'resubmit' %}#E65100{% else %}transparent{% endif %};color:{% if tab == 'resubmit' %}#E65100{% else %}#888{% endif %};margin-bottom:-2px">
         🔄 Resubmit ({{ stats.resubmit }})
     </a>
 </div>
@@ -127,7 +145,7 @@
         {% else %}
         <div class="empty-state" style="padding:3rem;text-align:center">
             <div style="font-size:3rem">🎉</div>
-            <h3>No pending county players</h3>
+            <h3>No pending players</h3>
             <p style="color:#888">All county player registrations have been reviewed.</p>
         </div>
         {% endif %}
@@ -167,7 +185,7 @@
         {% else %}
         <div class="empty-state" style="padding:3rem;text-align:center">
             <div style="font-size:3rem">📋</div>
-            <h3>No verified county players yet</h3>
+            <h3>No verified players yet</h3>
             <p style="color:#888">Verified players will appear here once reviewed.</p>
         </div>
         {% endif %}

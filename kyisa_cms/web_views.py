@@ -8,12 +8,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from django.utils.safestring import mark_safe
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
 from django.db.models import Q
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings as django_settings
 from functools import wraps
+import csv
 import secrets, string, json, re
 
 from accounts.models import User, UserRole, KenyaCounty
@@ -25,11 +26,12 @@ from teams.models import (
     Team, Player, VerificationStatus, RejectionReason, PLAYER_MIN_AGE, PLAYER_MAX_AGE,
     CountyRegistration, CountyRegStatus, CountyDiscipline, CountyPlayer, SQUAD_LIMITS,
     TechnicalBenchMember, TechnicalBenchRole, PlayerStatus,
+    CountyDelegationMember, CountyDelegationRole,
 )
 from teams.forms import (
     PlayerRegistrationForm,
     CountyAdminRegistrationForm, CountyPaymentForm, CountyPlayerForm,
-    TechnicalBenchForm,
+    TechnicalBenchForm, CountyDelegationMemberForm,
 )
 from referees.models import (
     RefereeProfile, RefereeAppointment, RefereeAvailability,
@@ -381,7 +383,7 @@ def public_statistics_view(request):
     from matches.models import PlayerStatistics
     from matches.stats_engine import (
         get_top_scorers, get_top_assisters,
-        get_disciplinary_table, get_clean_sheet_leaders,
+        get_disciplinary_table, get_clean_sheet_leaders, get_fair_play_table,
     )
     from django.db.models import F, Sum
 
@@ -518,6 +520,7 @@ def public_competition_standings_view(request, pk):
     top_assisters = get_top_assisters(competition, limit=10)
     disciplinary = get_disciplinary_table(competition, limit=10)
     clean_sheets = get_clean_sheet_leaders(competition, limit=5)
+    fair_play_table = get_fair_play_table(competition, limit=10)
 
     return render(request, 'public/competition_standings.html', {
         'active_page': 'results',
@@ -530,6 +533,7 @@ def public_competition_standings_view(request, pk):
         'top_assisters': top_assisters,
         'disciplinary': disciplinary,
         'clean_sheets': clean_sheets,
+        'fair_play_table': fair_play_table,
     })
 
 
@@ -647,6 +651,9 @@ def dashboard_view(request):
 
     if user.role == 'county_sports_admin':
         return redirect('county_admin_dashboard')
+
+    if user.role == 'cec_sports':
+        return redirect('cec_sports_portal')
 
     if user.role == 'team_manager':
         return redirect('team_manager_dashboard')
@@ -1105,61 +1112,9 @@ def referee_register_success_view(request):
 
 @role_required('admin', 'competition_manager')
 def pending_teams_view(request):
-    """List teams awaiting approval."""
-    pending = Team.objects.filter(status='pending').order_by('-registered_at')
-
-    if request.method == 'POST':
-        team_id = request.POST.get('team_id')
-        action = request.POST.get('action')
-        team = get_object_or_404(Team, pk=team_id)
-
-        if action == 'approve':
-            team.status = 'registered'
-            team.save()
-
-            # Create manager account if a contact email was provided
-            if team.contact_email and not team.manager:
-                try:
-                    default_pw = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(10))
-                    manager = User.objects.create_user(
-                        email=team.contact_email,
-                        password=default_pw,
-                        first_name=team.name,
-                        last_name='Manager',
-                        role=UserRole.TEAM_MANAGER,
-                        county=team.county,
-                    )
-                    manager.must_change_password = True
-                    manager.save(update_fields=['must_change_password'])
-
-                    send_credentials_email(manager, default_pw, 'Team Manager')
-                    team.manager = manager
-                    team.save()
-                    messages.success(request, mark_safe(
-                        f'✅ <strong>{team.name}</strong> approved!<br>'
-                        f'Manager account: <code>{team.contact_email}</code><br>'
-                        f'Temporary password sent to the manager email.'
-                    ))
-                except Exception as e:
-                    messages.warning(request, f'Team approved but manager account failed: {e}')
-            else:
-                messages.success(request, f'✅ {team.name} has been approved.')
-
-        elif action == 'reject':
-            team.status = 'suspended'
-            team.save()
-            messages.warning(request, f'❌ {team.name} registration rejected.')
-
-        return redirect('pending_teams')
-
-    return render(request, 'portal/pending_teams.html', {
-        'pending_teams': pending,
-        'stats': {
-            'pending': pending.count(),
-            'registered': Team.objects.filter(status='registered').count(),
-            'total': Team.objects.count(),
-        },
-    })
+    """Legacy endpoint kept for compatibility; county registration is now the only channel."""
+    messages.info(request, 'Legacy team registration flow has been retired. Use county registrations.')
+    return redirect('treasurer_county_registrations')
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1231,37 +1186,12 @@ def pending_referees_view(request):
 
 @role_required('admin', 'competition_manager', 'secretary_general', 'verification_officer')
 def player_verification_list_view(request):
-    """
-    Admin view showing players grouped by verification status.
-    Tabs: Pending | Verified | Rejected
-    """
-    tab = request.GET.get('tab', 'pending')
+    """Canonical player verification entry — uses county player verification queue."""
+    if request.user.role == 'secretary_general':
+        messages.info(request, 'Use the Secretary General verification view for read-only verification summaries.')
+        return redirect('sg_verifications')
 
-    pending_players = Player.objects.filter(
-        verification_status=VerificationStatus.PENDING,
-        team__status='registered',
-    ).select_related('team').order_by('team__name', 'shirt_number')
-
-    verified_players = Player.objects.filter(
-        verification_status=VerificationStatus.VERIFIED,
-    ).select_related('team', 'verified_by').order_by('team__name', 'shirt_number')
-
-    rejected_players = Player.objects.filter(
-        verification_status=VerificationStatus.REJECTED,
-    ).select_related('team').order_by('team__name', 'shirt_number')
-
-    return render(request, 'portal/player_verification_list.html', {
-        'tab': tab,
-        'pending_players': pending_players,
-        'verified_players': verified_players,
-        'rejected_players': rejected_players,
-        'stats': {
-            'pending': pending_players.count(),
-            'verified': verified_players.count(),
-            'rejected': rejected_players.count(),
-        },
-        'rejection_reasons': RejectionReason.choices,
-    })
+    return redirect('county_player_verification_list')
 
 
 @role_required('admin', 'competition_manager', 'verification_officer')
@@ -2036,10 +1966,18 @@ def referee_edit_profile_view(request):
         user.first_name = request.POST.get('first_name', user.first_name)
         user.last_name = request.POST.get('last_name', user.last_name)
         new_phone = request.POST.get('phone', user.phone).strip()
-        # Validate phone format: +254 followed by 9 digits
+        # Normalize phone so users can enter 7XXXXXXXX or 07XXXXXXXX.
+        if new_phone.startswith('0') and len(new_phone) == 10:
+            new_phone = f'+254{new_phone[1:]}'
+        elif new_phone.startswith('7') and len(new_phone) == 9:
+            new_phone = f'+254{new_phone}'
+        elif new_phone.startswith('254') and len(new_phone) == 12:
+            new_phone = f'+{new_phone}'
+
+        # Validate normalized phone format.
         import re
         if new_phone and not re.match(r'^\+254\d{9}$', new_phone):
-            messages.error(request, 'Phone number must be in the format +254XXXXXXXXX (country code + 9 digits).')
+            messages.error(request, 'Phone number must be valid. Use 7XXXXXXXX, 07XXXXXXXX or +254XXXXXXXXX.')
             return redirect('referee_edit_profile')
         user.phone = new_phone
         user.save(update_fields=['first_name', 'last_name', 'phone'])
@@ -2078,6 +2016,7 @@ def coordinator_dashboard_view(request):
 
     discipline = _coordinator_discipline(request.user)
     discipline_label = dict(SportType.choices).get(discipline, discipline or 'Not Assigned')
+    coordinator_name = request.user.get_full_name() or request.user.email
 
     if not discipline:
         messages.warning(request, 'Your account has no discipline assigned. Contact an administrator.')
@@ -2127,6 +2066,7 @@ def coordinator_dashboard_view(request):
         'stats': stats,
         'discipline': discipline,
         'discipline_label': discipline_label,
+        'coordinator_name': coordinator_name,
         'active_competitions': active,
         'registration_competitions': registration,
         'recent_results': recent_results,
@@ -2518,6 +2458,10 @@ def coordinator_edit_fixture_view(request, pk, fixture_pk):
     fixture = get_object_or_404(Fixture, pk=fixture_pk, competition=competition)
 
     if request.method == 'POST':
+        original_status = fixture.status
+        original_home_score = fixture.home_score
+        original_away_score = fixture.away_score
+
         fixture.match_date = request.POST.get('match_date', fixture.match_date)
         kickoff = request.POST.get('kickoff_time', '')
         if kickoff:
@@ -2563,7 +2507,46 @@ def coordinator_edit_fixture_view(request, pk, fixture_pk):
         if away_score != '':
             fixture.away_score = int(away_score)
 
+        score_changed = (
+            fixture.home_score != original_home_score or
+            fixture.away_score != original_away_score
+        )
+        status_changed = fixture.status != original_status
+        if score_changed or status_changed:
+            exceptional_reason = request.POST.get('exceptional_reason', '').strip()
+            confirm_exceptional = request.POST.get('confirm_exceptional') == '1'
+            if not confirm_exceptional:
+                messages.error(request, 'Result edits are only allowed for exceptional cases. Tick the exceptional-case confirmation box.')
+                return redirect('coordinator_edit_fixture', pk=pk, fixture_pk=fixture_pk)
+            if len(exceptional_reason) < 12:
+                messages.error(request, 'Provide a clear exceptional-case reason (at least 12 characters) before editing results.')
+                return redirect('coordinator_edit_fixture', pk=pk, fixture_pk=fixture_pk)
+
         fixture.save()
+        if score_changed or status_changed:
+            from admin_dashboard.models import ActivityLog
+            ActivityLog.objects.create(
+                user=request.user,
+                action='RESULT_OVERRIDE',
+                description=(
+                    f'{request.user.get_full_name()} made exceptional result/status changes '
+                    f'for fixture {fixture} and submitted this override to SG tracking. '
+                    f'Reason: {exceptional_reason}'
+                ),
+                object_repr=str(fixture),
+                ip_address=request.META.get('REMOTE_ADDR', ''),
+                extra_data={
+                    'submitted_to_sg': True,
+                    'exceptional_case': True,
+                    'reason': exceptional_reason,
+                    'status_before': original_status,
+                    'status_after': fixture.status,
+                    'home_score_before': original_home_score,
+                    'away_score_before': original_away_score,
+                    'home_score_after': fixture.home_score,
+                    'away_score_after': fixture.away_score,
+                },
+            )
         messages.success(request, f'Fixture updated: {fixture}')
         return redirect('coordinator_competition_manage', pk=pk)
 
@@ -2595,8 +2578,25 @@ def coordinator_edit_standings_view(request, pk):
 
         if action == 'update_standings':
             pool_team_id = request.POST.get('pool_team_id')
+            exceptional_reason = request.POST.get('exceptional_reason', '').strip()
+            confirm_exceptional = request.POST.get('confirm_exceptional') == '1'
+            if not confirm_exceptional:
+                messages.error(request, 'Standings overrides are allowed only for exceptional cases. Tick confirmation to proceed.')
+                return redirect('coordinator_edit_standings', pk=pk)
+            if len(exceptional_reason) < 12:
+                messages.error(request, 'Provide a clear exceptional-case reason (at least 12 characters) before overriding standings.')
+                return redirect('coordinator_edit_standings', pk=pk)
             try:
                 pt = PoolTeam.objects.get(pk=pool_team_id, pool__competition=competition)
+                before_state = {
+                    'played': pt.played,
+                    'won': pt.won,
+                    'drawn': pt.drawn,
+                    'lost': pt.lost,
+                    'goals_for': pt.goals_for,
+                    'goals_against': pt.goals_against,
+                    'bonus_points': pt.bonus_points,
+                }
                 pt.played = int(request.POST.get('played', pt.played))
                 pt.won = int(request.POST.get('won', pt.won))
                 pt.drawn = int(request.POST.get('drawn', pt.drawn))
@@ -2605,16 +2605,33 @@ def coordinator_edit_standings_view(request, pk):
                 pt.goals_against = int(request.POST.get('goals_against', pt.goals_against))
                 pt.bonus_points = int(request.POST.get('bonus_points', pt.bonus_points))
                 pt.save()
+                after_state = {
+                    'played': pt.played,
+                    'won': pt.won,
+                    'drawn': pt.drawn,
+                    'lost': pt.lost,
+                    'goals_for': pt.goals_for,
+                    'goals_against': pt.goals_against,
+                    'bonus_points': pt.bonus_points,
+                }
                 from admin_dashboard.models import ActivityLog
                 ActivityLog.objects.create(
                     user=request.user,
                     action='STANDINGS_OVERRIDE',
                     description=(
-                        f'{request.user.get_full_name()} edited standings for '
-                        f'{pt.team.name} in {pt.pool.name} ({competition.name})'
+                        f'{request.user.get_full_name()} made an exceptional standings override '
+                        f'for {pt.team.name} in {pt.pool.name} ({competition.name}) and '
+                        f'submitted this override to SG tracking. Reason: {exceptional_reason}'
                     ),
                     object_repr=str(pt),
                     ip_address=request.META.get('REMOTE_ADDR', ''),
+                    extra_data={
+                        'submitted_to_sg': True,
+                        'exceptional_case': True,
+                        'reason': exceptional_reason,
+                        'before': before_state,
+                        'after': after_state,
+                    },
                 )
                 messages.success(request, f'Standings updated for {pt.team.name}.')
             except PoolTeam.DoesNotExist:
@@ -2718,7 +2735,7 @@ def coordinator_squads_view(request):
 def coordinator_statistics_view(request, pk):
     """Coordinator: View and manage statistics for a competition (top scorers, etc.)."""
     from competitions.models import Competition, Pool, PoolTeam
-    from matches.stats_engine import get_top_scorers, get_top_assisters, get_disciplinary_table
+    from matches.stats_engine import get_top_scorers, get_top_assisters, get_disciplinary_table, get_fair_play_table
 
     competition = get_object_or_404(Competition, pk=pk)
     discipline = _coordinator_discipline(request.user)
@@ -2729,6 +2746,7 @@ def coordinator_statistics_view(request, pk):
     top_scorers = get_top_scorers(competition)
     top_assisters = get_top_assisters(competition)
     disciplinary = get_disciplinary_table(competition)
+    fair_play_table = get_fair_play_table(competition)
 
     # Standings per pool
     pools = Pool.objects.filter(competition=competition).prefetch_related('pool_teams__team').order_by('name')
@@ -2747,6 +2765,7 @@ def coordinator_statistics_view(request, pk):
         'top_scorers': top_scorers,
         'top_assisters': top_assisters,
         'disciplinary': disciplinary,
+        'fair_play_table': fair_play_table,
         'pool_data': pool_data,
     })
 
@@ -2898,7 +2917,7 @@ def coordinator_competition_rules_view(request, pk):
 
 @role_required('treasurer', 'admin')
 def treasurer_dashboard_view(request):
-    """Treasurer home — overview of county payments, teams, and registration status."""
+    """Treasurer home — overview of county payments and county registration status."""
     current_season = str(date.today().year)
 
     # County payment stats
@@ -2910,14 +2929,20 @@ def treasurer_dashboard_view(request):
         if cp.payment_status in ('paid', 'waived')
     )
 
-    # Team stats
-    pending_count   = Team.objects.filter(status='pending', payment_confirmed=False).count()
-    paid_count      = Team.objects.filter(status='pending', payment_confirmed=True).count()
-    approved_count  = Team.objects.filter(status='registered').count()
-    rejected_count  = Team.objects.filter(status='suspended').count()
+    # County registration stats (new canonical channel)
+    pending_count = CountyRegistration.objects.filter(
+        status=CountyRegStatus.PAYMENT_SUBMITTED
+    ).count()
+    paid_count = pending_count
+    approved_count = CountyRegistration.objects.filter(
+        status=CountyRegStatus.APPROVED
+    ).count()
+    rejected_count = CountyRegistration.objects.filter(
+        status=CountyRegStatus.REJECTED
+    ).count()
 
-    # Recent pending teams
-    recent = Team.objects.filter(status='pending').order_by('-registered_at')[:5]
+    # Recent county registrations
+    recent = CountyRegistration.objects.select_related('user').order_by('-created_at')[:5]
     # Recent county payments
     recent_payments = county_payments.order_by('-updated_at')[:5]
 
@@ -2938,105 +2963,9 @@ def treasurer_dashboard_view(request):
 
 @role_required('treasurer', 'admin')
 def treasurer_teams_view(request):
-    """
-    Treasurer main workspace:
-    - Shows all pending teams
-    - Treasurer can confirm payment (enter M-Pesa ref + amount)
-    - Then approve → team status = registered, manager account created
-    - Or reject the registration
-    """
-    if request.method == 'POST':
-        team_id = request.POST.get('team_id')
-        action  = request.POST.get('action')
-        team    = get_object_or_404(Team, pk=team_id)
-
-        if action == 'confirm_payment':
-            ref    = request.POST.get('payment_reference', '').strip()
-            amount = request.POST.get('payment_amount', '').strip()
-            if not ref:
-                messages.error(request, 'Please enter the M-Pesa / payment reference.')
-            else:
-                team.payment_confirmed    = True
-                team.payment_reference    = ref
-                # Default to the standard county fee if not entered
-                team.payment_amount       = amount if amount else COUNTY_REGISTRATION_FEE_CAP
-                team.payment_confirmed_by = request.user
-                team.payment_confirmed_at = timezone.now()
-                team.save()
-                
-                # Send payment receipt notification
-                from teams.notifications import send_payment_receipt
-                send_payment_receipt(team, request.user)
-                
-                # Log this action explicitly for audit
-                from admin_dashboard.models import ActivityLog as AuditLog
-                AuditLog.objects.create(
-                    user=request.user,
-                    action='PAYMENT_VERIFIED',
-                    description=f'{request.user.get_full_name()} confirmed payment for {team.name} (Ref: {ref}, Amount: {team.payment_amount})',
-                    object_repr=str(team),
-                    ip_address=request.META.get('REMOTE_ADDR', ''),
-                )
-                messages.success(request, f'✅ Payment confirmed for <strong>{team.name}</strong> (Ref: {ref}). Receipt sent to sports officer and team contact.')
-
-        elif action == 'approve':
-            if not team.payment_confirmed:
-                messages.error(request, f'❌ Cannot approve {team.name} — payment not yet confirmed.')
-            else:
-                team.status = 'registered'
-                team.save()
-                # Create team manager account if email provided and no manager yet
-                if team.contact_email and not team.manager:
-                    try:
-                        temp_pw = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
-                        manager = User.objects.create_user(
-                            email=team.contact_email,
-                            password=temp_pw,
-                            first_name=team.name,
-                            last_name='Manager',
-                            role=UserRole.TEAM_MANAGER,
-                            county=team.county,
-                        )
-                        manager.must_change_password = True
-                        manager.save(update_fields=['must_change_password'])
-                        team.manager = manager
-                        team.save()
-                        try:
-                            send_credentials_email(manager, temp_pw, 'Team Manager')
-                            messages.success(request, f'✅ {team.name} approved! Login credentials sent to {team.contact_email}.')
-                        except Exception:
-                            messages.warning(request, f'✅ {team.name} approved but credential email failed. Contact the manager directly.')
-                    except Exception as e:
-                        messages.warning(request, f'Team approved but manager account failed: {e}')
-                else:
-                    messages.success(request, f'✅ {team.name} approved.')
-
-        elif action == 'reject':
-            team.status = 'suspended'
-            team.save()
-            # Log rejection for audit
-            from admin_dashboard.models import ActivityLog as AuditLog
-            AuditLog.objects.create(
-                user=request.user,
-                action='TEAM_REJECT',
-                description=f'{request.user.get_full_name()} rejected team registration: {team.name}',
-                object_repr=str(team),
-                ip_address=request.META.get('REMOTE_ADDR', ''),
-            )
-            messages.warning(request, f'❌ {team.name} registration rejected.')
-
-        return redirect('treasurer_teams')
-
-    # Split pending teams into: not-yet-paid vs payment-confirmed-awaiting-approval
-    unpaid  = Team.objects.filter(status='pending', payment_confirmed=False).order_by('-registered_at')
-    paid    = Team.objects.filter(status='pending', payment_confirmed=True).order_by('-registered_at')
-    return render(request, 'portal/treasurer/teams.html', {
-        'unpaid_teams':         unpaid,
-        'paid_teams':           paid,
-        'unpaid_count':         unpaid.count(),
-        'paid_count':           paid.count(),
-        'registration_fee':     COUNTY_REGISTRATION_FEE_CAP,
-    })
+    """Legacy endpoint kept for compatibility; county registration is now the only channel."""
+    messages.info(request, 'Legacy team registration flow has been retired. Use county registrations.')
+    return redirect('treasurer_county_registrations')
 
 
 @role_required('treasurer', 'admin')
@@ -4412,6 +4341,8 @@ def county_player_verification_list_view(request):
     tab = request.GET.get('tab', 'pending')
     discipline_filter = request.GET.get('discipline', '')
     county_filter = request.GET.get('county', '')
+    huduma_filter = request.GET.get('huduma', '')
+    clearance_filter = request.GET.get('clearance', '')
     player_query = request.GET.get('q', '').strip()
 
     players = CountyPlayer.objects.select_related(
@@ -4422,6 +4353,10 @@ def county_player_verification_list_view(request):
         players = players.filter(discipline__sport_type=discipline_filter)
     if county_filter:
         players = players.filter(discipline__registration__county=county_filter)
+    if huduma_filter:
+        players = players.filter(huduma_status=huduma_filter)
+    if clearance_filter:
+        players = players.filter(higher_league_status=clearance_filter)
     if player_query:
         players = players.filter(
             Q(first_name__icontains=player_query) |
@@ -4458,6 +4393,8 @@ def county_player_verification_list_view(request):
         'counties': county_choices,
         'discipline_filter': discipline_filter,
         'county_filter': county_filter,
+        'huduma_filter': huduma_filter,
+        'clearance_filter': clearance_filter,
         'player_query': player_query,
         'stats': {
             'pending': pending.count(),
@@ -4475,16 +4412,114 @@ def verify_county_player_view(request, player_pk):
         CountyPlayer.objects.select_related('discipline', 'discipline__registration'),
         pk=player_pk,
     )
+    is_football = player.discipline.sport_type in ('football_men', 'football_women')
+    clearance_check_label = 'FIFA Connect' if is_football else 'Higher League'
+
+    blocking_reasons = []
+    if player.age < 18 or player.age > 23:
+        blocking_reasons.append('Age must be between 18 and 23.')
+    if player.huduma_status != 'verified':
+        blocking_reasons.append('Huduma age verification must be marked as Verified.')
+    if player.higher_league_status != 'clear':
+        blocking_reasons.append(f'{clearance_check_label} check must be marked as Clear.')
+
+    can_verify = len(blocking_reasons) == 0
 
     if request.method == 'POST':
         action = request.POST.get('action')
+        from admin_dashboard.models import ActivityLog
+
+        if action == 'huduma_verify':
+            player.huduma_status = 'verified'
+            player.huduma_verified_at = timezone.now()
+            player.save(update_fields=['huduma_status', 'huduma_verified_at'])
+            ActivityLog.objects.create(
+                action='PLAYER_UPDATE',
+                description=f'Huduma check marked VERIFIED for county player {player.first_name} {player.last_name} '
+                            f'({player.discipline.get_sport_type_display()} - {player.discipline.registration.county})',
+                user=request.user,
+            )
+            messages.success(request, f'Huduma check marked verified for {player.first_name} {player.last_name}.')
+            return redirect('verify_county_player', player_pk=player.pk)
+
+        elif action == 'huduma_fail':
+            player.huduma_status = 'failed'
+            player.huduma_verified_at = None
+            player.save(update_fields=['huduma_status', 'huduma_verified_at'])
+            ActivityLog.objects.create(
+                action='PLAYER_UPDATE',
+                description=f'Huduma check marked FAILED for county player {player.first_name} {player.last_name} '
+                            f'({player.discipline.get_sport_type_display()} - {player.discipline.registration.county})',
+                user=request.user,
+            )
+            messages.warning(request, f'Huduma check marked failed for {player.first_name} {player.last_name}.')
+            return redirect('verify_county_player', player_pk=player.pk)
+
+        elif action == 'huduma_reset':
+            player.huduma_status = 'not_checked'
+            player.huduma_verified_at = None
+            player.save(update_fields=['huduma_status', 'huduma_verified_at'])
+            ActivityLog.objects.create(
+                action='PLAYER_UPDATE',
+                description=f'Huduma check reset for county player {player.first_name} {player.last_name} '
+                            f'({player.discipline.get_sport_type_display()} - {player.discipline.registration.county})',
+                user=request.user,
+            )
+            messages.info(request, f'Huduma check reset for {player.first_name} {player.last_name}.')
+            return redirect('verify_county_player', player_pk=player.pk)
+
+        elif action == 'clearance_clear':
+            player.higher_league_status = 'clear'
+            player.higher_league_details = ''
+            player.save(update_fields=['higher_league_status', 'higher_league_details'])
+            ActivityLog.objects.create(
+                action='PLAYER_UPDATE',
+                description=f'{clearance_check_label} check marked CLEAR for county player '
+                            f'{player.first_name} {player.last_name} '
+                            f'({player.discipline.get_sport_type_display()} - {player.discipline.registration.county})',
+                user=request.user,
+            )
+            messages.success(request, f'{clearance_check_label} check marked clear for {player.first_name} {player.last_name}.')
+            return redirect('verify_county_player', player_pk=player.pk)
+
+        elif action == 'clearance_flag':
+            details = request.POST.get('higher_league_details', '').strip()
+            player.higher_league_status = 'flagged'
+            player.higher_league_details = details
+            player.save(update_fields=['higher_league_status', 'higher_league_details'])
+            ActivityLog.objects.create(
+                action='PLAYER_UPDATE',
+                description=f'{clearance_check_label} check FLAGGED for county player '
+                            f'{player.first_name} {player.last_name} '
+                            f'({player.discipline.get_sport_type_display()} - {player.discipline.registration.county}): {details}',
+                user=request.user,
+            )
+            messages.warning(request, f'{clearance_check_label} check flagged for {player.first_name} {player.last_name}.')
+            return redirect('verify_county_player', player_pk=player.pk)
+
+        elif action == 'clearance_reset':
+            player.higher_league_status = 'not_checked'
+            player.higher_league_details = ''
+            player.save(update_fields=['higher_league_status', 'higher_league_details'])
+            ActivityLog.objects.create(
+                action='PLAYER_UPDATE',
+                description=f'{clearance_check_label} check reset for county player '
+                            f'{player.first_name} {player.last_name} '
+                            f'({player.discipline.get_sport_type_display()} - {player.discipline.registration.county})',
+                user=request.user,
+            )
+            messages.info(request, f'{clearance_check_label} check reset for {player.first_name} {player.last_name}.')
+            return redirect('verify_county_player', player_pk=player.pk)
 
         if action == 'verify':
+            # Enforce prerequisite checks before final verification.
+            if not can_verify:
+                messages.error(request, 'Cannot verify yet: ' + ' '.join(blocking_reasons))
+                return redirect('verify_county_player', player_pk=player.pk)
+
             player.verification_status = 'verified'
             player.rejection_reason = ''
             player.save(update_fields=['verification_status', 'rejection_reason'])
-            # Audit log
-            from admin_dashboard.models import ActivityLog
             ActivityLog.objects.create(
                 action='PLAYER_UPDATE',
                 description=f'County player {player.first_name} {player.last_name} verified '
@@ -4499,7 +4534,6 @@ def verify_county_player_view(request, player_pk):
             player.verification_status = 'rejected'
             player.rejection_reason = reason
             player.save(update_fields=['verification_status', 'rejection_reason'])
-            from admin_dashboard.models import ActivityLog
             ActivityLog.objects.create(
                 action='PLAYER_UPDATE',
                 description=f'County player {player.first_name} {player.last_name} rejected '
@@ -4514,7 +4548,6 @@ def verify_county_player_view(request, player_pk):
             player.verification_status = 'resubmit'
             player.rejection_reason = reason
             player.save(update_fields=['verification_status', 'rejection_reason'])
-            from admin_dashboard.models import ActivityLog
             ActivityLog.objects.create(
                 action='PLAYER_UPDATE',
                 description=f'County player {player.first_name} {player.last_name} sent back for '
@@ -4528,7 +4561,6 @@ def verify_county_player_view(request, player_pk):
             player.verification_status = 'pending'
             player.rejection_reason = ''
             player.save(update_fields=['verification_status', 'rejection_reason'])
-            from admin_dashboard.models import ActivityLog
             ActivityLog.objects.create(
                 action='PLAYER_UPDATE',
                 description=f'County player {player.first_name} {player.last_name} reset to pending '
@@ -4542,6 +4574,10 @@ def verify_county_player_view(request, player_pk):
 
     return render(request, 'portal/cm/verify_county_player.html', {
         'player': player,
+        'is_football': is_football,
+        'clearance_check_label': clearance_check_label,
+        'can_verify': can_verify,
+        'blocking_reasons': blocking_reasons,
     })
 
 
@@ -4695,7 +4731,7 @@ def county_admin_register_success_view(request):
     })
 
 
-@role_required('admin', 'competition_manager', 'secretary_general', 'coordinator', 'verification_officer')
+@role_required('admin', 'competition_manager', 'secretary_general', 'coordinator', 'verification_officer', 'cec_sports')
 def cec_sports_portal_view(request):
     """CEC sports caucus portal (view-only): high-level competition and verification visibility."""
     competitions = Competition.objects.order_by('-created_at')[:12]
@@ -4721,11 +4757,16 @@ def county_admin_dashboard_view(request):
     reg = get_object_or_404(CountyRegistration, user=request.user)
     disciplines = reg.disciplines.all()
     player_count = sum(d.player_count for d in disciplines)
+    delegation_members = reg.delegation_members.all().order_by('role', 'full_name')
+    delegation_count = delegation_members.count()
+    cecm_member = delegation_members.filter(role=CountyDelegationRole.CECM_SPORTS).first()
 
     return render(request, 'portal/county_admin/dashboard.html', {
         'reg': reg,
         'disciplines': disciplines,
         'player_count': player_count,
+        'delegation_count': delegation_count,
+        'cecm_member': cecm_member,
         'registration_fee': COUNTY_REGISTRATION_FEE_CAP,
     })
 
@@ -4881,7 +4922,7 @@ def county_admin_delete_player_view(request, player_pk):
 #   TREASURER — COUNTY REGISTRATION APPROVALS
 # ══════════════════════════════════════════════════════════════════════════════
 
-@role_required('treasurer', 'admin')
+@role_required('treasurer', 'admin', 'competition_manager')
 def treasurer_county_registrations_view(request):
     """Treasurer reviews county admin registrations and approves/rejects."""
     if request.method == 'POST':
@@ -4963,31 +5004,51 @@ def county_admin_add_bench_member_view(request, discipline_pk):
             else:
                 member.save()
 
-                # If this is a Team Manager, create a user account for them
-                if member.role == TechnicalBenchRole.TEAM_MANAGER and member.email:
-                    try:
-                        import secrets, string
-                        temp_pw = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
-                        tm_user = User.objects.create_user(
-                            email=member.email,
-                            password=temp_pw,
-                            first_name=member.first_name,
-                            last_name=member.last_name,
-                            phone=member.phone,
-                            county=reg.county,
-                            role=UserRole.TEAM_MANAGER,
-                            must_change_password=True,
-                        )
+                # Team Manager must always be wired to a Team Manager account.
+                if member.role == TechnicalBenchRole.TEAM_MANAGER:
+                    existing_user = User.objects.filter(email__iexact=member.email).first()
+
+                    if existing_user and existing_user.technical_bench_profile:
+                        messages.error(request, 'This Team Manager email is already linked to another technical bench profile.')
+                        member.delete()
+                        return redirect('county_admin_discipline_players', discipline_pk=discipline_pk)
+
+                    if existing_user and existing_user.role == UserRole.TEAM_MANAGER:
+                        # Reuse existing Team Manager account and align profile details.
+                        tm_user = existing_user
+                        tm_user.first_name = member.first_name
+                        tm_user.last_name = member.last_name
+                        tm_user.phone = member.phone
+                        tm_user.county = reg.county
+                        tm_user.is_active = True
+                        tm_user.save(update_fields=['first_name', 'last_name', 'phone', 'county', 'is_active'])
                         member.user = tm_user
                         member.save(update_fields=['user'])
+                        messages.success(request, f'{member.get_full_name} added as {member.get_role_display()}. Existing Team Manager account linked.')
+                    else:
                         try:
-                            send_credentials_email(tm_user, temp_pw, 'Team Manager')
-                            messages.success(request, f'{member.get_full_name} added as {member.get_role_display()}. Login credentials sent to {member.email}.')
-                        except Exception:
-                            messages.success(request, f'{member.get_full_name} added as {member.get_role_display()} but credential email failed.')
-                    except Exception as e:
-                        member.save()
-                        messages.warning(request, f'{member.get_full_name} added but account creation failed: {e}')
+                            temp_pw = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
+                            tm_user = User.objects.create_user(
+                                email=member.email,
+                                password=temp_pw,
+                                first_name=member.first_name,
+                                last_name=member.last_name,
+                                phone=member.phone,
+                                county=reg.county,
+                                role=UserRole.TEAM_MANAGER,
+                                must_change_password=True,
+                            )
+                            member.user = tm_user
+                            member.save(update_fields=['user'])
+                            try:
+                                send_credentials_email(tm_user, temp_pw, 'Team Manager')
+                                messages.success(request, f'{member.get_full_name} added as {member.get_role_display()}. Login credentials sent to {member.email}.')
+                            except Exception:
+                                messages.success(request, f'{member.get_full_name} added as {member.get_role_display()} but credential email failed.')
+                        except Exception as e:
+                            member.delete()
+                            messages.error(request, f'Team Manager account creation failed: {e}')
+                            return redirect('county_admin_discipline_players', discipline_pk=discipline_pk)
                 else:
                     messages.success(request, f'{member.get_full_name} added as {member.get_role_display()}.')
 
@@ -5020,6 +5081,92 @@ def county_admin_delete_bench_member_view(request, member_pk):
         member.delete()
         messages.success(request, f'{name} removed from technical bench.')
     return redirect('county_admin_discipline_players', discipline_pk=discipline_pk)
+
+
+@role_required('county_sports_admin')
+def county_admin_delegation_members_view(request):
+    """County sports director manages county-level delegation officials."""
+    reg = get_object_or_404(CountyRegistration, user=request.user)
+
+    if not reg.is_approved:
+        messages.warning(request, 'Registration must be approved before adding delegation members.')
+        return redirect('county_admin_dashboard')
+
+    members = reg.delegation_members.select_related('user').order_by('role', 'full_name')
+
+    if request.method == 'POST':
+        form = CountyDelegationMemberForm(request.POST)
+        if form.is_valid():
+            member = form.save(commit=False)
+            member.registration = reg
+
+            if (
+                member.role == CountyDelegationRole.CECM_SPORTS and
+                CountyDelegationMember.objects.filter(
+                    registration=reg,
+                    role=CountyDelegationRole.CECM_SPORTS,
+                ).exists()
+            ):
+                messages.error(request, 'A CECM Sports member has already been added for this county.')
+            elif member.role == CountyDelegationRole.CECM_SPORTS and User.objects.filter(email__iexact=member.email).exists():
+                messages.error(request, 'A user account with this email already exists. Use a different email for CECM account creation.')
+            else:
+                member.save()
+
+                if member.role == CountyDelegationRole.CECM_SPORTS:
+                    temp_pw = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
+                    name_parts = member.full_name.strip().split()
+                    first_name = name_parts[0] if name_parts else 'CECM'
+                    last_name = ' '.join(name_parts[1:]) if len(name_parts) > 1 else 'Sports'
+
+                    cec_user = User.objects.create_user(
+                        email=member.email,
+                        password=temp_pw,
+                        first_name=first_name,
+                        last_name=last_name,
+                        phone=member.phone,
+                        county=reg.county,
+                        role=UserRole.CEC_SPORTS_MEMBER,
+                        must_change_password=True,
+                    )
+                    member.user = cec_user
+                    member.save(update_fields=['user'])
+
+                    try:
+                        send_credentials_email(cec_user, temp_pw, 'County Executive Committee Member for Sports (CECM)')
+                        messages.success(request, f'{member.full_name} added as CECM Sports and login credentials sent.')
+                    except Exception:
+                        messages.success(request, f'{member.full_name} added as CECM Sports. Account created but credential email failed.')
+                else:
+                    messages.success(request, f'{member.full_name} added as {member.get_role_display()}.')
+
+            return redirect('county_admin_delegation_members')
+    else:
+        form = CountyDelegationMemberForm()
+
+    return render(request, 'portal/county_admin/delegation_members.html', {
+        'reg': reg,
+        'form': form,
+        'members': members,
+        'cecm_exists': members.filter(role=CountyDelegationRole.CECM_SPORTS).exists(),
+    })
+
+
+@role_required('county_sports_admin')
+def county_admin_delete_delegation_member_view(request, member_pk):
+    """Remove a county-level delegation member and linked account if present."""
+    reg = get_object_or_404(CountyRegistration, user=request.user)
+    member = get_object_or_404(CountyDelegationMember, pk=member_pk, registration=reg)
+
+    if request.method == 'POST':
+        name = member.full_name
+        linked_user = member.user
+        member.delete()
+        if linked_user:
+            linked_user.delete()
+        messages.success(request, f'{name} removed from county delegation.')
+
+    return redirect('county_admin_delegation_members')
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -5085,7 +5232,7 @@ def player_profile_view(request, player_pk):
     user = request.user
     can_view = (
         user.is_superuser or
-        user.role in ('admin', 'competition_manager', 'referee', 'coordinator', 'jury_chair')
+        user.role in ('admin', 'competition_manager', 'referee', 'coordinator', 'jury_chair', 'cec_sports')
     )
     if player_type == 'county':
         # County sports director can view their own county's players
@@ -5173,6 +5320,7 @@ def team_manager_dashboard_view(request):
 
     # Upcoming fixtures
     upcoming_fixtures = []
+    fixture_action_rows = []
     if my_teams.exists():
         upcoming_fixtures = Fixture.objects.filter(
             Q(home_team__in=my_teams) | Q(away_team__in=my_teams),
@@ -5180,6 +5328,38 @@ def team_manager_dashboard_view(request):
         ).select_related(
             'competition', 'home_team', 'away_team', 'venue'
         ).order_by('match_date')[:10]
+
+        now = timezone.now()
+        for f in upcoming_fixtures:
+            if f.home_team in my_teams:
+                my_team = f.home_team
+                opponent_team = f.away_team
+            else:
+                my_team = f.away_team
+                opponent_team = f.home_team
+
+            kickoff_dt = f.kickoff_datetime
+            if timezone.is_naive(kickoff_dt):
+                kickoff_dt = timezone.make_aware(kickoff_dt, timezone.get_current_timezone())
+            selection_opens_at = kickoff_dt - timedelta(hours=2)
+
+            match_locked = f.status in ('live', 'completed') or now >= kickoff_dt
+            selection_window_open = (now >= selection_opens_at) and not match_locked
+
+            my_squad = SquadSubmission.objects.filter(fixture=f, team=my_team).first()
+            opp_squad = SquadSubmission.objects.filter(fixture=f, team=opponent_team).first()
+            both_approved = (
+                my_squad and my_squad.status == SquadStatus.APPROVED and
+                opp_squad and opp_squad.status == SquadStatus.APPROVED
+            )
+
+            fixture_action_rows.append({
+                'fixture': f,
+                'selection_opens_at': selection_opens_at,
+                'match_locked': match_locked,
+                'selection_window_open': selection_window_open,
+                'both_squads_approved': both_approved,
+            })
 
     # Disciplinary sanctions
     from matches.models import PlayerStatistics
@@ -5200,6 +5380,7 @@ def team_manager_dashboard_view(request):
         'my_teams': my_teams,
         'team_players': team_players,
         'upcoming_fixtures': upcoming_fixtures,
+        'fixture_action_rows': fixture_action_rows,
         'own_sanctions': own_sanctions,
     })
 
@@ -5222,6 +5403,7 @@ def team_manager_match_squad_view(request, fixture_pk):
         'home_team', 'away_team', 'competition', 'venue'
     ), pk=fixture_pk)
     user = request.user
+    now = timezone.now()
 
     # Determine the manager's team
     my_teams = Team.objects.filter(manager=user)
@@ -5235,9 +5417,22 @@ def team_manager_match_squad_view(request, fixture_pk):
         messages.error(request, 'Your team is not involved in this fixture.')
         return redirect('team_manager_dashboard')
 
-    # Check match hasn't started
-    if fixture.status in ('live', 'completed'):
+    # Lock once match has started/completed OR kickoff time has passed.
+    kickoff_dt = fixture.kickoff_datetime
+    if timezone.is_naive(kickoff_dt):
+        kickoff_dt = timezone.make_aware(kickoff_dt, timezone.get_current_timezone())
+
+    if fixture.status in ('live', 'completed') or now >= kickoff_dt:
         messages.error(request, 'Cannot edit squad — match has already started or completed.')
+        return redirect('team_manager_dashboard')
+
+    # Squad selection window opens 2 hours before kickoff.
+    selection_opens_at = kickoff_dt - timedelta(hours=2)
+    if now < selection_opens_at:
+        messages.warning(
+            request,
+            f'Squad selection opens 2 hours before kickoff at {selection_opens_at.strftime("%d %b %Y %H:%M")}.',
+        )
         return redirect('team_manager_dashboard')
 
     # Sport-specific starter count
@@ -5257,6 +5452,8 @@ def team_manager_match_squad_view(request, fixture_pk):
         verification_status=VerificationStatus.VERIFIED,
         huduma_status='verified',
         fifa_connect_status='clear',
+    ).exclude(
+        status=PlayerStatus.SUSPENDED,
     ).order_by('shirt_number')
 
     suspended_ids = set(
@@ -5264,6 +5461,7 @@ def team_manager_match_squad_view(request, fixture_pk):
             team=team, status=PlayerStatus.SUSPENDED
         ).values_list('pk', flat=True)
     )
+    eligible_ids = set(eligible_players.values_list('pk', flat=True))
 
     starter_ids = []
     sub_ids = []
@@ -5283,12 +5481,21 @@ def team_manager_match_squad_view(request, fixture_pk):
 
         # Validate no suspended players
         selected_suspended = (set(starters_int) | set(subs_int)) & suspended_ids
-        if selected_suspended:
+        selected_ids = set(starters_int) | set(subs_int)
+        invalid_ids = selected_ids - eligible_ids
+
+        if invalid_ids:
+            messages.error(request, 'You can only select from available eligible players.')
+        elif selected_suspended:
             messages.error(request, 'Cannot select suspended players.')
         elif set(starters_int) & set(subs_int):
             messages.error(request, 'A player cannot be both a starter and a substitute.')
         elif len(starters_int) != required_starters:
             messages.error(request, f'Exactly {required_starters} starters required. You selected {len(starters_int)}.')
+        elif is_football and not Player.objects.filter(pk__in=starters_int, team=team, position='GK').exists():
+            messages.error(request, 'Football starting lineup must include at least one goalkeeper (GK).')
+        elif is_football and (len(selected_ids) < 7 or len(selected_ids) > 25):
+            messages.error(request, f'Football matchday squad must have between 7 and 25 players. You selected {len(selected_ids)}.')
         else:
             if existing:
                 existing.squad_players.all().delete()
@@ -5327,6 +5534,7 @@ def team_manager_match_squad_view(request, fixture_pk):
         'needs_re_approval': needs_re_approval,
         'required_starters': required_starters,
         'is_football': is_football,
+        'selection_opens_at': selection_opens_at,
         'formations': SquadSubmission.FOOTBALL_FORMATIONS,
         'current_formation': current_formation,
     })
@@ -5366,7 +5574,8 @@ def team_manager_opponent_view(request, fixture_pk):
         messages.warning(request, 'Opponent team list is only visible after referee approves both squads.')
         return redirect('team_manager_dashboard')
 
-    opp_players = opp_squad.squad_players.select_related('player').order_by('-is_starter', 'shirt_number')
+    # Only starters are visible for confirmation and potential appeals.
+    opp_players = opp_squad.squad_players.select_related('player').filter(is_starter=True).order_by('shirt_number')
 
     return render(request, 'portal/team_manager/opponent_view.html', {
         'fixture': fixture,
@@ -5826,6 +6035,261 @@ def sg_user_actions_view(request):
         'action_choices': action_choices,
         'user_filter': user_filter,
         'action_filter': action_filter,
+    })
+
+
+@role_required('secretary_general')
+def sg_exceptional_overrides_view(request):
+    """SG: Track exceptional results/standings overrides submitted by coordinators."""
+    from admin_dashboard.models import ActivityLog
+    from io import BytesIO
+
+    competition_filter = request.GET.get('competition', '').strip()
+    discipline_filter = request.GET.get('discipline', '').strip()
+    user_filter = request.GET.get('user', '').strip()
+    action_filter = request.GET.get('action', '').strip()
+    status_filter = request.GET.get('status', 'pending').strip().lower()
+    export_format = request.GET.get('export', '').strip().lower()
+
+    review_base_qs = ActivityLog.objects.filter(
+        user__role='coordinator',
+        action__in=['STANDINGS_OVERRIDE', 'RESULT_OVERRIDE'],
+        extra_data__submitted_to_sg=True,
+    )
+
+    if request.method == 'POST':
+        log_id = request.POST.get('log_id', '').strip()
+        decision = request.POST.get('decision', '').strip().lower()
+        review_note = request.POST.get('review_note', '').strip()
+        next_query = request.POST.get('next', '').strip()
+
+        redirect_url = 'sg_exceptional_overrides'
+        if next_query:
+            redirect_url = f"{redirect_url}?{next_query}"
+
+        if decision not in ('acknowledged', 'rejected'):
+            messages.error(request, 'Choose a valid SG review decision.')
+            return redirect(redirect_url)
+
+        if decision == 'rejected' and len(review_note) < 8:
+            messages.error(request, 'Provide a rejection remark of at least 8 characters.')
+            return redirect(redirect_url)
+
+        try:
+            override_log = review_base_qs.select_related('user').get(pk=int(log_id))
+        except (ValueError, ActivityLog.DoesNotExist):
+            messages.error(request, 'Override record not found.')
+            return redirect(redirect_url)
+
+        extra_data = override_log.extra_data if isinstance(override_log.extra_data, dict) else {}
+        extra_data.update({
+            'sg_review_status': decision,
+            'sg_review_note': review_note,
+            'sg_reviewed_at': timezone.now().isoformat(),
+            'sg_reviewed_by_id': request.user.pk,
+            'sg_reviewed_by_name': request.user.get_full_name() or request.user.email,
+        })
+        override_log.extra_data = extra_data
+        override_log.save(update_fields=['extra_data'])
+
+        ActivityLog.objects.create(
+            user=request.user,
+            action='SG_OVERRIDE_ACK' if decision == 'acknowledged' else 'SG_OVERRIDE_REJECT',
+            description=(
+                f"SG {decision} coordinator override #{override_log.pk} "
+                f"by {override_log.user.get_full_name() or override_log.user.email}."
+            ),
+            object_repr=str(override_log.pk),
+            ip_address=request.META.get('REMOTE_ADDR', ''),
+            extra_data={
+                'related_override_log_id': override_log.pk,
+                'decision': decision,
+                'review_note': review_note,
+            },
+        )
+
+        messages.success(
+            request,
+            'Override reviewed successfully.'
+            if decision == 'acknowledged'
+            else 'Override rejected and logged successfully.'
+        )
+        return redirect(redirect_url)
+
+    logs = ActivityLog.objects.filter(
+        user__role='coordinator',
+        action__in=['STANDINGS_OVERRIDE', 'RESULT_OVERRIDE'],
+    ).exclude(
+        action__in=['LOGIN', 'LOGOUT']
+    ).select_related('user').order_by('-timestamp')
+
+    # Keep SG queue focused on explicitly submitted exceptional overrides.
+    logs = logs.filter(extra_data__submitted_to_sg=True)
+
+    if competition_filter:
+        logs = logs.filter(description__icontains=competition_filter)
+    if discipline_filter:
+        logs = logs.filter(user__assigned_discipline=discipline_filter)
+    if user_filter:
+        logs = logs.filter(user_id=user_filter)
+    if action_filter:
+        logs = logs.filter(action=action_filter)
+    if status_filter and status_filter != 'all':
+        if status_filter == 'pending':
+            logs = logs.exclude(extra_data__sg_review_status__in=['acknowledged', 'rejected'])
+        else:
+            logs = logs.filter(extra_data__sg_review_status=status_filter)
+
+    if export_format == 'csv':
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = (
+            f'attachment; filename="sg_exceptional_overrides_{timezone.now().strftime("%Y%m%d_%H%M%S")}.csv"'
+        )
+
+        writer = csv.writer(response)
+        writer.writerow([
+            'Timestamp',
+            'Coordinator Name',
+            'Coordinator Email',
+            'Discipline',
+            'Override Type',
+            'Reason',
+            'Description',
+            'IP Address',
+            'SG Review Status',
+            'SG Review Note',
+            'SG Reviewed By',
+            'SG Reviewed At',
+            'Before State',
+            'After State',
+        ])
+
+        for log in logs.iterator():
+            extra_data = log.extra_data if isinstance(log.extra_data, dict) else {}
+            writer.writerow([
+                timezone.localtime(log.timestamp).strftime('%Y-%m-%d %H:%M:%S') if log.timestamp else '',
+                log.user.get_full_name() or '',
+                log.user.email or '',
+                log.user.assigned_discipline or '',
+                'Result Override' if log.action == 'RESULT_OVERRIDE' else 'Standings Override',
+                extra_data.get('reason', ''),
+                log.description or '',
+                log.ip_address or '',
+                extra_data.get('sg_review_status', 'pending'),
+                extra_data.get('sg_review_note', ''),
+                extra_data.get('sg_reviewed_by_name', ''),
+                extra_data.get('sg_reviewed_at', ''),
+                json.dumps(extra_data.get('before', {}), ensure_ascii=True),
+                json.dumps(extra_data.get('after', {}), ensure_ascii=True),
+            ])
+
+        return response
+
+    if export_format == 'pdf':
+        try:
+            from reportlab.lib import colors
+            from reportlab.lib.pagesizes import A4, landscape
+            from reportlab.lib.styles import getSampleStyleSheet
+            from reportlab.lib.units import mm
+            from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+        except ImportError:
+            messages.error(request, 'PDF export requires reportlab. Install with: pip install reportlab')
+            return redirect('sg_exceptional_overrides')
+
+        buffer = BytesIO()
+        doc = SimpleDocTemplate(
+            buffer,
+            pagesize=landscape(A4),
+            leftMargin=10 * mm,
+            rightMargin=10 * mm,
+            topMargin=10 * mm,
+            bottomMargin=10 * mm,
+        )
+        styles = getSampleStyleSheet()
+        elements = [
+            Paragraph('KYISA - Exceptional Coordinator Overrides (SG Report)', styles['Title']),
+            Paragraph(f"Generated: {timezone.now().strftime('%d %b %Y %H:%M')}", styles['Normal']),
+            Spacer(1, 6),
+        ]
+
+        rows = [[
+            'Date/Time', 'Coordinator', 'Discipline', 'Type', 'Reason', 'SG Status', 'SG Note', 'Description'
+        ]]
+        for log in logs[:1000]:
+            extra_data = log.extra_data if isinstance(log.extra_data, dict) else {}
+            rows.append([
+                timezone.localtime(log.timestamp).strftime('%d %b %Y %H:%M') if log.timestamp else '',
+                (log.user.get_full_name() or log.user.email or '')[:24],
+                (log.user.assigned_discipline or '-')[:18],
+                'Result' if log.action == 'RESULT_OVERRIDE' else 'Standings',
+                (extra_data.get('reason', '') or '-')[:45],
+                (extra_data.get('sg_review_status', 'pending') or 'pending')[:14],
+                (extra_data.get('sg_review_note', '') or '-')[:35],
+                (log.description or '-')[:55],
+            ])
+
+        table = Table(rows, colWidths=[25*mm, 35*mm, 26*mm, 18*mm, 43*mm, 24*mm, 36*mm, 50*mm], repeatRows=1)
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1B5E20')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 7),
+            ('GRID', (0, 0), (-1, -1), 0.3, colors.HexColor('#BDBDBD')),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#F7F7F7')]),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ]))
+
+        elements.append(table)
+        if logs.count() > 1000:
+            elements.append(Spacer(1, 5))
+            elements.append(Paragraph('Showing first 1000 rows only.', styles['Italic']))
+        doc.build(elements)
+        buffer.seek(0)
+
+        response = HttpResponse(buffer, content_type='application/pdf')
+        response['Content-Disposition'] = (
+            f'attachment; filename="sg_exceptional_overrides_{timezone.now().strftime("%Y%m%d_%H%M%S")}.pdf"'
+        )
+        return response
+
+    users = User.objects.filter(role='coordinator', is_active=True).order_by('first_name', 'last_name')
+    discipline_choices = [
+        (value, label) for value, label in SportType.choices
+    ]
+    action_choices = [
+        ('STANDINGS_OVERRIDE', 'Standings Override'),
+        ('RESULT_OVERRIDE', 'Result Override'),
+    ]
+    status_choices = [
+        ('pending', 'Pending Review'),
+        ('acknowledged', 'Acknowledged'),
+        ('rejected', 'Rejected'),
+        ('all', 'All'),
+    ]
+
+    base_qs = review_base_qs
+    pending_qs = base_qs.exclude(extra_data__sg_review_status__in=['acknowledged', 'rejected'])
+
+    return render(request, 'portal/secretary_general/exceptional_overrides.html', {
+        'logs': logs[:200],
+        'users': users,
+        'discipline_choices': discipline_choices,
+        'action_choices': action_choices,
+        'status_choices': status_choices,
+        'competition_filter': competition_filter,
+        'discipline_filter': discipline_filter,
+        'user_filter': user_filter,
+        'action_filter': action_filter,
+        'status_filter': status_filter,
+        'current_query': request.GET.urlencode,
+        'stats': {
+            'total': base_qs.count(),
+            'pending': pending_qs.count(),
+            'acknowledged': base_qs.filter(extra_data__sg_review_status='acknowledged').count(),
+            'rejected': base_qs.filter(extra_data__sg_review_status='rejected').count(),
+            'result_overrides': base_qs.filter(action='RESULT_OVERRIDE').count(),
+            'standings_overrides': base_qs.filter(action='STANDINGS_OVERRIDE').count(),
+        },
     })
 
 

@@ -103,6 +103,8 @@ from .web_views import (
     # County Sports Director — technical bench & verification
     county_admin_add_bench_member_view,
     county_admin_delete_bench_member_view,
+    county_admin_delegation_members_view,
+    county_admin_delete_delegation_member_view,
     county_admin_verification_view,
     # County player verification (Competition Manager)
     county_player_verification_list_view,
@@ -144,6 +146,7 @@ from .web_views import (
     sg_appeals_view,
     sg_treasurer_actions_view,
     sg_user_actions_view,
+    sg_exceptional_overrides_view,
     sg_verified_players_view,
     cec_sports_portal_view,
     # Scout portal
@@ -253,6 +256,8 @@ urlpatterns = [
     path("portal/county-admin/player/<int:player_pk>/delete/", county_admin_delete_player_view,     name="county_admin_delete_player"),
     path("portal/county-admin/discipline/<int:discipline_pk>/add-bench-member/", county_admin_add_bench_member_view, name="county_admin_add_bench_member"),
     path("portal/county-admin/bench-member/<int:member_pk>/delete/", county_admin_delete_bench_member_view, name="county_admin_delete_bench_member"),
+    path("portal/county-admin/delegation/", county_admin_delegation_members_view, name="county_admin_delegation_members"),
+    path("portal/county-admin/delegation/<int:member_pk>/delete/", county_admin_delete_delegation_member_view, name="county_admin_delete_delegation_member"),
     path("portal/county-admin/verification/", county_admin_verification_view, name="county_admin_verification"),
     path("portal/county-admin/discipline/<int:discipline_pk>/team-list.pdf", team_list_pdf_view, name="team_list_pdf"),
 
@@ -323,6 +328,7 @@ urlpatterns = [
     path("portal/sg/appeals/",                   sg_appeals_view,            name="sg_appeals"),
     path("portal/sg/treasurer-actions/",         sg_treasurer_actions_view,  name="sg_treasurer_actions"),
     path("portal/sg/user-actions/",              sg_user_actions_view,       name="sg_user_actions"),
+    path("portal/sg/exceptional-overrides/",     sg_exceptional_overrides_view, name="sg_exceptional_overrides"),
     path("portal/sg/verified-players/",          sg_verified_players_view,   name="sg_verified_players"),
 
     # ── MEDIA MANAGER PORTAL ─────────────────────────────────────────────────

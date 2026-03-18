@@ -46,6 +46,7 @@
             flex-direction: column;
             min-height: 100vh;
             position: relative;
+            overflow-x: clip;
         }
 
         /* ═══ ANIMATED BACKGROUND ═══ */
@@ -67,9 +68,9 @@
 
         /* Floating orbs */
         .orb { position: fixed; border-radius: 50%; filter: blur(100px); z-index: 0; opacity: .25; }
-        .orb--1 { width: 500px; height: 500px; background: rgba(27,94,32,.15); top: -10%; left: -5%; animation: orb-drift 20s ease-in-out infinite; }
-        .orb--2 { width: 400px; height: 400px; background: rgba(249,168,37,.08); bottom: -10%; right: -5%; animation: orb-drift 25s ease-in-out infinite reverse; }
-        .orb--3 { width: 300px; height: 300px; background: rgba(46,125,50,.1); top: 40%; left: 60%; animation: orb-drift 18s ease-in-out infinite 3s; }
+        .orb--1 { width: min(320px, 52vw); height: min(320px, 52vw); background: rgba(27,94,32,.15); top: 4vh; left: 4vw; animation: orb-drift 20s ease-in-out infinite; }
+        .orb--2 { width: min(280px, 46vw); height: min(280px, 46vw); background: rgba(249,168,37,.08); bottom: 4vh; right: 4vw; animation: orb-drift 25s ease-in-out infinite reverse; }
+        .orb--3 { width: min(220px, 38vw); height: min(220px, 38vw); background: rgba(46,125,50,.1); top: 42%; left: 58%; transform: translate(-50%, -50%); animation: orb-drift 18s ease-in-out infinite 3s; }
         @keyframes orb-drift {
             0%, 100% { transform: translate(0, 0) scale(1); }
             33% { transform: translate(30px, -40px) scale(1.05); }
@@ -376,6 +377,11 @@
         .modal-btn-secondary { background: rgba(255,255,255,.06); color: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.1); }
         .modal-btn-secondary:hover { background: rgba(255,255,255,.1); }
 
+        /* Keep microcopy readable across devices without enlarging headings. */
+        .login-page :is(a, p, span, label, small, button) {
+            font-size: clamp(.75rem, 1em, 1em);
+        }
+
         /* ═══ RESPONSIVE ═══ */
         @media (max-width: 768px) {
             .login-card { max-width: 100%; }
@@ -383,6 +389,7 @@
             .remember-row { flex-direction: column; align-items: flex-start; gap: .6rem; }
             .partners-bar__logos { gap: 1.5rem; }
             .partner-item img { height: 40px; }
+            .orb { filter: blur(80px); opacity: .2; }
         }
         @media (max-width: 480px) {
             .login-main { padding: 1.5rem 1rem; }
@@ -391,6 +398,7 @@
             .partners-bar { padding: 1.25rem 1rem 1.5rem; }
             .partners-bar__logos { gap: 1.2rem; }
             .partner-item img { height: 36px; }
+            .orb { filter: blur(62px); }
         }
     </style>
 </head>

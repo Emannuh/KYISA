@@ -5,7 +5,7 @@
 <div class="page-header">
     <div class="breadcrumb">
         <a href="{% url 'dashboard' %}">Dashboard</a>
-        <a href="{% url 'county_player_verification_list' %}">County Player Verification</a>
+        <a href="{% url 'county_player_verification_list' %}">Player Verification</a>
         <span>{{ player.first_name }} {{ player.last_name }}</span>
     </div>
     <h1>Verify: {{ player.first_name }} {{ player.last_name }}</h1>
@@ -155,9 +155,50 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr><td style="font-weight:600">Huduma Status</td><td>{{ player.get_huduma_status_display }}</td></tr>
-                    <tr><td style="font-weight:600">Higher League</td><td>{{ player.get_higher_league_status_display }}</td></tr>
+                    <tr><td style="font-weight:600">Huduma Status</td><td>{{ player.get_huduma_status_display }}{% if player.huduma_verified_at %}<br><small style="color:#666">Checked: {{ player.huduma_verified_at|date:"d M Y H:i" }}</small>{% endif %}</td></tr>
+                    <tr><td style="font-weight:600">{{ clearance_check_label }} Status</td><td>{{ player.get_higher_league_status_display }}{% if player.higher_league_details %}<br><small style="color:#C62828">{{ player.higher_league_details }}</small>{% endif %}</td></tr>
                 </table>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom:1.5rem">
+            <div class="card-header"><h3>Eligibility Checks</h3></div>
+            <div class="card-body">
+                <div style="margin-bottom:1rem;padding:.85rem;border-radius:10px;background:#f6f8fb;border:1px solid #e2e8f0;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap;">
+                        <div>
+                            <strong>Age Verification (Huduma)</strong>
+                            <div style="font-size:.85rem;color:#666">Current: {{ player.get_huduma_status_display }}</div>
+                        </div>
+                        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+                            <form method="post" style="display:inline">{% csrf_token %}<button type="submit" name="action" value="huduma_verify" class="btn btn-outline btn-sm" style="background:#1B5E20;color:#fff;border-color:#1B5E20">Mark Verified</button></form>
+                            <form method="post" style="display:inline">{% csrf_token %}<button type="submit" name="action" value="huduma_fail" class="btn btn-outline btn-sm" style="background:#C62828;color:#fff;border-color:#C62828">Mark Failed</button></form>
+                            <form method="post" style="display:inline">{% csrf_token %}<button type="submit" name="action" value="huduma_reset" class="btn btn-outline btn-sm">Reset</button></form>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="padding:.85rem;border-radius:10px;background:#f6f8fb;border:1px solid #e2e8f0;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap;">
+                        <div>
+                            <strong>{% if is_football %}FIFA Connect Check{% else %}Higher League Check{% endif %}</strong>
+                            <div style="font-size:.85rem;color:#666">Current: {{ player.get_higher_league_status_display }}</div>
+                        </div>
+                        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+                            <form method="post" style="display:inline">{% csrf_token %}<button type="submit" name="action" value="clearance_clear" class="btn btn-outline btn-sm" style="background:#1B5E20;color:#fff;border-color:#1B5E20">Mark Clear</button></form>
+                            <form method="post" style="display:inline">{% csrf_token %}<button type="submit" name="action" value="clearance_reset" class="btn btn-outline btn-sm">Reset</button></form>
+                        </div>
+                    </div>
+                    <form method="post" style="margin-top:.75rem;display:flex;gap:.5rem;align-items:flex-end;flex-wrap:wrap;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="clearance_flag">
+                        <div style="flex:1;min-width:240px;">
+                            <label style="display:block;font-weight:600;font-size:.85rem;margin-bottom:.25rem;">Flag details</label>
+                            <input type="text" name="higher_league_details" class="form-control" placeholder="Reason for flag (club/league/national team detail)">
+                        </div>
+                        <button type="submit" class="btn btn-outline btn-sm" style="background:#C62828;color:#fff;border-color:#C62828;padding:.55rem .85rem;">Flag</button>
+                    </form>
+                </div>
             </div>
         </div>
 
@@ -224,11 +265,21 @@
 
                 {% else %}
                 <!-- PENDING — show approve/reject/resubmit -->
+                {% if not can_verify %}
+                <div style="margin-bottom:1rem;padding:.75rem;border-radius:8px;background:#FFF3E0;border-left:4px solid #E65100;">
+                    <strong style="color:#E65100">Complete required checks before final verification:</strong>
+                    <ul style="margin:.5rem 0 0 1rem;color:#555;font-size:.9rem;">
+                        {% for reason in blocking_reasons %}
+                        <li>{{ reason }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
                 <form method="post">
                     {% csrf_token %}
 
                     <!-- Approve Button -->
-                    <button type="submit" name="action" value="verify" style="width:100%;padding:.75rem;background:#1B5E20;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:1rem;margin-bottom:1rem">
+                    <button type="submit" name="action" value="verify" {% if not can_verify %}disabled{% endif %} style="width:100%;padding:.75rem;background:{% if can_verify %}#1B5E20{% else %}#9E9E9E{% endif %};color:#fff;border:none;border-radius:8px;cursor:{% if can_verify %}pointer{% else %}not-allowed{% endif %};font-weight:700;font-size:1rem;margin-bottom:1rem">
                         ✅ Verify Player
                     </button>
 
@@ -264,6 +315,6 @@
 </div>
 
 <div style="margin-top:1.5rem">
-    <a href="{% url 'county_player_verification_list' %}" style="color:#1B5E20;font-weight:600;text-decoration:none">← Back to County Player Verification</a>
+    <a href="{% url 'county_player_verification_list' %}" style="color:#1B5E20;font-weight:600;text-decoration:none">← Back to Player Verification</a>
 </div>
 {% endblock %}

@@ -11,6 +11,14 @@
     <p>{{ fixture.home_team.name }} vs {{ fixture.away_team.name }} &mdash; {{ fixture.match_date|date:"d M Y, H:i" }}</p>
 </div>
 
+<div style="background:#e3f2fd;border:1px solid #90caf9;border-radius:10px;padding:.9rem 1.2rem;margin-bottom:1rem;display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;">
+    <span style="font-size:1.2rem"><i class="bi bi-clock"></i></span>
+    <div style="font-size:.88rem;color:#355;">
+        Squad selection/edit window: from <strong>{{ selection_opens_at|date:"d M Y, H:i" }}</strong> until kickoff.
+        Once match starts, squad is locked.
+    </div>
+</div>
+
 {% if needs_re_approval %}
 <div style="background:#fff3e0;border:1px solid #ffcc80;border-radius:10px;padding:1rem 1.4rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem">
     <span style="font-size:1.5rem"><i class="bi bi-exclamation-triangle"></i></span>
@@ -28,6 +36,9 @@
         {% if is_football %}
         <div style="margin-bottom:1.5rem">
             <h3 style="font-size:1rem;color:#333;margin-bottom:.8rem"><i class="bi bi-diagram-3"></i> Formation</h3>
+            <p style="margin:0 0 .6rem;color:#666;font-size:.85rem;">
+                Football rules: starting lineup must include at least one <strong>Goalkeeper (GK)</strong> and total selected squad must be <strong>7 to 25 players</strong>.
+            </p>
             <select name="formation" style="padding:.5rem .8rem;border:1px solid #ccc;border-radius:8px;font-size:.9rem;min-width:200px">
                 <option value="">— Select Formation —</option>
                 {% for val, label in formations %}

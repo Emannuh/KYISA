@@ -83,6 +83,31 @@
     </div>
 </div>
 
+<!-- Fair Play -->
+<div class="stat-card mb-3">
+    <div class="card-header"><h3><i class="bi bi-award"></i> Fair Play Table (Lower is Better)</h3></div>
+    <div class="card-body">
+        {% if fair_play_table %}
+        <table class="tbl">
+            <thead><tr><th>#</th><th>Team</th><th>Yellow</th><th>Red</th><th>Fair Play Points</th></tr></thead>
+            <tbody>
+                {% for row in fair_play_table %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ row.team__name }}</td>
+                    <td>{{ row.yellow_total }}</td>
+                    <td>{{ row.red_total }}</td>
+                    <td><strong>{{ row.fair_play_points }}</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div style="text-align:center;padding:1rem;color:#999;">No fair play entries yet.</div>
+        {% endif %}
+    </div>
+</div>
+
 <!-- Pool Standings -->
 {% if pool_data %}
 <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:1rem;">Pool Standings</h3>

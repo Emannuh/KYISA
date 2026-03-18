@@ -5,13 +5,40 @@ Adapted from FKFSYS teams registration workflow.
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+import re
 from .models import (
     Team, Player, PLAYER_MIN_AGE, PLAYER_MAX_AGE,
     CountyRegistration, CountyPlayer, CountyDiscipline, SQUAD_LIMITS,
     TechnicalBenchMember, TechnicalBenchRole,
+    CountyDelegationMember, CountyDelegationRole,
 )
 from accounts.models import KenyaCounty, User, kenya_phone_validator
 from competitions.models import Competition, CompetitionStatus, SportType
+
+
+def normalize_kenya_phone(raw_phone: str) -> str:
+    """Normalize Kenyan phone input to +254XXXXXXXXX format."""
+    phone = (raw_phone or '').strip().replace(' ', '')
+    if not phone:
+        return ''
+
+    if phone.startswith('+254') and len(phone) == 13:
+        return phone
+    if phone.startswith('254') and len(phone) == 12:
+        return f'+{phone}'
+    if phone.startswith('0') and len(phone) == 10:
+        return f'+254{phone[1:]}'
+    if phone.startswith('7') and len(phone) == 9:
+        return f'+254{phone}'
+
+    return phone
+
+
+def validate_kenya_phone_or_raise(phone: str, label: str = 'Phone number') -> str:
+    normalized = normalize_kenya_phone(phone)
+    if not re.match(r'^\+254\d{9}$', normalized):
+        raise ValidationError(f'{label} must be valid. Use 7XXXXXXXX, 07XXXXXXXX or +254XXXXXXXXX.')
+    return normalized
 
 
 class TeamRegistrationForm(forms.ModelForm):
@@ -64,8 +91,8 @@ class TeamRegistrationForm(forms.ModelForm):
             }),
             'contact_phone': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': '+254712345678',
-                'pattern': '\\+254\\d{9}',
+                'placeholder': '712345678',
+                'pattern': '(?:\\+?254|0)?\\d{9}',
                 'maxlength': '13',
                 'required': True,
             }),
@@ -131,6 +158,9 @@ class TeamRegistrationForm(forms.ModelForm):
         if email and Team.objects.filter(contact_email=email).exists():
             raise ValidationError('This email is already registered to another team.')
         return email
+
+    def clean_contact_phone(self):
+        return validate_kenya_phone_or_raise(self.cleaned_data.get('contact_phone'), 'Contact phone')
 
     def clean(self):
         cleaned = super().clean()
@@ -263,8 +293,7 @@ class CountyAdminRegistrationForm(forms.Form):
     )
     phone = forms.CharField(
         max_length=13,
-        validators=[kenya_phone_validator],
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+254712345678', 'pattern': '\\+254\\d{9}', 'maxlength': '13'}),
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '712345678', 'pattern': '(?:\\+?254|0)?\\d{9}', 'maxlength': '13'}),
         label='Phone Number *',
     )
     county = forms.ChoiceField(
@@ -281,8 +310,7 @@ class CountyAdminRegistrationForm(forms.Form):
     )
     director_phone = forms.CharField(
         max_length=13,
-        validators=[kenya_phone_validator],
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+254712345678', 'pattern': '\\+254\\d{9}', 'maxlength': '13'}),
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '712345678', 'pattern': '(?:\\+?254|0)?\\d{9}', 'maxlength': '13'}),
         label='Director of Sports — Phone Number *',
     )
 
@@ -297,6 +325,12 @@ class CountyAdminRegistrationForm(forms.Form):
         if CountyRegistration.objects.filter(county=county).exists():
             raise ValidationError('A county sports director has already registered for this county.')
         return county
+
+    def clean_phone(self):
+        return validate_kenya_phone_or_raise(self.cleaned_data.get('phone'), 'Phone number')
+
+    def clean_director_phone(self):
+        return validate_kenya_phone_or_raise(self.cleaned_data.get('director_phone'), 'Director phone')
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -354,6 +388,11 @@ class CountyPaymentForm(forms.Form):
 class CountyPlayerForm(forms.ModelForm):
     """Form for county sports director to register a player under a discipline."""
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Huduma number is optional at registration time.
+        self.fields['huduma_number'].required = False
+
     class Meta:
         model = CountyPlayer
         fields = [
@@ -367,8 +406,8 @@ class CountyPlayerForm(forms.ModelForm):
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last name'}),
             'date_of_birth': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'national_id_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 12345678'}),
-            'huduma_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Huduma Namba'}),
-            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+254712345678', 'pattern': '\\+254\\d{9}', 'maxlength': '13', 'required': True}),
+            'huduma_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Huduma Namba (optional)'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '712345678', 'pattern': '(?:\\+?254|0)?\\d{9}', 'maxlength': '13', 'required': True}),
             'position': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. GK, CB, CM, ST'}),
             'jersey_number': forms.NumberInput(attrs={'class': 'form-control', 'min': '1', 'max': '99'}),
             'photo': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
@@ -380,7 +419,7 @@ class CountyPlayerForm(forms.ModelForm):
             'last_name': 'Last Name *',
             'date_of_birth': 'Date of Birth *',
             'national_id_number': 'National ID Number *',
-            'huduma_number': 'Huduma Namba *',
+            'huduma_number': 'Huduma Namba (optional)',
             'phone': 'Phone Number *',
             'position': 'Position',
             'jersey_number': 'Jersey Number',
@@ -413,6 +452,9 @@ class CountyPlayerForm(forms.ModelForm):
                 raise ValidationError(f'Player is {age} — maximum age is {PLAYER_MAX_AGE}.')
         return dob
 
+    def clean_phone(self):
+        return validate_kenya_phone_or_raise(self.cleaned_data.get('phone'), 'Phone number')
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  TECHNICAL BENCH — Add / Edit Form
@@ -420,6 +462,29 @@ class CountyPlayerForm(forms.ModelForm):
 
 class TechnicalBenchForm(forms.ModelForm):
     """Form for county sports director to add a technical bench member."""
+
+    def clean(self):
+        cleaned = super().clean()
+        role = cleaned.get('role')
+        email = (cleaned.get('email') or '').strip().lower()
+        phone = cleaned.get('phone')
+
+        if phone:
+            try:
+                cleaned['phone'] = validate_kenya_phone_or_raise(phone, 'Phone number')
+            except ValidationError as exc:
+                self.add_error('phone', exc)
+
+        # Team Manager must always have a login account.
+        if role == TechnicalBenchRole.TEAM_MANAGER:
+            if not email:
+                self.add_error('email', 'Email is required for Team Manager account creation.')
+            else:
+                existing_user = User.objects.filter(email__iexact=email).first()
+                if existing_user and existing_user.role != 'team_manager':
+                    self.add_error('email', 'This email already belongs to a non-Team Manager account.')
+
+        return cleaned
 
     class Meta:
         model = TechnicalBenchMember
@@ -432,7 +497,7 @@ class TechnicalBenchForm(forms.ModelForm):
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First name'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last name'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'email@example.com'}),
-            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+254712345678', 'pattern': '\\+254\\d{9}', 'maxlength': '13', 'required': True}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '712345678', 'pattern': '(?:\\+?254|0)?\\d{9}', 'maxlength': '13', 'required': True}),
             'national_id_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'National ID'}),
             'photo': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
             'id_document': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*,.pdf'}),
@@ -447,3 +512,43 @@ class TechnicalBenchForm(forms.ModelForm):
             'photo': 'Passport Photo',
             'id_document': 'Copy of National ID',
         }
+
+
+class CountyDelegationMemberForm(forms.ModelForm):
+    """Form for county-level delegation officials (including CECM account setup)."""
+
+    def clean(self):
+        cleaned = super().clean()
+        role = cleaned.get('role')
+        email = (cleaned.get('email') or '').strip()
+        phone = cleaned.get('phone')
+
+        if phone:
+            try:
+                cleaned['phone'] = validate_kenya_phone_or_raise(phone, 'Phone number')
+            except ValidationError as exc:
+                self.add_error('phone', exc)
+
+        if role == CountyDelegationRole.CECM_SPORTS and not email:
+            self.add_error('email', 'Email is required to create a CECM login account.')
+
+        return cleaned
+
+    class Meta:
+        model = CountyDelegationMember
+        fields = ['role', 'full_name', 'phone', 'national_id_number', 'email']
+        widgets = {
+            'role': forms.Select(attrs={'class': 'form-control'}),
+            'full_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Full names'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '712345678', 'pattern': '(?:\\+?254|0)?\\d{9}', 'maxlength': '13'}),
+            'national_id_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'National ID number'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email (required for CECM account)'}),
+        }
+        labels = {
+            'role': 'Role *',
+            'full_name': 'Full Names *',
+            'phone': 'Phone Number *',
+            'national_id_number': 'ID Number *',
+            'email': 'Email Address',
+        }
+

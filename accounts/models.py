@@ -20,6 +20,7 @@ class UserRole(models.TextChoices):
     REFEREE             = "referee",             "Referee"
     TEAM_MANAGER        = "team_manager",        "Team Manager"
     COUNTY_SPORTS_DIRECTOR = "county_sports_admin", "County Sports Director"
+    CEC_SPORTS_MEMBER = "cec_sports", "County CEC Member - Sports"
     TREASURER           = "treasurer",           "Treasurer"
     JURY_CHAIR          = "jury_chair",          "Chair of the Jury"
     MEDIA_MANAGER       = "media_manager",       "Media Manager"
@@ -103,6 +104,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_county_sports_director(self): return self.role == UserRole.COUNTY_SPORTS_DIRECTOR
     @property
     def is_county_sports_admin(self): return self.is_county_sports_director  # backwards compat
+    @property
+    def is_cec_sports_member(self): return self.role == UserRole.CEC_SPORTS_MEMBER
     @property
     def is_treasurer(self): return self.role == UserRole.TREASURER
     @property

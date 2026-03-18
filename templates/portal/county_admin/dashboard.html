@@ -72,7 +72,26 @@
         <div style="font-size:2.2rem;font-weight:800;color:#1565c0">{{ player_count }}</div>
         <div style="color:#888;font-size:.85rem;margin-top:.3rem">Total Players</div>
     </div>
+    <div class="card" style="padding:1.4rem;text-align:center;border-top:4px solid #00838f">
+        <div style="font-size:2.2rem;font-weight:800;color:#00838f">{{ delegation_count }}</div>
+        <div style="color:#888;font-size:.85rem;margin-top:.3rem">Delegation Members</div>
+    </div>
 </div>
+
+{% if reg.is_approved %}
+<div class="card" style="padding:1.25rem;margin-bottom:1.5rem;border-left:4px solid #00838f;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+    <div>
+        <h2 style="font-size:1.05rem;color:#333;margin:0 0 .35rem"><i class="bi bi-person-badge"></i> County Delegation Officials</h2>
+        <p style="margin:0;color:#666;font-size:.9rem">
+            Add county officials accompanying the delegation (full name, phone, ID number, and role).
+            {% if cecm_member %}<br><strong>CECM:</strong> {{ cecm_member.full_name }}{% else %}<br><strong>CECM account:</strong> not added yet.{% endif %}
+        </p>
+    </div>
+    <a href="{% url 'county_admin_delegation_members' %}" class="btn btn--primary" style="padding:.5rem 1rem;font-size:.88rem">
+        <i class="bi bi-plus-circle"></i> Manage Delegation Members
+    </a>
+</div>
+{% endif %}
 
 {% if reg.is_approved %}
 <!-- Disciplines & Players -->

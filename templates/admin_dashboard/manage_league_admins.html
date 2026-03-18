@@ -741,6 +741,46 @@
     </div>
 </div>
 
+<!-- Discipline Coordinators by Role -->
+<div class="card">
+    <div class="card-header" style="background:#FFF3E0;">
+        <h3>Discipline Coordinators by Sport</h3>
+    </div>
+    <div class="card-body">
+        <div class="info-grid">
+            <div>
+                <ul>
+                    {% for row in sport_coordinator_rows %}
+                    <li>
+                        <i class="bi bi-clipboard2-pulse"></i>
+                        <strong>{{ row.sport_label }} Coordinator:</strong>
+                        {% if row.coordinators %}
+                            {% for c in row.coordinators %}
+                                {{ c.get_full_name|default:c.email }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <span style="color:#C62828;">Not Assigned</span>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div>
+                <h4>Unassigned Coordinators</h4>
+                {% if unassigned_coordinators %}
+                <ul>
+                    {% for c in unassigned_coordinators %}
+                    <li><i class="bi bi-person-exclamation"></i> {{ c.get_full_name|default:c.email }} ({{ c.email }})</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p style="margin:0;color:#666;">All coordinator users are assigned to a discipline.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Info Panel -->
 <div class="card">
     <div class="card-header" style="background:#E3F2FD;">

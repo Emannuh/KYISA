@@ -36,6 +36,10 @@ class ActivityLog(models.Model):
         ('MATCH_RESCHEDULE', 'Match Rescheduled'),
         ('MATCH_REPORT', 'Match Report Submitted'),
         ('MATCH_REPORT_APPROVE', 'Match Report Approved'),
+        ('RESULT_OVERRIDE', 'Result Override'),
+        ('STANDINGS_OVERRIDE', 'Standings Override'),
+        ('SG_OVERRIDE_ACK', 'SG Override Acknowledged'),
+        ('SG_OVERRIDE_REJECT', 'SG Override Rejected'),
         
         # Fixture Management
         ('FIXTURE_GENERATE', 'Fixtures Generated'),

@@ -13,6 +13,10 @@
     </div>
 </div>
 
+<div class="alert alert-warning" style="font-size:.86rem;">
+    <strong>Exceptional case only:</strong> Manual standings overrides are restricted to exceptional cases and are automatically submitted to SG tracking with your reason.
+</div>
+
 {% for pd in pool_data %}
 <div class="card mb-3">
     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
@@ -21,7 +25,7 @@
     </div>
     <div class="card-body" style="overflow-x:auto;">
         <table class="table table-sm" style="font-size:.85rem;">
-            <thead><tr><th>#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Bonus</th><th>Pts</th><th></th></tr></thead>
+            <thead><tr><th>#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Bonus</th><th>Pts</th><th>Exception Reason</th><th></th></tr></thead>
             <tbody>
                 {% for pt in pd.teams %}
                 <tr>
@@ -40,6 +44,12 @@
                         <td>{{ pt.goal_difference }}</td>
                         <td><input type="number" name="bonus_points" value="{{ pt.bonus_points }}" class="form-control form-control-sm" style="width:50px;"></td>
                         <td><strong>{{ pt.points }}</strong></td>
+                        <td style="min-width:220px;">
+                            <input type="text" name="exceptional_reason" class="form-control form-control-sm" placeholder="Reason for exceptional override" required minlength="12">
+                            <label style="display:block;font-size:.72rem;margin-top:.2rem;color:#666;">
+                                <input type="checkbox" name="confirm_exceptional" value="1" required> Exceptional case
+                            </label>
+                        </td>
                         <td><button type="submit" class="btn btn-sm btn-outline-primary"><i class="bi bi-check"></i></button></td>
                     </form>
                 </tr>

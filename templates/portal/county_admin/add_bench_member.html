@@ -12,6 +12,14 @@
     <p>{{ reg.county }} County &mdash; {{ discipline.get_sport_type_display }}</p>
 </div>
 
+<div style="background:#e3f2fd;border:1px solid #90caf9;border-radius:10px;padding:.8rem 1rem;margin-bottom:1rem;display:flex;gap:.6rem;align-items:flex-start;">
+    <span style="font-size:1.1rem;color:#1565c0"><i class="bi bi-info-circle"></i></span>
+    <div style="font-size:.86rem;color:#334;line-height:1.45;">
+        When role is <strong>Team Manager</strong>, an account is created automatically and assigned the Team Manager role.
+        Provide a valid email address for credential delivery.
+    </div>
+</div>
+
 {% if existing_bench %}
 <div class="card" style="padding:1.2rem;margin-bottom:1.5rem">
     <h3 style="font-size:1rem;margin-bottom:.8rem;color:#333"><i class="bi bi-people"></i> Current Technical Bench</h3>

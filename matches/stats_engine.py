@@ -6,6 +6,8 @@ Supports sport-specific scoring: football, volleyball, basketball, handball.
 """
 import logging
 from django.db import transaction
+from django.db.models import ExpressionWrapper, F, IntegerField, Sum
+from django.db.models.functions import Coalesce
 
 logger = logging.getLogger(__name__)
 
@@ -387,3 +389,31 @@ def get_clean_sheet_leaders(competition, limit=10):
         competition=competition, clean_sheets__gt=0,
         player__position="GK"
     ).select_related("player", "team").order_by("-clean_sheets")[:limit]
+
+
+def get_fair_play_table(competition, limit=20):
+    """
+    Return teams ranked by fewest sanctions.
+
+    Fair play points formula:
+    - Yellow card: 1 point
+    - Red card: 3 points
+    Lower total is better.
+    """
+    from matches.models import PlayerStatistics
+
+    return (
+        PlayerStatistics.objects.filter(competition=competition)
+        .values('team__id', 'team__name')
+        .annotate(
+            yellow_total=Coalesce(Sum('yellow_cards'), 0),
+            red_total=Coalesce(Sum('red_cards'), 0),
+        )
+        .annotate(
+            fair_play_points=ExpressionWrapper(
+                F('yellow_total') + (F('red_total') * 3),
+                output_field=IntegerField(),
+            )
+        )
+        .order_by('fair_play_points', 'red_total', 'team__name')[:limit]
+    )

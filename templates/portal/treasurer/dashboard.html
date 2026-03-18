@@ -8,7 +8,7 @@
         <span>Dashboard</span>
     </div>
     <h1><i class="bi bi-cash-stack"></i> Treasurer Dashboard</h1>
-    <p>Review incoming team registrations, confirm payments, and approve teams.</p>
+    <p>Review incoming county registrations, verify payments, and approve county admins.</p>
 </div>
 
 <!-- County Payment Banner -->
@@ -17,7 +17,7 @@
     <div style="display:flex;align-items:center;gap:.75rem">
         <span style="font-size:1.5rem"><i class="bi bi-building"></i></span>
         <span style="font-size:.92rem">
-            <strong style="color:#1565c0">{{ current_season.name }} County Payments:</strong>
+            <strong style="color:#1565c0">{{ current_season }} County Payments:</strong>
             {{ counties_paid }} paid &#8226; {{ counties_pending }} pending &#8226;
             KSh {{ total_collected|floatformat:0 }} collected
         </span>
@@ -31,22 +31,22 @@
 <!-- Fee reminder -->
 <div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:10px;padding:.9rem 1.4rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem">
     <span style="font-size:1.5rem"><i class="bi bi-credit-card"></i></span>
-    <span style="font-size:.92rem"><strong style="color:#1b5e20">Standard one-time county registration fee: KSh {{ registration_fee|floatformat:0 }}</strong> &mdash; confirm this exact amount before approving any team.</span>
+    <span style="font-size:.92rem"><strong style="color:#1b5e20">Standard one-time county registration fee: KSh {{ registration_fee|floatformat:0 }}</strong> &mdash; confirm this exact amount before approving any county registration.</span>
 </div>
 
 <!-- Stats -->
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1rem;margin-bottom:2rem">
     <div class="card" style="padding:1.4rem;text-align:center;border-top:4px solid #f57c00">
         <div style="font-size:2.2rem;font-weight:800;color:#f57c00">{{ pending_count }}</div>
-        <div style="color:#888;font-size:.85rem;margin-top:.3rem">Awaiting Payment</div>
+        <div style="color:#888;font-size:.85rem;margin-top:.3rem">Awaiting Review</div>
     </div>
     <div class="card" style="padding:1.4rem;text-align:center;border-top:4px solid #1565c0">
         <div style="font-size:2.2rem;font-weight:800;color:#1565c0">{{ paid_count }}</div>
-        <div style="color:#888;font-size:.85rem;margin-top:.3rem">Payment Confirmed</div>
+        <div style="color:#888;font-size:.85rem;margin-top:.3rem">Payment Submitted</div>
     </div>
     <div class="card" style="padding:1.4rem;text-align:center;border-top:4px solid #2e7d32">
         <div style="font-size:2.2rem;font-weight:800;color:#2e7d32">{{ approved_count }}</div>
-        <div style="color:#888;font-size:.85rem;margin-top:.3rem">Approved Teams</div>
+        <div style="color:#888;font-size:.85rem;margin-top:.3rem">Approved Counties</div>
     </div>
     <div class="card" style="padding:1.4rem;text-align:center;border-top:4px solid #c62828">
         <div style="font-size:2.2rem;font-weight:800;color:#c62828">{{ rejected_count }}</div>
@@ -59,46 +59,44 @@
 <div class="card" style="margin-bottom:1.5rem;padding:1.2rem 1.5rem;background:#fff8e1;border-left:4px solid #f9a825">
     <strong><i class="bi bi-exclamation-triangle"></i> Action Required:</strong>
     {% if pending_count %}
-    <span style="margin-left:.5rem">{{ pending_count }} team{{ pending_count|pluralize }} waiting for payment confirmation.</span>
+    <span style="margin-left:.5rem">{{ pending_count }} county registration{{ pending_count|pluralize }} waiting for review.</span>
     {% endif %}
     {% if paid_count %}
-    <span style="margin-left:.5rem">{{ paid_count }} team{{ paid_count|pluralize }} with confirmed payment awaiting approval.</span>
+    <span style="margin-left:.5rem">{{ paid_count }} county registration{{ paid_count|pluralize }} with payment submitted awaiting approval.</span>
     {% endif %}
-    <a href="{% url 'treasurer_teams' %}" class="btn btn--primary" style="margin-left:1rem;padding:.4rem 1rem;font-size:.85rem">Go to Teams &#8594;</a>
+    <a href="{% url 'treasurer_county_registrations' %}" class="btn btn--primary" style="margin-left:1rem;padding:.4rem 1rem;font-size:.85rem">Go to County Registrations &#8594;</a>
 </div>
 {% endif %}
 
 <!-- Recent registrations -->
 <div class="card">
     <div class="card-header">
-        <h3>Recent Registrations</h3>
-        <a href="{% url 'treasurer_teams' %}" style="font-size:.85rem">View All →</a>
+        <h3>Recent County Registrations</h3>
+        <a href="{% url 'treasurer_county_registrations' %}" style="font-size:.85rem">View All →</a>
     </div>
     <div class="card-body">
         {% if recent_teams %}
         <table>
             <thead>
                 <tr>
-                    <th>Team</th>
                     <th>County</th>
+                    <th>County Admin</th>
                     <th>Contact Email</th>
                     <th>Registered</th>
-                    <th>Payment</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
                 {% for team in recent_teams %}
                 <tr>
-                    <td><strong>{{ team.name }}</strong></td>
-                    <td>{{ team.county }}</td>
-                    <td>{{ team.contact_email|default:"—" }}</td>
-                    <td style="font-size:.82rem;color:#888">{{ team.registered_at|date:"d M Y H:i" }}</td>
+                    <td><strong>{{ team.county }}</strong></td>
+                    <td>{{ team.user.first_name }} {{ team.user.last_name }}</td>
+                    <td>{{ team.user.email|default:"—" }}</td>
+                    <td style="font-size:.82rem;color:#888">{{ team.created_at|date:"d M Y H:i" }}</td>
                     <td>
-                        {% if team.payment_confirmed %}
-                        <span style="color:#2e7d32;font-weight:600"><i class="bi bi-check-circle-fill"></i> Confirmed</span>
-                        {% else %}
-                        <span style="color:#f57c00;font-weight:600"><i class="bi bi-hourglass-split"></i> Pending</span>
-                        {% endif %}
+                        <span style="font-weight:600">
+                            {{ team.get_status_display }}
+                        </span>
                     </td>
                 </tr>
                 {% endfor %}

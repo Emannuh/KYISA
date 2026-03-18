@@ -436,6 +436,8 @@ def view_report(request, report_id):
 @user_passes_test(superadmin_required)
 def manage_league_admins(request):
     """Manage all users — filter, search, view."""
+    from competitions.models import SportType
+
     role_filter = request.GET.get('role', 'all')
     status_filter = request.GET.get('status', 'all')
     search_query = request.GET.get('search', '')
@@ -459,6 +461,25 @@ def manage_league_admins(request):
 
     users = users.order_by('-date_joined')
 
+    coordinator_users = User.objects.filter(role='coordinator').order_by('assigned_discipline', 'first_name', 'last_name')
+    coordinators_by_discipline = {
+        code: [] for code, _ in SportType.choices
+    }
+    unassigned_coordinators = []
+    for coord in coordinator_users:
+        if coord.assigned_discipline in coordinators_by_discipline:
+            coordinators_by_discipline[coord.assigned_discipline].append(coord)
+        else:
+            unassigned_coordinators.append(coord)
+
+    sport_coordinator_rows = []
+    for sport_code, sport_label in SportType.choices:
+        assigned = coordinators_by_discipline.get(sport_code, [])
+        sport_coordinator_rows.append({
+            'sport_label': sport_label,
+            'coordinators': assigned,
+        })
+
     user_stats = {
         'total': User.objects.count(),
         'active': User.objects.filter(is_active=True).count(),
@@ -477,6 +498,8 @@ def manage_league_admins(request):
         'status_filter': status_filter,
         'search_query': search_query,
         'role_choices': UserRole.choices,
+        'sport_coordinator_rows': sport_coordinator_rows,
+        'unassigned_coordinators': unassigned_coordinators,
     }
     return render(request, 'admin_dashboard/manage_league_admins.html', context)
 

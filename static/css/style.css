@@ -95,7 +95,7 @@ img { max-width: 100%; }
     font-family: 'Outfit', sans-serif; font-size: 1.1rem;
     font-weight: 800; color: #1B5E20; letter-spacing: 2px;
 }
-.brand-sub { font-size: .58rem; color: #999; text-transform: uppercase; letter-spacing: 2px; }
+.brand-sub { font-size: .75rem; color: #999; text-transform: uppercase; letter-spacing: 2px; }
 
 .fkf-nav-links {
     display: flex; list-style: none; gap: 0; align-items: center;
@@ -215,6 +215,7 @@ img { max-width: 100%; }
     position: relative;
     width: 280px; height: 280px;
     margin: 0 auto 1.25rem;
+    overflow: hidden;
 }
 .hero-showcase__logo {
     position: absolute;
@@ -243,11 +244,11 @@ img { max-width: 100%; }
     border-color: rgba(76,175,80,.25); border-style: dashed;
 }
 .hero-showcase__ring--2 {
-    inset: -30px; animation: ring-spin 18s linear infinite reverse;
+    inset: 8px; animation: ring-spin 18s linear infinite reverse;
     border-color: rgba(249,168,37,.15); border-width: 1.5px;
 }
 .hero-showcase__ring--3 {
-    inset: -60px; animation: ring-spin 25s linear infinite;
+    inset: 18px; animation: ring-spin 25s linear infinite;
     border-color: rgba(76,175,80,.1); border-width: 1px; border-style: dotted;
 }
 @keyframes ring-spin {
@@ -378,7 +379,7 @@ img { max-width: 100%; }
 }
 
 .hero--dark .hero-tagline {
-    font-size: .72rem; color: rgba(255,255,255,.45);
+    font-size: .75rem; color: rgba(255,255,255,.45);
     letter-spacing: 4px; text-transform: uppercase;
     font-weight: 600; margin-bottom: .75rem;
 }
@@ -541,7 +542,7 @@ img { max-width: 100%; }
 .cd-edition {
     display: inline-block; padding: .25rem .7rem;
     border: 1px solid var(--cd-edition-border); border-radius: 50px;
-    font-size: .58rem; font-weight: 700; text-transform: uppercase;
+    font-size: .75rem; font-weight: 700; text-transform: uppercase;
     letter-spacing: 2px; color: var(--cd-edition-text);
     background: var(--cd-edition-bg); margin-bottom: .75rem;
 }
@@ -598,7 +599,7 @@ img { max-width: 100%; }
     letter-spacing: 1px;
 }
 .cd-label {
-    font-size: .5rem; font-weight: 600;
+    font-size: .75rem; font-weight: 600;
     color: rgba(255,255,255,.4);
     text-transform: uppercase; letter-spacing: 1.5px;
 }
@@ -613,7 +614,7 @@ img { max-width: 100%; }
 .cd-cta { }
 .cd-live {
     display: flex; align-items: center; justify-content: center;
-    gap: .4rem; font-size: .72rem; font-weight: 600;
+    gap: .4rem; font-size: .75rem; font-weight: 600;
     color: var(--cd-live); margin-bottom: .65rem;
 }
 .cd-live__dot {
@@ -695,7 +696,7 @@ img { max-width: 100%; }
 .badge {
     display: inline-block; padding: .3rem .85rem;
     border: 1px solid rgba(27,94,32,.2); border-radius: 50px;
-    font-size: .68rem; font-weight: 600; text-transform: uppercase;
+    font-size: .75rem; font-weight: 600; text-transform: uppercase;
     letter-spacing: 2px; color: #1B5E20; margin-bottom: .8rem;
     background: rgba(27,94,32,.04);
 }
@@ -1147,7 +1148,7 @@ img { max-width: 100%; }
 }
 .affil-label {
     text-align: center;
-    font-size: .7rem;
+    font-size: .75rem;
     font-weight: 700;
     color: #999;
     text-transform: uppercase;
@@ -1181,7 +1182,7 @@ img { max-width: 100%; }
     box-shadow: 0 4px 16px rgba(0,0,0,.1);
 }
 .affil-item span {
-    font-size: .7rem;
+    font-size: .75rem;
     font-weight: 600;
     color: #666;
     letter-spacing: .5px;
@@ -1276,7 +1277,7 @@ img { max-width: 100%; }
     flex-wrap: wrap;
 }
 .footer-affil-label {
-    font-size: .55rem;
+    font-size: .75rem;
     font-weight: 700;
     color: rgba(255,255,255,.25);
     text-transform: uppercase;
@@ -1306,7 +1307,7 @@ img { max-width: 100%; }
 .fkf-footer-bottom {
     border-top: 1px solid rgba(255,255,255,.06);
     padding: .75rem 0; text-align: center;
-    font-size: .68rem; color: rgba(255,255,255,.3);
+    font-size: .75rem; color: rgba(255,255,255,.3);
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
@@ -1365,7 +1366,7 @@ img { max-width: 100%; }
     transform: scale(1); transition: transform 8s ease-out;
 }
 .story-panel--active .story-panel__bg {
-    transform: scale(1.08);
+    transform: scale(1);
 }
 .story-panel__overlay {
     position: absolute; inset: 0;
@@ -1382,7 +1383,7 @@ img { max-width: 100%; }
     transform: translateY(0); opacity: 1;
 }
 .story-panel__tag {
-    display: inline-block; font-size: .6rem; font-weight: 700;
+    display: inline-block; font-size: .75rem; font-weight: 700;
     text-transform: uppercase; letter-spacing: 2.5px;
     color: #A5D6A7; background: rgba(27,94,32,.45);
     padding: .28rem .75rem; border-radius: 20px;
@@ -1462,7 +1463,7 @@ img { max-width: 100%; }
     line-height: 1; margin-bottom: .15rem;
 }
 .mc-stat__label {
-    font-size: .6rem; color: rgba(255,255,255,.55);
+    font-size: .75rem; color: rgba(255,255,255,.55);
     text-transform: uppercase; letter-spacing: 2px; font-weight: 500;
 }
 
@@ -1481,7 +1482,7 @@ img { max-width: 100%; }
 }
 .mc-badge {
     display: inline-block; padding: .22rem .6rem;
-    border-radius: 50px; font-size: .55rem; font-weight: 700;
+    border-radius: 50px; font-size: .75rem; font-weight: 700;
     text-transform: uppercase; letter-spacing: 1.5px;
     color: #1B5E20; border: 1px solid rgba(27,94,32,.2);
     background: rgba(27,94,32,.04);
@@ -1649,7 +1650,7 @@ img { max-width: 100%; }
 .page-hero__badge {
     display: inline-block; padding: .3rem .85rem;
     border: 1px solid rgba(249,168,37,.3); border-radius: 50px;
-    font-size: .6rem; font-weight: 700; text-transform: uppercase;
+    font-size: .75rem; font-weight: 700; text-transform: uppercase;
     letter-spacing: 2.5px; color: #F9A825;
     background: rgba(249,168,37,.08); margin-bottom: .75rem;
 }
@@ -1769,7 +1770,7 @@ img { max-width: 100%; }
     margin-bottom: .25rem; letter-spacing: 1px;
 }
 .about-stat__label {
-    font-size: .72rem; font-weight: 600;
+    font-size: .75rem; font-weight: 600;
     color: rgba(255,255,255,.45);
     text-transform: uppercase; letter-spacing: 1.5px;
 }
@@ -2039,7 +2040,7 @@ img { max-width: 100%; }
 
 .contact-socials { margin-top: 1.5rem; }
 .contact-socials__label {
-    display: block; font-size: .72rem; font-weight: 700;
+    display: block; font-size: .75rem; font-weight: 700;
     text-transform: uppercase; letter-spacing: 1.5px; color: #aaa;
     margin-bottom: .6rem;
 }
@@ -2120,10 +2121,11 @@ img { max-width: 100%; }
 
     .hero--dark .hero-title { font-size: 2.4rem; }
     .hero-logo-img { width: 150px; height: auto; }
-    .hero--dark .hero-tagline { font-size: .62rem; letter-spacing: 2px; }
+    .hero--dark .hero-tagline { font-size: .75rem; letter-spacing: 2px; }
 
     .hero-showcase { width: 220px; height: 220px; }
     .hero-showcase__logo { width: 200px; height: 200px; padding: 12px; }
+    .hero-showcase__orbit { display: none; }
     .hero-showcase__text { font-size: 2.2rem; letter-spacing: 6px; }
     .hero-showcase__sub { font-size: .7rem; letter-spacing: 2px; }
 
@@ -2206,18 +2208,18 @@ img { max-width: 100%; }
     .cd-title { font-size: 1.3rem; }
     .cd-ring { width: 52px; height: 52px; }
     .cd-num { font-size: 1rem; }
-    .cd-label { font-size: .42rem; letter-spacing: 1px; }
+    .cd-label { font-size: .75rem; letter-spacing: 1px; }
 
     /* Page hero 480 */
     .page-hero { min-height: 240px; padding-top: 75px; }
     .page-hero__title { font-size: 1.6rem; }
-    .page-hero__badge { font-size: .55rem; }
+    .page-hero__badge { font-size: .75rem; }
 
     /* About 480 */
     .values-grid { grid-template-columns: 1fr; }
     .about-stats__grid { grid-template-columns: repeat(2, 1fr); }
     .about-stat__num { font-size: 1.8rem; }
-    .about-stat__label { font-size: .6rem; }
+    .about-stat__label { font-size: .75rem; }
 
     /* Competitions 480 */
     .disc-grid { grid-template-columns: 1fr 1fr; }
@@ -2227,7 +2229,7 @@ img { max-width: 100%; }
     .disc-tile__link { font-size: .78rem; padding: .4rem .5rem; }
     .comp-card__icon { width: 38px; height: 38px; border-radius: 10px; }
     .comp-card__name { font-size: .95rem; }
-    .comp-chip { font-size: .68rem; padding: .22rem .6rem; }
+    .comp-chip { font-size: .75rem; padding: .22rem .6rem; }
     .comp-card__desc { font-size: .82rem; }
     .comp-card__meta { font-size: .76rem; gap: .6rem; }
     .comp-card__actions { flex-direction: column; }
@@ -2249,7 +2251,28 @@ img { max-width: 100%; }
     /* Match center 480 */
     .mc-stats__row { grid-template-columns: repeat(2, 1fr); }
     .mc-stat__num { font-size: 1.6rem; }
-    .mc-stat__label { font-size: .55rem; letter-spacing: 1px; }
+    .mc-stat__label { font-size: .75rem; letter-spacing: 1px; }
+}
+
+/* Accessibility floor for small public text on compact screens. */
+@media (max-width: 768px) {
+    :is(.fkf-nav, .hero, .sec, .page-hero, .stories-hero, .contact-grid, .fkf-footer)
+    :is(a, p, span, li, small, button, label) {
+        font-size: clamp(.75rem, 1em, 1em);
+    }
+
+    .hero--dark .hero-tagline,
+    .hero-showcase__sub,
+    .story-panel__tag,
+    .flag-author,
+    .cd-label,
+    .page-hero__badge,
+    .about-stat__label,
+    .comp-chip,
+    .mc-stat__label,
+    .brand-sub {
+        font-size: .75rem;
+    }
 }
 
 
