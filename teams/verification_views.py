@@ -31,11 +31,11 @@ from teams.utils import save_base64_photo
 
 # ── Role decorator ────────────────────────────────────────────────────────────
 def clearance_role_required(view):
-    """Only Admin, Competition Manager can access clearance views."""
+    """Only Admin, Competition Manager, Verification Officer can access clearance views."""
     @wraps(view)
     @login_required(login_url='web_login')
     def wrapper(request, *args, **kwargs):
-        allowed_roles = ('admin', 'competition_manager')
+        allowed_roles = ('admin', 'competition_manager', 'verification_officer')
         if request.user.role not in allowed_roles and not request.user.is_superuser:
             messages.error(request, 'You do not have permission to access player clearance.')
             return redirect('dashboard')

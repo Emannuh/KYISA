@@ -212,7 +212,7 @@
                                 {{ form.email|as_crispy_field }}
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="id_phone_digits" class="form-label fw-bold">Phone Number</label>
+                                <label for="id_phone_digits" class="form-label fw-bold">Phone Number *</label>
                                 <div class="input-group">
                                     <span class="input-group-text fw-bold bg-primary text-white">+254</span>
                                     {{ form.phone_digits }}
@@ -484,7 +484,8 @@ document.addEventListener('DOMContentLoaded', function() {
         form.addEventListener('submit', function(e) {
             const fkfNumber = document.querySelector('#id_fkf_number').value;
             const email = document.querySelector('#id_email').value;
-            const phone = document.querySelector('#id_phone_number').value;
+            const phoneDigits = document.querySelector('[name="phone_digits"]');
+            const phoneValue = phoneDigits ? phoneDigits.value : '';
             
             if (!fkfNumber || !email) {
                 e.preventDefault();
@@ -500,10 +501,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 return false;
             }
             
-            // Phone validation (optional)
-            if (phone && !/^[\d\s\-\+\(\)]{10,}$/.test(phone)) {
+            // Phone validation (required, 9 digits)
+            if (!phoneValue || !/^[0-9]{9}$/.test(phoneValue)) {
                 e.preventDefault();
-                alert('Please enter a valid phone number (minimum 10 digits).');
+                alert('Phone number is required. Enter exactly 9 digits (e.g., 712345678).');
+                if (phoneDigits) phoneDigits.focus();
                 return false;
             }
             

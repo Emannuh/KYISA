@@ -8,9 +8,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from django.utils.safestring import mark_safe
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 from django.db.models import Q
+from django.core.mail import EmailMultiAlternatives
+from django.conf import settings as django_settings
 from functools import wraps
-import secrets, string
+import secrets, string, json, re
 
 from accounts.models import User, UserRole, KenyaCounty
 from competitions.models import (
@@ -50,6 +54,29 @@ def role_required(*roles):
             return view(request, *args, **kwargs)
         return wrapper
     return decorator
+
+
+def send_credentials_email(user, temporary_password, role_label):
+    """Send login credentials to the registrant's email address."""
+    subject = f'KYISA Portal Access - {role_label}'
+    text_content = (
+        f'Dear {user.first_name} {user.last_name},\n\n'
+        f'Your KYISA portal account is ready.\n\n'
+        f'Login Email: {user.email}\n'
+        f'Temporary Password: {temporary_password}\n'
+        f'Role: {role_label}\n\n'
+        f'Login URL: /portal/login/\n\n'
+        f'Please change your password immediately after first login.\n\n'
+        f'KYISA Administration'
+    )
+
+    email = EmailMultiAlternatives(
+        subject,
+        text_content,
+        getattr(django_settings, 'DEFAULT_FROM_EMAIL', 'noreply@kyisa.org'),
+        [user.email],
+    )
+    email.send(fail_silently=False)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -102,9 +129,32 @@ def leadership_view(request):
     """Public leadership page — KYISA officials and their messages."""
     leaders = [
         {
+            'name': 'Chairperson',
+            'title': 'Chairperson',
+            'image': None,
+            'message': (
+                'As Chairperson of KYISA, I am proud to champion a leadership agenda '
+                'that keeps youth development, fairness, and county inclusion at the center '
+                'of our sports mission. We remain committed to building strong structures '
+                'that give every county equal opportunity to compete and grow talent.'
+            ),
+        },
+        {
+            'name': 'First Vice-Chairperson',
+            'title': 'First Vice-Chairperson',
+            'image': None,
+            'message': '',
+        },
+        {
+            'name': 'Second Vice-Chairperson',
+            'title': 'Second Vice-Chairperson',
+            'image': None,
+            'message': '',
+        },
+        {
             'name': 'Ambrose Kisoi',
             'title': 'Secretary General',
-            'image': 'img/leadership/ambrose_kisoi.jpg',
+            'image': 'img/leadership/ambrose_kisoi.png',
             'message': (
                 'Welcome to the Kenya Youth Intercounty Sports Association. '
                 'As Secretary General, it is my privilege to lead an organisation '
@@ -122,31 +172,65 @@ def leadership_view(request):
                 'I invite you to explore our programmes, follow our competitions, '
                 'and join us in building a stronger, more united Kenya through sport.'
             ),
-            'has_photo': True,
         },
         {
-            'name': 'Chairman',
-            'title': 'Chairman',
+            'name': 'Deputy Secretary General',
+            'title': 'Deputy Secretary General',
             'image': None,
-            'message': None,
-            'has_photo': False,
-            'placeholder': True,
-        },
-        {
-            'name': 'Vice Chairman',
-            'title': 'Vice Chairman',
-            'image': None,
-            'message': None,
-            'has_photo': False,
-            'placeholder': True,
+            'message': '',
         },
         {
             'name': 'Treasurer',
             'title': 'Treasurer',
             'image': None,
-            'message': None,
-            'has_photo': False,
-            'placeholder': True,
+            'message': (
+                'The KYISA treasury remains committed to transparent financial management '
+                'and accountable support for all competition operations. We continue to '
+                'prioritise timely approvals, proper documentation, and prudent stewardship '
+                'of resources entrusted to the association.'
+            ),
+        },
+        {
+            'name': 'Deputy Treasurer',
+            'title': 'Deputy Treasurer',
+            'image': None,
+            'message': '',
+        },
+        {
+            'name': 'Organizing Secretary',
+            'title': 'Organizing Secretary',
+            'image': None,
+            'message': '',
+        },
+        {
+            'name': 'Deputy Organizing Secretary',
+            'title': 'Deputy Organizing Secretary',
+            'image': None,
+            'message': '',
+        },
+        {
+            'name': 'CEC Sports Nominee 1',
+            'title': 'CEC Members Caucus Nominee',
+            'image': None,
+            'message': '',
+        },
+        {
+            'name': 'CEC Sports Nominee 2',
+            'title': 'CEC Members Caucus Nominee',
+            'image': None,
+            'message': '',
+        },
+        {
+            'name': 'Chief Officers Nominee 1',
+            'title': 'Chief Officers Caucus Nominee',
+            'image': None,
+            'message': '',
+        },
+        {
+            'name': 'Chief Officers Nominee 2',
+            'title': 'Chief Officers Caucus Nominee',
+            'image': None,
+            'message': '',
         },
     ]
     return render(request, 'public/leadership.html', {
@@ -555,6 +639,9 @@ def dashboard_view(request):
     if user.role == 'competition_manager':
         return redirect('cm_dashboard')
 
+    if user.role == 'verification_officer':
+        return redirect('vo_registered_counties')
+
     if user.role == 'coordinator':
         return redirect('coordinator_dashboard')
 
@@ -566,6 +653,15 @@ def dashboard_view(request):
 
     if user.role == 'secretary_general':
         return redirect('sg_dashboard')
+
+    if user.role == 'jury_chair':
+        return redirect('jury_dashboard')
+
+    if user.role == 'media_manager':
+        return redirect('media_dashboard')
+
+    if user.role == 'scout':
+        return redirect('scout_dashboard')
 
     recent_fixtures = Fixture.objects.select_related(
         'competition', 'home_team', 'away_team'
@@ -1033,12 +1129,16 @@ def pending_teams_view(request):
                         role=UserRole.TEAM_MANAGER,
                         county=team.county,
                     )
+                    manager.must_change_password = True
+                    manager.save(update_fields=['must_change_password'])
+
+                    send_credentials_email(manager, default_pw, 'Team Manager')
                     team.manager = manager
                     team.save()
                     messages.success(request, mark_safe(
                         f'✅ <strong>{team.name}</strong> approved!<br>'
                         f'Manager account: <code>{team.contact_email}</code><br>'
-                        f'Temp password: <code>{default_pw}</code>'
+                        f'Temporary password sent to the manager email.'
                     ))
                 except Exception as e:
                     messages.warning(request, f'Team approved but manager account failed: {e}')
@@ -1089,14 +1189,22 @@ def pending_referees_view(request):
             user.is_active = True
             temp_pw = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(10))
             user.set_password(temp_pw)
-            user.save()
+            user.must_change_password = True
+            user.save(update_fields=['is_active', 'password', 'must_change_password'])
+
+            email_sent = True
+            try:
+                send_credentials_email(user, temp_pw, 'Referee')
+            except Exception:
+                email_sent = False
 
             messages.success(request, mark_safe(
                 f'✅ <strong>{user.get_full_name()}</strong> approved!<br>'
                 f'Login: <code>{user.email}</code><br>'
-                f'Temp password: <code>{temp_pw}</code><br>'
-                f'Ask them to change their password on first login.'
+                f'Temporary password sent to email. Ask them to change their password on first login.'
             ))
+            if not email_sent:
+                messages.warning(request, 'Could not send referee credentials email. Please resend manually.')
 
         elif action == 'reject':
             user = profile.user
@@ -1121,7 +1229,7 @@ def pending_referees_view(request):
 #   ADMIN — PLAYER VERIFICATION VIEWS
 # ══════════════════════════════════════════════════════════════════════════════
 
-@role_required('admin', 'competition_manager', 'secretary_general')
+@role_required('admin', 'competition_manager', 'secretary_general', 'verification_officer')
 def player_verification_list_view(request):
     """
     Admin view showing players grouped by verification status.
@@ -1156,7 +1264,7 @@ def player_verification_list_view(request):
     })
 
 
-@role_required('admin', 'competition_manager')
+@role_required('admin', 'competition_manager', 'verification_officer')
 def verify_player_view(request, player_pk):
     """Admin view to inspect a single player's documents and verify/reject."""
     player = get_object_or_404(Player, pk=player_pk)
@@ -1927,7 +2035,13 @@ def referee_edit_profile_view(request):
         # Update user name / phone
         user.first_name = request.POST.get('first_name', user.first_name)
         user.last_name = request.POST.get('last_name', user.last_name)
-        user.phone = request.POST.get('phone', user.phone)
+        new_phone = request.POST.get('phone', user.phone).strip()
+        # Validate phone format: +254 followed by 9 digits
+        import re
+        if new_phone and not re.match(r'^\+254\d{9}$', new_phone):
+            messages.error(request, 'Phone number must be in the format +254XXXXXXXXX (country code + 9 digits).')
+            return redirect('referee_edit_profile')
+        user.phone = new_phone
         user.save(update_fields=['first_name', 'last_name', 'phone'])
 
         messages.success(request, 'Profile updated successfully.')
@@ -2655,14 +2769,15 @@ def coordinator_referees_view(request):
             profile.save()
             user = profile.user
             user.is_active = True
-            temp_pw = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(10))
+            temp_pw = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
             user.set_password(temp_pw)
+            user.must_change_password = True
             user.save()
-            messages.success(request, mark_safe(
-                f'✅ <strong>{user.get_full_name()}</strong> approved!<br>'
-                f'Login: <code>{user.email}</code><br>'
-                f'Temp password: <code>{temp_pw}</code>'
-            ))
+            try:
+                send_credentials_email(user, temp_pw, 'Referee')
+                messages.success(request, f'✅ {user.get_full_name()} approved! Login credentials sent to {user.email}.')
+            except Exception:
+                messages.warning(request, f'✅ {user.get_full_name()} approved but credential email failed. Contact them directly.')
         elif action == 'reject':
             user = profile.user
             user_name = user.get_full_name()
@@ -2873,7 +2988,7 @@ def treasurer_teams_view(request):
                 # Create team manager account if email provided and no manager yet
                 if team.contact_email and not team.manager:
                     try:
-                        temp_pw = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(10))
+                        temp_pw = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
                         manager = User.objects.create_user(
                             email=team.contact_email,
                             password=temp_pw,
@@ -2882,14 +2997,15 @@ def treasurer_teams_view(request):
                             role=UserRole.TEAM_MANAGER,
                             county=team.county,
                         )
+                        manager.must_change_password = True
+                        manager.save(update_fields=['must_change_password'])
                         team.manager = manager
                         team.save()
-                        messages.success(request, mark_safe(
-                            f'✅ <strong>{team.name}</strong> approved!<br>'
-                            f'Manager login: <code>{team.contact_email}</code><br>'
-                            f'Temporary password: <code>{temp_pw}</code><br>'
-                            f'<em>Share these credentials with the team manager.</em>'
-                        ))
+                        try:
+                            send_credentials_email(manager, temp_pw, 'Team Manager')
+                            messages.success(request, f'✅ {team.name} approved! Login credentials sent to {team.contact_email}.')
+                        except Exception:
+                            messages.warning(request, f'✅ {team.name} approved but credential email failed. Contact the manager directly.')
                     except Exception as e:
                         messages.warning(request, f'Team approved but manager account failed: {e}')
                 else:
@@ -2974,7 +3090,7 @@ def treasurer_county_payments_view(request):
 
                     # Also unlock all teams from this county
                     Team.objects.filter(
-                        county=cp.county, payment_confirmed=False
+                        county__name=cp.county, payment_confirmed=False
                     ).update(
                         payment_confirmed=True,
                         payment_reference=ref,
@@ -4167,15 +4283,136 @@ def cm_competition_rules_view(request, pk):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+#   VERIFICATION OFFICER — COUNTY-BASED VERIFICATION FLOW
+# ══════════════════════════════════════════════════════════════════════════════
+
+@role_required('competition_manager', 'admin', 'verification_officer')
+def vo_registered_counties_view(request):
+    """List all registered (approved) counties with stats."""
+    counties = CountyRegistration.objects.filter(
+        status='approved'
+    ).order_by('county')
+
+    county_data = []
+    for reg in counties:
+        disciplines = reg.disciplines.all()
+        total_players = CountyPlayer.objects.filter(discipline__registration=reg).count()
+        pending_players = CountyPlayer.objects.filter(
+            discipline__registration=reg, verification_status='pending'
+        ).count()
+        verified_players = CountyPlayer.objects.filter(
+            discipline__registration=reg, verification_status='verified'
+        ).count()
+        county_data.append({
+            'registration': reg,
+            'discipline_count': disciplines.count(),
+            'total_players': total_players,
+            'pending_players': pending_players,
+            'verified_players': verified_players,
+        })
+
+    return render(request, 'portal/verification/registered_counties.html', {
+        'county_data': county_data,
+        'total_counties': len(county_data),
+    })
+
+
+@role_required('competition_manager', 'admin', 'verification_officer')
+def vo_county_disciplines_view(request, county_reg_pk):
+    """Show disciplines registered under a specific county."""
+    reg = get_object_or_404(CountyRegistration, pk=county_reg_pk, status='approved')
+    disciplines = reg.disciplines.prefetch_related('players', 'technical_bench').all()
+
+    disc_data = []
+    for disc in disciplines:
+        players = disc.players.all()
+        bench = disc.technical_bench.all()
+        disc_data.append({
+            'discipline': disc,
+            'total_players': players.count(),
+            'pending': players.filter(verification_status='pending').count(),
+            'verified': players.filter(verification_status='verified').count(),
+            'rejected': players.filter(verification_status='rejected').count(),
+            'resubmit': players.filter(verification_status='resubmit').count(),
+            'bench_count': bench.count(),
+        })
+
+    return render(request, 'portal/verification/county_disciplines.html', {
+        'reg': reg,
+        'disc_data': disc_data,
+    })
+
+
+@role_required('competition_manager', 'admin', 'verification_officer')
+def vo_discipline_players_view(request, discipline_pk):
+    """Show players in a discipline with gender filter, linking to verification."""
+    discipline = get_object_or_404(
+        CountyDiscipline.objects.select_related('registration'),
+        pk=discipline_pk,
+    )
+
+    tab = request.GET.get('tab', 'pending')
+    player_query = request.GET.get('q', '').strip()
+
+    players = discipline.players.all().order_by('last_name', 'first_name')
+
+    if player_query:
+        players = players.filter(
+            Q(first_name__icontains=player_query) |
+            Q(last_name__icontains=player_query) |
+            Q(national_id_number__icontains=player_query)
+        )
+
+    pending = players.filter(verification_status='pending')
+    verified = players.filter(verification_status='verified')
+    rejected = players.filter(verification_status='rejected')
+    resubmit = players.filter(verification_status='resubmit')
+
+    return render(request, 'portal/verification/discipline_players.html', {
+        'discipline': discipline,
+        'reg': discipline.registration,
+        'tab': tab,
+        'pending_players': pending,
+        'verified_players': verified,
+        'rejected_players': rejected,
+        'resubmit_players': resubmit,
+        'player_query': player_query,
+        'stats': {
+            'pending': pending.count(),
+            'verified': verified.count(),
+            'rejected': rejected.count(),
+            'resubmit': resubmit.count(),
+        },
+    })
+
+
+@role_required('competition_manager', 'admin', 'verification_officer')
+def vo_discipline_delegation_view(request, discipline_pk):
+    """View technical bench / delegation for a discipline (separate from players)."""
+    discipline = get_object_or_404(
+        CountyDiscipline.objects.select_related('registration'),
+        pk=discipline_pk,
+    )
+    bench_members = discipline.technical_bench.all().order_by('role')
+
+    return render(request, 'portal/verification/discipline_delegation.html', {
+        'discipline': discipline,
+        'reg': discipline.registration,
+        'bench_members': bench_members,
+    })
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 #   COUNTY PLAYER VERIFICATION (Competition Manager / Organising Secretary)
 # ══════════════════════════════════════════════════════════════════════════════
 
-@role_required('competition_manager', 'admin')
+@role_required('competition_manager', 'admin', 'verification_officer')
 def county_player_verification_list_view(request):
     """CM view: All county players by verification status with filters."""
     tab = request.GET.get('tab', 'pending')
     discipline_filter = request.GET.get('discipline', '')
     county_filter = request.GET.get('county', '')
+    player_query = request.GET.get('q', '').strip()
 
     players = CountyPlayer.objects.select_related(
         'discipline', 'discipline__registration',
@@ -4185,6 +4422,12 @@ def county_player_verification_list_view(request):
         players = players.filter(discipline__sport_type=discipline_filter)
     if county_filter:
         players = players.filter(discipline__registration__county=county_filter)
+    if player_query:
+        players = players.filter(
+            Q(first_name__icontains=player_query) |
+            Q(last_name__icontains=player_query) |
+            Q(national_id_number__icontains=player_query)
+        )
 
     pending = players.filter(verification_status='pending')
     verified = players.filter(verification_status='verified')
@@ -4215,6 +4458,7 @@ def county_player_verification_list_view(request):
         'counties': county_choices,
         'discipline_filter': discipline_filter,
         'county_filter': county_filter,
+        'player_query': player_query,
         'stats': {
             'pending': pending.count(),
             'verified': verified.count(),
@@ -4224,7 +4468,7 @@ def county_player_verification_list_view(request):
     })
 
 
-@role_required('competition_manager', 'admin')
+@role_required('competition_manager', 'admin', 'verification_officer')
 def verify_county_player_view(request, player_pk):
     """CM view: Inspect a county player's documents and verify/reject/resubmit."""
     player = get_object_or_404(
@@ -4302,6 +4546,39 @@ def verify_county_player_view(request, player_pk):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+#   M-PESA STK PUSH — AJAX ENDPOINT
+# ══════════════════════════════════════════════════════════════════════════════
+
+@require_POST
+def mpesa_stk_push_view(request):
+    """AJAX endpoint to trigger an M-Pesa STK push payment prompt."""
+    try:
+        body = json.loads(request.body)
+    except (json.JSONDecodeError, ValueError):
+        return JsonResponse({'success': False, 'error': 'Invalid request.'}, status=400)
+
+    phone = body.get('phone', '').strip()
+    if not re.match(r'^\+254\d{9}$', phone):
+        return JsonResponse({'success': False, 'error': 'Invalid phone number. Use +254XXXXXXXXX format.'}, status=400)
+
+    try:
+        from teams.mpesa_service import initiate_stk_push
+        result = initiate_stk_push(
+            phone_number=phone,
+            amount=int(COUNTY_REGISTRATION_FEE_CAP),
+            account_reference=django_settings.MPESA_ACCOUNT_REF,
+            description='KYISA County Registration Fee',
+        )
+        if result['success']:
+            checkout_id = result['data'].get('CheckoutRequestID', '')
+            return JsonResponse({'success': True, 'checkout_id': checkout_id})
+        else:
+            return JsonResponse({'success': False, 'error': str(result.get('data', 'STK push failed.'))})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': 'Payment service unavailable. Please pay manually.'})
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 #   COUNTY SPORTS DIRECTOR — PUBLIC REGISTRATION
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -4333,24 +4610,67 @@ def county_admin_register_view(request):
             user.must_change_password = True
             user.save(update_fields=['must_change_password'])
 
-            CountyRegistration.objects.create(
+            email_sent = True
+            try:
+                send_credentials_email(user, temp_password, 'County Sports Director')
+            except Exception:
+                email_sent = False
+
+            # ── Collect payment data from registration form ──
+            payment_method = request.POST.get('payment_method', '').strip()
+            mpesa_phone = request.POST.get('mpesa_phone', '').strip()
+            mpesa_reference = request.POST.get('mpesa_reference', '').strip()
+            mpesa_checkout_id = request.POST.get('mpesa_checkout_id', '').strip()
+            bank_reference = request.POST.get('bank_reference', '').strip()
+            bank_slip = request.FILES.get('bank_slip')
+            payment_amount_str = request.POST.get('payment_amount', '').strip()
+
+            reg = CountyRegistration.objects.create(
                 user=user,
                 county=cd['county'],
                 director_name=cd['director_name'],
                 director_phone=cd['director_phone'],
+                payment_method=payment_method,
+                mpesa_phone=mpesa_phone,
+                mpesa_reference=mpesa_reference,
+                mpesa_checkout_id=mpesa_checkout_id,
+                bank_reference=bank_reference,
             )
+            if bank_slip:
+                reg.bank_slip = bank_slip
+            if payment_amount_str:
+                try:
+                    reg.payment_amount = float(payment_amount_str)
+                except (ValueError, TypeError):
+                    pass
+
+            # Mark payment as submitted if any proof was provided
+            has_proof = mpesa_reference or bank_reference or bank_slip
+            if has_proof:
+                reg.payment_submitted_at = timezone.now()
+                reg.status = CountyRegStatus.PAYMENT_SUBMITTED
+            reg.save()
+
             messages.success(request, mark_safe(
                 f'<strong>County Registration Successful!</strong><br>'
                 f'County: <strong>{cd["county"]}</strong><br>'
                 f'Director of Sports: <strong>{cd["director_name"]}</strong><br><br>'
-                f'Your temporary password is: <code>{temp_password}</code><br>'
-                f'<strong>Please save this password.</strong> You will be required to change it on first login.<br><br>'
+                f'Your temporary password has been sent to <code>{cd["email"]}</code>.<br>'
+                f'Check your inbox and spam folder, then change the password on first login.<br><br>'
                 f'<strong>Next steps:</strong><br>'
-                f'1. Log in to the portal with your email and the temporary password above<br>'
+                f'1. Log in to the portal with your email and the temporary password from email<br>'
                 f'2. Change your password when prompted<br>'
-                f'3. Submit payment (M-Pesa or bank slip)<br>'
-                f'4. Once the treasurer approves, you can add disciplines and players'
+                + (f'3. Your payment proof has been submitted — the treasurer will review it shortly<br>'
+                   f'4. Once approved, add disciplines first, then add your county delegation players'
+                   if has_proof else
+                   f'3. Submit payment (M-Pesa or bank slip) from your portal dashboard<br>'
+                   f'4. Once the treasurer approves, add disciplines first, then add your county delegation players')
             ))
+            if not email_sent:
+                messages.warning(
+                    request,
+                    'Registration is saved, but we could not deliver the credentials email right now. Please contact KYISA support to resend credentials.'
+                )
             return redirect('county_admin_register_success')
     else:
         form = CountyAdminRegistrationForm()
@@ -4360,12 +4680,34 @@ def county_admin_register_view(request):
         'taken_counties': taken_counties,
         'active_page': 'register',
         'registration_fee': COUNTY_REGISTRATION_FEE_CAP,
+        'bank_name': django_settings.KYISA_BANK_NAME,
+        'bank_branch': django_settings.KYISA_BANK_BRANCH,
+        'bank_account_name': django_settings.KYISA_BANK_ACCOUNT_NAME,
+        'bank_account_no': django_settings.KYISA_BANK_ACCOUNT_NO,
+        'mpesa_paybill': django_settings.KYISA_MPESA_PAYBILL,
+        'mpesa_account_no': django_settings.KYISA_MPESA_ACCOUNT_NO,
     })
 
 
 def county_admin_register_success_view(request):
     return render(request, 'public/county_admin_register_success.html', {
         'active_page': 'register',
+    })
+
+
+@role_required('admin', 'competition_manager', 'secretary_general', 'coordinator', 'verification_officer')
+def cec_sports_portal_view(request):
+    """CEC sports caucus portal (view-only): high-level competition and verification visibility."""
+    competitions = Competition.objects.order_by('-created_at')[:12]
+    counties_registered = CountyRegistration.objects.filter(status='approved').count()
+    pending_players = CountyPlayer.objects.filter(verification_status='pending').count()
+    verified_players = CountyPlayer.objects.filter(verification_status='verified').count()
+
+    return render(request, 'portal/cec_sports_dashboard.html', {
+        'competitions': competitions,
+        'counties_registered': counties_registered,
+        'pending_players': pending_players,
+        'verified_players': verified_players,
     })
 
 
@@ -4405,7 +4747,9 @@ def county_admin_payment_view(request):
         form = CountyPaymentForm(request.POST, request.FILES)
         if form.is_valid():
             cd = form.cleaned_data
+            reg.payment_method = cd.get('payment_method', '')
             reg.mpesa_reference = cd.get('mpesa_reference', '')
+            reg.bank_reference = cd.get('bank_reference', '')
             if cd.get('bank_slip'):
                 reg.bank_slip = cd['bank_slip']
             reg.payment_amount = cd['payment_amount']
@@ -4421,6 +4765,12 @@ def county_admin_payment_view(request):
         'form': form,
         'reg': reg,
         'registration_fee': COUNTY_REGISTRATION_FEE_CAP,
+        'bank_name': django_settings.KYISA_BANK_NAME,
+        'bank_branch': django_settings.KYISA_BANK_BRANCH,
+        'bank_account_name': django_settings.KYISA_BANK_ACCOUNT_NAME,
+        'bank_account_no': django_settings.KYISA_BANK_ACCOUNT_NO,
+        'mpesa_paybill': django_settings.KYISA_MPESA_PAYBILL,
+        'mpesa_account_no': django_settings.KYISA_MPESA_ACCOUNT_NO,
     })
 
 
@@ -4544,6 +4894,23 @@ def treasurer_county_registrations_view(request):
             reg.approved_by = request.user
             reg.approved_at = timezone.now()
             reg.save()
+            # Notify county admin by email
+            try:
+                from django.core.mail import send_mail
+                send_mail(
+                    subject='[KYISA] County Registration Approved',
+                    message=(
+                        f'Dear {reg.user.get_full_name()},\n\n'
+                        f'Your county registration for {reg.county} has been approved.\n'
+                        f'You can now log in to the KYISA portal and begin adding disciplines and players.\n\n'
+                        f'KYISA Administration'
+                    ),
+                    from_email=getattr(django_settings, 'DEFAULT_FROM_EMAIL', 'noreply@kyisa.org'),
+                    recipient_list=[reg.user.email],
+                    fail_silently=True,
+                )
+            except Exception:
+                pass
             messages.success(request, f'{reg.county} county registration approved.')
         elif action == 'reject':
             reason = request.POST.get('rejection_reason', '')
@@ -4600,7 +4967,7 @@ def county_admin_add_bench_member_view(request, discipline_pk):
                 if member.role == TechnicalBenchRole.TEAM_MANAGER and member.email:
                     try:
                         import secrets, string
-                        temp_pw = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(10))
+                        temp_pw = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
                         tm_user = User.objects.create_user(
                             email=member.email,
                             password=temp_pw,
@@ -4613,12 +4980,11 @@ def county_admin_add_bench_member_view(request, discipline_pk):
                         )
                         member.user = tm_user
                         member.save(update_fields=['user'])
-                        messages.success(request, mark_safe(
-                            f'<strong>{member.get_full_name}</strong> added as {member.get_role_display()}.<br>'
-                            f'Login: <code>{member.email}</code><br>'
-                            f'Temp password: <code>{temp_pw}</code><br>'
-                            f'<em>They must change password on first login.</em>'
-                        ))
+                        try:
+                            send_credentials_email(tm_user, temp_pw, 'Team Manager')
+                            messages.success(request, f'{member.get_full_name} added as {member.get_role_display()}. Login credentials sent to {member.email}.')
+                        except Exception:
+                            messages.success(request, f'{member.get_full_name} added as {member.get_role_display()} but credential email failed.')
                     except Exception as e:
                         member.save()
                         messages.warning(request, f'{member.get_full_name} added but account creation failed: {e}')
@@ -4841,13 +5207,16 @@ def team_manager_dashboard_view(request):
 @role_required('team_manager')
 def team_manager_match_squad_view(request, fixture_pk):
     """
-    Team Manager selects match day squad (starting 11 + subs).
+    Team Manager selects match day squad (starters + subs).
+    - Sport-specific starter count (11 for football, 6 volleyball, etc.)
+    - Formation selection for football
     - Only verified players can be selected
     - Suspended players are blocked
     - Cannot edit after match start
     - Post-referee-approval edits require re-approval
     """
     from django.conf import settings as conf
+    from matches.models import get_starters_for_sport
 
     fixture = get_object_or_404(Fixture.objects.select_related(
         'home_team', 'away_team', 'competition', 'venue'
@@ -4871,6 +5240,11 @@ def team_manager_match_squad_view(request, fixture_pk):
         messages.error(request, 'Cannot edit squad — match has already started or completed.')
         return redirect('team_manager_dashboard')
 
+    # Sport-specific starter count
+    sport_type = fixture.competition.sport_type if fixture.competition else ''
+    required_starters = get_starters_for_sport(sport_type)
+    is_football = sport_type in ('football_men', 'football_women')
+
     # Get existing submission
     existing = SquadSubmission.objects.filter(fixture=fixture, team=team).first()
 
@@ -4893,13 +5267,16 @@ def team_manager_match_squad_view(request, fixture_pk):
 
     starter_ids = []
     sub_ids = []
+    current_formation = ''
     if existing:
         starter_ids = list(existing.squad_players.filter(is_starter=True).values_list('player_id', flat=True))
         sub_ids = list(existing.squad_players.filter(is_starter=False).values_list('player_id', flat=True))
+        current_formation = existing.formation or ''
 
     if request.method == 'POST':
         selected_starters = request.POST.getlist('starters')
         selected_subs = request.POST.getlist('subs')
+        chosen_formation = request.POST.get('formation', '').strip()
 
         starters_int = [int(x) for x in selected_starters if x]
         subs_int = [int(x) for x in selected_subs if x]
@@ -4910,8 +5287,8 @@ def team_manager_match_squad_view(request, fixture_pk):
             messages.error(request, 'Cannot select suspended players.')
         elif set(starters_int) & set(subs_int):
             messages.error(request, 'A player cannot be both a starter and a substitute.')
-        elif len(starters_int) != 11:
-            messages.error(request, f'Exactly 11 starters required. You selected {len(starters_int)}.')
+        elif len(starters_int) != required_starters:
+            messages.error(request, f'Exactly {required_starters} starters required. You selected {len(starters_int)}.')
         else:
             if existing:
                 existing.squad_players.all().delete()
@@ -4925,6 +5302,8 @@ def team_manager_match_squad_view(request, fixture_pk):
             submission.rejection_reason = ''
             submission.reviewed_by = None
             submission.reviewed_at = None
+            if is_football and chosen_formation:
+                submission.formation = chosen_formation
             submission.save()
 
             for pid in starters_int:
@@ -4946,6 +5325,10 @@ def team_manager_match_squad_view(request, fixture_pk):
         'starter_ids': starter_ids,
         'sub_ids': sub_ids,
         'needs_re_approval': needs_re_approval,
+        'required_starters': required_starters,
+        'is_football': is_football,
+        'formations': SquadSubmission.FOOTBALL_FORMATIONS,
+        'current_formation': current_formation,
     })
 
 
@@ -5090,7 +5473,8 @@ def team_manager_file_appeal_view(request):
 def team_list_pdf_view(request, discipline_pk):
     """
     Generate and return a downloadable PDF of the team list.
-    Accessible to Team Manager and County Sports Director.
+    Includes KYISA logo, player photos, name, DOB, position, jersey.
+    Accessible to Team Manager, County Sports Director, admin, CM.
     """
     from django.http import HttpResponse
     from io import BytesIO
@@ -5133,29 +5517,64 @@ def team_list_pdf_view(request, discipline_pk):
         from reportlab.lib.pagesizes import A4
         from reportlab.lib import colors
         from reportlab.platypus import (
-            SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image as RLImage
+            SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer,
+            Image as RLImage,
         )
         from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
         from reportlab.lib.units import cm, mm
+        import os
 
         buffer = BytesIO()
-        doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=1.5*cm, bottomMargin=1.5*cm)
+        doc = SimpleDocTemplate(
+            buffer, pagesize=A4,
+            topMargin=1.5*cm, bottomMargin=1.5*cm,
+            leftMargin=1.5*cm, rightMargin=1.5*cm,
+        )
         styles = getSampleStyleSheet()
         elements = []
 
-        # Title
+        # ── KYISA Logo ──
+        logo_path = os.path.join(
+            django_settings.STATICFILES_DIRS[0] if django_settings.STATICFILES_DIRS else django_settings.STATIC_ROOT,
+            'img', 'kyisa_logo_official.jpg',
+        )
+        if os.path.exists(logo_path):
+            try:
+                logo = RLImage(logo_path, width=30*mm, height=30*mm)
+                logo.hAlign = 'CENTER'
+                elements.append(logo)
+                elements.append(Spacer(1, 2*mm))
+            except Exception:
+                pass
+
+        # ── Header ──
+        header_style = ParagraphStyle(
+            'Header', parent=styles['Normal'],
+            fontSize=8, textColor=colors.HexColor('#004D1A'),
+            alignment=1, spaceAfter=2,
+        )
         title_style = ParagraphStyle(
             'CustomTitle', parent=styles['Title'],
-            fontSize=16, spaceAfter=6,
+            fontSize=14, spaceAfter=4, alignment=1,
+            textColor=colors.HexColor('#1B5E20'),
         )
+        subtitle_style = ParagraphStyle(
+            'Subtitle', parent=styles['Heading2'],
+            fontSize=11, spaceAfter=2, alignment=1,
+        )
+
+        elements.append(Paragraph(
+            "KENYA YOUTH INTERCOUNTY SPORTS ASSOCIATION",
+            header_style,
+        ))
         elements.append(Paragraph(
             f"{discipline.registration.county} County — {discipline.get_sport_type_display()}",
             title_style,
         ))
-        elements.append(Paragraph("Official Team List", styles['Heading2']))
+        elements.append(Paragraph("Official Team List", subtitle_style))
         elements.append(Spacer(1, 0.5*cm))
 
-        # Technical bench section
+        # ── Technical bench section ──
         if bench_members.exists():
             elements.append(Paragraph("Technical Bench / Delegation", styles['Heading3']))
             bench_data = [['Role', 'Name', 'Phone']]
@@ -5175,39 +5594,71 @@ def team_list_pdf_view(request, discipline_pk):
             elements.append(bench_table)
             elements.append(Spacer(1, 0.5*cm))
 
-        # Players section
-        elements.append(Paragraph(f"Players ({players.count()})", styles['Heading3']))
+        # ── Players section with photos ──
+        elements.append(Paragraph(f"Verified Players ({players.count()})", styles['Heading3']))
 
         if players.exists():
-            player_data = [['#', 'Name', 'Age', 'Position', 'Jersey']]
+            cell_style = ParagraphStyle('Cell', parent=styles['Normal'], fontSize=8, leading=10)
+            name_style = ParagraphStyle('NameCell', parent=styles['Normal'], fontSize=9, leading=11, fontName='Helvetica-Bold')
+
+            player_data = [['#', 'Photo', 'Name', 'Date of Birth', 'Position', 'Jersey']]
+            row_num = 0
             for p in players:
+                row_num += 1
+                # Try to load player photo
+                photo_cell = ''
+                if p.photo and hasattr(p.photo, 'path'):
+                    try:
+                        photo_path = p.photo.path
+                        if os.path.exists(photo_path):
+                            photo_cell = RLImage(photo_path, width=18*mm, height=22*mm)
+                    except Exception:
+                        pass
+
+                dob_str = p.date_of_birth.strftime('%d/%m/%Y') if p.date_of_birth else '—'
+
                 player_data.append([
-                    str(players.filter(pk__lte=p.pk).count()),
-                    p.get_full_name,
-                    str(p.age),
+                    str(row_num),
+                    photo_cell,
+                    Paragraph(f"{p.last_name} {p.first_name}", name_style),
+                    dob_str,
                     p.position or '—',
                     str(p.jersey_number) if p.jersey_number else '—',
                 ])
 
-            player_table = Table(player_data, colWidths=[1.5*cm, 7*cm, 2*cm, 3*cm, 2.5*cm])
+            # Column widths adjusted for photo column
+            col_widths = [1*cm, 2.2*cm, 5*cm, 3*cm, 3*cm, 2*cm]
+            player_table = Table(player_data, colWidths=col_widths, repeatRows=1)
+
+            # Row heights — header is normal, player rows need space for photo
+            row_heights = [None] + [25*mm] * len(players)
+
+            player_table = Table(player_data, colWidths=col_widths, rowHeights=row_heights, repeatRows=1)
             player_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1B5E20')),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
                 ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, -1), 9),
+                ('FONTSIZE', (0, 0), (-1, 0), 9),
                 ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
                 ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#F5F5F5')]),
                 ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-                ('LEFTPADDING', (0, 0), (-1, -1), 6),
+                ('ALIGN', (0, 0), (0, -1), 'CENTER'),   # # column
+                ('ALIGN', (1, 0), (1, -1), 'CENTER'),   # Photo column
+                ('ALIGN', (5, 0), (5, -1), 'CENTER'),   # Jersey column
+                ('LEFTPADDING', (0, 0), (-1, -1), 4),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 4),
+                ('TOPPADDING', (0, 1), (-1, -1), 2*mm),
+                ('BOTTOMPADDING', (0, 1), (-1, -1), 2*mm),
             ]))
             elements.append(player_table)
         else:
             elements.append(Paragraph("No verified players.", styles['Normal']))
 
         elements.append(Spacer(1, 1*cm))
+        footer_style = ParagraphStyle('Footer', parent=styles['Normal'], fontSize=7, textColor=colors.grey, alignment=1)
         elements.append(Paragraph(
-            f"Generated on {timezone.now().strftime('%d %B %Y at %H:%M')} — KYISA CMS",
-            styles['Normal'],
+            f"Generated on {timezone.now().strftime('%d %B %Y at %H:%M')} — KYISA CMS | Confidential — For authorised personnel only",
+            footer_style,
         ))
 
         doc.build(elements)
@@ -5407,3 +5858,160 @@ def sg_verified_players_view(request):
         'county_filter': county_filter,
         'total': players.count(),
     })
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   SCOUT PORTAL
+# ══════════════════════════════════════════════════════════════════════════════
+
+@role_required('scout', 'admin')
+def scout_dashboard_view(request):
+    """Scout dashboard — overview of shortlisted players and browse, scoped to discipline."""
+    from teams.models import ScoutShortlist, CountyPlayer, CountyDiscipline, CountyRegistration
+
+    user = request.user
+    discipline = user.assigned_discipline
+    discipline_label = dict(SportType.choices).get(discipline, discipline or 'Not Assigned')
+
+    shortlist = ScoutShortlist.objects.filter(scout=user).select_related(
+        'player', 'player__discipline', 'player__discipline__registration',
+    )
+
+    # Scope total players to scout's assigned discipline if set
+    player_qs = CountyPlayer.objects.filter(verification_status='verified')
+    if discipline:
+        player_qs = player_qs.filter(discipline__sport_type=discipline)
+    total_players = player_qs.count()
+
+    return render(request, 'portal/scout/dashboard.html', {
+        'discipline': discipline,
+        'discipline_label': discipline_label,
+        'shortlist': shortlist[:10],
+        'shortlist_count': shortlist.count(),
+        'total_players': total_players,
+        'top_rated': shortlist.filter(rating__gte=4).count(),
+    })
+
+
+@role_required('scout', 'admin')
+def scout_players_view(request):
+    """Browse verified players for scouting — defaults to scout's assigned discipline."""
+    from teams.models import ScoutShortlist, CountyPlayer, CountyDiscipline, CountyRegistration
+
+    discipline_filter = request.GET.get('discipline', '')
+    county_filter = request.GET.get('county', '')
+    search_query = request.GET.get('q', '').strip()
+
+    # Default to the scout's assigned discipline if no filter explicitly set
+    if not discipline_filter and 'discipline' not in request.GET and request.user.assigned_discipline:
+        discipline_filter = request.user.assigned_discipline
+
+    players = CountyPlayer.objects.filter(
+        verification_status='verified',
+    ).select_related(
+        'discipline', 'discipline__registration',
+    ).order_by('last_name', 'first_name')
+
+    if discipline_filter:
+        players = players.filter(discipline__sport_type=discipline_filter)
+    if county_filter:
+        players = players.filter(discipline__registration__county=county_filter)
+    if search_query:
+        players = players.filter(
+            models.Q(first_name__icontains=search_query) |
+            models.Q(last_name__icontains=search_query)
+        )
+
+    # Get IDs already shortlisted by this scout
+    shortlisted_ids = set(
+        ScoutShortlist.objects.filter(scout=request.user).values_list('player_id', flat=True)
+    )
+
+    disc_values = CountyDiscipline.objects.values_list('sport_type', flat=True).distinct().order_by('sport_type')
+    disciplines = [(st, dict(SportType.choices).get(st, st)) for st in disc_values]
+    counties = CountyRegistration.objects.values_list('county', flat=True).distinct().order_by('county')
+
+    return render(request, 'portal/scout/players.html', {
+        'players': players,
+        'shortlisted_ids': shortlisted_ids,
+        'disciplines': disciplines,
+        'counties': counties,
+        'discipline_filter': discipline_filter,
+        'county_filter': county_filter,
+        'search_query': search_query,
+        'total': players.count(),
+    })
+
+
+@role_required('scout', 'admin')
+def scout_shortlist_view(request):
+    """View and manage the scout's shortlist."""
+    from teams.models import ScoutShortlist
+
+    shortlist = ScoutShortlist.objects.filter(scout=request.user).select_related(
+        'player', 'player__discipline', 'player__discipline__registration',
+    )
+
+    rating_filter = request.GET.get('rating', '')
+    if rating_filter:
+        shortlist = shortlist.filter(rating=int(rating_filter))
+
+    return render(request, 'portal/scout/shortlist.html', {
+        'shortlist': shortlist,
+        'rating_filter': rating_filter,
+        'total': shortlist.count(),
+    })
+
+
+@role_required('scout', 'admin')
+def scout_add_to_shortlist_view(request, player_pk):
+    """Add a player to the scout's shortlist."""
+    from teams.models import ScoutShortlist, CountyPlayer
+
+    if request.method != 'POST':
+        return redirect('scout_players')
+
+    player = get_object_or_404(CountyPlayer, pk=player_pk, verification_status='verified')
+    rating = int(request.POST.get('rating', 3))
+    notes = request.POST.get('notes', '').strip()
+
+    obj, created = ScoutShortlist.objects.get_or_create(
+        scout=request.user, player=player,
+        defaults={'rating': max(1, min(5, rating)), 'notes': notes},
+    )
+    if created:
+        messages.success(request, f'{player.first_name} {player.last_name} added to your shortlist.')
+    else:
+        messages.info(request, f'{player.first_name} {player.last_name} is already on your shortlist.')
+
+    return redirect('scout_players')
+
+
+@role_required('scout', 'admin')
+def scout_edit_shortlist_view(request, pk):
+    """Edit rating/notes on a shortlisted player."""
+    from teams.models import ScoutShortlist
+
+    entry = get_object_or_404(ScoutShortlist, pk=pk, scout=request.user)
+
+    if request.method == 'POST':
+        entry.rating = max(1, min(5, int(request.POST.get('rating', entry.rating))))
+        entry.notes = request.POST.get('notes', entry.notes).strip()
+        entry.save(update_fields=['rating', 'notes', 'updated_at'])
+        messages.success(request, 'Shortlist entry updated.')
+        return redirect('scout_shortlist')
+
+    return render(request, 'portal/scout/edit_shortlist.html', {'entry': entry})
+
+
+@role_required('scout', 'admin')
+def scout_remove_from_shortlist_view(request, pk):
+    """Remove a player from the scout's shortlist."""
+    from teams.models import ScoutShortlist
+
+    entry = get_object_or_404(ScoutShortlist, pk=pk, scout=request.user)
+    if request.method == 'POST':
+        name = f'{entry.player.first_name} {entry.player.last_name}'
+        entry.delete()
+        messages.success(request, f'{name} removed from your shortlist.')
+    return redirect('scout_shortlist')

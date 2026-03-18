@@ -107,6 +107,11 @@ from .web_views import (
     # County player verification (Competition Manager)
     county_player_verification_list_view,
     verify_county_player_view,
+    # Verification Officer — county-based flow
+    vo_registered_counties_view,
+    vo_county_disciplines_view,
+    vo_discipline_players_view,
+    vo_discipline_delegation_view,
     # Discipline Coordinator portal
     coordinator_dashboard_view,
     coordinator_competitions_view,
@@ -140,6 +145,16 @@ from .web_views import (
     sg_treasurer_actions_view,
     sg_user_actions_view,
     sg_verified_players_view,
+    cec_sports_portal_view,
+    # Scout portal
+    scout_dashboard_view,
+    scout_players_view,
+    scout_shortlist_view,
+    scout_add_to_shortlist_view,
+    scout_edit_shortlist_view,
+    scout_remove_from_shortlist_view,
+    # M-Pesa STK push endpoint
+    mpesa_stk_push_view,
 )
 
 urlpatterns = [
@@ -164,6 +179,7 @@ urlpatterns = [
     path("register/referee/success/", referee_register_success_view, name="referee_register_success"),
     path("register/county-admin/",           county_admin_register_view,         name="county_admin_register"),
     path("register/county-admin/success/",   county_admin_register_success_view, name="county_admin_register_success"),
+    path("api/mpesa/stk-push/",              mpesa_stk_push_view,               name="mpesa_stk_push"),
 
     # ── CMS PORTAL (Authenticated) ───────────────────────────────────────────
     path("portal/login/",                   web_login_view,         name="web_login"),
@@ -250,6 +266,9 @@ urlpatterns = [
     path("portal/team-manager/sanctions/",                          team_manager_sanctions_view,    name="team_manager_sanctions"),
     path("portal/team-manager/appeal/",                             team_manager_file_appeal_view,  name="team_manager_file_appeal"),
 
+    # ── CEC SPORTS CAUCUS PORTAL (VIEW ONLY) ─────────────────────────────
+    path("portal/cec-sports/", cec_sports_portal_view, name="cec_sports_portal"),
+
     # ── COMPETITION MANAGER PORTAL ────────────────────────────────────────
     path("portal/competitions/<int:pk>/standings/",   competition_standings_view,      name="competition_standings"),
     path("portal/competitions/<int:pk>/reports/",     competition_reports_view,        name="competition_reports"),
@@ -269,6 +288,12 @@ urlpatterns = [
          cm_edit_fixture_view, name="cm_edit_fixture"),
     path("portal/cm/competitions/<int:pk>/rules/",         cm_competition_rules_view,     name="cm_competition_rules"),
     path("portal/cm/venues/",                              cm_manage_venues_view,         name="cm_venues"),
+
+    # ── VERIFICATION OFFICER — COUNTY-BASED FLOW ─────────────────────────
+    path("portal/verification/counties/",                                 vo_registered_counties_view,     name="vo_registered_counties"),
+    path("portal/verification/counties/<int:county_reg_pk>/disciplines/", vo_county_disciplines_view,      name="vo_county_disciplines"),
+    path("portal/verification/disciplines/<int:discipline_pk>/players/",  vo_discipline_players_view,      name="vo_discipline_players"),
+    path("portal/verification/disciplines/<int:discipline_pk>/delegation/", vo_discipline_delegation_view, name="vo_discipline_delegation"),
 
     # ── CM: COUNTY PLAYER VERIFICATION ────────────────────────────────────
     path("portal/cm/county-players/",                       county_player_verification_list_view, name="county_player_verification_list"),
@@ -317,6 +342,14 @@ urlpatterns = [
     path("portal/media/videos/create/",             media_video_create_view,       name="media_video_create"),
     path("portal/media/videos/<int:pk>/edit/",      media_video_edit_view,         name="media_video_edit"),
     path("portal/media/videos/<int:pk>/delete/",    media_video_delete_view,       name="media_video_delete"),
+
+    # ── SCOUT PORTAL ─────────────────────────────────────────────────────────
+    path("portal/scout/",                              scout_dashboard_view,              name="scout_dashboard"),
+    path("portal/scout/players/",                      scout_players_view,                name="scout_players"),
+    path("portal/scout/shortlist/",                    scout_shortlist_view,              name="scout_shortlist"),
+    path("portal/scout/shortlist/add/<int:player_pk>/",scout_add_to_shortlist_view,       name="scout_add_to_shortlist"),
+    path("portal/scout/shortlist/<int:pk>/edit/",      scout_edit_shortlist_view,         name="scout_edit_shortlist"),
+    path("portal/scout/shortlist/<int:pk>/remove/",    scout_remove_from_shortlist_view,  name="scout_remove_from_shortlist"),
 
     # ── ADMIN DASHBOARD ───────────────────────────────────────────────────────
     path("portal/admin-dashboard/", include("admin_dashboard.urls")),

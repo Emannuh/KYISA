@@ -2,13 +2,21 @@
 KYISA Accounts — Custom User Model with Role-Based Access
 """
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.core.validators import RegexValidator
 from django.db import models
 from django.utils import timezone
 
+# Shared phone validator: +254 followed by exactly 9 digits
+kenya_phone_validator = RegexValidator(
+    regex=r'^\+254\d{9}$',
+    message='Phone number must be in the format +254XXXXXXXXX (country code + 9 digits).',
+)
+
 
 class UserRole(models.TextChoices):
-    COMPETITION_MANAGER = "competition_manager", "Competition Manager"
+    COMPETITION_MANAGER = "competition_manager", "Organising Secretary"
     COORDINATOR         = "coordinator",         "Discipline Coordinator"
+    VERIFICATION_OFFICER = "verification_officer", "Verification Officer"
     REFEREE             = "referee",             "Referee"
     TEAM_MANAGER        = "team_manager",        "Team Manager"
     COUNTY_SPORTS_DIRECTOR = "county_sports_admin", "County Sports Director"
@@ -16,6 +24,7 @@ class UserRole(models.TextChoices):
     JURY_CHAIR          = "jury_chair",          "Chair of the Jury"
     MEDIA_MANAGER       = "media_manager",       "Media Manager"
     SECRETARY_GENERAL   = "secretary_general",   "Secretary General"
+    SCOUT               = "scout",               "Scout"
     ADMIN               = "admin",               "System Admin"
 
 
@@ -43,7 +52,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email       = models.EmailField(unique=True)
     first_name  = models.CharField(max_length=100)
     last_name   = models.CharField(max_length=100)
-    phone       = models.CharField(max_length=20, blank=True)
+    phone       = models.CharField(max_length=13, validators=[kenya_phone_validator])
     role        = models.CharField(max_length=30, choices=UserRole.choices, default=UserRole.TEAM_MANAGER)
     county      = models.CharField(max_length=100, blank=True, help_text="Kenyan county")
     profile_photo = models.ImageField(upload_to="profiles/", null=True, blank=True)
@@ -52,7 +61,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_suspended = models.BooleanField(default=False, help_text="Admin-suspended account")
     assigned_discipline = models.CharField(
         max_length=30, blank=True, default="",
-        help_text="Sport discipline this coordinator manages (only for Coordinator role)",
+        help_text="Sport discipline this user manages (for Coordinator / Scout roles)",
     )
     must_change_password = models.BooleanField(
         default=False,
@@ -83,6 +92,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_coordinator(self): return self.role == UserRole.COORDINATOR
     @property
+    def is_verification_officer(self): return self.role == UserRole.VERIFICATION_OFFICER
+    @property
     def is_referee_manager(self): return self.is_coordinator  # backwards compat
     @property
     def is_referee(self): return self.role == UserRole.REFEREE
@@ -96,6 +107,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_treasurer(self): return self.role == UserRole.TREASURER
     @property
     def is_jury_chair(self): return self.role == UserRole.JURY_CHAIR
+    @property
+    def is_scout(self): return self.role == UserRole.SCOUT
     @property
     def is_secretary_general(self): return self.role == UserRole.SECRETARY_GENERAL
     @property

@@ -4,11 +4,11 @@
 {% block content %}
 <div class="page-header">
     <div class="breadcrumb">
-        <a href="{% url 'cm_dashboard' %}">Dashboard</a>
+        <a href="{% url 'dashboard' %}">Dashboard</a>
         <span>County Player Verification</span>
     </div>
     <h1><i class="bi bi-shield-check"></i> County Player Verification</h1>
-    <p>Review and verify players registered by County Sports Directors across all disciplines.</p>
+    <p>Verification Officers and Organising Secretary portal for county player checks.</p>
 </div>
 
 <!-- Stats -->
@@ -35,6 +35,10 @@
 <div class="card" style="margin-bottom:1rem;padding:1rem 1.25rem;">
     <form method="get" style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-end;">
         <input type="hidden" name="tab" value="{{ tab }}">
+        <div style="min-width:240px;">
+            <label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:.25rem;">Player Name or ID</label>
+            <input type="text" name="q" value="{{ player_query }}" class="form-control" placeholder="Search by first name, last name, or national ID">
+        </div>
         <div>
             <label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:.25rem;">Discipline</label>
             <select name="discipline" class="form-control" style="min-width:180px;" onchange="this.form.submit()">
@@ -53,8 +57,11 @@
                 {% endfor %}
             </select>
         </div>
+        <button type="submit" class="btn btn-outline btn-sm" style="padding:.45rem .9rem;">Search</button>
         {% if discipline_filter or county_filter %}
         <a href="?tab={{ tab }}" style="font-size:.85rem;color:#C62828;text-decoration:none;font-weight:600;">✕ Clear Filters</a>
+        {% elif player_query %}
+        <a href="?tab={{ tab }}" style="font-size:.85rem;color:#C62828;text-decoration:none;font-weight:600;">✕ Clear Search</a>
         {% endif %}
     </form>
 </div>

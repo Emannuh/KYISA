@@ -6,7 +6,8 @@ from django.core.exceptions import ValidationError
 from .models import (
     Appeal, AppealEvidence, AppealResponse, ResponseEvidence,
     JuryDecision, DecisionEvidence, HearingSchedule,
-    EvidenceType, FeeStatus, AppealDecision, APPEAL_FEE_KES,
+    EvidenceType, FeeStatus, AppealDecision,
+    APPEAL_FEE_KES, REAPPEAL_FEE_KES,
 )
 
 
@@ -61,7 +62,10 @@ class AppealFeeForm(forms.Form):
             "class": "form-control",
             "placeholder": "M-Pesa confirmation code or receipt reference",
         }),
-        help_text=f"Appeal fee: KES {APPEAL_FEE_KES:,}. Enter your payment reference.",
+        help_text=(
+            f"Appeal fee: KES {APPEAL_FEE_KES:,} (refundable if appeal succeeds). "
+            f"Re-appeal fee: KES {REAPPEAL_FEE_KES:,}. Enter your payment reference."
+        ),
     )
 
 

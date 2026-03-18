@@ -256,165 +256,38 @@
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════════════════
-     SECRETARY GENERAL — FEATURED
-     ══════════════════════════════════════════════════════════════════════════ -->
-<section class="sg-section">
-    <div class="container sg-inner">
-        <div class="sec-head" style="margin-bottom: 2.5rem;">
-            <span class="badge badge--green">Featured Leader</span>
-            <h2 class="sec-title">Secretary General's Message</h2>
-            <div class="sec-line"></div>
-        </div>
-
-        <div class="sg-card reveal">
-            <div class="sg-card-top">
-                <!-- Photo -->
-                <div class="sg-photo-wrap">
-                    <img src="{% static 'img/leadership/ambrose_kisoi.jpg' %}" alt="Ambrose Kisoi — Secretary General, KYISA" loading="lazy">
-                    <div class="sg-photo-overlay">
-                        <div class="sg-photo-name">Ambrose Kisoi</div>
-                        <div class="sg-photo-title">Secretary General</div>
-                    </div>
-                </div>
-
-                <!-- Message -->
-                <div class="sg-message-wrap">
-                    <div class="sg-message-badge">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                        Message from the Secretary General
-                    </div>
-                    <div class="sg-quote-icon">"</div>
-                    <div class="sg-message-text">
-                        <p>
-                            Welcome to the Kenya Youth Intercounty Sports Association. As Secretary General,
-                            it is my privilege to lead an organisation that is dedicated to nurturing the
-                            next generation of Kenyan sporting talent. KYISA exists to provide a platform
-                            where young athletes from all 47 counties can showcase their abilities, build
-                            lifelong friendships, and develop the discipline that sport instils.
-                        </p>
-                        <p>
-                            Our annual championship has grown into one of Kenya's most anticipated youth
-                            sporting events, bringing together thousands of talented young men and women
-                            aged 18 to 23. We believe that every county has untapped potential, and through
-                            fair, competitive, and well-organised tournaments, we aim to uncover and develop
-                            that talent.
-                        </p>
-                        <p>
-                            I invite you to explore our programmes, follow our competitions, and join us in
-                            building a stronger, more united Kenya through sport.
-                        </p>
-                    </div>
-                    <div class="sg-signature">
-                        <div class="sg-sig-avatar">AK</div>
-                        <div>
-                            <div class="sg-sig-name">Ambrose Kisoi</div>
-                            <div class="sg-sig-title">Secretary General, KYISA</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════════════════
-     OTHER LEADERS
+     LEADERSHIP STRUCTURE
      ══════════════════════════════════════════════════════════════════════════ -->
 <section class="leaders-section">
     <div class="container">
         <div class="sec-head">
-            <span class="badge">Executive Committee</span>
-            <h2 class="sec-title">KYISA Officials</h2>
-            <p class="sec-sub">The team behind Kenya's premier youth intercounty sports championship.</p>
+            <span class="badge">Executive Leadership</span>
+            
             <div class="sec-line"></div>
         </div>
 
         <div class="leaders-grid">
-            <!-- Secretary General -->
-            <div class="leader-card reveal">
+            {% for leader in leaders %}
+            <div class="leader-card reveal" style="--delay:{{ forloop.counter0|add:1 }}0ms">
                 <div class="leader-card__photo">
-                    <img src="{% static 'img/leadership/ambrose_kisoi.jpg' %}" alt="Ambrose Kisoi" loading="lazy">
-                </div>
-                <div class="leader-card__body">
-                    <h3 class="leader-card__name">Ambrose Kisoi</h3>
-                    <span class="leader-card__title-badge">Secretary General</span>
-                </div>
-            </div>
-
-            <!-- Chairman — Placeholder -->
-            <div class="leader-card reveal" style="--delay:.06s">
-                <div class="leader-card__photo">
+                    {% if leader.image %}
+                    <img src="{% static leader.image %}" alt="{{ leader.name }}" loading="lazy">
+                    {% else %}
                     <div class="leader-card__placeholder">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        <span>Photo coming</span>
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+                        <span>Photo Coming Soon</span>
                     </div>
+                    {% endif %}
                 </div>
                 <div class="leader-card__body">
-                    <h3 class="leader-card__name">Chairman</h3>
-                    <span class="leader-card__title-badge">Chairman</span>
-                    <p class="leader-card__coming">Profile and message coming soon</p>
+                    <h3 class="leader-card__name">{{ leader.name }}</h3>
+                    <span class="leader-card__title-badge">{{ leader.title }}</span>
+                    {% if leader.message %}
+                    <p class="leader-card__message">{{ leader.message }}</p>
+                    {% endif %}
                 </div>
             </div>
-
-            <!-- Vice Chairman — Placeholder -->
-            <div class="leader-card reveal" style="--delay:.12s">
-                <div class="leader-card__photo">
-                    <div class="leader-card__placeholder">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        <span>Photo coming</span>
-                    </div>
-                </div>
-                <div class="leader-card__body">
-                    <h3 class="leader-card__name">Vice Chairman</h3>
-                    <span class="leader-card__title-badge">Vice Chairman</span>
-                    <p class="leader-card__coming">Profile and message coming soon</p>
-                </div>
-            </div>
-
-            <!-- Treasurer — Placeholder -->
-            <div class="leader-card reveal" style="--delay:.18s">
-                <div class="leader-card__photo">
-                    <div class="leader-card__placeholder">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        <span>Photo coming</span>
-                    </div>
-                </div>
-                <div class="leader-card__body">
-                    <h3 class="leader-card__name">Treasurer</h3>
-                    <span class="leader-card__title-badge">Treasurer</span>
-                    <p class="leader-card__coming">Profile and message coming soon</p>
-                </div>
-            </div>
-
-            <!-- Organizing Secretary — Placeholder -->
-            <div class="leader-card reveal" style="--delay:.24s">
-                <div class="leader-card__photo">
-                    <div class="leader-card__placeholder">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        <span>Photo coming</span>
-                    </div>
-                </div>
-                <div class="leader-card__body">
-                    <h3 class="leader-card__name">Organizing Secretary</h3>
-                    <span class="leader-card__title-badge">Organizing Secretary</span>
-                    <p class="leader-card__coming">Profile and message coming soon</p>
-                </div>
-            </div>
-
-            <!-- Competition Director — Placeholder -->
-            <div class="leader-card reveal" style="--delay:.30s">
-                <div class="leader-card__photo">
-                    <div class="leader-card__placeholder">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        <span>Photo coming</span>
-                    </div>
-                </div>
-                <div class="leader-card__body">
-                    <h3 class="leader-card__name">Competition Director</h3>
-                    <span class="leader-card__title-badge">Competition Director</span>
-                    <p class="leader-card__coming">Profile and message coming soon</p>
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
 </section>

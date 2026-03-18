@@ -1336,8 +1336,16 @@ def admin_add_team_official(request):
         team_id = request.POST.get('team_id')
         full_name = request.POST.get('full_name')
         position = request.POST.get('position')
-        phone_number = request.POST.get('phone_number')
+        phone_number = request.POST.get('phone_number', '').strip()
         email = request.POST.get('email', '')
+        
+        # Validate phone format: +254 followed by 9 digits
+        import re
+        if not re.match(r'^\+254\d{9}$', phone_number):
+            messages.error(request, '❌ Phone number must be in the format +254XXXXXXXXX (country code + 9 digits)')
+            teams = Team.objects.filter(status='approved').order_by('team_name')
+            positions = TeamOfficial.POSITION_CHOICES
+            return render(request, 'teams/admin_add_official.html', {'teams': teams, 'positions': positions})
         
         try:
             team = Team.objects.get(id=team_id, status='approved')
@@ -1581,6 +1589,12 @@ def admin_add_team_official(request):
         
         if not all([team_id, first_name, last_name, position]):
             messages.error(request, "All fields are required.")
+            return redirect('teams:admin_manage_officials')
+        
+        # Validate phone format: +254 followed by 9 digits
+        import re
+        if not re.match(r'^\+254\d{9}$', mobile):
+            messages.error(request, "Phone number must be in the format +254XXXXXXXXX (country code + 9 digits)")
             return redirect('teams:admin_manage_officials')
         
         try:

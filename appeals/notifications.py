@@ -207,7 +207,10 @@ def notify_hearing_scheduled(hearing):
 def notify_decision_published(decision):
     """
     Notify both team managers that a jury decision has been published.
+    Includes fee refund info (successful) or re-appeal window (rejected).
     """
+    from .models import REAPPEAL_FEE_KES, REAPPEAL_WINDOW_MINUTES
+
     appeal = decision.appeal
     appellant_email = _get_team_manager_email(appeal.appellant_team)
     respondent_email = _get_team_manager_email(appeal.respondent_team)
@@ -218,6 +221,23 @@ def notify_decision_published(decision):
         else "#dc3545" if decision.outcome == "rejected"
         else "#ffc107"
     )
+
+    # Build conditional sections
+    fee_refund_html = ""
+    if decision.outcome == "successful":
+        fee_refund_html = (
+            f"<p style='background: #e8f5e9; padding: 12px; border-radius: 4px; border-left: 4px solid #4caf50;'>"
+            f"💰 The appeal fee of KES {appeal.fee_amount:,.0f} will be refunded to the appellant.</p>"
+        )
+
+    reappeal_html = ""
+    if decision.outcome == "rejected" and not appeal.is_reappeal:
+        reappeal_html = (
+            f"<p style='background: #fce4ec; padding: 12px; border-radius: 4px; border-left: 4px solid #e91e63;'>"
+            f"⏱️ The appellant has <strong>{REAPPEAL_WINDOW_MINUTES} minutes</strong> from this notification "
+            f"to file a re-appeal. Re-appeal fee is KES {REAPPEAL_FEE_KES:,}. "
+            f"This is the final opportunity to challenge this decision.</p>"
+        )
 
     subject = f"[KYISA] Decision Published — Appeal #{appeal.pk}: {outcome_display}"
 
@@ -254,7 +274,8 @@ def notify_decision_published(decision):
 
             {"<div style='background: #fff3cd; padding: 15px; border-radius: 4px; border: 1px solid #ffc107; margin: 15px 0;'><h4 style='margin: 0 0 8px;'>Sanctions / Remedies:</h4><p style='margin: 0;'>" + decision.sanctions + "</p></div>" if decision.sanctions else ""}
 
-            {"<p style='background: #fce4ec; padding: 12px; border-radius: 4px; border-left: 4px solid #e91e63;'>The appellant may file one re-appeal with new evidence if they disagree with this decision.</p>" if decision.outcome == 'rejected' and not appeal.is_reappeal else ""}
+            {fee_refund_html}
+            {reappeal_html}
 
             <p>Log in to the KYISA CMS for full details and evidence.</p>
         </div>
@@ -264,4 +285,215 @@ def notify_decision_published(decision):
     </div>
     """
 
+    _safe_send(subject, html_message, [appellant_email, respondent_email])
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  4. RESPONSE SUBMITTED → Notify appellant team
+# ══════════════════════════════════════════════════════════════════════════════
+
+def notify_response_submitted(appeal):
+    """Notify the appellant team that the respondent has submitted a response."""
+    appellant_email = _get_team_manager_email(appeal.appellant_team)
+
+    subject = f"[KYISA] Response Received — Appeal #{appeal.pk}"
+
+    html_message = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #1a237e; color: #fff; padding: 20px; text-align: center;">
+            <h2 style="margin: 0;">⚖️ KYISA Appeals System</h2>
+        </div>
+        <div style="padding: 20px; background: #f8f9fa;">
+            <h3>📩 Response Received — Appeal #{appeal.pk}</h3>
+            <p><strong>{appeal.respondent_team.name}</strong> has submitted a response to your appeal.</p>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Appeal:</strong></td>
+                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">#{appeal.pk} — {appeal.subject}</td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Status:</strong></td>
+                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">Response Received — Awaiting Jury Review</td></tr>
+            </table>
+
+            <p>The appeal will now proceed to the Chair of the Jury for review and determination.</p>
+            <p>Log in to the KYISA CMS to view the full response and evidence.</p>
+        </div>
+        <div style="background: #e8eaf6; padding: 15px; text-align: center; font-size: 0.85rem; color: #666;">
+            KYISA Competition Management System — This is an automated notification.
+        </div>
+    </div>
+    """
+
+    _safe_send(subject, html_message, [appellant_email])
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  5. RE-APPEAL FILED → Notify respondent team + jury chair
+# ══════════════════════════════════════════════════════════════════════════════
+
+def notify_reappeal_filed(appeal):
+    """Notify both parties and jury chair that a re-appeal has been filed."""
+    from .models import REAPPEAL_FEE_KES
+    from accounts.models import User, UserRole
+
+    respondent_email = _get_team_manager_email(appeal.respondent_team)
+    appellant_email = _get_team_manager_email(appeal.appellant_team)
+
+    # Also notify jury chair(s)
+    jury_emails = list(
+        User.objects.filter(role=UserRole.JURY_CHAIR, is_active=True)
+        .values_list('email', flat=True)
+    )
+
+    subject = f"[KYISA] Re-Appeal Filed — Appeal #{appeal.pk}"
+
+    html_message = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #1a237e; color: #fff; padding: 20px; text-align: center;">
+            <h2 style="margin: 0;">⚖️ KYISA Appeals System</h2>
+        </div>
+        <div style="padding: 20px; background: #f8f9fa;">
+            <h3>🔄 Re-Appeal Filed — Appeal #{appeal.pk}</h3>
+            <p><strong>{appeal.appellant_team.name}</strong> has filed a re-appeal against <strong>{appeal.respondent_team.name}</strong>.</p>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Subject:</strong></td>
+                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">{appeal.subject}</td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Original Appeal:</strong></td>
+                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">#{appeal.original_appeal_id}</td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Re-Appeal Fee:</strong></td>
+                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">KES {REAPPEAL_FEE_KES:,}</td></tr>
+            </table>
+
+            <p style="background: #fff3cd; padding: 12px; border-radius: 4px; border-left: 4px solid #ffc107;">
+                ⚠️ This is a re-appeal. The decision on this re-appeal will be <strong>final and binding</strong>.
+                The respondent team has 30 minutes to submit a response once the appeal is formally submitted.
+            </p>
+
+            <p>Log in to the KYISA CMS for full details.</p>
+        </div>
+        <div style="background: #e8eaf6; padding: 15px; text-align: center; font-size: 0.85rem; color: #666;">
+            KYISA Competition Management System — This is an automated notification.
+        </div>
+    </div>
+    """
+
+    all_recipients = [respondent_email, appellant_email] + jury_emails
+    _safe_send(subject, html_message, all_recipients)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  6. FEE NOTIFICATIONS → Notify appellant
+# ══════════════════════════════════════════════════════════════════════════════
+
+def notify_fee_verified(appeal):
+    """Notify appellant that their fee payment has been verified."""
+    appellant_email = _get_team_manager_email(appeal.appellant_team)
+    subject = f"[KYISA] Appeal Fee Verified — Appeal #{appeal.pk}"
+    html_message = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #1a237e; color: #fff; padding: 20px; text-align: center;">
+            <h2 style="margin: 0;">⚖️ KYISA Appeals System</h2>
+        </div>
+        <div style="padding: 20px; background: #f8f9fa;">
+            <h3>✅ Fee Payment Verified — Appeal #{appeal.pk}</h3>
+            <p>Your appeal fee payment of <strong>KES {appeal.fee_amount:,.0f}</strong> has been verified.</p>
+            <p>Reference: <strong>{appeal.fee_reference}</strong></p>
+            <p style="background: #e8f5e9; padding: 12px; border-radius: 4px; border-left: 4px solid #4caf50;">
+                You can now finalize and submit your appeal. Remember: the appeal fee is
+                <strong>refundable only if the appeal is successful</strong>.
+            </p>
+            <p>Log in to the KYISA CMS to submit your appeal.</p>
+        </div>
+        <div style="background: #e8eaf6; padding: 15px; text-align: center; font-size: 0.85rem; color: #666;">
+            KYISA Competition Management System — This is an automated notification.
+        </div>
+    </div>
+    """
+    _safe_send(subject, html_message, [appellant_email])
+
+
+def notify_fee_rejected(appeal):
+    """Notify appellant that their fee payment was rejected."""
+    appellant_email = _get_team_manager_email(appeal.appellant_team)
+    subject = f"[KYISA] Appeal Fee Rejected — Appeal #{appeal.pk}"
+    html_message = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #1a237e; color: #fff; padding: 20px; text-align: center;">
+            <h2 style="margin: 0;">⚖️ KYISA Appeals System</h2>
+        </div>
+        <div style="padding: 20px; background: #f8f9fa;">
+            <h3>❌ Fee Payment Rejected — Appeal #{appeal.pk}</h3>
+            <p>Your appeal fee payment for appeal <strong>#{appeal.pk}</strong> has been rejected.</p>
+            <p style="background: #fce4ec; padding: 12px; border-radius: 4px; border-left: 4px solid #e91e63;">
+                Please resubmit a valid M-Pesa or bank reference for KES {appeal.fee_amount:,.0f}.
+            </p>
+            <p>Log in to the KYISA CMS to resubmit your payment reference.</p>
+        </div>
+        <div style="background: #e8eaf6; padding: 15px; text-align: center; font-size: 0.85rem; color: #666;">
+            KYISA Competition Management System — This is an automated notification.
+        </div>
+    </div>
+    """
+    _safe_send(subject, html_message, [appellant_email])
+
+
+def notify_fee_refunded(appeal):
+    """Notify appellant that their fee has been refunded."""
+    appellant_email = _get_team_manager_email(appeal.appellant_team)
+    subject = f"[KYISA] Appeal Fee Refunded — Appeal #{appeal.pk}"
+    html_message = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #1a237e; color: #fff; padding: 20px; text-align: center;">
+            <h2 style="margin: 0;">⚖️ KYISA Appeals System</h2>
+        </div>
+        <div style="padding: 20px; background: #f8f9fa;">
+            <h3>💰 Fee Refunded — Appeal #{appeal.pk}</h3>
+            <p>Your appeal fee of <strong>KES {appeal.fee_amount:,.0f}</strong> for appeal <strong>#{appeal.pk}</strong>
+            has been marked for refund.</p>
+            <p>Reference: <strong>{appeal.fee_reference}</strong></p>
+            <p style="background: #e8f5e9; padding: 12px; border-radius: 4px; border-left: 4px solid #4caf50;">
+                The refund will be processed to the original payment method. Please allow 2-3 business days.
+            </p>
+        </div>
+        <div style="background: #e8eaf6; padding: 15px; text-align: center; font-size: 0.85rem; color: #666;">
+            KYISA Competition Management System — This is an automated notification.
+        </div>
+    </div>
+    """
+    _safe_send(subject, html_message, [appellant_email])
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  7. HEARING CANCELLED → Notify both teams
+# ══════════════════════════════════════════════════════════════════════════════
+
+def notify_hearing_cancelled(hearing):
+    """Notify both team managers that a hearing has been cancelled."""
+    appeal = hearing.appeal
+    appellant_email = _get_team_manager_email(appeal.appellant_team)
+    respondent_email = _get_team_manager_email(appeal.respondent_team)
+
+    hearing_dt = hearing.hearing_date.strftime("%d %b %Y")
+    hearing_tm = hearing.hearing_time.strftime("%H:%M")
+
+    subject = f"[KYISA] Hearing Cancelled — Appeal #{appeal.pk}"
+    html_message = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #1a237e; color: #fff; padding: 20px; text-align: center;">
+            <h2 style="margin: 0;">⚖️ KYISA Appeals System</h2>
+        </div>
+        <div style="padding: 20px; background: #f8f9fa;">
+            <h3>🚫 Hearing Cancelled — Appeal #{appeal.pk}</h3>
+            <p>The hearing scheduled for <strong>{hearing_dt} at {hearing_tm}</strong> has been cancelled.</p>
+            <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Appeal:</strong></td>
+                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">#{appeal.pk} — {appeal.subject}</td></tr>
+            </table>
+            <p>A new hearing may be scheduled. Check the KYISA CMS for updates.</p>
+        </div>
+        <div style="background: #e8eaf6; padding: 15px; text-align: center; font-size: 0.85rem; color: #666;">
+            KYISA Competition Management System — This is an automated notification.
+        </div>
+    </div>
+    """
     _safe_send(subject, html_message, [appellant_email, respondent_email])

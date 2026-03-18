@@ -15,7 +15,10 @@ from django.utils import timezone
 
 
 # ── CONSTANTS ──────────────────────────────────────────────────────────────────
-APPEAL_FEE_KES = 2000  # KES 2,000 appeal submission fee
+APPEAL_FEE_KES = 2000       # KES 2,000 appeal submission fee (refundable if appeal succeeds)
+REAPPEAL_FEE_KES = 4000     # KES 4,000 re-appeal fee
+REAPPEAL_WINDOW_MINUTES = 10  # Re-appeal must be filed within 10 minutes of decision
+RESPONSE_WINDOW_MINUTES = 30  # Respondent has 30 minutes to submit a response
 
 
 class AppealStatus(models.TextChoices):
@@ -130,6 +133,10 @@ class Appeal(models.Model):
         null=True, blank=True,
         help_text="Deadline for respondent team to submit a response"
     )
+    reappeal_deadline = models.DateTimeField(
+        null=True, blank=True,
+        help_text="Deadline to file a re-appeal (10 minutes after decision)"
+    )
 
     # ── Timestamps ─────────────────────────────────────────────────────────
     created_at  = models.DateTimeField(auto_now_add=True)
@@ -179,6 +186,7 @@ class Appeal(models.Model):
         """
         A team can re-appeal ONCE if the decision was 'rejected'.
         Cannot re-appeal a re-appeal.
+        Must be filed within 10 minutes of the decision being published.
         """
         if self.is_reappeal:
             return False
@@ -186,6 +194,12 @@ class Appeal(models.Model):
         if not decision:
             return False
         if decision.outcome != AppealDecision.REJECTED:
+            return False
+        if not decision.is_published or not decision.published_at:
+            return False
+        # Check 10-minute window
+        window_end = decision.published_at + timezone.timedelta(minutes=REAPPEAL_WINDOW_MINUTES)
+        if timezone.now() > window_end:
             return False
         # Check no re-appeal already exists
         return not self.reappeals.exists()
@@ -404,6 +418,12 @@ class JuryDecision(models.Model):
             self.appeal.status = AppealStatus.SUBMITTED
         else:
             self.appeal.status = AppealStatus.DECIDED
+        # If appeal is successful, fee is refundable
+        if self.outcome == AppealDecision.SUCCESSFUL:
+            self.appeal.fee_status = FeeStatus.REFUNDED
+        # If rejected and not a re-appeal, set 10-minute re-appeal window
+        if self.outcome == AppealDecision.REJECTED and not self.appeal.is_reappeal:
+            self.appeal.reappeal_deadline = timezone.now() + timezone.timedelta(minutes=REAPPEAL_WINDOW_MINUTES)
         self.appeal.save()
         self.save()
 

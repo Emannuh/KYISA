@@ -52,13 +52,16 @@ class RefereeRegistrationForm(forms.Form):
         help_text='Your referee license / badge number',
     )
     phone = forms.CharField(
-        max_length=20,
-        required=False,
+        max_length=13,
+        required=True,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
             'placeholder': '+254712345678',
+            'pattern': '\\+254\\d{9}',
+            'maxlength': '13',
         }),
-        label='Phone Number',
+        label='Phone Number *',
+        help_text='Format: +254XXXXXXXXX',
     )
     county = forms.ChoiceField(
         choices=[('', '-- Select County --')] + list(KenyaCounty.choices),

@@ -19,7 +19,8 @@ from teams.models import Team
 from .models import (
     Appeal, AppealEvidence, AppealResponse, ResponseEvidence,
     JuryDecision, DecisionEvidence, HearingSchedule,
-    AppealStatus, AppealDecision, FeeStatus, APPEAL_FEE_KES,
+    AppealStatus, AppealDecision, FeeStatus,
+    APPEAL_FEE_KES, REAPPEAL_FEE_KES, REAPPEAL_WINDOW_MINUTES,
 )
 from .forms import (
     AppealForm, AppealEvidenceForm, AppealFeeForm,
@@ -159,6 +160,8 @@ def appeal_detail_view(request, pk):
         "can_schedule_hearing": is_jury and appeal.status not in (AppealStatus.DRAFT, AppealStatus.CLOSED),
         "can_reappeal": is_appellant and appeal.can_reappeal,
         "APPEAL_FEE": APPEAL_FEE_KES,
+        "REAPPEAL_FEE": REAPPEAL_FEE_KES,
+        "REAPPEAL_WINDOW_MINUTES": REAPPEAL_WINDOW_MINUTES,
     }
     return render(request, "appeals/appeal_detail.html", context)
 
@@ -358,6 +361,10 @@ def submit_response_view(request, pk):
             appeal.status = AppealStatus.RESPONSE_RECEIVED
             appeal.save()
 
+            # Notify appellant that a response was received
+            from .notifications import notify_response_submitted
+            notify_response_submitted(appeal)
+
             messages.success(request, "Response submitted. Now upload supporting evidence.")
             return redirect("upload_response_evidence", pk=appeal.pk)
     else:
@@ -495,7 +502,13 @@ def publish_decision_view(request, pk, decision_pk):
         from .notifications import notify_decision_published
         notify_decision_published(decision)
 
-        messages.success(request, "Decision published. Both teams have been notified by email.")
+        outcome_msg = "Decision published. Both teams have been notified by email."
+        if decision.outcome == AppealDecision.SUCCESSFUL:
+            outcome_msg += f" Appeal fee of KES {appeal.fee_amount:,.0f} will be refunded to the appellant."
+        elif decision.outcome == AppealDecision.REJECTED and not appeal.is_reappeal:
+            outcome_msg += f" The appellant has {REAPPEAL_WINDOW_MINUTES} minutes to file a re-appeal."
+
+        messages.success(request, outcome_msg)
         return redirect("appeal_detail", pk=pk)
 
     context = {
@@ -566,7 +579,12 @@ def cancel_hearing_view(request, pk, hearing_pk):
     if request.method == "POST":
         hearing.is_cancelled = True
         hearing.save()
-        messages.success(request, "Hearing cancelled.")
+
+        # Notify both teams about cancellation
+        from .notifications import notify_hearing_cancelled
+        notify_hearing_cancelled(hearing)
+
+        messages.success(request, "Hearing cancelled. Both teams have been notified.")
         return redirect("appeal_detail", pk=pk)
 
     context = {
@@ -582,7 +600,7 @@ def cancel_hearing_view(request, pk, hearing_pk):
 
 @team_manager_required
 def reappeal_view(request, pk):
-    """File a re-appeal on a rejected appeal (max 1 allowed)."""
+    """File a re-appeal on a rejected appeal (max 1 allowed, within 10 minutes)."""
     original = get_object_or_404(Appeal, pk=pk)
 
     managed_teams = Team.objects.filter(manager=request.user)
@@ -591,6 +609,13 @@ def reappeal_view(request, pk):
         return redirect("appeal_detail", pk=pk)
 
     if not original.can_reappeal:
+        # Check specific reason for better messaging
+        decision = original.latest_decision
+        if decision and decision.is_published and decision.published_at:
+            window_end = decision.published_at + timezone.timedelta(minutes=REAPPEAL_WINDOW_MINUTES)
+            if timezone.now() > window_end:
+                messages.error(request, f"The {REAPPEAL_WINDOW_MINUTES}-minute re-appeal window has expired.")
+                return redirect("appeal_detail", pk=pk)
         messages.error(request, "This appeal cannot be re-appealed. Either it was not rejected, is itself a re-appeal, or a re-appeal already exists.")
         return redirect("appeal_detail", pk=pk)
 
@@ -602,7 +627,7 @@ def reappeal_view(request, pk):
             appeal = form.save(commit=False)
             appeal.appellant_team = appellant_team
             appeal.appellant_user = request.user
-            appeal.fee_amount = APPEAL_FEE_KES
+            appeal.fee_amount = REAPPEAL_FEE_KES
             appeal.is_reappeal = True
             appeal.original_appeal = original
             # Pre-fill respondent from original
@@ -610,7 +635,12 @@ def reappeal_view(request, pk):
             appeal.competition = original.competition
             appeal.match = original.match
             appeal.save()
-            messages.success(request, "Re-appeal draft created. Add new evidence and pay the fee.")
+
+            # Notify both teams about re-appeal filing
+            from .notifications import notify_reappeal_filed
+            notify_reappeal_filed(appeal)
+
+            messages.success(request, f"Re-appeal draft created. Fee is KES {REAPPEAL_FEE_KES:,}. Add new evidence and pay the fee.")
             return redirect("appeal_detail", pk=appeal.pk)
     else:
         form = AppealForm(
@@ -623,11 +653,20 @@ def reappeal_view(request, pk):
             }
         )
 
+    # Calculate remaining time in re-appeal window
+    decision = original.latest_decision
+    remaining_seconds = 0
+    if decision and decision.published_at:
+        window_end = decision.published_at + timezone.timedelta(minutes=REAPPEAL_WINDOW_MINUTES)
+        remaining_seconds = max(0, int((window_end - timezone.now()).total_seconds()))
+
     context = {
         "form": form,
         "original_appeal": original,
         "appellant_team": appellant_team,
-        "APPEAL_FEE": APPEAL_FEE_KES,
+        "APPEAL_FEE": REAPPEAL_FEE_KES,
+        "remaining_seconds": remaining_seconds,
+        "REAPPEAL_WINDOW_MINUTES": REAPPEAL_WINDOW_MINUTES,
     }
     return render(request, "appeals/reappeal.html", context)
 
@@ -654,15 +693,24 @@ def verify_fee_view(request, pk):
                 appeal.fee_verified_by = request.user
                 appeal.fee_verified_at = timezone.now()
                 appeal.save()
+                # Notify appellant their fee was verified
+                from .notifications import notify_fee_verified
+                notify_fee_verified(appeal)
                 messages.success(request, "Fee payment verified.")
             elif action == "reject":
                 appeal.fee_status = FeeStatus.UNPAID
                 appeal.fee_reference = ""
                 appeal.save()
+                # Notify appellant their fee was rejected
+                from .notifications import notify_fee_rejected
+                notify_fee_rejected(appeal)
                 messages.warning(request, "Fee payment rejected. Team must resubmit.")
             elif action == "refund":
                 appeal.fee_status = FeeStatus.REFUNDED
                 appeal.save()
+                # Notify appellant about refund
+                from .notifications import notify_fee_refunded
+                notify_fee_refunded(appeal)
                 messages.info(request, "Fee marked as refunded.")
             return redirect("appeal_detail", pk=pk)
     else:

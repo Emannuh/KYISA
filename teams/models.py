@@ -4,19 +4,19 @@ KYISA Teams — Models
 from django.db import models
 from django.conf import settings
 from competitions.models import SportType
-from accounts.models import KenyaCounty
+from accounts.models import KenyaCounty, kenya_phone_validator
 
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  SQUAD SIZE LIMITS  (per discipline)
 # ══════════════════════════════════════════════════════════════════════════════
 SQUAD_LIMITS = {
-    SportType.FOOTBALL_MEN:       30,
-    SportType.FOOTBALL_WOMEN:     30,
-    SportType.VOLLEYBALL_MEN:     16,
-    SportType.VOLLEYBALL_WOMEN:   16,
-    SportType.HANDBALL_MEN:       16,
-    SportType.HANDBALL_WOMEN:     16,
+    SportType.FOOTBALL_MEN:       24,
+    SportType.FOOTBALL_WOMEN:     24,
+    SportType.VOLLEYBALL_MEN:     14,
+    SportType.VOLLEYBALL_WOMEN:   14,
+    SportType.HANDBALL_MEN:       14,
+    SportType.HANDBALL_WOMEN:     14,
     SportType.BASKETBALL_MEN:     12,
     SportType.BASKETBALL_WOMEN:   12,
     SportType.BASKETBALL_3X3_MEN: 8,
@@ -58,7 +58,7 @@ class CountyRegistration(models.Model):
         help_text="Full name of the Director of Sports for this county",
     )
     director_phone = models.CharField(
-        max_length=20, blank=True, default="",
+        max_length=13, validators=[kenya_phone_validator],
         help_text="Phone number of the Director of Sports",
     )
 
@@ -69,9 +69,19 @@ class CountyRegistration(models.Model):
     )
 
     # Payment evidence
-    mpesa_reference = models.CharField(max_length=100, blank=True, default="")
-    bank_slip = models.FileField(upload_to="county_reg/bank_slips/", null=True, blank=True)
+    mpesa_reference = models.CharField(max_length=100, blank=True, default="",
+                                        help_text="M-Pesa transaction code from confirmation SMS")
+    mpesa_phone = models.CharField(max_length=13, blank=True, default="",
+                                    help_text="Phone number used for M-Pesa payment")
+    mpesa_checkout_id = models.CharField(max_length=100, blank=True, default="",
+                                          help_text="Daraja STK push CheckoutRequestID")
+    bank_slip = models.FileField(upload_to="county_reg/bank_slips/", null=True, blank=True,
+                                  help_text="Bank deposit slip (image or PDF)")
+    bank_reference = models.CharField(max_length=100, blank=True, default="",
+                                       help_text="Bank payment/transfer reference code")
     payment_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    payment_method = models.CharField(max_length=20, blank=True, default="",
+                                       help_text="mpesa or bank_transfer")
     payment_submitted_at = models.DateTimeField(null=True, blank=True)
 
     # Approval
@@ -149,7 +159,7 @@ class CountyPlayer(models.Model):
         max_length=30, blank=True, default="",
         help_text="Huduma Namba / Huduma Kenya number",
     )
-    phone = models.CharField(max_length=20, blank=True, default="")
+    phone = models.CharField(max_length=13, validators=[kenya_phone_validator])
     position = models.CharField(max_length=10, blank=True, default="",
                                 help_text="Player position (where applicable)")
     jersey_number = models.PositiveIntegerField(null=True, blank=True,
@@ -262,7 +272,7 @@ class TechnicalBenchMember(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField(blank=True, default="")
-    phone = models.CharField(max_length=20, blank=True, default="")
+    phone = models.CharField(max_length=13, validators=[kenya_phone_validator])
     national_id_number = models.CharField(max_length=20, blank=True, default="")
     photo = models.ImageField(upload_to="technical_bench/photos/", null=True, blank=True)
     id_document = models.ImageField(upload_to="technical_bench/ids/", null=True, blank=True)
@@ -302,12 +312,12 @@ class County(models.Model):
     # Sports officer contact details
     sports_officer_name = models.CharField(max_length=200, blank=True, help_text="Sports officer full name")
     sports_officer_email = models.EmailField(blank=True, help_text="Sports officer email address")
-    sports_officer_phone = models.CharField(max_length=20, blank=True, help_text="Sports officer phone number")
+    sports_officer_phone = models.CharField(max_length=13, blank=True, validators=[kenya_phone_validator], help_text="Sports officer phone number")
     
     # Alternative contact (backup)
     alt_contact_name = models.CharField(max_length=200, blank=True, help_text="Alternative contact name")
     alt_contact_email = models.EmailField(blank=True, help_text="Alternative contact email")
-    alt_contact_phone = models.CharField(max_length=20, blank=True, help_text="Alternative contact phone")
+    alt_contact_phone = models.CharField(max_length=13, blank=True, validators=[kenya_phone_validator], help_text="Alternative contact phone")
     
     office_address = models.TextField(blank=True, help_text="County sports office address")
     is_active = models.BooleanField(default=True, help_text="County is active and participating")
@@ -384,7 +394,7 @@ class Team(models.Model):
     home_colour = models.CharField(max_length=50, blank=True, help_text="Primary kit colour (legacy)")
     away_colour = models.CharField(max_length=50, blank=True)
 
-    contact_phone = models.CharField(max_length=20, blank=True)
+    contact_phone = models.CharField(max_length=13, validators=[kenya_phone_validator])
     contact_email = models.EmailField(blank=True)
 
     # ── Payment tracking ───────────────────────────────────────────────────────
@@ -695,3 +705,38 @@ class PlayerVerificationLog(models.Model):
 
     def __str__(self):
         return f"{self.player.get_full_name()} — {self.get_step_display()} — {self.action}"
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   SCOUT SHORTLIST
+# ══════════════════════════════════════════════════════════════════════════════
+
+class ScoutShortlist(models.Model):
+    """A scout's shortlisted player with notes and rating."""
+    RATING_CHOICES = [(i, str(i)) for i in range(1, 6)]
+
+    scout = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        related_name="scout_shortlists",
+        limit_choices_to={"role": "scout"},
+    )
+    player = models.ForeignKey(
+        CountyPlayer, on_delete=models.CASCADE,
+        related_name="scout_entries",
+    )
+    rating = models.PositiveSmallIntegerField(
+        choices=RATING_CHOICES, default=3,
+        help_text="1 = Low potential, 5 = Outstanding",
+    )
+    notes = models.TextField(blank=True, default="", help_text="Scouting notes")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("scout", "player")
+        ordering = ["-updated_at"]
+        verbose_name = "Scout Shortlist Entry"
+        verbose_name_plural = "Scout Shortlist Entries"
+
+    def __str__(self):
+        return f"{self.scout.get_full_name()} → {self.player.first_name} {self.player.last_name} ({self.rating}★)"

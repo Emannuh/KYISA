@@ -139,10 +139,15 @@
                             {% if value == 'admin' %}Full system control, all management features
                             {% elif value == 'competition_manager' %}Create and manage competitions, fixtures, teams
                             {% elif value == 'coordinator' %}Manage discipline competitions, appoint referees, review match reports
+                            {% elif value == 'verification_officer' %}Verify county player registrations and documents
                             {% elif value == 'referee' %}Accept appointments, submit match reports
                             {% elif value == 'team_manager' %}Manage team players, squads, transfers
-                            {% elif value == 'treasurer' %}Verify payments, approve team registrations
-                            {% elif value == 'jury_chair' %}Handle appeals and disciplinary matters
+                            {% elif value == 'county_sports_admin' %}County registration, add disciplines and players
+                            {% elif value == 'treasurer' %}Verify payments, approve team and county registrations
+                            {% elif value == 'jury_chair' %}Handle appeals, schedule hearings, publish decisions
+                            {% elif value == 'media_manager' %}Manage news articles, photo albums, and videos
+                            {% elif value == 'secretary_general' %}Oversight, audit reports, verification review
+                            {% elif value == 'scout' %}Talent scouting, player shortlists and notes
                             {% else %}{{ label }} role{% endif %}
                         </div>
                     </div>
@@ -156,6 +161,22 @@
                     {% endif %}
                 </div>
 
+                <!-- Discipline assignment for Scout / Coordinator -->
+                <div id="discipline-section" style="display:none;margin-bottom:1.25rem;padding:1rem;background:#F5F5F5;border-radius:10px;border:1px solid #E0E0E0;">
+                    <label style="font-weight:600;font-size:.9rem;display:block;margin-bottom:.5rem;">
+                        <i class="bi bi-bullseye"></i> Assigned Discipline
+                    </label>
+                    <p style="color:#757575;font-size:.82rem;margin-bottom:.6rem;">
+                        Scouts and Coordinators are scoped to a specific sport discipline. Players and competitions will be filtered accordingly.
+                    </p>
+                    <select name="assigned_discipline" style="width:100%;padding:.5rem .8rem;border:1px solid #ccc;border-radius:8px;font-size:.9rem;">
+                        <option value="">— Not Assigned —</option>
+                        {% for val, label in sport_type_choices %}
+                        <option value="{{ val }}" {% if edit_user.assigned_discipline == val %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
                 <div style="display:flex;gap:.8rem;">
                     <button type="submit" class="btn btn-primary"
                             onclick="return confirm('Change role for {{ edit_user.email }}?')">
@@ -167,4 +188,20 @@
         </div>
     </div>
 </div>
+
+<script>
+function toggleDisciplineSection() {
+    var checked = document.querySelector('input[name="role"]:checked');
+    var section = document.getElementById('discipline-section');
+    if (checked && (checked.value === 'scout' || checked.value === 'coordinator')) {
+        section.style.display = 'block';
+    } else {
+        section.style.display = 'none';
+    }
+}
+document.querySelectorAll('input[name="role"]').forEach(function(r) {
+    r.addEventListener('change', toggleDisciplineSection);
+});
+toggleDisciplineSection();
+</script>
 {% endblock %}

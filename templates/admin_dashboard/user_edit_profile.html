@@ -93,8 +93,8 @@
 
                 <div class="form-row">
                     <div class="field">
-                        <label>Phone</label>
-                        <input type="text" name="phone" class="form-control" value="{{ detail_user.phone|default:'' }}" placeholder="+254...">
+                        <label>Phone *</label>
+                        <input type="tel" name="phone" class="form-control" value="{{ detail_user.phone|default:'' }}" placeholder="+254712345678" pattern="\+254\d{9}" maxlength="13" required title="Format: +254XXXXXXXXX">
                     </div>
                     <div class="field">
                         <label>County</label>

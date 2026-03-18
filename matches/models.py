@@ -160,6 +160,22 @@ def get_event_types_for_sport(sport_type):
     return cfg["event_types"]
 
 
+# ── Sport-specific match-day starters ────────────────────────────────────────
+SPORT_STARTERS = {
+    "football_men": 11, "football_women": 11,
+    "volleyball_men": 6, "volleyball_women": 6,
+    "basketball_men": 5, "basketball_women": 5,
+    "basketball_3x3_men": 3, "basketball_3x3_women": 3,
+    "handball_men": 7, "handball_women": 7,
+    "beach_volleyball": 2, "beach_handball": 4,
+}
+
+
+def get_starters_for_sport(sport_type):
+    """Return the required number of starters for a sport type."""
+    return SPORT_STARTERS.get(sport_type, 11)
+
+
 class SquadStatus(models.TextChoices):
     DRAFT     = "draft",     "Draft"
     SUBMITTED = "submitted", "Submitted"
@@ -172,6 +188,21 @@ class SquadSubmission(models.Model):
     Team Manager submits squad; Referee approves it before kick-off.
     Must be submitted at least 4 hours before kick-off (enforced in serializer).
     """
+    FOOTBALL_FORMATIONS = [
+        ("4-4-2",   "4-4-2"),
+        ("4-3-3",   "4-3-3"),
+        ("4-2-3-1", "4-2-3-1"),
+        ("3-5-2",   "3-5-2"),
+        ("4-5-1",   "4-5-1"),
+        ("3-4-3",   "3-4-3"),
+        ("5-3-2",   "5-3-2"),
+        ("5-4-1",   "5-4-1"),
+        ("4-1-4-1", "4-1-4-1"),
+        ("4-3-2-1", "4-3-2-1"),
+        ("4-1-2-1-2", "4-1-2-1-2"),
+        ("3-4-1-2", "3-4-1-2"),
+    ]
+
     KIT_CHOICES = [
         ("home", "Home Kit"),
         ("away", "Away Kit"),
@@ -189,7 +220,7 @@ class SquadSubmission(models.Model):
     status      = models.CharField(max_length=20, choices=SquadStatus.choices, default=SquadStatus.DRAFT)
     formation   = models.CharField(
         max_length=20, blank=True, default="",
-        help_text="Playing formation / units (e.g. 4-3-3, 4-4-2)",
+        help_text="Playing formation (e.g. 4-3-3, 4-4-2) — applies to football",
     )
     kit_choice  = models.CharField(
         max_length=10, choices=KIT_CHOICES, default="home",

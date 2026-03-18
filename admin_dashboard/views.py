@@ -190,14 +190,16 @@ def approve_registrations(request):
                         team.manager = mgr
                         team.save()
 
-                        # Try sending email
-                        send_welcome_email(mgr, default_pw, 'Team Manager')
+                        # Send credentials via email only (no password shown in UI)
+                        email_sent = send_welcome_email(mgr, default_pw, 'Team Manager')
 
                         messages.success(request, mark_safe(
                             f'<strong>{team.name}</strong> approved!<br>'
                             f'Manager account: <code>{team.contact_email}</code><br>'
-                            f'Temp password: <code>{default_pw}</code>'
+                            f'Temporary password sent to the manager email.'
                         ))
+                        if not email_sent:
+                            messages.warning(request, 'Email delivery failed. Ask admin to resend credentials.')
                 except Exception as e:
                     messages.warning(request, f'Team approved but manager account failed: {e}')
             else:
@@ -489,7 +491,14 @@ def create_league_admin(request):
         email = request.POST.get('email', '').strip()
         first_name = request.POST.get('first_name', '').strip()
         last_name = request.POST.get('last_name', '').strip()
+        phone = request.POST.get('phone', '').strip()
         role = request.POST.get('role', 'team_manager')
+
+        # Validate phone format
+        import re
+        if not re.match(r'^\+254\d{9}$', phone):
+            messages.error(request, "Phone number must be in the format +254XXXXXXXXX (country code + 9 digits).")
+            return redirect('manage_league_admins')
 
         if User.objects.filter(email=email).exists():
             messages.error(request, f"Email '{email}' already registered.")
@@ -502,6 +511,7 @@ def create_league_admin(request):
                 password=password,
                 first_name=first_name,
                 last_name=last_name,
+                phone=phone,
                 role=role,
                 is_active=True,
             )
@@ -525,8 +535,8 @@ def create_league_admin(request):
             messages.success(request, mark_safe(
                 f'User created!<br>'
                 f'Email: <code>{email}</code><br>'
-                f'Password: <code>{password}</code><br>'
-                f'Role: {role}'
+                f'Role: {role}<br>'
+                f'Temporary password has been sent to the user\'s email.'
             ))
         except Exception as e:
             messages.error(request, f"Error: {e}")
@@ -567,7 +577,7 @@ def reset_league_admin_password(request, user_id):
     send_password_reset_email(user_obj, new_password)
     messages.success(request, mark_safe(
         f'Password reset for {user_obj.email}.<br>'
-        f'New password: <code>{new_password}</code>'
+        f'New password has been sent to the user\'s email.'
     ))
     return redirect('manage_league_admins')
 
@@ -576,11 +586,13 @@ def reset_league_admin_password(request, user_id):
 @user_passes_test(superadmin_required)
 def edit_user_roles(request, user_id):
     """Edit user's role assignment using KYISA UserRole field."""
+    from competitions.models import SportType
     user_obj = get_object_or_404(User, id=user_id)
 
     if request.method == 'POST':
         new_role = request.POST.get('role', user_obj.role)
         old_role = user_obj.role
+        new_discipline = request.POST.get('assigned_discipline', '').strip()
 
         if new_role not in dict(UserRole.choices):
             messages.error(request, f"Invalid role: {new_role}")
@@ -594,7 +606,16 @@ def edit_user_roles(request, user_id):
         else:
             user_obj.is_staff = False
 
-        user_obj.save(update_fields=['role', 'is_staff'])
+        # Assign discipline for scout / coordinator roles
+        update_fields = ['role', 'is_staff']
+        if new_role in ('scout', 'coordinator'):
+            user_obj.assigned_discipline = new_discipline
+            update_fields.append('assigned_discipline')
+        elif old_role in ('scout', 'coordinator') and new_role not in ('scout', 'coordinator'):
+            user_obj.assigned_discipline = ''
+            update_fields.append('assigned_discipline')
+
+        user_obj.save(update_fields=update_fields)
 
         # Handle referee profile creation/removal
         if new_role == 'referee' and old_role != 'referee':
@@ -628,6 +649,7 @@ def edit_user_roles(request, user_id):
     context = {
         'edit_user': user_obj,
         'role_choices': UserRole.choices,
+        'sport_type_choices': SportType.choices,
     }
     return render(request, 'admin_dashboard/edit_user_roles.html', context)
 
@@ -803,6 +825,12 @@ def user_edit_profile(request, user_id):
         last_name = request.POST.get('last_name', '').strip()
         phone = request.POST.get('phone', '').strip()
         county = request.POST.get('county', '').strip()
+
+        # Validate phone format: +254 followed by 9 digits
+        import re
+        if phone and not re.match(r'^\+254\d{9}$', phone):
+            messages.error(request, "Phone number must be in the format +254XXXXXXXXX (country code + 9 digits).")
+            return redirect('user_detail', user_id=user_obj.id)
 
         # Validate email uniqueness
         if new_email and new_email != old_email:

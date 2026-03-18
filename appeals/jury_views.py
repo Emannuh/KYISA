@@ -676,7 +676,7 @@ def _pdf_base(title, subtitle, header_row, data_rows, col_widths, filename):
 
     # Add KYISA 11th Edition logo at the top
     elements = []
-    logo_path = os.path.join(settings.STATICFILES_DIRS[0] if settings.STATICFILES_DIRS else settings.STATIC_ROOT, 'img', 'kyisa_logo.png')
+    logo_path = os.path.join(settings.STATICFILES_DIRS[0] if settings.STATICFILES_DIRS else settings.STATIC_ROOT, 'img', 'kyisa_logo_official.jpg')
     if os.path.exists(logo_path):
         try:
             logo = Image(logo_path, width=40*mm, height=40*mm)

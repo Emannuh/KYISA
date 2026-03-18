@@ -10,7 +10,7 @@ from .models import (
     CountyRegistration, CountyPlayer, CountyDiscipline, SQUAD_LIMITS,
     TechnicalBenchMember, TechnicalBenchRole,
 )
-from accounts.models import KenyaCounty, User
+from accounts.models import KenyaCounty, User, kenya_phone_validator
 from competitions.models import Competition, CompetitionStatus, SportType
 
 
@@ -65,6 +65,9 @@ class TeamRegistrationForm(forms.ModelForm):
             'contact_phone': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': '+254712345678',
+                'pattern': '\\+254\\d{9}',
+                'maxlength': '13',
+                'required': True,
             }),
             'contact_email': forms.EmailInput(attrs={
                 'class': 'form-control',
@@ -96,7 +99,7 @@ class TeamRegistrationForm(forms.ModelForm):
             'name': 'Team Name *',
             'county': 'County *',
             'sport_type': 'Sport *',
-            'contact_phone': 'Contact Phone',
+            'contact_phone': 'Contact Phone *',
             'contact_email': 'Contact Email',
             'home_outfield_colour': 'Home Jersey Colour *',
             'home_shorts_colour': 'Home Shorts Colour *',
@@ -259,8 +262,9 @@ class CountyAdminRegistrationForm(forms.Form):
         label='Email Address *',
     )
     phone = forms.CharField(
-        max_length=20,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+254712345678'}),
+        max_length=13,
+        validators=[kenya_phone_validator],
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+254712345678', 'pattern': '\\+254\\d{9}', 'maxlength': '13'}),
         label='Phone Number *',
     )
     county = forms.ChoiceField(
@@ -276,8 +280,9 @@ class CountyAdminRegistrationForm(forms.Form):
         label='Director of Sports — Full Name *',
     )
     director_phone = forms.CharField(
-        max_length=20,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+254712345678'}),
+        max_length=13,
+        validators=[kenya_phone_validator],
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+254712345678', 'pattern': '\\+254\\d{9}', 'maxlength': '13'}),
         label='Director of Sports — Phone Number *',
     )
 
@@ -300,15 +305,29 @@ class CountyAdminRegistrationForm(forms.Form):
 
 class CountyPaymentForm(forms.Form):
     """County admin submits M-Pesa ref or bank slip as payment proof."""
+    payment_method = forms.ChoiceField(
+        choices=[('mpesa', 'M-Pesa'), ('bank_transfer', 'Bank Transfer')],
+        widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),
+        label='Payment Method *',
+    )
     mpesa_reference = forms.CharField(
         max_length=100, required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. RIA7K8QX3P'}),
-        label='M-Pesa Reference',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control', 'placeholder': 'e.g. RIA7K8QX3P',
+            'pattern': '[A-Z0-9]{10,}', 'style': 'text-transform:uppercase',
+        }),
+        label='M-Pesa Transaction Code',
+        help_text='Enter the M-Pesa confirmation code from your SMS.',
     )
     bank_slip = forms.FileField(
         required=False,
         widget=forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*,.pdf'}),
         label='Bank Slip (image or PDF)',
+    )
+    bank_reference = forms.CharField(
+        max_length=100, required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Bank transfer reference'}),
+        label='Bank Payment Reference',
     )
     payment_amount = forms.DecimalField(
         max_digits=10, decimal_places=2,
@@ -318,8 +337,13 @@ class CountyPaymentForm(forms.Form):
 
     def clean(self):
         cd = super().clean()
-        if not cd.get('mpesa_reference') and not cd.get('bank_slip'):
-            raise ValidationError('Please provide either an M-Pesa reference or upload a bank slip.')
+        method = cd.get('payment_method')
+        if method == 'mpesa':
+            if not cd.get('mpesa_reference'):
+                raise ValidationError('Please enter the M-Pesa transaction code from your confirmation SMS.')
+        elif method == 'bank_transfer':
+            if not cd.get('bank_slip') and not cd.get('bank_reference'):
+                raise ValidationError('Please upload a bank slip or enter the bank payment reference.')
         return cd
 
 
@@ -344,7 +368,7 @@ class CountyPlayerForm(forms.ModelForm):
             'date_of_birth': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'national_id_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 12345678'}),
             'huduma_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Huduma Namba'}),
-            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+254712345678'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+254712345678', 'pattern': '\\+254\\d{9}', 'maxlength': '13', 'required': True}),
             'position': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. GK, CB, CM, ST'}),
             'jersey_number': forms.NumberInput(attrs={'class': 'form-control', 'min': '1', 'max': '99'}),
             'photo': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
@@ -357,7 +381,7 @@ class CountyPlayerForm(forms.ModelForm):
             'date_of_birth': 'Date of Birth *',
             'national_id_number': 'National ID Number *',
             'huduma_number': 'Huduma Namba *',
-            'phone': 'Phone Number',
+            'phone': 'Phone Number *',
             'position': 'Position',
             'jersey_number': 'Jersey Number',
             'photo': 'Passport Photo *',
@@ -408,7 +432,7 @@ class TechnicalBenchForm(forms.ModelForm):
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First name'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last name'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'email@example.com'}),
-            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+254712345678'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+254712345678', 'pattern': '\\+254\\d{9}', 'maxlength': '13', 'required': True}),
             'national_id_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'National ID'}),
             'photo': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
             'id_document': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*,.pdf'}),

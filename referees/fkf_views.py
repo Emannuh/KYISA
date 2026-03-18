@@ -268,7 +268,7 @@ def approve_referee(request, referee_id):
         messages.success(request, mark_safe(
             f'<strong>Referee {referee.full_name} has been approved!</strong><br><br>'
             f'• <strong>Referee ID:</strong> <code>{unique_id}</code><br>'
-            f'• <strong>Default Password:</strong> <code>{default_password}</code><br>'
+            f'• Login credentials have been sent to the referee\'s email.<br>'
         ))
         return redirect('referees:pending_referees')
     
@@ -2823,7 +2823,7 @@ def export_appointments_pdf(request):
     
     # Create elements list and add KYISA 11th edition logo
     elements = []
-    logo_path = os.path.join(settings.STATICFILES_DIRS[0] if settings.STATICFILES_DIRS else settings.STATIC_ROOT, 'img', 'kyisa_logo.png')
+    logo_path = os.path.join(settings.STATICFILES_DIRS[0] if settings.STATICFILES_DIRS else settings.STATIC_ROOT, 'img', 'kyisa_logo_official.jpg')
     if os.path.exists(logo_path):
         try:
             logo = Image(logo_path, width=40*mm, height=40*mm)

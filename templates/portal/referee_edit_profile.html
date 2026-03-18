@@ -31,10 +31,11 @@
                        style="width:100%;padding:.6rem;border:1px solid #ddd;border-radius:8px;" required>
             </div>
             <div>
-                <label style="font-weight:600;display:block;margin-bottom:.3rem;">Phone</label>
-                <input type="text" name="phone" value="{{ user.phone }}"
+                <label style="font-weight:600;display:block;margin-bottom:.3rem;">Phone *</label>
+                <input type="tel" name="phone" value="{{ user.phone }}"
                        style="width:100%;padding:.6rem;border:1px solid #ddd;border-radius:8px;"
-                       placeholder="+254712345678">
+                       placeholder="+254712345678" pattern="\+254\d{9}" maxlength="13" required
+                       title="Format: +254XXXXXXXXX">
             </div>
             <div>
                 <label style="font-weight:600;display:block;margin-bottom:.3rem;">Email</label>

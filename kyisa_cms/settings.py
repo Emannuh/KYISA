@@ -238,4 +238,25 @@ SMILE_PARTNER_ID = env("SMILE_PARTNER_ID", default="")
 SMILE_API_KEY    = env("SMILE_API_KEY", default="")
 SMILE_ENVIRONMENT = env("SMILE_ENVIRONMENT", default="sandbox")  # 'sandbox' or 'production'
 SMILE_TIMEOUT    = env.int("SMILE_TIMEOUT", default=30)
+
+# ── M-PESA (DARAJA) INTEGRATION ──────────────────────────────────────────────
+# Safaricom Daraja API — STK Push (Lipa Na M-Pesa Online)
+# Register at developer.safaricom.co.ke → My Apps → Create App
+MPESA_ENVIRONMENT    = env("MPESA_ENVIRONMENT", default="sandbox")  # 'sandbox' or 'production'
+MPESA_CONSUMER_KEY   = env("MPESA_CONSUMER_KEY", default="")
+MPESA_CONSUMER_SECRET = env("MPESA_CONSUMER_SECRET", default="")
+MPESA_SHORTCODE      = env("MPESA_SHORTCODE", default="174379")       # Business shortcode (Paybill/Till)
+MPESA_PASSKEY        = env("MPESA_PASSKEY", default="")               # Lipa Na M-Pesa Online passkey
+MPESA_CALLBACK_URL   = env("MPESA_CALLBACK_URL", default="")          # Public URL for callbacks
+MPESA_ACCOUNT_REF    = env("MPESA_ACCOUNT_REF", default="KYISA2026")  # Account reference on receipts
+
+# ── KYISA BANK ACCOUNT DETAILS ────────────────────────────────────────────────
+# Displayed on registration page for bank transfers
+KYISA_BANK_NAME        = env("KYISA_BANK_NAME", default="Kenya Commercial Bank (KCB)")
+KYISA_BANK_BRANCH      = env("KYISA_BANK_BRANCH", default="Meru Branch")
+KYISA_BANK_ACCOUNT_NAME = env("KYISA_BANK_ACCOUNT_NAME", default="Kenya Youth Inter-County Sports Association")
+KYISA_BANK_ACCOUNT_NO  = env("KYISA_BANK_ACCOUNT_NO", default="1234567890")
+KYISA_BANK_SWIFT_CODE  = env("KYISA_BANK_SWIFT_CODE", default="")
+KYISA_MPESA_PAYBILL    = env("KYISA_MPESA_PAYBILL", default="")       # Paybill number for manual payments
+KYISA_MPESA_ACCOUNT_NO = env("KYISA_MPESA_ACCOUNT_NO", default="")    # Account number for Paybill
 IPRS_ENABLED     = env.bool("IPRS_ENABLED", default=True)

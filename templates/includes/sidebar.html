@@ -52,9 +52,9 @@
     </div>
 
     {% elif user.role == 'competition_manager' %}
-    <!-- COMPETITION MANAGER SIDEBAR -->
+    <!-- ORGANISING SECRETARY SIDEBAR -->
     <div class="sidebar-section">
-        <div class="sidebar-section-toggle"><h4>CM Portal</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
+        <div class="sidebar-section-toggle"><h4>Organising Secretary Portal</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
         <div class="sidebar-section-body">
             <a href="{% url 'cm_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'cm_dashboard' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-speedometer2"></i></span> Dashboard
@@ -87,6 +87,9 @@
             </a>
             <a href="{% url 'county_player_verification_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'county_player_verification_list' or request.resolver_match.url_name == 'verify_county_player' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-shield-check"></i></span> County Players
+            </a>
+            <a href="{% url 'cec_sports_portal' %}" class="sidebar-link {% if request.resolver_match.url_name == 'cec_sports_portal' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-people-fill"></i></span> CEC Sports (View Only)
             </a>
         </div>
     </div>
@@ -276,6 +279,9 @@
             <a href="{% url 'sg_verified_players' %}" class="sidebar-link {% if request.resolver_match.url_name == 'sg_verified_players' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-patch-check-fill"></i></span> Verified Players
             </a>
+            <a href="{% url 'cec_sports_portal' %}" class="sidebar-link {% if request.resolver_match.url_name == 'cec_sports_portal' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-people-fill"></i></span> CEC Sports (View Only)
+            </a>
         </div>
     </div>
     <div class="sidebar-section">
@@ -289,6 +295,22 @@
             </a>
         </div>
     </div>
+    {% elif user.role == 'verification_officer' %}
+    <!-- VERIFICATION OFFICER SIDEBAR -->
+    <div class="sidebar-section">
+        <div class="sidebar-section-toggle"><h4>Verification Officer</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
+        <div class="sidebar-section-body">
+            <a href="{% url 'vo_registered_counties' %}" class="sidebar-link {% if request.resolver_match.url_name == 'vo_registered_counties' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-geo-alt-fill"></i></span> Registered Counties
+            </a>
+            <a href="{% url 'county_player_verification_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'county_player_verification_list' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-list-check"></i></span> All Players Queue
+            </a>
+            <a href="{% url 'cec_sports_portal' %}" class="sidebar-link {% if request.resolver_match.url_name == 'cec_sports_portal' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-people-fill"></i></span> CEC Sports (View Only)
+            </a>
+        </div>
+    </div>
     {% elif user.role == 'media_manager' %}
     <!-- MEDIA MANAGER SIDEBAR -->
     <div class="sidebar-section">
@@ -299,6 +321,16 @@
             <a href="{% url 'media_album_list' %}" class="sidebar-link {% if 'media_album' in request.resolver_match.url_name %}active{% endif %}"><span class="icon"><i class="bi bi-images"></i></span> Photo Albums</a>
             <a href="{% url 'media_video_list' %}" class="sidebar-link {% if 'media_video' in request.resolver_match.url_name %}active{% endif %}"><span class="icon"><i class="bi bi-play-circle"></i></span> Videos</a>
             <a href="{% url 'media_categories' %}" class="sidebar-link {% if 'media_categories' in request.resolver_match.url_name %}active{% endif %}"><span class="icon"><i class="bi bi-tags"></i></span> Categories</a>
+        </div>
+    </div>
+    {% elif user.role == 'scout' %}
+    <!-- SCOUT SIDEBAR -->
+    <div class="sidebar-section">
+        <div class="sidebar-section-toggle"><h4>Scout</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
+        <div class="sidebar-section-body">
+            <a href="{% url 'scout_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'scout_dashboard' %}active{% endif %}"><span class="icon"><i class="bi bi-binoculars"></i></span> Scout Dashboard</a>
+            <a href="{% url 'scout_players' %}" class="sidebar-link {% if request.resolver_match.url_name == 'scout_players' %}active{% endif %}"><span class="icon"><i class="bi bi-people"></i></span> Browse Players</a>
+            <a href="{% url 'scout_shortlist' %}" class="sidebar-link {% if request.resolver_match.url_name == 'scout_shortlist' %}active{% endif %}"><span class="icon"><i class="bi bi-star"></i></span> My Shortlist</a>
         </div>
     </div>
     {% endif %}
