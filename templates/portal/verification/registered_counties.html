@@ -39,7 +39,7 @@
                     {% for item in county_data %}
                     <tr>
                         <td><strong>{{ item.registration.get_county_display }}</strong></td>
-                        <td>{{ item.registration.director_name|default:"—" }}<br><small style="color:#888">{{ item.registration.director_phone|default:"" }}</small></td>
+                        <td>{{ item.registration.user.get_full_name|default:"—" }}<br><small style="color:#888">{{ item.registration.user.phone|default:"" }}</small></td>
                         <td>
                             <span style="background:#E8F5E9;color:#1B5E20;padding:.2rem .6rem;border-radius:12px;font-weight:600;font-size:.85rem">
                                 {{ item.discipline_count }}

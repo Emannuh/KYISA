@@ -94,6 +94,7 @@ from .web_views import (
     cm_edit_fixture_view,
     cm_competition_rules_view,
     # County Sports Admin portal
+    county_admin_complete_registration_view,
     county_admin_dashboard_view,
     county_admin_payment_view,
     county_admin_add_discipline_view,
@@ -248,6 +249,7 @@ urlpatterns = [
     path("portal/treasurer/county-registrations/", treasurer_county_registrations_view, name="treasurer_county_registrations"),
 
     # ── COUNTY SPORTS ADMIN PORTAL ────────────────────────────────────────
+    path("portal/county-admin/complete-registration/",        county_admin_complete_registration_view, name="county_admin_complete_registration"),
     path("portal/county-admin/",                              county_admin_dashboard_view,          name="county_admin_dashboard"),
     path("portal/county-admin/payment/",                      county_admin_payment_view,            name="county_admin_payment"),
     path("portal/county-admin/add-discipline/",               county_admin_add_discipline_view,     name="county_admin_add_discipline"),

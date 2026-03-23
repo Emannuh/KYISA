@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Complete County Registration — KYISA{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'dashboard' %}">Portal</a>
+        <span>Complete Registration</span>
+    </div>
+    <h1><i class="bi bi-building"></i> Complete Your County Registration</h1>
+    <p>Welcome, {{ request.user.get_full_name }}. Select the county you represent to complete your registration.</p>
+</div>
+
+{% if messages %}
+{% for message in messages %}
+<div style="background:{% if message.tags == 'error' %}#fce4ec;border-left:4px solid #C62828{% elif message.tags == 'success' %}#e8f5e9;border-left:4px solid #2E7D32{% else %}#fff3e0;border-left:4px solid #f57c00{% endif %};border-radius:10px;padding:1rem 1.4rem;margin-bottom:1.5rem;font-size:.9rem">
+    {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="card" style="padding:2rem;max-width:600px">
+    <div style="background:#e3f2fd;border:1px solid #90caf9;border-radius:10px;padding:1rem 1.2rem;margin-bottom:1.5rem;font-size:.88rem;color:#1565c0;display:flex;align-items:flex-start;gap:.6rem">
+        <i class="bi bi-info-circle" style="margin-top:2px;flex-shrink:0"></i>
+        <div>
+            You are registered as a <strong>Director of Sports</strong>. Select your county below to create your county registration.
+            After this, you will need to submit your payment proof for treasurer approval.
+        </div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div style="margin-bottom:1.2rem">
+            <label for="id_county" style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">
+                <i class="bi bi-geo-alt"></i> County *
+            </label>
+            <select name="county" id="id_county" required
+                    style="width:100%;padding:.7rem .9rem;border:1.5px solid #d0d0d0;border-radius:10px;font-size:.92rem;background:#fafafa">
+                <option value="">— Select your county —</option>
+                {% for code, name in available_counties %}
+                <option value="{{ code }}" {% if code == user_county %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+            <small style="color:#999;font-size:.78rem">Counties already registered by another director are not shown.</small>
+        </div>
+
+        <button type="submit" style="width:100%;padding:.85rem;background:linear-gradient(135deg,#1B5E20,#2E7D32);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem">
+            <i class="bi bi-check-circle"></i> Register My County
+        </button>
+    </form>
+</div>
+{% endblock %}

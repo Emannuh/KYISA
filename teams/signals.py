@@ -41,7 +41,7 @@ def auto_create_team_for_discipline(sender, instance, created, **kwargs):
         county=county_obj,
         discipline=instance,
         sport_type=instance.sport_type,
-        contact_phone=registration.director_phone if registration.director_phone else "",
+        contact_phone=registration.user.phone if registration.user else "",
         status="pending",  # Team starts as pending approval
     )
 

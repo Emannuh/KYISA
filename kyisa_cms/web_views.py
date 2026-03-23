@@ -4653,6 +4653,52 @@ def mpesa_stk_push_view(request):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+#   COUNTY SPORTS DIRECTOR — COMPLETE REGISTRATION (logged-in users)
+# ══════════════════════════════════════════════════════════════════════════════
+
+@role_required('county_sports_admin')
+def county_admin_complete_registration_view(request):
+    """Logged-in county_sports_admin who has no CountyRegistration picks a county."""
+    # If they already have a registration, go to dashboard
+    if CountyRegistration.objects.filter(user=request.user).exists():
+        return redirect('county_admin_dashboard')
+
+    taken_counties = set(
+        CountyRegistration.objects.values_list('county', flat=True)
+    )
+
+    if request.method == 'POST':
+        county = request.POST.get('county', '').strip()
+        # Validate
+        valid_counties = dict(KenyaCounty.choices)
+        if not county or county not in valid_counties:
+            messages.error(request, 'Please select a valid county.')
+        elif county in taken_counties:
+            messages.error(request, 'This county has already been registered by another director.')
+        else:
+            reg = CountyRegistration.objects.create(
+                user=request.user,
+                county=county,
+                director_name=request.user.get_full_name(),
+                director_phone=request.user.phone,
+                status=CountyRegStatus.PENDING_PAYMENT,
+            )
+            # Also update user's county field
+            if request.user.county != county:
+                request.user.county = county
+                request.user.save(update_fields=['county'])
+            messages.success(request, f'County registration for {county} created. Please submit your payment.')
+            return redirect('county_admin_dashboard')
+
+    available = [(k, v) for k, v in KenyaCounty.choices if k not in taken_counties]
+
+    return render(request, 'portal/county_admin/complete_registration.html', {
+        'available_counties': available,
+        'user_county': request.user.county,
+    })
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 #   COUNTY SPORTS DIRECTOR — PUBLIC REGISTRATION
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -4690,55 +4736,25 @@ def county_admin_register_view(request):
             except Exception:
                 email_sent = False
 
-            # ── Collect payment data from registration form ──
-            payment_method = request.POST.get('payment_method', '').strip()
-            mpesa_phone = request.POST.get('mpesa_phone', '').strip()
-            mpesa_reference = request.POST.get('mpesa_reference', '').strip()
-            mpesa_checkout_id = request.POST.get('mpesa_checkout_id', '').strip()
-            bank_reference = request.POST.get('bank_reference', '').strip()
-            bank_slip = request.FILES.get('bank_slip')
-            payment_amount_str = request.POST.get('payment_amount', '').strip()
-
+            # Director info = registrant's own info (they ARE the Director of Sports)
             reg = CountyRegistration.objects.create(
                 user=user,
                 county=cd['county'],
-                director_name=cd['director_name'],
-                director_phone=cd['director_phone'],
-                payment_method=payment_method,
-                mpesa_phone=mpesa_phone,
-                mpesa_reference=mpesa_reference,
-                mpesa_checkout_id=mpesa_checkout_id,
-                bank_reference=bank_reference,
+                director_name=f"{cd['first_name']} {cd['last_name']}",
+                director_phone=cd['phone'],
             )
-            if bank_slip:
-                reg.bank_slip = bank_slip
-            if payment_amount_str:
-                try:
-                    reg.payment_amount = float(payment_amount_str)
-                except (ValueError, TypeError):
-                    pass
-
-            # Mark payment as submitted if any proof was provided
-            has_proof = mpesa_reference or bank_reference or bank_slip
-            if has_proof:
-                reg.payment_submitted_at = timezone.now()
-                reg.status = CountyRegStatus.PAYMENT_SUBMITTED
-            reg.save()
 
             messages.success(request, mark_safe(
                 f'<strong>County Registration Successful!</strong><br>'
                 f'County: <strong>{cd["county"]}</strong><br>'
-                f'Director of Sports: <strong>{cd["director_name"]}</strong><br><br>'
+                f'Director of Sports: <strong>{cd["first_name"]} {cd["last_name"]}</strong><br><br>'
                 f'Your temporary password has been sent to <code>{cd["email"]}</code>.<br>'
                 f'Check your inbox and spam folder, then change the password on first login.<br><br>'
                 f'<strong>Next steps:</strong><br>'
                 f'1. Log in to the portal with your email and the temporary password from email<br>'
                 f'2. Change your password when prompted<br>'
-                + (f'3. Your payment proof has been submitted — the treasurer will review it shortly<br>'
-                   f'4. Once approved, add disciplines first, then add your county delegation players'
-                   if has_proof else
-                   f'3. Submit payment (M-Pesa or bank slip) from your portal dashboard<br>'
-                   f'4. Once the treasurer approves, add disciplines first, then add your county delegation players')
+                f'3. Submit payment proof (M-Pesa or bank slip) from your portal dashboard<br>'
+                f'4. Once the treasurer approves, add disciplines, then add your county players'
             ))
             if not email_sent:
                 messages.warning(
@@ -4753,13 +4769,6 @@ def county_admin_register_view(request):
         'form': form,
         'taken_counties': taken_counties,
         'active_page': 'register',
-        'registration_fee': COUNTY_REGISTRATION_FEE_CAP,
-        'bank_name': django_settings.KYISA_BANK_NAME,
-        'bank_branch': django_settings.KYISA_BANK_BRANCH,
-        'bank_account_name': django_settings.KYISA_BANK_ACCOUNT_NAME,
-        'bank_account_no': django_settings.KYISA_BANK_ACCOUNT_NO,
-        'mpesa_paybill': django_settings.KYISA_MPESA_PAYBILL,
-        'mpesa_account_no': django_settings.KYISA_MPESA_ACCOUNT_NO,
     })
 
 
@@ -4792,7 +4801,10 @@ def cec_sports_portal_view(request):
 @role_required('county_sports_admin')
 def county_admin_dashboard_view(request):
     """County admin home — registration status, payment, disciplines, players."""
-    reg = get_object_or_404(CountyRegistration, user=request.user)
+    reg = CountyRegistration.objects.filter(user=request.user).first()
+    if reg is None:
+        messages.info(request, 'Please complete your county registration first.')
+        return redirect('county_admin_complete_registration')
     disciplines = reg.disciplines.all()
     player_count = sum(d.player_count for d in disciplines)
     delegation_members = reg.delegation_members.all().order_by('role', 'full_name')
@@ -4816,7 +4828,10 @@ def county_admin_dashboard_view(request):
 @role_required('county_sports_admin')
 def county_admin_payment_view(request):
     """County admin submits payment proof (M-Pesa or bank slip)."""
-    reg = get_object_or_404(CountyRegistration, user=request.user)
+    reg = CountyRegistration.objects.filter(user=request.user).first()
+    if reg is None:
+        messages.info(request, 'Please complete your county registration first.')
+        return redirect('county_admin_complete_registration')
 
     if reg.status not in (CountyRegStatus.PENDING_PAYMENT, CountyRegStatus.REJECTED):
         messages.info(request, 'Payment has already been submitted.')
@@ -4860,7 +4875,10 @@ def county_admin_payment_view(request):
 @role_required('county_sports_admin')
 def county_admin_add_discipline_view(request):
     """County admin chooses which disciplines to participate in."""
-    reg = get_object_or_404(CountyRegistration, user=request.user)
+    reg = CountyRegistration.objects.filter(user=request.user).first()
+    if reg is None:
+        messages.info(request, 'Please complete your county registration first.')
+        return redirect('county_admin_complete_registration')
 
     if not reg.is_approved:
         messages.warning(request, 'You must be approved before adding disciplines.')
@@ -4891,7 +4909,10 @@ def county_admin_add_discipline_view(request):
 @role_required('county_sports_admin')
 def county_admin_discipline_players_view(request, discipline_pk):
     """View players in a discipline and add new ones."""
-    reg = get_object_or_404(CountyRegistration, user=request.user)
+    reg = CountyRegistration.objects.filter(user=request.user).first()
+    if reg is None:
+        messages.info(request, 'Please complete your county registration first.')
+        return redirect('county_admin_complete_registration')
     discipline = get_object_or_404(CountyDiscipline, pk=discipline_pk, registration=reg)
     players = discipline.players.all()
 
@@ -4905,7 +4926,10 @@ def county_admin_discipline_players_view(request, discipline_pk):
 @role_required('county_sports_admin')
 def county_admin_add_player_view(request, discipline_pk):
     """Add a player to a discipline."""
-    reg = get_object_or_404(CountyRegistration, user=request.user)
+    reg = CountyRegistration.objects.filter(user=request.user).first()
+    if reg is None:
+        messages.info(request, 'Please complete your county registration first.')
+        return redirect('county_admin_complete_registration')
     discipline = get_object_or_404(CountyDiscipline, pk=discipline_pk, registration=reg)
 
     if not reg.is_approved:
@@ -4945,7 +4969,10 @@ def county_admin_add_player_view(request, discipline_pk):
 @role_required('county_sports_admin')
 def county_admin_delete_player_view(request, player_pk):
     """Remove a player from a discipline."""
-    reg = get_object_or_404(CountyRegistration, user=request.user)
+    reg = CountyRegistration.objects.filter(user=request.user).first()
+    if reg is None:
+        messages.info(request, 'Please complete your county registration first.')
+        return redirect('county_admin_complete_registration')
     player = get_object_or_404(CountyPlayer, pk=player_pk, discipline__registration=reg)
     discipline_pk = player.discipline.pk
 
@@ -5023,7 +5050,10 @@ def treasurer_county_registrations_view(request):
 @role_required('county_sports_admin')
 def county_admin_add_bench_member_view(request, discipline_pk):
     """County sports director adds a technical bench member to a discipline."""
-    reg = get_object_or_404(CountyRegistration, user=request.user)
+    reg = CountyRegistration.objects.filter(user=request.user).first()
+    if reg is None:
+        messages.info(request, 'Please complete your county registration first.')
+        return redirect('county_admin_complete_registration')
     discipline = get_object_or_404(CountyDiscipline, pk=discipline_pk, registration=reg)
 
     if not reg.is_approved:
@@ -5110,7 +5140,10 @@ def county_admin_add_bench_member_view(request, discipline_pk):
 @role_required('county_sports_admin')
 def county_admin_delete_bench_member_view(request, member_pk):
     """Remove a technical bench member."""
-    reg = get_object_or_404(CountyRegistration, user=request.user)
+    reg = CountyRegistration.objects.filter(user=request.user).first()
+    if reg is None:
+        messages.info(request, 'Please complete your county registration first.')
+        return redirect('county_admin_complete_registration')
     member = get_object_or_404(TechnicalBenchMember, pk=member_pk, discipline__registration=reg)
     discipline_pk = member.discipline.pk
 
@@ -5124,7 +5157,10 @@ def county_admin_delete_bench_member_view(request, member_pk):
 @role_required('county_sports_admin')
 def county_admin_delegation_members_view(request):
     """County sports director manages county-level delegation officials."""
-    reg = get_object_or_404(CountyRegistration, user=request.user)
+    reg = CountyRegistration.objects.filter(user=request.user).first()
+    if reg is None:
+        messages.info(request, 'Please complete your county registration first.')
+        return redirect('county_admin_complete_registration')
 
     if not reg.is_approved:
         messages.warning(request, 'Registration must be approved before adding delegation members.')
@@ -5193,7 +5229,10 @@ def county_admin_delegation_members_view(request):
 @role_required('county_sports_admin')
 def county_admin_delete_delegation_member_view(request, member_pk):
     """Remove a county-level delegation member and linked account if present."""
-    reg = get_object_or_404(CountyRegistration, user=request.user)
+    reg = CountyRegistration.objects.filter(user=request.user).first()
+    if reg is None:
+        messages.info(request, 'Please complete your county registration first.')
+        return redirect('county_admin_complete_registration')
     member = get_object_or_404(CountyDelegationMember, pk=member_pk, registration=reg)
 
     if request.method == 'POST':
@@ -5214,7 +5253,10 @@ def county_admin_delete_delegation_member_view(request, member_pk):
 @role_required('county_sports_admin')
 def county_admin_verification_view(request):
     """County sports director views verification status of all their players."""
-    reg = get_object_or_404(CountyRegistration, user=request.user)
+    reg = CountyRegistration.objects.filter(user=request.user).first()
+    if reg is None:
+        messages.info(request, 'Please complete your county registration first.')
+        return redirect('county_admin_complete_registration')
     disciplines = reg.disciplines.prefetch_related('players').all()
 
     approved_players = []

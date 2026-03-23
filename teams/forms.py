@@ -302,18 +302,6 @@ class CountyAdminRegistrationForm(forms.Form):
         label='County *',
     )
 
-    # Director of Sports — contact person for the county
-    director_name = forms.CharField(
-        max_length=200,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Full name of Director of Sports'}),
-        label='Director of Sports — Full Name *',
-    )
-    director_phone = forms.CharField(
-        max_length=13,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '712345678', 'pattern': '(?:\\+?254|0)?\\d{9}', 'maxlength': '13'}),
-        label='Director of Sports — Phone Number *',
-    )
-
     def clean_email(self):
         email = self.cleaned_data['email']
         if User.objects.filter(email__iexact=email).exists():
@@ -329,8 +317,7 @@ class CountyAdminRegistrationForm(forms.Form):
     def clean_phone(self):
         return validate_kenya_phone_or_raise(self.cleaned_data.get('phone'), 'Phone number')
 
-    def clean_director_phone(self):
-        return validate_kenya_phone_or_raise(self.cleaned_data.get('director_phone'), 'Director phone')
+
 
 
 # ══════════════════════════════════════════════════════════════════════════════
