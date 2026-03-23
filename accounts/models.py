@@ -15,7 +15,11 @@ kenya_phone_validator = RegexValidator(
 
 class UserRole(models.TextChoices):
     COMPETITION_MANAGER = "competition_manager", "Organising Secretary"
-    COORDINATOR         = "coordinator",         "Discipline Coordinator"
+    COORDINATOR         = "coordinator",         "Discipline Coordinator"  # Legacy - deprecated
+    SOCCER_COORDINATOR  = "soccer_coordinator",  "Soccer Coordinator"
+    HANDBALL_COORDINATOR = "handball_coordinator", "Handball Coordinator"
+    BASKETBALL_COORDINATOR = "basketball_coordinator", "Basketball Coordinator"
+    VOLLEYBALL_COORDINATOR = "volleyball_coordinator", "Volleyball Coordinator"
     VERIFICATION_OFFICER = "verification_officer", "Verification Officer"
     REFEREE             = "referee",             "Referee"
     TEAM_MANAGER        = "team_manager",        "Team Manager"
@@ -62,7 +66,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_suspended = models.BooleanField(default=False, help_text="Admin-suspended account")
     assigned_discipline = models.CharField(
         max_length=30, blank=True, default="",
-        help_text="Sport discipline this user manages (for Coordinator / Scout roles)",
+        help_text="Sport discipline (only for legacy Discipline Coordinator role; sport coordinators don't need this)",
     )
     must_change_password = models.BooleanField(
         default=False,
@@ -92,6 +96,23 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_competition_manager(self): return self.role == UserRole.COMPETITION_MANAGER
     @property
     def is_coordinator(self): return self.role == UserRole.COORDINATOR
+    @property
+    def is_soccer_coordinator(self): return self.role == UserRole.SOCCER_COORDINATOR
+    @property
+    def is_handball_coordinator(self): return self.role == UserRole.HANDBALL_COORDINATOR
+    @property
+    def is_basketball_coordinator(self): return self.role == UserRole.BASKETBALL_COORDINATOR
+    @property
+    def is_volleyball_coordinator(self): return self.role == UserRole.VOLLEYBALL_COORDINATOR
+    @property
+    def is_any_sport_coordinator(self):
+        """Check if user is any of the sport-specific coordinators."""
+        return self.role in (
+            UserRole.SOCCER_COORDINATOR,
+            UserRole.HANDBALL_COORDINATOR,
+            UserRole.BASKETBALL_COORDINATOR,
+            UserRole.VOLLEYBALL_COORDINATOR,
+        )
     @property
     def is_verification_officer(self): return self.role == UserRole.VERIFICATION_OFFICER
     @property

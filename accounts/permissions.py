@@ -23,6 +23,53 @@ class IsCoordinator(BasePermission):
 IsRefereeManager = IsCoordinator  # backwards compat
 
 
+class IsSportCoordinator(BasePermission):
+    """Only a Sport Coordinator (Soccer, Handball, Basketball, Volleyball) can access."""
+    message = "You must be a Sport Coordinator to perform this action."
+    def has_permission(self, request, view):
+        return bool(
+            request.user and request.user.is_authenticated and
+            request.user.role in [
+                UserRole.SOCCER_COORDINATOR,
+                UserRole.HANDBALL_COORDINATOR,
+                UserRole.BASKETBALL_COORDINATOR,
+                UserRole.VOLLEYBALL_COORDINATOR,
+            ]
+        )
+
+
+class IsSoccerCoordinator(BasePermission):
+    """Only Soccer Coordinator can access."""
+    message = "You must be a Soccer Coordinator to perform this action."
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_authenticated and
+                    request.user.role == UserRole.SOCCER_COORDINATOR)
+
+
+class IsHandballCoordinator(BasePermission):
+    """Only Handball Coordinator can access."""
+    message = "You must be a Handball Coordinator to perform this action."
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_authenticated and
+                    request.user.role == UserRole.HANDBALL_COORDINATOR)
+
+
+class IsBasketballCoordinator(BasePermission):
+    """Only Basketball Coordinator can access."""
+    message = "You must be a Basketball Coordinator to perform this action."
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_authenticated and
+                    request.user.role == UserRole.BASKETBALL_COORDINATOR)
+
+
+class IsVolleyballCoordinator(BasePermission):
+    """Only Volleyball Coordinator can access."""
+    message = "You must be a Volleyball Coordinator to perform this action."
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_authenticated and
+                    request.user.role == UserRole.VOLLEYBALL_COORDINATOR)
+
+
 class IsReferee(BasePermission):
     """Only approved Referees can access."""
     message = "You must be an approved Referee to perform this action."
@@ -86,13 +133,17 @@ IsRefereeManagerOrAdmin = IsCoordinatorOrAdmin  # backwards compat
 
 
 class IsAnyStaff(BasePermission):
-    """Any internal staff role (CM, RM, Treasurer, Admin) — not team manager or referee."""
+    """Any internal staff role (CM, Coordinators, Treasurer, Admin) — not team manager or referee."""
     def has_permission(self, request, view):
         return bool(
             request.user and request.user.is_authenticated and
             request.user.role in [
                 UserRole.COMPETITION_MANAGER,
                 UserRole.COORDINATOR,
+                UserRole.SOCCER_COORDINATOR,
+                UserRole.HANDBALL_COORDINATOR,
+                UserRole.BASKETBALL_COORDINATOR,
+                UserRole.VOLLEYBALL_COORDINATOR,
                 UserRole.TREASURER,
                 UserRole.ADMIN,
             ]

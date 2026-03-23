@@ -138,7 +138,11 @@
                         <div class="role-desc">
                             {% if value == 'admin' %}Full system control, all management features
                             {% elif value == 'competition_manager' %}Create and manage competitions, fixtures, teams
-                            {% elif value == 'coordinator' %}Manage discipline competitions, appoint referees, review match reports
+                            {% elif value == 'coordinator' %}[LEGACY] Manage discipline competitions, appoint referees, review match reports
+                            {% elif value == 'soccer_coordinator' %}Manage Soccer competitions, teams, fixtures, appoint referees
+                            {% elif value == 'handball_coordinator' %}Manage Handball competitions, teams, fixtures, appoint referees
+                            {% elif value == 'basketball_coordinator' %}Manage Basketball competitions, teams, fixtures, appoint referees
+                            {% elif value == 'volleyball_coordinator' %}Manage Volleyball competitions, teams, fixtures, appoint referees
                             {% elif value == 'verification_officer' %}Verify county player registrations and documents
                             {% elif value == 'referee' %}Accept appointments, submit match reports
                             {% elif value == 'team_manager' %}Manage team players, squads, transfers
@@ -161,13 +165,14 @@
                     {% endif %}
                 </div>
 
-                <!-- Discipline assignment for Scout / Coordinator -->
+                <!-- Discipline assignment for Scout / Coordinator [LEGACY] -->
                 <div id="discipline-section" style="display:none;margin-bottom:1.25rem;padding:1rem;background:#F5F5F5;border-radius:10px;border:1px solid #E0E0E0;">
                     <label style="font-weight:600;font-size:.9rem;display:block;margin-bottom:.5rem;">
                         <i class="bi bi-bullseye"></i> Assigned Discipline
                     </label>
                     <p style="color:#757575;font-size:.82rem;margin-bottom:.6rem;">
-                        Scouts and Coordinators are scoped to a specific sport discipline. Players and competitions will be filtered accordingly.
+                        [LEGACY] Scouts and old-style Coordinators are scoped to a specific sport discipline. 
+                        <strong>New Sport Coordinators don't need discipline assignment.</strong>
                     </p>
                     <select name="assigned_discipline" style="width:100%;padding:.5rem .8rem;border:1px solid #ccc;border-radius:8px;font-size:.9rem;">
                         <option value="">— Not Assigned —</option>
@@ -193,6 +198,8 @@
 function toggleDisciplineSection() {
     var checked = document.querySelector('input[name="role"]:checked');
     var section = document.getElementById('discipline-section');
+    // Only show discipline section for legacy coordinator and scout roles
+    // New sport coordinators (soccer_coordinator, etc.) don't need discipline assignment
     if (checked && (checked.value === 'scout' || checked.value === 'coordinator')) {
         section.style.display = 'block';
     } else {

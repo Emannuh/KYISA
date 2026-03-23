@@ -101,8 +101,8 @@
         </div>
     </div>
 
-    {% elif user.role == 'coordinator' %}
-    <!-- DISCIPLINE COORDINATOR SIDEBAR -->
+    {% elif user.role == 'coordinator' or user.role == 'soccer_coordinator' or user.role == 'handball_coordinator' or user.role == 'basketball_coordinator' or user.role == 'volleyball_coordinator' %}
+    <!-- COORDINATOR SIDEBAR (all types) -->
     <div class="sidebar-section">
         <div class="sidebar-section-toggle"><h4>Coordinator Portal</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
         <div class="sidebar-section-body">

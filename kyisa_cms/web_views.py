@@ -46,11 +46,28 @@ from datetime import date, timedelta
 # ── ROLE DECORATOR ────────────────────────────────────────────────────────────
 def role_required(*roles):
     """Allow access only to users with the given role(s)."""
+    # Expand 'coordinator' to include all sport-specific coordinators
+    expanded_roles = []
+    for role in roles:
+        if role == 'coordinator':
+            # Include both legacy and new coordinator roles
+            expanded_roles.extend([
+                'coordinator',
+                'soccer_coordinator',
+                'handball_coordinator',
+                'basketball_coordinator',
+                'volleyball_coordinator',
+            ])
+        else:
+            expanded_roles.append(role)
+    
+    allowed_roles = tuple(set(expanded_roles))  # Remove duplicates
+    
     def decorator(view):
         @wraps(view)
         @login_required(login_url='web_login')
         def wrapper(request, *args, **kwargs):
-            if request.user.role not in roles and not request.user.is_superuser:
+            if request.user.role not in allowed_roles and not request.user.is_superuser:
                 messages.error(request, 'You do not have permission to access this page.')
                 return redirect('dashboard')
             return view(request, *args, **kwargs)
@@ -2001,8 +2018,29 @@ def referee_edit_profile_view(request):
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _coordinator_discipline(user):
-    """Return the coordinator's assigned discipline or None."""
-    return getattr(user, 'assigned_discipline', '') or None
+    """
+    Get the discipline for a coordinator user.
+    - New sport coordinators: derive from role
+    - Legacy general coordinators: use assigned_discipline field
+    Returns: SportType choice value or None
+    """
+    # Map new sport coordinator roles to SportType values
+    ROLE_TO_SPORT = {
+        UserRole.SOCCER_COORDINATOR: SportType.FOOTBALL_MEN,  # Default to men's
+        UserRole.HANDBALL_COORDINATOR: SportType.HANDBALL_MEN,  # Default to men's
+        UserRole.BASKETBALL_COORDINATOR: SportType.BASKETBALL_MEN,  # Default to men's
+        UserRole.VOLLEYBALL_COORDINATOR: SportType.VOLLEYBALL_MEN,  # Default to men's
+    }
+    
+    # Check if user is a new sport coordinator
+    if user.role in ROLE_TO_SPORT:
+        return ROLE_TO_SPORT[user.role]
+    
+    # Fall back to legacy assigned_discipline for old Coordinator role
+    if user.role == UserRole.COORDINATOR:
+        return getattr(user, 'assigned_discipline', '') or None
+    
+    return None
 
 
 @role_required('coordinator', 'admin')

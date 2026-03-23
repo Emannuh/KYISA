@@ -402,6 +402,10 @@ class TeamStatus(models.TextChoices):
 class Team(models.Model):
     name        = models.CharField(max_length=200, unique=True)
     county      = models.ForeignKey(County, on_delete=models.CASCADE, related_name="teams", help_text="County this team represents")
+    discipline  = models.ForeignKey(
+        CountyDiscipline, on_delete=models.CASCADE, null=True, blank=True,
+        related_name="teams", help_text="Discipline this team is registered for"
+    )
     sport_type  = models.CharField(
         max_length=30, choices=SportType.choices, default=SportType.FOOTBALL_MEN,
         help_text="Sport this team competes in"
