@@ -179,13 +179,13 @@ def get_starters_for_sport(sport_type):
 class SquadStatus(models.TextChoices):
     DRAFT     = "draft",     "Draft"
     SUBMITTED = "submitted", "Submitted"
-    APPROVED  = "approved",  "Approved by Referee"
+    APPROVED  = "approved",  "Approved by Coordinator"
     REJECTED  = "rejected",  "Rejected — Needs Changes"
 
 
 class SquadSubmission(models.Model):
     """
-    Team Manager submits squad; Referee approves it before kick-off.
+    Team Manager submits squad; Coordinator approves it before kick-off.
     Must be submitted at least 4 hours before kick-off (enforced in serializer).
     """
     FOOTBALL_FORMATIONS = [

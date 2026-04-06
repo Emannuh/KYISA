@@ -193,3 +193,51 @@ class ActivityLog(models.Model):
         if days_old > 7:
             return False
         return True
+
+
+class EmailLog(models.Model):
+    """
+    Audit trail for all outgoing emails.
+    Every email sent by the system is recorded here.
+    """
+    DIRECTION_CHOICES = [
+        ('OUT', 'Outgoing'),
+        ('IN', 'Incoming'),
+    ]
+    STATUS_CHOICES = [
+        ('sent', 'Sent'),
+        ('failed', 'Failed'),
+        ('draft', 'Draft'),
+    ]
+
+    direction    = models.CharField(max_length=3, choices=DIRECTION_CHOICES, default='OUT')
+    status       = models.CharField(max_length=10, choices=STATUS_CHOICES, default='sent')
+    from_email   = models.EmailField()
+    to_emails    = models.TextField(help_text="Comma-separated recipient emails")
+    cc_emails    = models.TextField(blank=True, default="")
+    bcc_emails   = models.TextField(blank=True, default="")
+    subject      = models.CharField(max_length=500)
+    body_text    = models.TextField(blank=True)
+    body_html    = models.TextField(blank=True)
+    sent_at      = models.DateTimeField(default=timezone.now, db_index=True)
+    sent_by      = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='emails_sent',
+    )
+    error_message = models.TextField(blank=True, help_text="Error details if send failed")
+    message_id   = models.CharField(
+        max_length=255, blank=True, db_index=True,
+        help_text="RFC 2822 Message-ID for deduplication",
+    )
+
+    class Meta:
+        ordering = ['-sent_at']
+        verbose_name = 'Email Log'
+        verbose_name_plural = 'Email Logs'
+        indexes = [
+            models.Index(fields=['-sent_at']),
+            models.Index(fields=['status', '-sent_at']),
+        ]
+
+    def __str__(self):
+        return f"[{self.status}] {self.subject} → {self.to_emails[:60]}"

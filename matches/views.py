@@ -13,7 +13,7 @@ from .serializers import (
     SquadSubmissionSerializer, SquadApprovalSerializer,
     MatchReportSerializer, MatchReportApprovalSerializer,
 )
-from accounts.permissions import IsReferee, IsTeamManager, IsRefereeManagerOrAdmin
+from accounts.permissions import IsReferee, IsTeamManager, IsRefereeManagerOrAdmin, IsCoordinatorOrAdmin
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -59,11 +59,11 @@ class SquadListView(generics.ListAPIView):
 class SquadApproveView(APIView):
     """
     POST /api/v1/matches/squads/<id>/approve/
-    Referee approves or rejects a submitted squad.
+    Coordinator approves or rejects a submitted squad.
     """
-    permission_classes = [IsReferee]
+    permission_classes = [IsCoordinatorOrAdmin]
 
-    @extend_schema(tags=["squads"], summary="Referee approves/rejects squad sheet")
+    @extend_schema(tags=["squads"], summary="Coordinator approves/rejects squad sheet")
     def post(self, request, pk):
         try:
             squad = SquadSubmission.objects.get(pk=pk, status="submitted")
@@ -87,7 +87,10 @@ class SquadApproveView(APIView):
             squad.rejection_reason = reason
 
         squad.save()
-        # TODO: notify team manager via email
+        # Notify team manager via email
+        from kyisa_cms.notifications import notify_squad_rejected
+        if action == "reject":
+            notify_squad_rejected(squad)
         return Response({
             "detail": f"Squad {action}d successfully.",
             "status": squad.status,
@@ -127,11 +130,14 @@ class MatchReportViewSet(ModelViewSet):
 
     @extend_schema(tags=["matches"], summary="Submit match report (referee)")
     def perform_create(self, serializer):
-        serializer.save(
+        report = serializer.save(
             referee=self.request.user.referee_profile,
             submitted_at=timezone.now(),
             status="submitted",
         )
+        # Notify coordinator
+        from kyisa_cms.notifications import notify_match_report_submitted
+        notify_match_report_submitted(report)
 
     @extend_schema(tags=["matches"])
     def list(self, request, *args, **kwargs):
@@ -177,6 +183,12 @@ class MatchReportApproveView(APIView):
             report.reviewer_notes = notes
 
         report.save()
+
+        # Send notification emails
+        if action == "return":
+            from kyisa_cms.notifications import notify_match_report_returned
+            notify_match_report_returned(report)
+
         return Response({"detail": f"Match report {action}d.", "status": report.status})
 
 

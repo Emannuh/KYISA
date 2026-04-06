@@ -87,13 +87,19 @@
             </a>
             {% endif %}
 
-            {% if user.role == 'coordinator' %}
-            <a href="{% url 'coordinator_dashboard' %}" class="action-card">
-                <div class="action-icon"><i class="bi bi-clipboard2-pulse"></i></div>
-                <h4>Coordinator Portal</h4>
-                <p>Manage your discipline</p>
-            </a>
-            {% endif %}
+                        {% if user.role == 'coordinator' or user.role == 'soccer_coordinator' or user.role == 'handball_coordinator' or user.role == 'basketball_coordinator' or user.role == 'volleyball_coordinator' %}
+                        <a href="{% url 'coordinator_dashboard' %}" class="action-card">
+                                <div class="action-icon"><i class="bi bi-clipboard2-pulse"></i></div>
+                                <h4>
+                                    {% if user.discipline %}
+                                        {{ user.discipline.name }} Coordinator
+                                    {% else %}
+                                        {{ user.get_role_display|default:'Coordinator Portal' }}
+                                    {% endif %}
+                                </h4>
+                                <p>Manage your {% if user.discipline %}{{ user.discipline.name|lower }}{% else %}discipline{% endif %}</p>
+                        </a>
+                        {% endif %}
 
             {% if user.role == 'referee' %}
             <a href="{% url 'matches_list' %}" class="action-card">

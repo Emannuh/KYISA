@@ -5,12 +5,27 @@
 
 {% block content %}
 
-<!-- ── PAGE HERO ───────────────────────────────────────────────────────────── -->
-<section class="hero" style="padding:3rem 2rem;">
-    <div class="hero-content">
-        <h1>{{ competition.name }}</h1>
-        <h2>{{ competition.description|default:"KYISA Intercounty Competition" }}</h2>
+<!-- ══════════════════════════════════════════════════════════════════════════
+     PAGE HERO — DARK CINEMATIC
+     ══════════════════════════════════════════════════════════════════════════ -->
+<section class="page-hero">
+    <div class="page-hero__bg">
+        <div class="page-hero__gradient"></div>
+        <canvas class="page-hero__canvas" id="pageCanvas"></canvas>
     </div>
+    <div class="container page-hero__inner">
+        <span class="page-hero__badge reveal"><i class="bi bi-trophy"></i> Competition</span>
+        <h1 class="page-hero__title reveal">{{ competition.name }}</h1>
+        <p class="page-hero__sub reveal">{{ competition.description|default:"KYISA Intercounty Competition" }}</p>
+        <div class="page-hero__breadcrumb reveal">
+            <a href="{% url 'home' %}">Home</a>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+            <a href="{% url 'public_competitions' %}">Competitions</a>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+            <span>{{ competition.name|truncatewords:4 }}</span>
+        </div>
+    </div>
+    <div class="kenya-stripe" style="position:absolute;bottom:0;left:0;right:0;z-index:5"></div>
 </section>
 
 <!-- ── COMPETITION INFO ───────────────────────────────────────────────────── -->
@@ -129,4 +144,30 @@
     </div>
 </section>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    var canvas = document.getElementById('pageCanvas');
+    if(canvas && canvas.getContext){
+        var ctx = canvas.getContext('2d'), w, h, particles = [];
+        function resize(){ w = canvas.width = canvas.parentElement.offsetWidth; h = canvas.height = canvas.parentElement.offsetHeight; }
+        resize(); window.addEventListener('resize', resize);
+        for(var i=0;i<35;i++){
+            particles.push({x:Math.random()*w, y:Math.random()*h, r:Math.random()*1.5+.4, dx:(Math.random()-.5)*.25, dy:(Math.random()-.5)*.25, o:Math.random()*.3+.06});
+        }
+        (function draw(){
+            ctx.clearRect(0,0,w,h);
+            for(var i=0;i<particles.length;i++){
+                var d=particles[i]; d.x+=d.dx; d.y+=d.dy;
+                if(d.x<0||d.x>w) d.dx*=-1; if(d.y<0||d.y>h) d.dy*=-1;
+                ctx.beginPath(); ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
+                ctx.fillStyle='rgba(76,175,80,'+d.o+')'; ctx.fill();
+            }
+            requestAnimationFrame(draw);
+        })();
+    }
+})();
+</script>
 {% endblock %}

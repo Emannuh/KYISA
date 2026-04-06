@@ -10,35 +10,11 @@
         align-items: center;
         gap: .3rem;
         font-size: .82rem;
-        color: #1B5E20;
+        color: #F9A825;
         font-weight: 600;
-        margin-bottom: 1rem;
         transition: color .2s;
     }
-    .back-link:hover { color: #2E7D32; }
-
-    .comp-hero {
-        text-align: center;
-        padding: 2.5rem 2rem;
-    }
-    .comp-hero h1 {
-        font-size: 1.8rem;
-        margin-bottom: .3rem;
-    }
-    .comp-meta {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-top: .7rem;
-    }
-    .comp-meta-item {
-        display: inline-flex;
-        align-items: center;
-        gap: .3rem;
-        font-size: .8rem;
-        color: #666;
-    }
+    .back-link:hover { color: #fff; }
 
     .badge-status {
         display: inline-block;
@@ -342,31 +318,37 @@
 
 {% block content %}
 
-<!-- ── COMPETITION HERO ────────────────────────────────────────────────── -->
-<section class="hero comp-hero">
-    <div class="hero-content">
-        <a href="{% url 'public_results' %}" class="back-link" style="color:#fff;"><i class="bi bi-arrow-left"></i> Back to Results</a>
-        <h1>{{ competition.name }}</h1>
-        <div class="comp-meta">
-            <span class="comp-meta-item" style="color:rgba(255,255,255,.85);">
-                <i class="bi bi-trophy"></i> {{ competition.get_sport_type_display }}
-            </span>
-            <span class="comp-meta-item" style="color:rgba(255,255,255,.85);">
-                <i class="bi bi-people"></i> {{ competition.get_age_group_display }}
-            </span>
-            <span class="comp-meta-item" style="color:rgba(255,255,255,.85);">
-                <i class="bi bi-diagram-3"></i> {{ competition.get_format_type_display }}
-            </span>
-            <span class="comp-meta-item" style="color:rgba(255,255,255,.85);">
-                <i class="bi bi-calendar-event"></i> {{ competition.start_date|date:"M d" }} — {{ competition.end_date|date:"M d, Y" }}
-            </span>
-        </div>
-        <div style="margin-top:.7rem;">
-            <span class="badge-status {% if competition.status == 'completed' %}badge-completed{% elif competition.status == 'knockout' %}badge-knockout{% elif competition.status == 'registration' %}badge-registration{% else %}badge-active{% endif %}">
+<!-- ══════════════════════════════════════════════════════════════════════════
+     PAGE HERO — DARK CINEMATIC
+     ══════════════════════════════════════════════════════════════════════════ -->
+<section class="page-hero">
+    <div class="page-hero__bg">
+        <div class="page-hero__gradient"></div>
+        <canvas class="page-hero__canvas" id="pageCanvas"></canvas>
+    </div>
+    <div class="container page-hero__inner">
+        <span class="page-hero__badge reveal">
+            <i class="bi bi-trophy"></i> {{ competition.get_sport_type_display }}
+            &bull;
+            <span class="badge-status {% if competition.status == 'completed' %}badge-completed{% elif competition.status == 'knockout' %}badge-knockout{% elif competition.status == 'registration' %}badge-registration{% else %}badge-active{% endif %}" style="font-size:.65rem;padding:.15rem .5rem;">
                 {{ competition.get_status_display }}
             </span>
+        </span>
+        <h1 class="page-hero__title reveal">{{ competition.name }}</h1>
+        <p class="page-hero__sub reveal">
+            <i class="bi bi-people"></i> {{ competition.get_age_group_display }}
+            &bull; <i class="bi bi-diagram-3"></i> {{ competition.get_format_type_display }}
+            &bull; <i class="bi bi-calendar-event"></i> {{ competition.start_date|date:"M d" }} — {{ competition.end_date|date:"M d, Y" }}
+        </p>
+        <div class="page-hero__breadcrumb reveal">
+            <a href="{% url 'home' %}">Home</a>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+            <a href="{% url 'public_results' %}">Results</a>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+            <span>Standings</span>
         </div>
     </div>
+    <div class="kenya-stripe" style="position:absolute;bottom:0;left:0;right:0;z-index:5"></div>
 </section>
 
 
@@ -769,4 +751,30 @@
     </div>
 </section>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    var canvas = document.getElementById('pageCanvas');
+    if(canvas && canvas.getContext){
+        var ctx = canvas.getContext('2d'), w, h, particles = [];
+        function resize(){ w = canvas.width = canvas.parentElement.offsetWidth; h = canvas.height = canvas.parentElement.offsetHeight; }
+        resize(); window.addEventListener('resize', resize);
+        for(var i=0;i<35;i++){
+            particles.push({x:Math.random()*w, y:Math.random()*h, r:Math.random()*1.5+.4, dx:(Math.random()-.5)*.25, dy:(Math.random()-.5)*.25, o:Math.random()*.3+.06});
+        }
+        (function draw(){
+            ctx.clearRect(0,0,w,h);
+            for(var i=0;i<particles.length;i++){
+                var d=particles[i]; d.x+=d.dx; d.y+=d.dy;
+                if(d.x<0||d.x>w) d.dx*=-1; if(d.y<0||d.y>h) d.dy*=-1;
+                ctx.beginPath(); ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
+                ctx.fillStyle='rgba(76,175,80,'+d.o+')'; ctx.fill();
+            }
+            requestAnimationFrame(draw);
+        })();
+    }
+})();
+</script>
 {% endblock %}

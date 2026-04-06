@@ -168,24 +168,93 @@ SPECTACULAR_SETTINGS = {
 STATIC_URL  = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
-STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
 
-MEDIA_URL  = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+# ── CLOUD MEDIA STORAGE (production) ──────────────────────────────────────────
+# Set STORAGE_BACKEND to "s3", "azure", or "gcs" to enable cloud storage.
+# Leave empty or unset for local file storage (development).
+STORAGE_BACKEND = env("STORAGE_BACKEND", default="")
 
-# ── CACHE (local memory for dev; switch to Redis in production) ────────────────
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+if STORAGE_BACKEND == "azure":
+    AZURE_ACCOUNT_NAME  = env("AZURE_ACCOUNT_NAME")
+    AZURE_ACCOUNT_KEY   = env("AZURE_ACCOUNT_KEY")
+    AZURE_CONTAINER     = env("AZURE_CONTAINER", default="media")
+    AZURE_CUSTOM_DOMAIN = env("AZURE_CUSTOM_DOMAIN", default=f"{AZURE_ACCOUNT_NAME}.blob.core.windows.net")
+    MEDIA_URL = f"https://{AZURE_CUSTOM_DOMAIN}/{AZURE_CONTAINER}/"
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.azure_storage.AzureStorage",
+            "OPTIONS": {
+                "azure_container": AZURE_CONTAINER,
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
     }
-}
+elif STORAGE_BACKEND == "gcs":
+    GS_BUCKET_NAME      = env("GS_BUCKET_NAME")
+    GS_PROJECT_ID       = env("GS_PROJECT_ID", default="")
+    GS_DEFAULT_ACL      = None
+    MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/media/"
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+            "OPTIONS": {"location": "media"},
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
+elif STORAGE_BACKEND == "s3":
+    AWS_ACCESS_KEY_ID       = env("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY   = env("AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
+    AWS_S3_REGION_NAME      = env("AWS_S3_REGION_NAME", default="af-south-1")
+    AWS_S3_ENDPOINT_URL     = env("AWS_S3_ENDPOINT_URL", default="")  # for DO Spaces / other S3-compatible
+    AWS_S3_CUSTOM_DOMAIN    = env("AWS_S3_CUSTOM_DOMAIN", default=f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com")
+    AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
+    AWS_DEFAULT_ACL          = None
+    AWS_QUERYSTRING_AUTH     = False
+    if AWS_S3_ENDPOINT_URL:
+        MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
+    else:
+        MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+            "OPTIONS": {"location": "media"},
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
+else:
+    MEDIA_URL  = "/media/"
+    MEDIA_ROOT = BASE_DIR / "media"
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
+
+# ── CACHE ──────────────────────────────────────────────────────────────────────
+REDIS_URL = env("REDIS_URL", default="")
+if REDIS_URL:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": REDIS_URL,
+        }
+    }
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        }
+    }
 
 # ── CELERY ─────────────────────────────────────────────────────────────────────
 CELERY_BROKER_URL        = env("REDIS_URL", default="redis://127.0.0.1:6379/0")
@@ -196,13 +265,14 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE          = "Africa/Nairobi"
 
 # ── EMAIL ──────────────────────────────────────────────────────────────────────
+# Dev: console backend. Production: set EMAIL_BACKEND + SMTP credentials.
 EMAIL_BACKEND    = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
-EMAIL_HOST       = env("EMAIL_HOST", default="smtp.gmail.com")
+EMAIL_HOST       = env("EMAIL_HOST", default="localhost")
 EMAIL_PORT       = env.int("EMAIL_PORT", default=587)
 EMAIL_USE_TLS    = True
 EMAIL_HOST_USER  = env("EMAIL_HOST_USER",     default="")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
-DEFAULT_FROM_EMAIL = "KYISA CMS <noreply@kyisa.ke>"
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="KYISA CMS <noreply@kyisa.ke>")
 
 # ── LOCALISATION ───────────────────────────────────────────────────────────────
 LANGUAGE_CODE = "en-us"

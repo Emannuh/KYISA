@@ -8,29 +8,6 @@
 /* ═══════════════════════════════════════
    GALLERY DETAIL PAGE (Lightbox album)
 ═══════════════════════════════════════ */
-.gd-hero {
-    padding: 10rem 0 3rem;
-    background: linear-gradient(135deg, #0a1a0d 0%, #1B5E20 50%, #0d2810 100%);
-    position: relative; overflow: hidden;
-    text-align: center; color: #fff;
-}
-.gd-hero .container { position: relative; z-index: 2; }
-.gd-breadcrumb {
-    display: inline-flex; align-items: center; gap: .4rem;
-    font-size: .8rem; color: rgba(255,255,255,.6); margin-bottom: 1.5rem;
-}
-.gd-breadcrumb a { color: rgba(255,255,255,.7); transition: color .2s; }
-.gd-breadcrumb a:hover { color: #fff; }
-.gd-hero h1 {
-    font-family: 'Outfit', sans-serif;
-    font-size: 2.4rem; font-weight: 800; margin-bottom: .75rem;
-    letter-spacing: -1px;
-}
-.gd-hero-meta {
-    font-size: .88rem; color: rgba(255,255,255,.6);
-    display: flex; justify-content: center; gap: 1.5rem;
-}
-.gd-hero-meta i { margin-right: .3rem; }
 
 /* ── Photo grid ── */
 .gd-grid-section {
@@ -101,20 +78,29 @@
 {% endblock %}
 
 {% block content %}
-<!-- ── HERO ── -->
-<section class="gd-hero">
-    <div class="container">
-        <div class="gd-breadcrumb">
-            <a href="{% url 'home' %}">Home</a> <i class="bi bi-chevron-right"></i>
-            <a href="{% url 'news_media:gallery_list' %}">Gallery</a> <i class="bi bi-chevron-right"></i>
+<!-- ══════════════════════════════════════════════════════════════════════════
+     PAGE HERO — DARK CINEMATIC
+     ══════════════════════════════════════════════════════════════════════════ -->
+<section class="page-hero">
+    <div class="page-hero__bg">
+        <div class="page-hero__gradient"></div>
+        <canvas class="page-hero__canvas" id="pageCanvas"></canvas>
+    </div>
+    <div class="container page-hero__inner">
+        <span class="page-hero__badge reveal"><i class="bi bi-images"></i> Gallery Album</span>
+        <h1 class="page-hero__title reveal">{{ album.title }}</h1>
+        <p class="page-hero__sub reveal">
+            {% if album.event_date %}<i class="bi bi-calendar3"></i> {{ album.event_date|date:"F d, Y" }} &bull; {% endif %}<i class="bi bi-images"></i> {{ images|length }} photos
+        </p>
+        <div class="page-hero__breadcrumb reveal">
+            <a href="{% url 'home' %}">Home</a>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+            <a href="{% url 'news_media:gallery_list' %}">Gallery</a>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
             <span>{{ album.title|truncatewords:5 }}</span>
         </div>
-        <h1>{{ album.title }}</h1>
-        <div class="gd-hero-meta">
-            {% if album.event_date %}<span><i class="bi bi-calendar3"></i> {{ album.event_date|date:"F d, Y" }}</span>{% endif %}
-            <span><i class="bi bi-images"></i> {{ images|length }} photos</span>
-        </div>
     </div>
+    <div class="kenya-stripe" style="position:absolute;bottom:0;left:0;right:0;z-index:5"></div>
 </section>
 
 {% if album.description %}
@@ -187,6 +173,26 @@
         if (e.key === 'ArrowLeft') navLightbox(-1);
         if (e.key === 'ArrowRight') navLightbox(1);
     });
+
+    var canvas = document.getElementById('pageCanvas');
+    if(canvas && canvas.getContext){
+        var ctx = canvas.getContext('2d'), w, h, particles = [];
+        function resize(){ w = canvas.width = canvas.parentElement.offsetWidth; h = canvas.height = canvas.parentElement.offsetHeight; }
+        resize(); window.addEventListener('resize', resize);
+        for(var i=0;i<35;i++){
+            particles.push({x:Math.random()*w, y:Math.random()*h, r:Math.random()*1.5+.4, dx:(Math.random()-.5)*.25, dy:(Math.random()-.5)*.25, o:Math.random()*.3+.06});
+        }
+        (function draw(){
+            ctx.clearRect(0,0,w,h);
+            for(var i=0;i<particles.length;i++){
+                var d=particles[i]; d.x+=d.dx; d.y+=d.dy;
+                if(d.x<0||d.x>w) d.dx*=-1; if(d.y<0||d.y>h) d.dy*=-1;
+                ctx.beginPath(); ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
+                ctx.fillStyle='rgba(76,175,80,'+d.o+')'; ctx.fill();
+            }
+            requestAnimationFrame(draw);
+        })();
+    }
 })();
 </script>
 {% endblock %}

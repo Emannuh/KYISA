@@ -71,7 +71,7 @@ def populate_counties(apps, schema_editor):
                 'is_active': True,
             }
         )
-    print(f"✅ Created {County.objects.count()} counties")
+    print(f"[OK] Created {County.objects.count()} counties")
 
 
 def migrate_team_counties(apps, schema_editor):
@@ -190,6 +190,14 @@ def migrate_team_counties(apps, schema_editor):
     # First, let's use raw SQL to check what county values we have
     from django.db import connection
     with connection.cursor() as cursor:
+        # Check if the old text 'county' column still exists (it may have
+        # already been renamed to 'county_id' by migration 0008)
+        cursor.execute("PRAGMA table_info(teams_team)")
+        columns = {row[1] for row in cursor.fetchall()}
+        if 'county' not in columns or 'county_id' in columns:
+            # Column was already converted to FK – nothing to migrate
+            print("[SKIP] county column already migrated to FK, skipping data migration")
+            return
         cursor.execute("SELECT DISTINCT county FROM teams_team WHERE county IS NOT NULL")
         existing_counties = [row[0] for row in cursor.fetchall()]
     
@@ -208,7 +216,7 @@ def migrate_team_counties(apps, schema_editor):
                     )
                     updated_count = cursor.rowcount
                     migrated_count += updated_count
-                    print(f"✅ Mapped '{existing_county}' -> '{county_name}' ({updated_count} teams)")
+                    print(f"[OK] Mapped '{existing_county}' -> '{county_name}' ({updated_count} teams)")
             except County.DoesNotExist:
                 failed_mappings.append(f"'{existing_county}' -> '{county_name}' (County not found)")
         else:
@@ -229,7 +237,7 @@ def migrate_team_counties(apps, schema_editor):
             if not matched:
                 failed_mappings.append(f"'{existing_county}' (No mapping found)")
     
-    print(f"✅ Migration complete: {migrated_count} teams migrated")
+    print(f"[OK] Migration complete: {migrated_count} teams migrated")
     if failed_mappings:
         print(f"⚠️  Failed mappings: {failed_mappings}")
 

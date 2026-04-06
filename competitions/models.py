@@ -285,6 +285,24 @@ class Fixture(models.Model):
         related_name="fixtures_won", help_text="Winner (auto-set or set for knockout ties)"
     )
 
+    # ── Live tracking fields ──────────────────────────────────────────────
+    live_started_at   = models.DateTimeField(
+        null=True, blank=True, help_text="When the match actually kicked off"
+    )
+    live_half         = models.PositiveIntegerField(
+        null=True, blank=True,
+        help_text="Current period: 1=1st half, 2=2nd half, 3=ET1, 4=ET2, 99=penalties"
+    )
+    live_paused       = models.BooleanField(
+        default=False, help_text="Is the match clock currently stopped?"
+    )
+    live_paused_minute = models.PositiveIntegerField(
+        null=True, blank=True, help_text="Minute at which clock was paused"
+    )
+    live_extra_minutes = models.PositiveIntegerField(
+        default=0, help_text="Injury/stoppage time added to current period"
+    )
+
     created_by  = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True,
         related_name="fixtures_created"

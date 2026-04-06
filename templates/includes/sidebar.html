@@ -101,10 +101,19 @@
         </div>
     </div>
 
-    {% elif user.role == 'coordinator' or user.role == 'soccer_coordinator' or user.role == 'handball_coordinator' or user.role == 'basketball_coordinator' or user.role == 'volleyball_coordinator' %}
-    <!-- COORDINATOR SIDEBAR (all types) -->
-    <div class="sidebar-section">
-        <div class="sidebar-section-toggle"><h4>Coordinator Portal</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
+        {% elif user.role == 'coordinator' or user.role == 'soccer_coordinator' or user.role == 'handball_coordinator' or user.role == 'basketball_coordinator' or user.role == 'volleyball_coordinator' %}
+        <!-- COORDINATOR SIDEBAR (all types) -->
+        <div class="sidebar-section">
+                <div class="sidebar-section-toggle">
+                    <h4>
+                        {% if user.discipline %}
+                            {{ user.discipline.name }} Coordinator
+                        {% else %}
+                            {{ user.get_role_display|default:'Coordinator Portal' }}
+                        {% endif %}
+                    </h4>
+                    <span class="toggle-icon"><i class="bi bi-chevron-down"></i></span>
+                </div>
         <div class="sidebar-section-body">
             <a href="{% url 'coordinator_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'coordinator_dashboard' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-clipboard2-pulse"></i></span> Dashboard

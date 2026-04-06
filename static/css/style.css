@@ -1,3 +1,91 @@
+/* Countdown Card Mini & Entrance */
+.cd-card-entrance {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    min-height: 320px;
+    position: relative;
+    z-index: 10;
+}
+.cd-card--mini {
+    width: 220px;
+    min-height: 220px;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.22);
+    transform: translateY(40px) scale(0.92);
+    opacity: 0;
+    pointer-events: none;
+    transition: all .7s cubic-bezier(.22,1,.36,1);
+}
+.cd-card--mini.cd-card--show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+.cd-card--mini .cd-card__inner {
+    padding: 1.1rem .7rem;
+    border-radius: 18px;
+}
+.cd-card--mini .cd-title {
+    font-size: 1.1rem;
+    margin-bottom: .1rem;
+}
+.cd-card--mini .cd-ring {
+    width: 38px; height: 38px;
+}
+.cd-card--mini .cd-num {
+    font-size: .95rem;
+}
+.cd-card--mini .cd-label {
+    font-size: .65rem;
+}
+.cd-card--mini .cd-meta {
+    margin-bottom: .5rem;
+}
+.cd-card--mini .cd-cta {
+    margin-top: .2rem;
+}
+.cd-card--mini .btn--sm {
+    padding: .35rem .7rem;
+    font-size: .68rem;
+}
+
+/* Road Journey SVG: visually connect to countdown */
+.road-journey {
+    position: relative;
+    min-height: 340px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+.road-svg {
+    width: 100%;
+    height: 260px;
+    display: block;
+    margin-bottom: -38px;
+    z-index: 2;
+}
+.road-svg .road-branch {
+    stroke: #42A5F5;
+    stroke-width: 2.5;
+    stroke-dasharray: 6 6;
+    opacity: 0.7;
+    animation: branch-glow 2.5s linear infinite alternate;
+}
+@keyframes branch-glow {
+    0% { stroke-opacity: 0.5; }
+    100% { stroke-opacity: 1; }
+}
+.road-svg .road-path-bg,
+.road-svg .road-path-line,
+.road-svg .road-path-anim {
+    filter: drop-shadow(0 2px 8px rgba(76,175,80,.12));
+}
+.road-info {
+    margin-top: 0;
+    margin-bottom: 0;
+}
 /* ═══════════════════════════════════════════════════════════════════════════
    KYISA — Complete Website + CMS Stylesheet
    Kenya Youth Intercounty Sports Association
@@ -317,6 +405,77 @@ img { max-width: 100%; }
     display: block; text-align: center;
     font-size: .88rem; color: #f5d060;
     letter-spacing: 1.5px; font-weight: 700; text-transform: uppercase;
+}
+
+/* ── Phase D: Road to Nyahururu ───────────────────────────────────────── */
+.road-journey {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 1.2rem; padding: 0 1rem;
+}
+.road-svg {
+    width: 100%; max-width: 440px; height: auto;
+    filter: drop-shadow(0 0 20px rgba(76,175,80,0.15));
+}
+.road-path-bg { filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5)); }
+.road-path-anim {
+    stroke-dasharray: 1000; stroke-dashoffset: 1000;
+}
+.hero-phase--active .road-path-anim {
+    animation: roadDraw 3.5s ease-out forwards;
+}
+@keyframes roadDraw {
+    to { stroke-dashoffset: 0; }
+}
+/* Town markers stagger in */
+.road-town { opacity: 0; }
+.hero-phase--active .road-town--1 { animation: townPop .4s ease forwards .3s; }
+.hero-phase--active .road-town--2 { animation: townPop .4s ease forwards 1s; }
+.hero-phase--active .road-town--3 { animation: townPop .4s ease forwards 1.6s; }
+.hero-phase--active .road-town--4 { animation: townPop .4s ease forwards 2.1s; }
+.hero-phase--active .road-town--5 { animation: townPop .4s ease forwards 2.6s; }
+.hero-phase--active .road-town--6 { animation: townPop .5s ease forwards 3.1s; }
+@keyframes townPop {
+    0% { opacity: 0; transform: scale(0.3); }
+    60% { transform: scale(1.3); }
+    100% { opacity: 1; transform: scale(1); }
+}
+/* Destination pulsing ring */
+.road-dest-ring {
+    animation: destPulse 1.5s ease-in-out infinite 3.5s;
+    opacity: 0;
+}
+.hero-phase--active .road-dest-ring {
+    animation: destPulse 1.5s ease-in-out infinite 3.5s;
+}
+@keyframes destPulse {
+    0%, 100% { r: 13; opacity: 0.6; }
+    50% { r: 18; opacity: 0; }
+}
+/* Vehicle glow */
+.road-vehicle { filter: drop-shadow(0 0 6px rgba(255,255,255,0.8)); }
+.road-vehicle-glow { filter: blur(3px); }
+/* Journey text below SVG */
+.road-info { text-align: center; }
+.road-badge {
+    display: inline-block; padding: .3rem .9rem;
+    background: rgba(249,168,37,0.15); border: 1px solid rgba(249,168,37,0.3);
+    border-radius: 50px; font-size: .72rem; color: #F9A825;
+    letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700;
+    margin-bottom: .5rem;
+}
+.road-badge i { margin-right: .3rem; }
+.road-title {
+    font-family: 'Outfit', sans-serif; font-size: 1.6rem; font-weight: 700;
+    color: #fff; margin: .3rem 0;
+}
+.road-title strong { color: #F9A825; }
+.road-sub {
+    font-size: .85rem; color: #bbb; margin: .2rem 0; line-height: 1.5;
+}
+.road-sub strong { color: #4CAF50; font-weight: 700; }
+.road-distance {
+    font-size: .75rem; color: #777; letter-spacing: 1px; text-transform: uppercase;
+    margin-top: .3rem;
 }
 
 /* Hero logo */

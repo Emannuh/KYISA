@@ -8,32 +8,6 @@
 /* ═══════════════════════════════════════
    VIDEOS LIST PAGE
 ═══════════════════════════════════════ */
-.vid-hero {
-    padding: 10rem 0 4rem;
-    background: linear-gradient(135deg, #0a1a0d 0%, #1B5E20 50%, #0d2810 100%);
-    position: relative; overflow: hidden;
-    text-align: center; color: #fff;
-}
-.vid-hero::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    pointer-events: none;
-}
-.vid-hero .container { position: relative; z-index: 2; }
-.vid-hero-badge {
-    display: inline-flex; align-items: center; gap: .5rem;
-    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
-    border-radius: 50px; padding: .4rem 1.2rem;
-    font-size: .75rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
-    margin-bottom: 1.5rem; color: rgba(255,255,255,.9);
-}
-.vid-hero h1 {
-    font-family: 'Outfit', sans-serif;
-    font-size: 3rem; font-weight: 800; margin-bottom: .75rem;
-    letter-spacing: -1px;
-}
-.vid-hero p { font-size: 1.1rem; opacity: .8; max-width: 600px; margin: 0 auto; }
 
 /* ── Featured video ── */
 .vid-featured {
@@ -173,13 +147,25 @@
 {% endblock %}
 
 {% block content %}
-<!-- ── HERO ── -->
-<section class="vid-hero">
-    <div class="container">
-        <div class="vid-hero-badge"><i class="bi bi-play-circle"></i> VIDEOS</div>
-        <h1>Videos</h1>
-        <p>Watch highlights, match replays, and official KYISA content from across the nation.</p>
+<!-- ══════════════════════════════════════════════════════════════════════════
+     PAGE HERO — DARK CINEMATIC
+     ══════════════════════════════════════════════════════════════════════════ -->
+<section class="page-hero">
+    <div class="page-hero__bg">
+        <div class="page-hero__gradient"></div>
+        <canvas class="page-hero__canvas" id="pageCanvas"></canvas>
     </div>
+    <div class="container page-hero__inner">
+        <span class="page-hero__badge reveal"><i class="bi bi-play-circle"></i> Videos</span>
+        <h1 class="page-hero__title reveal">Video <span class="text-gold">Hub</span></h1>
+        <p class="page-hero__sub reveal">Watch highlights, match replays, and official KYISA content from across the nation.</p>
+        <div class="page-hero__breadcrumb reveal">
+            <a href="{% url 'home' %}">Home</a>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+            <span>Videos</span>
+        </div>
+    </div>
+    <div class="kenya-stripe" style="position:absolute;bottom:0;left:0;right:0;z-index:5"></div>
 </section>
 
 {% if featured_video %}
@@ -314,6 +300,26 @@
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && modal.classList.contains('active')) closeVideoModal();
     });
+
+    var canvas = document.getElementById('pageCanvas');
+    if(canvas && canvas.getContext){
+        var ctx = canvas.getContext('2d'), w, h, particles = [];
+        function resize(){ w = canvas.width = canvas.parentElement.offsetWidth; h = canvas.height = canvas.parentElement.offsetHeight; }
+        resize(); window.addEventListener('resize', resize);
+        for(var i=0;i<35;i++){
+            particles.push({x:Math.random()*w, y:Math.random()*h, r:Math.random()*1.5+.4, dx:(Math.random()-.5)*.25, dy:(Math.random()-.5)*.25, o:Math.random()*.3+.06});
+        }
+        (function draw(){
+            ctx.clearRect(0,0,w,h);
+            for(var i=0;i<particles.length;i++){
+                var d=particles[i]; d.x+=d.dx; d.y+=d.dy;
+                if(d.x<0||d.x>w) d.dx*=-1; if(d.y<0||d.y>h) d.dy*=-1;
+                ctx.beginPath(); ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
+                ctx.fillStyle='rgba(76,175,80,'+d.o+')'; ctx.fill();
+            }
+            requestAnimationFrame(draw);
+        })();
+    }
 })();
 </script>
 {% endblock %}
