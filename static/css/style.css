@@ -3175,7 +3175,7 @@ textarea.form-control { resize: vertical; min-height: 90px; }
     .navbar-nav li:hover > .nav-dropdown-menu { display: none; opacity: 1; visibility: visible; transform: none; }
     .navbar-nav li.open > .nav-dropdown-menu { display: block; }
     .navbar-user .role-badge { display: none; }
-    .sidebar { display: none; }
+    /* sidebar hidden via off-canvas transform (see mobile section below) */
     .main-content { padding: .85rem; }
     .toolbar { flex-wrap: wrap; }
     .toolbar-search { flex: 1 1 100%; }
@@ -3199,4 +3199,175 @@ textarea.form-control { resize: vertical; min-height: 90px; }
     .stats-grid, .counter-grid { grid-template-columns: 1fr; }
     .quick-actions { grid-template-columns: 1fr; }
     .stat-card { flex-direction: row; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE — Sidebar Drawer, Bottom Nav, Breadcrumbs, Touch UX
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Sidebar Toggle Button (in navbar, mobile only) ─────────────────────── */
+.sidebar-toggle-mobile {
+    display: none;
+    background: none; border: none; color: #fff;
+    font-size: 1.25rem; cursor: pointer;
+    padding: 6px 8px; margin-right: 4px;
+    border-radius: 6px;
+}
+.sidebar-toggle-mobile:hover { background: rgba(255,255,255,.12); }
+
+/* ── Sidebar Overlay ────────────────────────────────────────────────────── */
+.sidebar-overlay {
+    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,.5); z-index: 999;
+    opacity: 0; transition: opacity .25s ease;
+}
+.sidebar-overlay.active {
+    display: block; opacity: 1;
+}
+
+/* ── Mobile Bottom Navigation ───────────────────────────────────────────── */
+.mobile-bottom-nav {
+    display: none;
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #fff;
+    border-top: 1px solid var(--border);
+    z-index: 998;
+    justify-content: space-around;
+    align-items: center;
+    padding: 4px 0;
+    padding-bottom: env(safe-area-inset-bottom, 4px);
+    box-shadow: 0 -2px 10px rgba(0,0,0,.08);
+}
+.mobile-bottom-nav-item {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 1px; padding: 6px 12px;
+    color: var(--gray); text-decoration: none;
+    font-size: .65rem; font-weight: 500;
+    background: none; border: none; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    min-width: 56px; min-height: 44px;
+    justify-content: center;
+}
+.mobile-bottom-nav-item i { font-size: 1.2rem; }
+.mobile-bottom-nav-item.active { color: var(--primary); }
+.mobile-bottom-nav-item:hover { color: var(--primary); }
+
+@media (max-width: 768px) {
+    /* ── Show mobile-specific elements ────────────────────────────────── */
+    .sidebar-toggle-mobile { display: block; }
+    .mobile-bottom-nav { display: flex; }
+
+    /* ── Sidebar: off-canvas drawer from left ─────────────────────────── */
+    .sidebar {
+        display: flex !important;
+        flex-direction: column;
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        width: 280px;
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform .28s cubic-bezier(.4,0,.2,1);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        box-shadow: none;
+        padding-top: 0;
+    }
+    .sidebar.mobile-open {
+        transform: translateX(0);
+        box-shadow: 4px 0 24px rgba(0,0,0,.15);
+    }
+
+    /* Sidebar header for mobile drawer */
+    .sidebar::before {
+        content: 'KYISA Menu';
+        display: block;
+        padding: 1rem 1.1rem .6rem;
+        font-weight: 700; font-size: 1rem;
+        color: var(--primary);
+        border-bottom: 1px solid var(--border);
+        margin-bottom: .4rem;
+        flex-shrink: 0;
+    }
+
+    /* Bigger touch targets for sidebar links */
+    .sidebar-link {
+        padding: .65rem .85rem !important;
+        min-height: 44px;
+        display: flex; align-items: center;
+        font-size: .85rem;
+    }
+
+    /* Sidebar sections spacing */
+    .sidebar-section { margin-bottom: .25rem; }
+    .sidebar-section-toggle { padding: .6rem .85rem; }
+    .sidebar-section-toggle h4 { font-size: .75rem; }
+
+    /* Add bottom padding for bottom nav */
+    .main-content {
+        padding-bottom: 70px !important;
+    }
+    .footer { margin-bottom: 56px; }
+
+    /* Prevent body scroll when sidebar open */
+    body.sidebar-open { overflow: hidden; }
+
+    /* ── Breadcrumbs: scrollable on mobile ────────────────────────────── */
+    .breadcrumb {
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+        flex-wrap: nowrap;
+    }
+    .breadcrumb::-webkit-scrollbar { display: none; }
+    .breadcrumb a, .breadcrumb span {
+        flex-shrink: 0;
+    }
+
+    /* ── Navbar user area compact ─────────────────────────────────────── */
+    .navbar-user span[style*="font-size:.82rem"] {
+        display: none;
+    }
+
+    /* ── Tables: force responsive ─────────────────────────────────────── */
+    table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    thead { white-space: nowrap; }
+
+    /* ── Action buttons: stack on mobile ──────────────────────────────── */
+    .toolbar-actions {
+        flex-wrap: wrap; gap: .35rem;
+    }
+    .toolbar-actions .btn { font-size: .75rem; padding: .4rem .6rem; }
+
+    /* ── Cards: reduce padding on mobile ─────────────────────────────── */
+    .card { padding: .85rem; }
+    .card-header { padding: .65rem .85rem; }
+
+    /* ── Hide footer on mobile (bottom nav takes its place) ──────────── */
+    .footer { font-size: .68rem; padding: .6rem; }
+
+    /* ── Modal/dialog: full width on mobile ──────────────────────────── */
+    .modal-content, .dialog-content {
+        width: 95% !important; max-width: 95% !important;
+        margin: 10px auto;
+    }
+
+    /* ── Page header: tighter ─────────────────────────────────────────── */
+    .page-header { margin-bottom: .6rem; padding: .6rem 0; }
+    .page-header h1 { font-size: 1.1rem; }
+
+    /* ── Form inputs: bigger touch targets ────────────────────────────── */
+    input, select, textarea { min-height: 40px; font-size: 16px !important; }
+}
+
+/* ── Extra small screens (320px-480px) ──────────────────────────────────── */
+@media (max-width: 480px) {
+    .sidebar { width: 260px; }
+    .mobile-bottom-nav-item { font-size: .6rem; padding: 6px 8px; min-width: 48px; }
+    .mobile-bottom-nav-item i { font-size: 1.1rem; }
+    .navbar-brand span { display: none; }
+    .page-header h1 { font-size: 1rem; }
+    .toolbar { gap: .35rem; }
+    .toolbar-search input { font-size: .82rem; }
 }

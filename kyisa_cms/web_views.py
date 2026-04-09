@@ -99,6 +99,45 @@ def send_credentials_email(user, temporary_password, role_label):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+#   SEO — robots.txt & sitemap.xml
+# ══════════════════════════════════════════════════════════════════════════════
+
+def robots_txt(request):
+    lines = [
+        "User-agent: *",
+        "Allow: /",
+        "Disallow: /admin/",
+        "Disallow: /api/",
+        "Disallow: /portal/",
+        "Disallow: /dashboard/",
+        "",
+        "Sitemap: https://kyisa.org/sitemap.xml",
+    ]
+    return HttpResponse("\n".join(lines), content_type="text/plain")
+
+
+def sitemap_xml(request):
+    urls = [
+        ("https://kyisa.org/", "daily", "1.0"),
+        ("https://kyisa.org/about/", "monthly", "0.8"),
+        ("https://kyisa.org/leadership/", "monthly", "0.7"),
+        ("https://kyisa.org/competitions/public/", "daily", "0.9"),
+        ("https://kyisa.org/results/", "daily", "0.9"),
+        ("https://kyisa.org/results/statistics/", "weekly", "0.7"),
+        ("https://kyisa.org/contact/", "monthly", "0.5"),
+        ("https://kyisa.org/media-hub/", "daily", "0.8"),
+        ("https://kyisa.org/register/team/", "monthly", "0.6"),
+        ("https://kyisa.org/register/referee/", "monthly", "0.6"),
+    ]
+    xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    for loc, freq, priority in urls:
+        xml += f'  <url><loc>{loc}</loc><changefreq>{freq}</changefreq><priority>{priority}</priority></url>\n'
+    xml += '</urlset>'
+    return HttpResponse(xml, content_type="application/xml")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 #   PUBLIC WEBSITE VIEWS (No login required)
 # ══════════════════════════════════════════════════════════════════════════════
 

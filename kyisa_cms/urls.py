@@ -161,7 +161,13 @@ from .web_views import (
     mpesa_stk_push_view,
 )
 
+from .web_views import robots_txt, sitemap_xml
+
 urlpatterns = [
+    # ── SEO ───────────────────────────────────────────────────────────────────
+    path("robots.txt",                    robots_txt,                     name="robots_txt"),
+    path("sitemap.xml",                   sitemap_xml,                    name="sitemap_xml"),
+
     # ── PUBLIC WEBSITE ────────────────────────────────────────────────────────
     path("",                              home_view,                      name="home"),
     path("about/",                        about_view,                     name="about"),

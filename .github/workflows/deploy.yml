@@ -1,0 +1,69 @@
+name: Deploy KYISA CMS
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Upload code to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "accounts,admin_dashboard,appeals,competitions,kyisa_cms,matches,news_media,referees,teams,templates,static,Dockerfile,manage.py,Procfile,requirements.txt"
+          target: /opt/kyisa/
+          overwrite: true
+
+      - name: Build and deploy
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          command_timeout: 10m
+          script: |
+            cd /opt/kyisa
+
+            echo "=== Building Docker image ==="
+            docker build -t kyisa-cms-new .
+
+            echo "=== Stopping old container ==="
+            docker stop kyisa-cms || true
+            docker rm kyisa-cms || true
+
+            echo "=== Starting new container ==="
+            docker run -d \
+              --name kyisa-cms \
+              --restart unless-stopped \
+              --env-file .env \
+              -p 8080:8080 \
+              -v /opt/kyisa/staticfiles:/app/staticfiles \
+              kyisa-cms-new
+
+            sleep 3
+
+            echo "=== Running migrations ==="
+            docker exec kyisa-cms python manage.py migrate --noinput
+
+            echo "=== Collecting static files ==="
+            docker exec kyisa-cms python manage.py collectstatic --noinput
+
+            echo "=== Tagging image ==="
+            docker tag kyisa-cms-new kyisa-cms
+            docker image prune -f
+
+            echo "=== Verifying ==="
+            STATUS=$(curl -sk -o /dev/null -w "%{http_code}" -H "Host: kyisa.org" http://localhost:8080/)
+            echo "Health check: $STATUS"
+            if [ "$STATUS" != "200" ] && [ "$STATUS" != "302" ]; then
+              echo "DEPLOY FAILED — health check returned $STATUS"
+              exit 1
+            fi
+            echo "=== Deploy complete ==="

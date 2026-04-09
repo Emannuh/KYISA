@@ -22,6 +22,7 @@
             <span>KYISA</span>
         </a>
         <button class="nav-toggle" onclick="document.querySelector('.navbar-nav').classList.toggle('show')"><i class="bi bi-list"></i></button>
+        <button class="sidebar-toggle-mobile" onclick="toggleMobileSidebar()" title="Menu"><i class="bi bi-layout-sidebar"></i></button>
         <ul class="navbar-nav">
             <li><a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"><i class="bi bi-house-door"></i> Dashboard</a></li>
             {% if user.role == 'admin' or user.role == 'competition_manager' %}
@@ -85,6 +86,9 @@
         </div>
     </nav>
 
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
     <!-- Layout -->
     <div class="layout">
         {% include 'includes/sidebar.html' %}
@@ -105,7 +109,55 @@
     </footer>
     {% endblock %}
 
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="{% url 'dashboard' %}" class="mobile-bottom-nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <i class="bi bi-house-door"></i><span>Home</span>
+        </a>
+        {% if user.role == 'admin' or user.role == 'competition_manager' %}
+        <a href="{% url 'competitions_list' %}" class="mobile-bottom-nav-item {% if 'competition' in request.resolver_match.url_name %}active{% endif %}">
+            <i class="bi bi-trophy"></i><span>Comps</span>
+        </a>
+        {% endif %}
+        <button class="mobile-bottom-nav-item" onclick="toggleMobileSidebar()">
+            <i class="bi bi-grid"></i><span>Menu</span>
+        </button>
+        <a href="{% url 'matches_list' %}" class="mobile-bottom-nav-item {% if 'match' in request.resolver_match.url_name %}active{% endif %}">
+            <i class="bi bi-clipboard-data"></i><span>Matches</span>
+        </a>
+        <a href="{% url 'profile' %}" class="mobile-bottom-nav-item">
+            <i class="bi bi-person"></i><span>Profile</span>
+        </a>
+    </nav>
+
     <script src="{% static 'js/main.js' %}"></script>
+    <script>
+    /* Mobile sidebar drawer */
+    function toggleMobileSidebar() {
+        var sidebar = document.querySelector('.sidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        if (sidebar && overlay) {
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+            document.body.classList.toggle('sidebar-open');
+        }
+    }
+    function closeMobileSidebar() {
+        var sidebar = document.querySelector('.sidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        if (sidebar && overlay) {
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+            document.body.classList.remove('sidebar-open');
+        }
+    }
+    /* Close sidebar on link click (mobile) */
+    document.querySelectorAll('.sidebar-link').forEach(function(link) {
+        link.addEventListener('click', function() {
+            if (window.innerWidth <= 768) closeMobileSidebar();
+        });
+    });
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

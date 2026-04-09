@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Compose Email — KYISA CMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'email_logs' %}"><i class="bi bi-envelope"></i> Email Centre</a>
+        <span>/</span>
+        <span>Compose</span>
+    </div>
+    <h1><i class="bi bi-pencil-square"></i> Compose Email</h1>
+</div>
+
+<div class="card">
+    <form method="post" action="{% url 'email_compose' %}">
+        {% csrf_token %}
+        <div style="padding:.85rem;display:flex;flex-direction:column;gap:.75rem">
+            <!-- To -->
+            <div>
+                <label style="font-size:.75rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.3rem">To <span style="color:var(--danger)">*</span></label>
+                <textarea name="to_emails" rows="2" class="form-input" style="width:100%;font-size:.82rem" placeholder="email@example.com, another@example.com" required>{{ to_emails }}</textarea>
+                <small style="color:var(--gray-light);font-size:.68rem">Separate multiple addresses with commas</small>
+            </div>
+
+            <!-- CC -->
+            <div>
+                <label style="font-size:.75rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.3rem">CC <span style="color:var(--gray-light)">(optional)</span></label>
+                <input type="text" name="cc_emails" value="{{ cc_emails }}" class="form-input" style="width:100%;font-size:.82rem" placeholder="cc@example.com">
+            </div>
+
+            <!-- Subject -->
+            <div>
+                <label style="font-size:.75rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.3rem">Subject <span style="color:var(--danger)">*</span></label>
+                <input type="text" name="subject" value="{{ subject }}" class="form-input" style="width:100%;font-size:.82rem" placeholder="Email subject..." required>
+            </div>
+
+            <!-- Body -->
+            <div>
+                <label style="font-size:.75rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.3rem">Message <span style="color:var(--danger)">*</span></label>
+                <textarea name="body" rows="12" class="form-input" style="width:100%;font-size:.82rem;font-family:inherit;line-height:1.6" placeholder="Write your message here..." required>{{ body }}</textarea>
+                <small style="color:var(--gray-light);font-size:.68rem">Email will be sent with the KYISA branded template</small>
+            </div>
+
+            <!-- Actions -->
+            <div style="display:flex;gap:.5rem;padding-top:.5rem;border-top:1px solid var(--border)">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-send"></i> Send Email</button>
+                <a href="{% url 'email_logs' %}" class="btn btn-outline">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

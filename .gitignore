@@ -19,6 +19,12 @@ media/
 # Environment variables
 .env
 .env.local
+.env.aws
+.env.digitalocean
+
+# AWS / SSH keys
+*.pem
+aws/
 
 # IDE
 .vscode/
@@ -31,3 +37,7 @@ nul
 
 # Compiled/build
 staticfiles/
+
+# DigitalOcean (not used)
+.do/
+DIGITALOCEAN_DEPLOY.md
