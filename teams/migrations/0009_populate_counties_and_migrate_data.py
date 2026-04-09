@@ -192,8 +192,15 @@ def migrate_team_counties(apps, schema_editor):
     with connection.cursor() as cursor:
         # Check if the old text 'county' column still exists (it may have
         # already been renamed to 'county_id' by migration 0008)
-        cursor.execute("PRAGMA table_info(teams_team)")
-        columns = {row[1] for row in cursor.fetchall()}
+        if connection.vendor == 'sqlite':
+            cursor.execute("PRAGMA table_info(teams_team)")
+            columns = {row[1] for row in cursor.fetchall()}
+        else:
+            cursor.execute(
+                "SELECT column_name FROM information_schema.columns "
+                "WHERE table_name = 'teams_team'"
+            )
+            columns = {row[0] for row in cursor.fetchall()}
         if 'county' not in columns or 'county_id' in columns:
             # Column was already converted to FK – nothing to migrate
             print("[SKIP] county column already migrated to FK, skipping data migration")

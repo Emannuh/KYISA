@@ -6,6 +6,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+from django.contrib.admin.views.decorators import staff_member_required
 
 from teams.verification_views import (
     player_clearance_dashboard as _clearance_dashboard,
@@ -47,7 +48,6 @@ from .web_views import (
     contact_view,
     # Public registration
     team_register_view, team_register_success_view,
-    referee_register_view, referee_register_success_view,
     county_admin_register_view, county_admin_register_success_view,
     # CMS portal
     web_login_view, web_logout_view, dashboard_view,
@@ -185,8 +185,7 @@ urlpatterns = [
     # ── PUBLIC REGISTRATION ───────────────────────────────────────────────────
     path("register/team/",            team_register_view,          name="team_register"),
     path("register/team/success/",    team_register_success_view,  name="team_register_success"),
-    path("register/referee/",         referee_register_view,       name="referee_register"),
-    path("register/referee/success/", referee_register_success_view, name="referee_register_success"),
+    # Referee public registration removed — referees are added via admin portal
     path("register/county-admin/",           county_admin_register_view,         name="county_admin_register"),
     path("register/county-admin/success/",   county_admin_register_success_view, name="county_admin_register_success"),
     path("api/mpesa/stk-push/",              mpesa_stk_push_view,               name="mpesa_stk_push"),
@@ -371,7 +370,7 @@ urlpatterns = [
     # ── APPEALS & JURY ────────────────────────────────────────────────────────
     path("portal/appeals/", include("appeals.urls")),
 
-    # ── DJANGO ADMIN ─────────────────────────────────────────────────────────
+    # ── DJANGO ADMIN (staff-only, behind portal login) ─────────────────────
     path("admin/", admin.site.urls),
 
     # ── API v1 ────────────────────────────────────────────────────────────────
@@ -381,10 +380,10 @@ urlpatterns = [
     path("api/v1/teams/",        include("teams.urls")),
     path("api/v1/matches/",      include("matches.urls")),
 
-    # ── API DOCUMENTATION ─────────────────────────────────────────────────────
-    path("api/schema/", SpectacularAPIView.as_view(),                        name="schema"),
-    path("api/docs/",   SpectacularSwaggerView.as_view(url_name="schema"),   name="swagger-ui"),
-    path("api/redoc/",  SpectacularRedocView.as_view(url_name="schema"),     name="redoc"),
+    # ── API DOCUMENTATION (staff-only) ─────────────────────────────────────────
+    path("api/schema/", staff_member_required(SpectacularAPIView.as_view()),                        name="schema"),
+    path("api/docs/",   staff_member_required(SpectacularSwaggerView.as_view(url_name="schema")),   name="swagger-ui"),
+    path("api/redoc/",  staff_member_required(SpectacularRedocView.as_view(url_name="schema")),     name="redoc"),
 ]
 
 # ── SERVE MEDIA IN DEVELOPMENT ────────────────────────────────────────────────

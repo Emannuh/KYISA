@@ -127,7 +127,7 @@ def sitemap_xml(request):
         ("https://kyisa.org/contact/", "monthly", "0.5"),
         ("https://kyisa.org/media-hub/", "daily", "0.8"),
         ("https://kyisa.org/register/team/", "monthly", "0.6"),
-        ("https://kyisa.org/register/referee/", "monthly", "0.6"),
+
     ]
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
