@@ -95,7 +95,7 @@ def email_compose(request):
 
         # Build branded HTML
         from kyisa_cms.email_utils import _base_html
-        html_body = _base_html(f"<p>{body}</p>", subject)
+        html_body = _base_html(subject, f"<p>{body}</p>")
 
         try:
             msg = EmailMultiAlternatives(
