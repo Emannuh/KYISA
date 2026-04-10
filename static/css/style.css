@@ -1,53 +1,79 @@
 /* Countdown Card Mini & Entrance */
 .cd-card-entrance {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
     min-height: 320px;
     position: relative;
     z-index: 10;
 }
 .cd-card--mini {
-    width: 220px;
-    min-height: 220px;
-    border-radius: 18px;
-    box-shadow: 0 8px 32px rgba(0,0,0,.22);
-    transform: translateY(40px) scale(0.92);
+    width: 260px;
+    min-height: unset;
+    border-radius: 22px;
+    box-shadow: 0 12px 40px rgba(0,0,0,.3), 0 0 80px rgba(76,175,80,.12);
     opacity: 0;
     pointer-events: none;
-    transition: all .7s cubic-bezier(.22,1,.36,1);
+    transition: opacity .9s cubic-bezier(.22,1,.36,1),
+                transform .9s cubic-bezier(.22,1,.36,1),
+                box-shadow .4s ease;
+    will-change: transform, opacity;
 }
+
+/* ── Corner pop-in origins ──────────────────────────────────── */
+.cd-card--mini.cd-pop--top-left {
+    transform: translate(-120px, -120px) scale(.4) rotate(-12deg);
+}
+.cd-card--mini.cd-pop--top-right {
+    transform: translate(120px, -120px) scale(.4) rotate(12deg);
+}
+.cd-card--mini.cd-pop--bottom-left {
+    transform: translate(-120px, 120px) scale(.4) rotate(12deg);
+}
+.cd-card--mini.cd-pop--bottom-right {
+    transform: translate(120px, 120px) scale(.4) rotate(-12deg);
+}
+
+/* ── Settled state ──────────────────────────────────────────── */
 .cd-card--mini.cd-card--show {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translate(0, 0) scale(1) rotate(0deg);
     pointer-events: auto;
+    animation: cd-settle .6s .9s ease-out both;
 }
+@keyframes cd-settle {
+    0% { transform: translate(0,0) scale(1.03) rotate(0); }
+    40% { transform: translate(0,-6px) scale(.98) rotate(0); }
+    70% { transform: translate(0,2px) scale(1.01) rotate(0); }
+    100% { transform: translate(0,0) scale(1) rotate(0); }
+}
+
 .cd-card--mini .cd-card__inner {
-    padding: 1.1rem .7rem;
-    border-radius: 18px;
+    padding: 1.25rem 1rem;
+    border-radius: 22px;
 }
 .cd-card--mini .cd-title {
-    font-size: 1.1rem;
-    margin-bottom: .1rem;
+    font-size: 1.15rem;
+    margin-bottom: .15rem;
 }
 .cd-card--mini .cd-ring {
-    width: 38px; height: 38px;
+    width: 44px; height: 44px;
 }
 .cd-card--mini .cd-num {
-    font-size: .95rem;
+    font-size: 1rem;
 }
 .cd-card--mini .cd-label {
-    font-size: .65rem;
+    font-size: .68rem;
 }
 .cd-card--mini .cd-meta {
     margin-bottom: .5rem;
 }
 .cd-card--mini .cd-cta {
-    margin-top: .2rem;
+    margin-top: .3rem;
 }
 .cd-card--mini .btn--sm {
-    padding: .35rem .7rem;
-    font-size: .68rem;
+    padding: .4rem .8rem;
+    font-size: .72rem;
 }
 
 /* Road Journey SVG: visually connect to countdown */
@@ -2247,10 +2273,11 @@ img { max-width: 100%; }
     .fkf-footer-grid { grid-template-columns: repeat(2, 1fr); }
 
     /* Hero countdown responsive */
-    .hero-right { width: 320px; }
-    .cd-title { font-size: 1.5rem; }
-    .cd-ring { width: 60px; height: 60px; }
-    .cd-num { font-size: 1.25rem; }
+    .hero-right { width: 300px; }
+    .cd-card--mini { width: 280px; }
+    .cd-title { font-size: 1.4rem; }
+    .cd-ring { width: 54px; height: 54px; }
+    .cd-num { font-size: 1.15rem; }
 
     /* Match center */
     .mc-stats__row { grid-template-columns: repeat(4, 1fr); }
@@ -2325,16 +2352,48 @@ img { max-width: 100%; }
     /* Results 768 */
     .comp-hub-grid { grid-template-columns: 1fr; }
 
-    /* Hero split → stacked */
-    .hero-split { flex-direction: column; gap: 1.5rem; }
+    /* Hero split → stacked on tablet */
+    .hero-split { flex-direction: column; gap: 1rem; padding: 1.5rem 1.25rem; }
     .hero-right {
-        width: 100%; max-width: 380px; margin: 0 auto;
+        width: 100%; max-width: 340px; margin: 0 auto;
     }
-    .hero-left { min-height: 360px; }
-    .cd-title { font-size: 1.5rem; }
-    .cd-timer { gap: .3rem; }
-    .cd-ring { width: 60px; height: 60px; }
-    .cd-num { font-size: 1.2rem; }
+
+    /* Switch hero phases from absolute to relative on mobile */
+    .hero-left {
+        min-height: unset;
+        position: relative;
+        overflow: hidden;
+    }
+    .hero-phase {
+        position: relative;
+        top: auto; left: auto; right: auto;
+        transform: none;
+        display: none;
+        padding: 1.5rem 0;
+    }
+    .hero-phase--active {
+        display: block;
+        opacity: 1;
+    }
+
+    /* Contain the road journey on mobile */
+    .road-journey { min-height: unset; overflow: hidden; }
+    .road-svg { width: 100%; max-height: 220px; }
+    .road-info { text-align: center; }
+
+    /* Countdown card tablet */
+    .cd-card-entrance { min-height: unset; }
+    .cd-card--mini { width: 280px; margin: 0 auto; }
+    .cd-title { font-size: 1.4rem; }
+    .cd-timer { gap: .4rem; }
+    .cd-ring { width: 56px; height: 56px; }
+    .cd-num { font-size: 1.15rem; }
+
+    /* Corner pop reduced travel on mobile */
+    .cd-card--mini.cd-pop--top-left { transform: translate(-60px, -60px) scale(.5) rotate(-8deg); }
+    .cd-card--mini.cd-pop--top-right { transform: translate(60px, -60px) scale(.5) rotate(8deg); }
+    .cd-card--mini.cd-pop--bottom-left { transform: translate(-60px, 60px) scale(.5) rotate(8deg); }
+    .cd-card--mini.cd-pop--bottom-right { transform: translate(60px, 60px) scale(.5) rotate(-8deg); }
 
     /* Stories responsive */
     .stories-hero { height: 60vh; min-height: 400px; }
@@ -2348,26 +2407,66 @@ img { max-width: 100%; }
     .mc-stat__num { font-size: 2rem; }
 }
 @media (max-width: 480px) {
-    .hero--dark .hero-title { font-size: 1.65rem; }
+    /* ── Hero phone layout ────────────────────────────────────── */
+    .hero--dark { min-height: auto; }
+    .hero { min-height: auto; padding-top: 70px; padding-bottom: 0; }
+    .hero-split { padding: .75rem 1rem; gap: .5rem; }
+    .hero--dark .hero-title { font-size: 1.4rem; line-height: 1.2; }
+    .hero--dark .hero-tagline { font-size: .68rem; letter-spacing: 1.5px; }
+    .hero-logo-img { width: 72px; height: auto; }
+    .hero-logo-wrap { margin-bottom: .4rem; }
+    .hero-logo-ring { width: 90px; height: 90px; }
+    .hero-actions { flex-direction: column; gap: .5rem; align-items: center; }
+    .hero-actions .btn { width: 100%; max-width: 220px; text-align: center; font-size: .8rem; padding: .55rem .9rem; }
+    .hero-quote { font-size: .75rem; line-height: 1.4; max-width: 280px; margin: .4rem auto; }
+    .hero-phase { padding: 1rem 0; }
+
+    /* Phase B showcase */
+    .hero-showcase { width: 140px; height: 140px; }
+    .hero-showcase__logo { width: 120px; height: 120px; padding: 8px; }
+    .hero-showcase__text { font-size: 1.5rem; letter-spacing: 3px; }
+    .hero-showcase__sub { font-size: .58rem; letter-spacing: 1.5px; margin-bottom: .5rem; }
+
+    /* Phase C Kenya flag */
+    .kenya-flag { width: 200px; }
+    .flag-quote { font-size: .8rem; max-width: 260px; }
+    .flag-author { font-size: .62rem; letter-spacing: 1px; }
+    .flag-text-block { padding: 0 .5rem; }
+
+    /* Phase D Road journey — contained */
+    .road-journey { min-height: unset; align-items: center; }
+    .road-svg { max-height: 160px; width: 100%; }
+    .road-info { padding: .5rem 0; text-align: center; }
+    .road-badge { font-size: .68rem; }
+    .road-title { font-size: .9rem; }
+    .road-sub { font-size: .7rem; }
+    .road-distance { font-size: .65rem; }
+
+    /* ── Countdown card phone ─────────────────────────────────── */
+    .hero-right { width: 100%; max-width: 100%; padding: 0; }
+    .cd-card-entrance { min-height: unset; padding: 0; }
+    .cd-card--mini { width: 100%; max-width: 300px; margin: 0 auto; border-radius: 18px; }
+    .cd-card--mini .cd-card__inner { padding: 1rem .85rem; border-radius: 18px; }
+    .cd-card__glow { border-radius: 18px; }
+    .cd-edition { font-size: .65rem; padding: .2rem .55rem; margin-bottom: .5rem; letter-spacing: 1.5px; }
+    .cd-title { font-size: 1.1rem; }
+    .cd-host { font-size: .72rem; }
+    .cd-timer { gap: .3rem; margin: .5rem 0; }
+    .cd-ring { width: 46px; height: 46px; }
+    .cd-num { font-size: .9rem; }
+    .cd-label { font-size: .6rem; letter-spacing: 1px; }
+    .cd-date { font-size: .7rem; }
+    .cd-live { font-size: .68rem; }
+    .cd-cta .btn { font-size: .68rem; padding: .35rem .6rem; }
+
+    /* Corner pop reduced on phone */
+    .cd-card--mini.cd-pop--top-left { transform: translate(-30px, -40px) scale(.6) rotate(-5deg); }
+    .cd-card--mini.cd-pop--top-right { transform: translate(30px, -40px) scale(.6) rotate(5deg); }
+    .cd-card--mini.cd-pop--bottom-left { transform: translate(-30px, 40px) scale(.6) rotate(5deg); }
+    .cd-card--mini.cd-pop--bottom-right { transform: translate(30px, 40px) scale(.6) rotate(-5deg); }
+
     .stats-row { grid-template-columns: 1fr; }
     .stat-num { font-size: 2rem; }
-
-    .hero-showcase { width: 180px; height: 180px; }
-    .hero-showcase__logo { width: 160px; height: 160px; padding: 10px; }
-    .hero-showcase__text { font-size: 1.8rem; letter-spacing: 4px; }
-    .hero-showcase__sub { font-size: .6rem; letter-spacing: 1.5px; margin-bottom: 1rem; }
-
-    .kenya-flag { width: 260px; }
-    .flag-quote { font-size: .9rem; max-width: 320px; }
-    .flag-author { font-size: .68rem; letter-spacing: 1px; }
-
-    /* Countdown card 480 */
-    .hero-right { width: 100%; }
-    .cd-card__inner { padding: 1.5rem 1rem; }
-    .cd-title { font-size: 1.3rem; }
-    .cd-ring { width: 52px; height: 52px; }
-    .cd-num { font-size: 1rem; }
-    .cd-label { font-size: .75rem; letter-spacing: 1px; }
 
     /* Page hero 480 */
     .page-hero { min-height: 240px; padding-top: 75px; }
@@ -2411,6 +2510,33 @@ img { max-width: 100%; }
     .mc-stats__row { grid-template-columns: repeat(2, 1fr); }
     .mc-stat__num { font-size: 1.6rem; }
     .mc-stat__label { font-size: .75rem; letter-spacing: 1px; }
+}
+
+/* ── Ultra-small phones (360px and below) ──────────────────────────────── */
+@media (max-width: 360px) {
+    .hero-split { padding: .5rem .75rem; }
+    .hero--dark .hero-title { font-size: 1.2rem; }
+    .hero-logo-img { width: 60px; }
+    .hero-logo-ring { width: 78px; height: 78px; }
+    .hero-quote { font-size: .68rem; max-width: 240px; }
+    .hero-actions .btn { font-size: .75rem; padding: .45rem .7rem; max-width: 200px; }
+
+    .cd-card--mini { max-width: 260px; }
+    .cd-ring { width: 38px; height: 38px; }
+    .cd-num { font-size: .8rem; }
+    .cd-title { font-size: .95rem; }
+    .cd-edition { font-size: .58rem; }
+    .cd-date { font-size: .64rem; }
+    .cd-cta .btn { font-size: .64rem; }
+
+    .road-svg { max-height: 130px; }
+    .road-title { font-size: .82rem; }
+
+    .stories-hero { height: 45vh; min-height: 300px; }
+    .story-panel__title { font-size: .95rem; }
+
+    .sec-title { font-size: 1.4rem; }
+    .sec { padding: 2rem 0; }
 }
 
 /* Accessibility floor for small public text on compact screens. */

@@ -253,7 +253,7 @@
         <!-- RIGHT: Countdown — modern glass card -->
         <div class="hero-right">
             <div class="cd-card-entrance">
-                <div class="cd-card cd-card--mini" id="countdownCard">
+                <div class="cd-card cd-card--mini cd-card--corner-pop" id="countdownCard">
                     <div class="cd-card__glow"></div>
                     <div class="cd-card__inner">
                         <span class="cd-edition">11th Edition</span>
@@ -295,7 +295,7 @@
                         <div class="cd-meta">
                             <p class="cd-date">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                11th Apr — 19th Apr 2026
+                                13th Apr — 19th Apr 2026
                             </p>
                         </div>
                         <div class="cd-cta">
@@ -504,7 +504,7 @@
     }, 100);
 
     /* ── Countdown timer + ring animation ─────────────────────────── */
-    var targetDate = new Date('2026-04-10T08:00:00+03:00').getTime();
+    var targetDate = new Date('2026-04-13T08:00:00+03:00').getTime();
     var cdCard = document.querySelector('.cd-card');
     var cdDays = document.getElementById('cdDays');
     var cdHours = document.getElementById('cdHours');
@@ -651,6 +651,12 @@
 
         function showCountdownCard() {
             if (!countdownShown) {
+                // Pick a random corner to pop in from
+                var corners = ['cd-pop--top-left', 'cd-pop--top-right', 'cd-pop--bottom-left', 'cd-pop--bottom-right'];
+                var corner = corners[Math.floor(Math.random() * corners.length)];
+                countdownCard.classList.add(corner);
+                // Force reflow then trigger entrance
+                countdownCard.offsetHeight;
                 countdownCard.classList.add('cd-card--show');
                 countdownShown = true;
             }
