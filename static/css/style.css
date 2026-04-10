@@ -2353,33 +2353,26 @@ img { max-width: 100%; }
     .comp-hub-grid { grid-template-columns: 1fr; }
 
     /* Hero split → stacked on tablet */
-    .hero-split { flex-direction: column; gap: 1rem; padding: 1.5rem 1.25rem; }
+    .hero { min-height: auto; align-items: flex-start; padding-top: 70px; padding-bottom: 1rem; }
+    .hero-split { flex-direction: column; gap: 1rem; padding: 1.5rem 1.25rem; align-items: stretch; }
+    .hero-left {
+        min-height: unset;
+        position: relative;
+        overflow: visible;
+    }
     .hero-right {
         width: 100%; max-width: 340px; margin: 0 auto;
     }
 
-    /* Switch hero phases from absolute to relative on mobile */
-    .hero-left {
-        min-height: unset;
-        position: relative;
-        overflow: hidden;
-    }
+    /* On mobile: keep absolute stacking but use visibility+opacity for smooth fade */
     .hero-phase {
-        position: relative;
-        top: auto; left: auto; right: auto;
+        position: absolute;
+        top: 0; left: 0; right: 0;
         transform: none;
-        display: none;
-        padding: 1.5rem 0;
     }
     .hero-phase--active {
-        display: block;
-        opacity: 1;
+        position: relative;
     }
-
-    /* Contain the road journey on mobile */
-    .road-journey { min-height: unset; overflow: hidden; }
-    .road-svg { width: 100%; max-height: 220px; }
-    .road-info { text-align: center; }
 
     /* Countdown card tablet */
     .cd-card-entrance { min-height: unset; }
@@ -2408,9 +2401,8 @@ img { max-width: 100%; }
 }
 @media (max-width: 480px) {
     /* ── Hero phone layout ────────────────────────────────────── */
-    .hero--dark { min-height: auto; }
-    .hero { min-height: auto; padding-top: 70px; padding-bottom: 0; }
-    .hero-split { padding: .75rem 1rem; gap: .5rem; }
+    .hero { padding-top: 60px; padding-bottom: 0; }
+    .hero-split { padding: .75rem 1rem; gap: .75rem; }
     .hero--dark .hero-title { font-size: 1.4rem; line-height: 1.2; }
     .hero--dark .hero-tagline { font-size: .68rem; letter-spacing: 1.5px; }
     .hero-logo-img { width: 72px; height: auto; }
@@ -2419,7 +2411,6 @@ img { max-width: 100%; }
     .hero-actions { flex-direction: column; gap: .5rem; align-items: center; }
     .hero-actions .btn { width: 100%; max-width: 220px; text-align: center; font-size: .8rem; padding: .55rem .9rem; }
     .hero-quote { font-size: .75rem; line-height: 1.4; max-width: 280px; margin: .4rem auto; }
-    .hero-phase { padding: 1rem 0; }
 
     /* Phase B showcase */
     .hero-showcase { width: 140px; height: 140px; }
@@ -2432,15 +2423,6 @@ img { max-width: 100%; }
     .flag-quote { font-size: .8rem; max-width: 260px; }
     .flag-author { font-size: .62rem; letter-spacing: 1px; }
     .flag-text-block { padding: 0 .5rem; }
-
-    /* Phase D Road journey — contained */
-    .road-journey { min-height: unset; align-items: center; }
-    .road-svg { max-height: 160px; width: 100%; }
-    .road-info { padding: .5rem 0; text-align: center; }
-    .road-badge { font-size: .68rem; }
-    .road-title { font-size: .9rem; }
-    .road-sub { font-size: .7rem; }
-    .road-distance { font-size: .65rem; }
 
     /* ── Countdown card phone ─────────────────────────────────── */
     .hero-right { width: 100%; max-width: 100%; padding: 0; }
@@ -2515,22 +2497,24 @@ img { max-width: 100%; }
 /* ── Ultra-small phones (360px and below) ──────────────────────────────── */
 @media (max-width: 360px) {
     .hero-split { padding: .5rem .75rem; }
-    .hero--dark .hero-title { font-size: 1.2rem; }
-    .hero-logo-img { width: 60px; }
-    .hero-logo-ring { width: 78px; height: 78px; }
-    .hero-quote { font-size: .68rem; max-width: 240px; }
-    .hero-actions .btn { font-size: .75rem; padding: .45rem .7rem; max-width: 200px; }
+    .hero--dark .hero-title { font-size: 1.15rem; }
+    .hero-logo-img { width: 56px; }
+    .hero-logo-ring { width: 72px; height: 72px; }
+    .hero-quote { font-size: .66rem; max-width: 230px; }
+    .hero-actions .btn { font-size: .72rem; padding: .4rem .65rem; max-width: 190px; }
+    .hero-showcase { width: 110px; height: 110px; }
+    .hero-showcase__logo { width: 90px; height: 90px; }
+    .hero-showcase__text { font-size: 1.2rem; }
+    .kenya-flag { width: 170px; }
+    .flag-quote { font-size: .72rem; max-width: 220px; }
 
-    .cd-card--mini { max-width: 260px; }
-    .cd-ring { width: 38px; height: 38px; }
-    .cd-num { font-size: .8rem; }
-    .cd-title { font-size: .95rem; }
-    .cd-edition { font-size: .58rem; }
-    .cd-date { font-size: .64rem; }
-    .cd-cta .btn { font-size: .64rem; }
-
-    .road-svg { max-height: 130px; }
-    .road-title { font-size: .82rem; }
+    .cd-card--mini { max-width: 250px; }
+    .cd-ring { width: 36px; height: 36px; }
+    .cd-num { font-size: .78rem; }
+    .cd-title { font-size: .9rem; }
+    .cd-edition { font-size: .56rem; }
+    .cd-date { font-size: .62rem; }
+    .cd-cta .btn { font-size: .62rem; }
 
     .stories-hero { height: 45vh; min-height: 300px; }
     .story-panel__title { font-size: .95rem; }
