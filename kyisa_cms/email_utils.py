@@ -55,7 +55,7 @@ def _base_html(title, body_content):
   <tr>
     <td style="background:#f8f9fa; padding:20px 30px; border-top:1px solid #e0e0e0; text-align:center; font-size:11px; color:#888;">
       <p style="margin:0;">Kenya Youth Inter-Secondary School Association (KYISA)</p>
-      <p style="margin:4px 0 0;">Email: info@kyisa.ke &bull; Website: www.kyisa.ke</p>
+      <p style="margin:4px 0 0;">Email: admin@kyisa.org &bull; Website: www.kyisa.org</p>
       <p style="margin:4px 0 0;">&copy; {timezone.now().year} KYISA. All rights reserved.</p>
       <p style="margin:8px 0 0; font-size:10px; color:#aaa;">
         This is an automated message. Please do not reply directly to this email.
@@ -114,7 +114,7 @@ def _send(subject, html_body, recipients, fail_silently=True, sent_by=None, cc=N
         from admin_dashboard.models import EmailLog
 
         plain_body = strip_tags(html_body)
-        from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@kyisa.ke")
+        from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "KYISA Administration <admin@kyisa.org>")
         max_retries = 3
         last_error = ""
 

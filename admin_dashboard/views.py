@@ -23,75 +23,73 @@ def admin_required(user):
 
 
 def superadmin_required(user):
-    """Check if user is superuser"""
-    return user.is_superuser
+    """Check if user is superuser or system admin role"""
+    return user.is_superuser or user.role == 'admin'
 
 
 def send_welcome_email(user_obj, password, role):
-    """Send welcome email to newly created user with login credentials."""
-    from django.core.mail import EmailMultiAlternatives
+    """Send branded HTML welcome email to newly created user with login credentials."""
+    from kyisa_cms.email_utils import _base_html, _info_box, _action_button, _send
 
-    subject = f'Welcome to KYISA Competition Management System - {role}'
-    text_content = f"""
-Dear {user_obj.first_name} {user_obj.last_name},
+    role_display = dict(UserRole.choices).get(role, role)
+    login_url = "https://kyisa.org/portal/login/"
 
-Welcome to the KYISA Competition Management System!
-
-Your account has been created:
-
-Login Email: {user_obj.email}
-Temporary Password: {password}
-Role: {role}
-
-Login URL: /portal/login/
-
-Please change your password after your first login.
-
-Best regards,
-KYISA Administration
-"""
-    try:
-        email = EmailMultiAlternatives(
-            subject, text_content,
-            getattr(django_settings, 'DEFAULT_FROM_EMAIL', 'noreply@kyisa.org'),
-            [user_obj.email]
-        )
-        email.send(fail_silently=True)
-        return True
-    except Exception as e:
-        print(f"Email error: {e}")
-        return False
+    body = f"""
+    <p>Dear <strong>{user_obj.first_name} {user_obj.last_name}</strong>,</p>
+    <p>Welcome to the <strong>KYISA Competition Management System</strong>! Your account has been
+    created by the KYISA administration team.</p>
+    {_info_box([
+        ("Email", user_obj.email),
+        ("Temporary Password", f"<code style='background:#f0f0f0;padding:2px 8px;border-radius:4px;font-size:15px;letter-spacing:1px;'>{password}</code>"),
+        ("Role", role_display),
+    ])}
+    <div style="background:#FFF3E0;border-left:4px solid #E65100;padding:12px 16px;border-radius:4px;margin:16px 0;">
+      <strong style="color:#E65100;">&#9888; Important:</strong> You will be required to change your
+      password on first login. Your temporary password will expire once changed.
+    </div>
+    {_action_button(login_url, "Login to KYISA CMS")}
+    <p style="font-size:13px;color:#666;">If the button above doesn't work, copy and paste this URL
+    into your browser:<br><a href="{login_url}">{login_url}</a></p>
+    """
+    html = _base_html("Welcome to KYISA CMS", body)
+    _send(
+        subject=f"Welcome to KYISA CMS — Your {role_display} Account",
+        html_body=html,
+        recipients=[user_obj.email],
+        sent_by=None,
+    )
 
 
 def send_password_reset_email(user_obj, new_password):
-    """Send password reset email."""
-    from django.core.mail import EmailMultiAlternatives
+    """Send branded HTML password reset email."""
+    from kyisa_cms.email_utils import _base_html, _info_box, _action_button, _send
 
-    subject = 'KYISA CMS - Password Reset'
-    text_content = f"""
-Dear {user_obj.first_name} {user_obj.last_name},
+    login_url = "https://kyisa.org/portal/login/"
 
-Your password has been reset by an administrator.
+    body = f"""
+    <p>Dear <strong>{user_obj.first_name} {user_obj.last_name}</strong>,</p>
+    <p>Your password has been reset by a KYISA administrator. Please use the new credentials below
+    to log in.</p>
+    {_info_box([
+        ("Email", user_obj.email),
+        ("New Password", f"<code style='background:#f0f0f0;padding:2px 8px;border-radius:4px;font-size:15px;letter-spacing:1px;'>{new_password}</code>"),
+    ])}
+    <div style="background:#FFEBEE;border-left:4px solid #C62828;padding:12px 16px;border-radius:4px;margin:16px 0;">
+      <strong style="color:#C62828;">&#9888; Security Notice:</strong> You will be required to change
+      this password immediately after logging in.
+    </div>
+    {_action_button(login_url, "Login to KYISA CMS")}
+    <p style="font-size:13px;color:#666;">If the button above doesn't work, copy and paste this URL
+    into your browser:<br><a href="{login_url}">{login_url}</a></p>
+    """
+    html = _base_html("Password Reset — KYISA CMS", body)
+    _send(
+        subject="KYISA CMS — Your Password Has Been Reset",
+        html_body=html,
+        recipients=[user_obj.email],
+        sent_by=None,
+    )
 
-Login Email: {user_obj.email}
-New Password: {new_password}
-
-Please change your password immediately after login.
-
-Best regards,
-KYISA Administration
-"""
-    try:
-        email = EmailMultiAlternatives(
-            subject, text_content,
-            getattr(django_settings, 'DEFAULT_FROM_EMAIL', 'noreply@kyisa.org'),
-            [user_obj.email]
-        )
-        email.send(fail_silently=True)
-        return True
-    except Exception as e:
-        print(f"Email error: {e}")
-        return False
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -434,7 +432,7 @@ def view_report(request, report_id):
 
 @login_required
 @user_passes_test(superadmin_required)
-def manage_league_admins(request):
+def manage_users(request):
     """Manage all users — filter, search, view."""
     from competitions.models import SportType
 
@@ -501,12 +499,12 @@ def manage_league_admins(request):
         'sport_coordinator_rows': sport_coordinator_rows,
         'unassigned_coordinators': unassigned_coordinators,
     }
-    return render(request, 'admin_dashboard/manage_league_admins.html', context)
+    return render(request, 'admin_dashboard/manage_users.html', context)
 
 
 @login_required
 @user_passes_test(superadmin_required)
-def create_league_admin(request):
+def create_user(request):
     """Create a new user with selected role."""
     import random, string
 
@@ -521,11 +519,11 @@ def create_league_admin(request):
         import re
         if not re.match(r'^\+254\d{9}$', phone):
             messages.error(request, "Phone number must be in the format +254XXXXXXXXX (country code + 9 digits).")
-            return redirect('manage_league_admins')
+            return redirect('manage_users')
 
         if User.objects.filter(email=email).exists():
             messages.error(request, f"Email '{email}' already registered.")
-            return redirect('manage_league_admins')
+            return redirect('manage_users')
 
         try:
             password = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
@@ -564,30 +562,30 @@ def create_league_admin(request):
         except Exception as e:
             messages.error(request, f"Error: {e}")
 
-    return redirect('manage_league_admins')
+    return redirect('manage_users')
 
 
 @login_required
 @user_passes_test(superadmin_required)
-def toggle_league_admin_status(request, user_id):
+def toggle_user_status(request, user_id):
     """Activate or deactivate a user."""
     user_obj = get_object_or_404(User, id=user_id)
 
     if user_obj == request.user:
         messages.error(request, "Cannot deactivate your own account!")
-        return redirect('manage_league_admins')
+        return redirect('manage_users')
 
     user_obj.is_active = not user_obj.is_active
     user_obj.save()
 
     status = "activated" if user_obj.is_active else "deactivated"
     messages.success(request, f"{user_obj.email} has been {status}.")
-    return redirect('manage_league_admins')
+    return redirect('manage_users')
 
 
 @login_required
 @user_passes_test(superadmin_required)
-def reset_league_admin_password(request, user_id):
+def reset_user_password(request, user_id):
     """Reset password for any user."""
     import random, string
 
@@ -602,7 +600,7 @@ def reset_league_admin_password(request, user_id):
         f'Password reset for {user_obj.email}.<br>'
         f'New password has been sent to the user\'s email.'
     ))
-    return redirect('manage_league_admins')
+    return redirect('manage_users')
 
 
 @login_required
@@ -685,11 +683,11 @@ def delete_user(request, user_id):
 
     if user_obj == request.user:
         messages.error(request, "Cannot delete your own account!")
-        return redirect('manage_league_admins')
+        return redirect('manage_users')
 
     if user_obj.is_superuser:
         messages.error(request, "Cannot delete superuser accounts!")
-        return redirect('manage_league_admins')
+        return redirect('manage_users')
 
     email = user_obj.email
 
@@ -704,7 +702,7 @@ def delete_user(request, user_id):
 
     user_obj.delete()
     messages.success(request, f"User '{email}' deleted.")
-    return redirect('manage_league_admins')
+    return redirect('manage_users')
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -890,6 +888,7 @@ def user_edit_profile(request, user_id):
                 object_repr=str(user_obj),
                 ip_address=request.META.get('REMOTE_ADDR', ''),
             )
+            request._activity_logged = True  # prevent middleware duplicate
             messages.success(request, f'Profile updated for {user_obj.get_full_name()}.')
         else:
             messages.info(request, 'No changes were made.')

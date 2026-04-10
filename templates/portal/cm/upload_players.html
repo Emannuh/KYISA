@@ -1,0 +1,363 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Upload Verified Players &mdash; KYISA CMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .upload-hero {
+        background: linear-gradient(135deg, #4A148C 0%, #7B1FA2 50%, #9C27B0 100%);
+        border-radius: 16px;
+        padding: 2rem 2.5rem;
+        color: #fff;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .upload-hero::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(255,255,255,.08) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+    .upload-hero h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: .25rem; position: relative; }
+    .upload-hero p { opacity: .85; font-size: .95rem; position: relative; }
+    .upload-hero .hero-badge {
+        display: inline-block;
+        background: rgba(255,255,255,.15);
+        border: 1px solid rgba(255,255,255,.25);
+        padding: .2rem .8rem;
+        border-radius: 20px;
+        font-size: .75rem;
+        letter-spacing: .5px;
+        text-transform: uppercase;
+        margin-bottom: .5rem;
+    }
+
+    .upload-card {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.06);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    .upload-card h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 1.2rem;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+    }
+    .upload-card h3 i { color: #7B1FA2; }
+
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        font-size: .85rem;
+        color: #555;
+        margin-bottom: .4rem;
+    }
+    .form-group select,
+    .form-group input[type="file"] {
+        width: 100%;
+        padding: .6rem .8rem;
+        border: 1.5px solid #ddd;
+        border-radius: 8px;
+        font-size: .9rem;
+        transition: border-color .2s;
+    }
+    .form-group select:focus,
+    .form-group input[type="file"]:focus {
+        border-color: #7B1FA2;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(123,31,162,.1);
+    }
+
+    .drop-zone {
+        border: 2px dashed #ccc;
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all .3s;
+        background: #fafafa;
+    }
+    .drop-zone:hover, .drop-zone.dragover {
+        border-color: #7B1FA2;
+        background: #f3e5f5;
+    }
+    .drop-zone i { font-size: 2.5rem; color: #9C27B0; margin-bottom: .5rem; }
+    .drop-zone p { margin: 0; color: #666; font-size: .9rem; }
+    .drop-zone .file-name {
+        margin-top: .5rem;
+        font-weight: 600;
+        color: #4A148C;
+    }
+
+    .btn-upload {
+        background: linear-gradient(135deg, #4A148C, #7B1FA2);
+        color: #fff;
+        border: none;
+        padding: .7rem 2rem;
+        border-radius: 8px;
+        font-size: .95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform .15s, box-shadow .15s;
+    }
+    .btn-upload:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(123,31,162,.3);
+    }
+    .btn-upload:disabled {
+        opacity: .5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .template-info {
+        background: #E8F5E9;
+        border-left: 4px solid #2E7D32;
+        padding: 1rem 1.2rem;
+        border-radius: 0 8px 8px 0;
+        margin-bottom: 1.5rem;
+    }
+    .template-info h4 {
+        font-size: .9rem;
+        font-weight: 700;
+        color: #2E7D32;
+        margin-bottom: .3rem;
+    }
+    .template-info p { font-size: .85rem; color: #555; margin: 0; }
+    .template-info code {
+        background: rgba(0,0,0,.06);
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: .82rem;
+    }
+
+    .upload-steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .step-card {
+        text-align: center;
+        padding: 1.2rem 1rem;
+        background: #f9f9f9;
+        border-radius: 10px;
+        border: 1px solid #eee;
+    }
+    .step-card .step-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #7B1FA2;
+        color: #fff;
+        font-weight: 700;
+        font-size: .85rem;
+        margin-bottom: .5rem;
+    }
+    .step-card h5 { font-size: .85rem; font-weight: 600; margin: .3rem 0; }
+    .step-card p { font-size: .78rem; color: #888; margin: 0; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="upload-hero">
+    <span class="hero-badge">Organising Secretary</span>
+    <h1><i class="bi bi-cloud-upload me-2"></i> Upload Verified Player List</h1>
+    <p>Upload verified player lists by county and discipline. Players will be automatically loaded into the system and notifications sent to County Sports Directors and Team Managers.</p>
+</div>
+
+<!-- How It Works -->
+<div class="upload-steps">
+    <div class="step-card">
+        <div class="step-num">1</div>
+        <h5>Select County</h5>
+        <p>Choose the registered county</p>
+    </div>
+    <div class="step-card">
+        <div class="step-num">2</div>
+        <h5>Select Discipline</h5>
+        <p>Pick sport &amp; gender</p>
+    </div>
+    <div class="step-card">
+        <div class="step-num">3</div>
+        <h5>Upload File</h5>
+        <p>Excel (.xlsx) or CSV</p>
+    </div>
+    <div class="step-card">
+        <div class="step-num">4</div>
+        <h5>Auto-Notify</h5>
+        <p>Directors &amp; managers notified</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Upload Form -->
+    <div class="col-lg-8">
+        <div class="upload-card">
+            <h3><i class="bi bi-file-earmark-arrow-up"></i> Player Upload Form</h3>
+
+            <form method="post" enctype="multipart/form-data" id="uploadForm">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="county_registration"><i class="bi bi-geo-alt"></i> County</label>
+                    <select name="county_registration" id="county_registration" required>
+                        <option value="">— Select County —</option>
+                        {% for reg in approved_counties %}
+                        <option value="{{ reg.pk }}" data-county="{{ reg.county }}">{{ reg.county }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="discipline"><i class="bi bi-trophy"></i> Discipline (Sport &amp; Gender)</label>
+                    <select name="discipline" id="discipline" required disabled>
+                        <option value="">— Select County First —</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="bi bi-file-earmark-spreadsheet"></i> Player File</label>
+                    <div class="drop-zone" id="dropZone">
+                        <i class="bi bi-cloud-arrow-up-fill"></i>
+                        <p>Drag &amp; drop your file here, or <strong>click to browse</strong></p>
+                        <p class="file-name" id="fileName" style="display:none;"></p>
+                        <input type="file" name="player_file" id="playerFile" accept=".csv,.xlsx,.xls" style="display:none;" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-upload" id="submitBtn" disabled>
+                    <i class="bi bi-upload me-1"></i> Upload &amp; Process Players
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Instructions -->
+    <div class="col-lg-4">
+        <div class="upload-card">
+            <h3><i class="bi bi-info-circle"></i> File Format</h3>
+
+            <div class="template-info">
+                <h4>Required Columns</h4>
+                <p>
+                    <code>first_name</code>, <code>last_name</code>,
+                    <code>date_of_birth</code>, <code>national_id_number</code>
+                </p>
+            </div>
+
+            <div class="template-info" style="background:#FFF3E0;border-color:#E65100;">
+                <h4 style="color:#E65100;">Optional Columns</h4>
+                <p>
+                    <code>phone</code>, <code>position</code>,
+                    <code>jersey_number</code>, <code>huduma_number</code>
+                </p>
+            </div>
+
+            <div class="template-info" style="background:#E3F2FD;border-color:#1565C0;">
+                <h4 style="color:#1565C0;">Date Format</h4>
+                <p>Use <code>YYYY-MM-DD</code> or <code>DD/MM/YYYY</code></p>
+            </div>
+
+            <div style="margin-top:1.2rem;padding:1rem;background:#f5f5f5;border-radius:8px;">
+                <h4 style="font-size:.85rem;font-weight:600;margin-bottom:.5rem;">What happens after upload?</h4>
+                <ul style="font-size:.82rem;color:#666;padding-left:1.2rem;margin:0;">
+                    <li>Players are created with <strong>Verified</strong> status</li>
+                    <li>County Sports Director is notified by email</li>
+                    <li>Team Managers in the county are notified</li>
+                    <li>Existing players (same National ID) are updated</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    // Discipline data keyed by county registration PK
+    const disciplineData = {
+        {% for disc in disciplines %}
+        "{{ disc.registration_id }}": (disciplineData["{{ disc.registration_id }}"] || []).concat([
+            { pk: {{ disc.pk }}, label: "{{ disc.get_sport_type_display }}" }
+        ]),
+        {% endfor %}
+    };
+
+    // Rebuild properly
+    const discMap = {};
+    {% for disc in disciplines %}
+    if (!discMap["{{ disc.registration_id }}"]) discMap["{{ disc.registration_id }}"] = [];
+    discMap["{{ disc.registration_id }}"].push({ pk: {{ disc.pk }}, label: "{{ disc.get_sport_type_display }}" });
+    {% endfor %}
+
+    const countySelect = document.getElementById('county_registration');
+    const discSelect   = document.getElementById('discipline');
+    const dropZone     = document.getElementById('dropZone');
+    const fileInput    = document.getElementById('playerFile');
+    const fileName     = document.getElementById('fileName');
+    const submitBtn    = document.getElementById('submitBtn');
+
+    // County change → populate disciplines
+    countySelect.addEventListener('change', function() {
+        const regId = this.value;
+        discSelect.innerHTML = '<option value="">— Select Discipline —</option>';
+        discSelect.disabled = !regId;
+
+        if (regId && discMap[regId]) {
+            discMap[regId].forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d.pk;
+                opt.textContent = d.label;
+                discSelect.appendChild(opt);
+            });
+        }
+        checkReady();
+    });
+
+    discSelect.addEventListener('change', checkReady);
+
+    // Drop zone
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        if (e.dataTransfer.files.length) {
+            fileInput.files = e.dataTransfer.files;
+            showFile(e.dataTransfer.files[0]);
+        }
+    });
+    fileInput.addEventListener('change', function() {
+        if (this.files.length) showFile(this.files[0]);
+    });
+
+    function showFile(file) {
+        fileName.textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+        fileName.style.display = 'block';
+        checkReady();
+    }
+
+    function checkReady() {
+        submitBtn.disabled = !(countySelect.value && discSelect.value && fileInput.files.length);
+    }
+})();
+</script>
+{% endblock %}

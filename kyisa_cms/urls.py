@@ -93,6 +93,7 @@ from .web_views import (
     cm_edit_standings_view,
     cm_edit_fixture_view,
     cm_competition_rules_view,
+    cm_upload_verified_players_view,
     # County Sports Admin portal
     county_admin_complete_registration_view,
     county_admin_dashboard_view,
@@ -157,6 +158,8 @@ from .web_views import (
     scout_add_to_shortlist_view,
     scout_edit_shortlist_view,
     scout_remove_from_shortlist_view,
+    # System Admin portal
+    sys_admin_dashboard_view,
     # M-Pesa STK push endpoint
     mpesa_stk_push_view,
 )
@@ -300,6 +303,7 @@ urlpatterns = [
          cm_edit_fixture_view, name="cm_edit_fixture"),
     path("portal/cm/competitions/<int:pk>/rules/",         cm_competition_rules_view,     name="cm_competition_rules"),
     path("portal/cm/venues/",                              cm_manage_venues_view,         name="cm_venues"),
+    path("portal/cm/upload-players/",                      cm_upload_verified_players_view, name="cm_upload_players"),
 
     # ── VERIFICATION OFFICER — COUNTY-BASED FLOW ─────────────────────────
     path("portal/verification/counties/",                                 vo_registered_counties_view,     name="vo_registered_counties"),
@@ -363,6 +367,9 @@ urlpatterns = [
     path("portal/scout/shortlist/add/<int:player_pk>/",scout_add_to_shortlist_view,       name="scout_add_to_shortlist"),
     path("portal/scout/shortlist/<int:pk>/edit/",      scout_edit_shortlist_view,         name="scout_edit_shortlist"),
     path("portal/scout/shortlist/<int:pk>/remove/",    scout_remove_from_shortlist_view,  name="scout_remove_from_shortlist"),
+
+    # ── SYSTEM ADMIN PORTAL ────────────────────────────────────────────────────
+    path("portal/system/",                      sys_admin_dashboard_view,    name="sys_admin_dashboard"),
 
     # ── ADMIN DASHBOARD ───────────────────────────────────────────────────────
     path("portal/admin-dashboard/", include("admin_dashboard.urls")),

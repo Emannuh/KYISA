@@ -9,6 +9,14 @@
      HERO — DARK CINEMATIC WITH INTEGRATED COUNTDOWN
      ══════════════════════════════════════════════════════════════════════════ -->
 <section class="hero hero--dark" id="hero">
+    <!-- Background image slideshow -->
+    <div class="hero-bg-slideshow" id="heroBgSlideshow">
+        <div class="hero-bg-slide hero-bg-slide--active hero-bg-slide--zoom" style="background-image:url('{% static 'img/kyisa_women_football.jpg' %}')"></div>
+        <div class="hero-bg-slide" style="background-image:url('{% static 'img/kyisa_men_football.jpg' %}')"></div>
+        <div class="hero-bg-slide" style="background-image:url('{% static 'img/kyisa_basketball.jpg' %}')"></div>
+        <div class="hero-bg-slide" style="background-image:url('{% static 'img/kyisa_champions.jpg' %}')"></div>
+    </div>
+
     <div class="hero-bg hero-bg--dark">
         <canvas class="hero-canvas" id="heroCanvas"></canvas>
     </div>
@@ -469,9 +477,26 @@
     var countdownCard = document.getElementById('countdownCard');
     if (phaseA && phaseB && phaseC && countdownCard) {
         var heroPhases = [phaseA, phaseB, phaseC];
-        var phaseDurations = [8000, 8000, 9000];
+        var phaseDurations = [4000, 3500, 4000];
         var activePhase = 0;
         var countdownShown = false;
+
+        /* ── Background image slideshow ── */
+        var bgSlides = document.querySelectorAll('.hero-bg-slide');
+        var activeBg = 0;
+        var bgCount = bgSlides.length;
+        function nextBgSlide() {
+            bgSlides[activeBg].classList.remove('hero-bg-slide--active', 'hero-bg-slide--zoom');
+            activeBg = (activeBg + 1) % bgCount;
+            bgSlides[activeBg].classList.add('hero-bg-slide--active');
+            // Trigger zoom with slight delay for reflow
+            requestAnimationFrame(function(){
+                bgSlides[activeBg].classList.add('hero-bg-slide--zoom');
+            });
+        }
+        if (bgCount > 1) {
+            setInterval(nextBgSlide, 6000);
+        }
 
         function showCountdownCard() {
             if (!countdownShown) {
@@ -492,11 +517,11 @@
             heroPhases[activePhase].classList.add('hero-phase--active');
             setTimeout(switchHeroPhase, phaseDurations[activePhase]);
         }
-        // Show countdown after Phase A (logo) finishes (first 8s + 0.5s buffer)
+        // Show countdown after Phase A finishes
         setTimeout(function(){
             showCountdownCard();
             setTimeout(switchHeroPhase, phaseDurations[activePhase]);
-        }, 8500);
+        }, 4500);
     }
 
     /* ── Stories fullscreen carousel ──────────────────────────────────── */

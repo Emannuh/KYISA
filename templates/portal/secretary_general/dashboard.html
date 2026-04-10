@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block title %}Secretary General Dashboard &mdash; KYISA{% endblock %}
 
@@ -10,7 +11,7 @@
         border-radius: 16px;
         padding: 2rem 2.5rem;
         color: #fff;
-        margin-bottom: 2rem;
+        margin-bottom: 1.75rem;
         position: relative;
         overflow: hidden;
     }
@@ -34,70 +35,125 @@
         background: radial-gradient(circle, rgba(76,175,80,.15) 0%, transparent 70%);
         border-radius: 50%;
     }
-    .sg-hero h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: .25rem; position: relative; }
-    .sg-hero p  { opacity: .85; font-size: .92rem; position: relative; margin: 0; }
     .sg-hero .hero-badge {
-        display: inline-block;
-        background: rgba(255,255,255,.12);
-        border: 1px solid rgba(255,255,255,.22);
-        padding: .2rem .8rem;
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        background: rgba(255,255,255,.1);
+        border: 1px solid rgba(255,255,255,.2);
+        padding: .2rem .75rem;
         border-radius: 20px;
-        font-size: .72rem;
+        font-size: .7rem;
         letter-spacing: .5px;
         text-transform: uppercase;
         margin-bottom: .6rem;
         position: relative;
     }
-    .sg-hero .hero-date {
+    .sg-hero .hero-badge .pulse-dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: #4CAF50;
+        animation: pulse-glow 2s ease infinite;
+    }
+    @keyframes pulse-glow {
+        0% { box-shadow: 0 0 0 0 rgba(76,175,80,.7); }
+        70% { box-shadow: 0 0 0 6px rgba(76,175,80,0); }
+        100% { box-shadow: 0 0 0 0 rgba(76,175,80,0); }
+    }
+    .sg-hero h1 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin-bottom: .25rem;
         position: relative;
-        font-size: .8rem;
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+    }
+    .sg-hero p  { opacity: .85; font-size: .88rem; position: relative; margin: 0; }
+    .sg-hero .hero-meta {
+        position: relative;
+        display: flex;
+        gap: 1.5rem;
+        margin-top: .75rem;
+        font-size: .78rem;
         opacity: .7;
-        margin-top: .35rem;
+    }
+    .sg-hero .hero-meta span {
+        display: flex;
+        align-items: center;
+        gap: .3rem;
     }
 
     .stat-row {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
         gap: 1rem;
-        margin-bottom: 2rem;
+        margin-bottom: 1.75rem;
     }
     .sg-stat {
         background: #fff;
         border-radius: 12px;
-        padding: 1.1rem 1.25rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        padding: 1.15rem 1.25rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,.05);
         border-left: 4px solid transparent;
         transition: all .25s ease;
     }
-    .sg-stat:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,.1); }
-    .sg-stat .num  { font-size: 1.55rem; font-weight: 800; line-height: 1.1; }
-    .sg-stat .lbl  { font-size: .76rem; color: #757575; font-weight: 500; margin-top: .15rem; }
+    .sg-stat:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,.08); }
+    .sg-stat .stat-icon {
+        width: 38px; height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        margin-bottom: .5rem;
+    }
+    .sg-stat .num  { font-size: 1.6rem; font-weight: 800; line-height: 1.1; }
+    .sg-stat .lbl  { font-size: .74rem; color: #757575; font-weight: 500; margin-top: .1rem; }
     .sg-stat.green   { border-left-color: #1B5E20; }
     .sg-stat.green .num  { color: #1B5E20; }
+    .sg-stat.green .stat-icon { background: #E8F5E9; color: #1B5E20; }
     .sg-stat.blue    { border-left-color: #1565C0; }
     .sg-stat.blue .num   { color: #1565C0; }
+    .sg-stat.blue .stat-icon { background: #E3F2FD; color: #1565C0; }
     .sg-stat.teal    { border-left-color: #00897B; }
     .sg-stat.teal .num   { color: #00897B; }
+    .sg-stat.teal .stat-icon { background: #E0F2F1; color: #00897B; }
     .sg-stat.amber   { border-left-color: #E65100; }
     .sg-stat.amber .num  { color: #E65100; }
+    .sg-stat.amber .stat-icon { background: #FFF3E0; color: #E65100; }
     .sg-stat.red     { border-left-color: #C62828; }
     .sg-stat.red .num    { color: #C62828; }
+    .sg-stat.red .stat-icon { background: #FFEBEE; color: #C62828; }
     .sg-stat.purple  { border-left-color: #6A1B9A; }
     .sg-stat.purple .num { color: #6A1B9A; }
+    .sg-stat.purple .stat-icon { background: #F3E5F5; color: #6A1B9A; }
     .sg-stat.grey    { border-left-color: #546E7A; }
     .sg-stat.grey .num   { color: #546E7A; }
+    .sg-stat.grey .stat-icon { background: #ECEFF1; color: #546E7A; }
+
+    .section-title {
+        font-size: .78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        color: #9E9E9E;
+        margin-bottom: .85rem;
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+    }
 
     .actions-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
         gap: 1rem;
-        margin-bottom: 2rem;
+        margin-bottom: 1.75rem;
     }
     .action-tile {
         background: #fff;
         border-radius: 12px;
-        padding: 1.25rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        padding: 1.2rem 1.25rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,.05);
         text-decoration: none;
         color: #212121;
         transition: all .25s ease;
@@ -108,13 +164,12 @@
     }
     .action-tile:hover {
         transform: translateY(-3px);
-        box-shadow: 0 6px 20px rgba(0,0,0,.1);
+        box-shadow: 0 8px 24px rgba(0,0,0,.1);
         border-color: #2E7D32;
         color: #1B5E20;
     }
     .action-tile .tile-icon {
-        width: 44px;
-        height: 44px;
+        width: 44px; height: 44px;
         border-radius: 10px;
         display: flex;
         align-items: center;
@@ -122,31 +177,22 @@
         font-size: 1.3rem;
         flex-shrink: 0;
     }
-    .action-tile .tile-text h4 { font-size: .88rem; font-weight: 600; margin-bottom: .15rem; }
-    .action-tile .tile-text p  { font-size: .77rem; color: #757575; margin: 0; line-height: 1.35; }
+    .action-tile .tile-text h4 { font-size: .86rem; font-weight: 650; margin-bottom: .15rem; }
+    .action-tile .tile-text p  { font-size: .76rem; color: #757575; margin: 0; line-height: 1.35; }
     .action-tile .tile-count {
-        font-size: .7rem;
+        font-size: .65rem;
         font-weight: 700;
-        padding: .1rem .45rem;
+        padding: .1rem .4rem;
         border-radius: 10px;
-        margin-left: .3rem;
+        margin-left: .25rem;
     }
 
-    .section-title {
-        font-size: .82rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .5px;
-        color: #9E9E9E;
-        margin-bottom: .85rem;
-    }
-
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.75rem; }
 
     .panel {
         background: #fff;
         border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        box-shadow: 0 2px 8px rgba(0,0,0,.05);
         overflow: hidden;
     }
     .panel-head {
@@ -156,8 +202,21 @@
         justify-content: space-between;
         align-items: center;
     }
-    .panel-head h3 { font-size: .92rem; font-weight: 700; margin: 0; color: #1B5E20; }
-    .panel-head a   { font-size: .78rem; text-decoration: none; color: #2E7D32; font-weight: 600; }
+    .panel-head h3 {
+        font-size: .9rem;
+        font-weight: 700;
+        margin: 0;
+        color: #1B5E20;
+        display: flex;
+        align-items: center;
+        gap: .35rem;
+    }
+    .panel-head a {
+        font-size: .76rem;
+        text-decoration: none;
+        color: #2E7D32;
+        font-weight: 600;
+    }
     .panel-head a:hover { text-decoration: underline; }
     .panel-body { padding: 1rem 1.25rem; }
 
@@ -169,8 +228,8 @@
     }
     .sport-bar-row:last-child { margin-bottom: 0; }
     .sport-bar-label { width: 140px; font-size: .82rem; font-weight: 600; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .sport-bar-track { flex: 1; height: 22px; background: #f5f5f5; border-radius: 6px; overflow: hidden; position: relative; }
-    .sport-bar-fill  { height: 100%; border-radius: 6px; transition: width .5s ease; display: flex; align-items: center; justify-content: flex-end; padding-right: .5rem; }
+    .sport-bar-track { flex: 1; height: 24px; background: #f5f5f5; border-radius: 8px; overflow: hidden; position: relative; }
+    .sport-bar-fill  { height: 100%; border-radius: 8px; transition: width .5s ease; display: flex; align-items: center; justify-content: flex-end; padding-right: .5rem; }
     .sport-bar-fill span { font-size: .68rem; font-weight: 700; color: #fff; }
     .sport-bar-total { width: 48px; font-size: .78rem; font-weight: 600; text-align: right; color: #616161; }
 
@@ -178,7 +237,7 @@
         display: flex;
         align-items: flex-start;
         gap: .75rem;
-        padding: .7rem 0;
+        padding: .65rem 0;
         border-bottom: 1px solid #f5f5f5;
     }
     .activity-item:last-child { border-bottom: none; }
@@ -186,14 +245,21 @@
         width: 8px; height: 8px; border-radius: 50%;
         margin-top: .35rem; flex-shrink: 0;
     }
-    .activity-item .ai-main { font-size: .84rem; font-weight: 500; line-height: 1.35; }
-    .activity-item .ai-meta { font-size: .72rem; color: #999; margin-top: .1rem; }
+    .activity-item .ai-main { font-size: .82rem; font-weight: 500; line-height: 1.35; }
+    .activity-item .ai-meta { font-size: .7rem; color: #999; margin-top: .1rem; }
 
     @media (max-width: 768px) {
         .two-col { grid-template-columns: 1fr; }
         .actions-grid { grid-template-columns: 1fr; }
         .sg-hero { padding: 1.5rem; }
+        .sg-hero h1 { font-size: 1.25rem; }
+        .sg-hero .hero-meta { flex-direction: column; gap: .35rem; }
         .sport-bar-label { width: 100px; }
+        .stat-row { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+        .stat-row { grid-template-columns: 1fr; }
+        .sg-hero { padding: 1.25rem; border-radius: 12px; }
     }
 </style>
 {% endblock %}
@@ -201,40 +267,51 @@
 {% block content %}
 <!-- Hero Banner -->
 <div class="sg-hero">
-    <span class="hero-badge"><i class="bi bi-shield-lock-fill"></i> Secretary General</span>
+    <span class="hero-badge"><span class="pulse-dot"></span> Secretary General</span>
     <h1><i class="bi bi-speedometer2"></i> Oversight &amp; Audit Portal</h1>
-    <p>KYISA 11th Edition &mdash; Read-only system oversight across all operations</p>
-    <div class="hero-date"><i class="bi bi-calendar3"></i> 10th &ndash; 20th April 2026 &bull; Laikipia County</div>
+    <p>Read-only system oversight across all KYISA operations</p>
+    <div class="hero-meta">
+        <span><i class="bi bi-people-fill"></i> {{ total_players }} Players</span>
+        <span><i class="bi bi-globe2"></i> {{ total_counties }} Counties</span>
+        <span><i class="bi bi-calendar3"></i> KYISA 11th Edition &mdash; 13&ndash;19 April 2026</span>
+    </div>
 </div>
 
 <!-- Key Metrics -->
 <div class="section-title"><i class="bi bi-graph-up"></i> Key Metrics</div>
 <div class="stat-row">
     <div class="sg-stat green">
+        <div class="stat-icon"><i class="bi bi-globe2"></i></div>
         <div class="num">{{ total_counties }}</div>
         <div class="lbl">Counties Registered</div>
     </div>
     <div class="sg-stat blue">
+        <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
         <div class="num">{{ total_players }}</div>
         <div class="lbl">Total Players</div>
     </div>
     <div class="sg-stat teal">
+        <div class="stat-icon"><i class="bi bi-shield-check"></i></div>
         <div class="num">{{ verified_players }}</div>
         <div class="lbl">Verified</div>
     </div>
     <div class="sg-stat amber">
+        <div class="stat-icon"><i class="bi bi-clock-history"></i></div>
         <div class="num">{{ pending_players }}</div>
         <div class="lbl">Pending</div>
     </div>
     <div class="sg-stat red">
+        <div class="stat-icon"><i class="bi bi-x-circle"></i></div>
         <div class="num">{{ rejected_players }}</div>
         <div class="lbl">Rejected</div>
     </div>
     <div class="sg-stat purple">
+        <div class="stat-icon"><i class="bi bi-briefcase"></i></div>
         <div class="num">{{ total_appeals }}</div>
         <div class="lbl">Appeals Filed</div>
     </div>
     <div class="sg-stat grey">
+        <div class="stat-icon"><i class="bi bi-check-circle"></i></div>
         <div class="num">{{ decided_appeals }}</div>
         <div class="lbl">Appeals Decided</div>
     </div>

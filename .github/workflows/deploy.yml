@@ -45,6 +45,7 @@ jobs:
               --env-file .env \
               -p 8080:8080 \
               -v /opt/kyisa/media:/app/media \
+              -v /opt/kyisa/staticfiles:/app/staticfiles \
               kyisa-cms-new
 
             sleep 3

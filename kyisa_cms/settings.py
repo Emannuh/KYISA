@@ -272,7 +272,7 @@ EMAIL_PORT       = env.int("EMAIL_PORT", default=587)
 EMAIL_USE_TLS    = True
 EMAIL_HOST_USER  = env("EMAIL_HOST_USER",     default="")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="KYISA CMS <noreply@kyisa.ke>")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="KYISA Administration <admin@kyisa.org>")
 
 # ── AWS SES (used when EMAIL_BACKEND = django_ses.SESBackend) ─────────────────
 AWS_SES_REGION_NAME      = env("AWS_SES_REGION_NAME", default="eu-west-1")

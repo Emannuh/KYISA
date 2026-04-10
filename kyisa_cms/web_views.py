@@ -690,6 +690,9 @@ def dashboard_view(request):
     }
 
     # For team managers, show only their team's data
+    if user.role == 'admin':
+        return redirect('sys_admin_dashboard')
+
     if user.role == 'treasurer':
         return redirect('treasurer_dashboard')
 
@@ -703,6 +706,9 @@ def dashboard_view(request):
         return redirect('vo_registered_counties')
 
     if user.role == 'coordinator':
+        return redirect('coordinator_dashboard')
+
+    if user.role in ('soccer_coordinator', 'handball_coordinator', 'basketball_coordinator', 'volleyball_coordinator'):
         return redirect('coordinator_dashboard')
 
     if user.role == 'county_sports_admin':
@@ -4288,6 +4294,291 @@ def cm_competition_rules_view(request, pk):
     })
 
 
+@role_required('competition_manager', 'admin')
+def cm_upload_verified_players_view(request):
+    """
+    Organising Secretary uploads a verified player list (Excel/CSV).
+    Select county → discipline (by gender) → upload file.
+    System creates CountyPlayer records with verification_status='verified'
+    and notifies the relevant County Sports Director + Team Manager(s).
+    """
+    from admin_dashboard.models import ActivityLog
+
+    # Build county + discipline dropdowns
+    approved_counties = CountyRegistration.objects.filter(
+        status='approved'
+    ).order_by('county')
+
+    disciplines = CountyDiscipline.objects.filter(
+        registration__status='approved'
+    ).select_related('registration').order_by('registration__county', 'sport_type')
+
+    if request.method == 'POST':
+        county_reg_id = request.POST.get('county_registration')
+        discipline_id = request.POST.get('discipline')
+        uploaded_file = request.FILES.get('player_file')
+
+        if not county_reg_id or not discipline_id or not uploaded_file:
+            messages.error(request, 'Please select county, discipline and upload a file.')
+            return redirect('cm_upload_players')
+
+        county_reg = get_object_or_404(CountyRegistration, pk=county_reg_id, status='approved')
+        discipline = get_object_or_404(CountyDiscipline, pk=discipline_id, registration=county_reg)
+
+        filename = uploaded_file.name.lower()
+        if not filename.endswith(('.csv', '.xlsx', '.xls')):
+            messages.error(request, 'Unsupported file format. Please upload .csv or .xlsx files.')
+            return redirect('cm_upload_players')
+
+        # Parse file
+        rows, errors = _parse_player_upload(uploaded_file, filename)
+
+        if errors:
+            error_msgs = '; '.join(
+                f"Row {e['row']}: {', '.join(e['errors']) if isinstance(e.get('errors'), list) else e.get('error', '')}"
+                for e in errors[:10]
+            )
+            messages.error(request, f'File has errors: {error_msgs}')
+            return redirect('cm_upload_players')
+
+        if not rows:
+            messages.error(request, 'No valid player data found in the file.')
+            return redirect('cm_upload_players')
+
+        # Create/update CountyPlayer records as verified
+        created_count = 0
+        updated_count = 0
+        skipped = []
+        for i, row in enumerate(rows, start=2):
+            national_id = row.get('national_id_number', '').strip()
+            if not national_id:
+                skipped.append(f"Row {i}: missing national ID")
+                continue
+
+            defaults = {
+                'first_name': row.get('first_name', '').strip(),
+                'last_name': row.get('last_name', '').strip(),
+                'date_of_birth': row.get('_parsed_dob'),
+                'phone': row.get('phone', '').strip() or '+254000000000',
+                'position': row.get('position', '').strip().upper(),
+                'jersey_number': row.get('jersey_number') or row.get('shirt_number') or None,
+                'verification_status': 'verified',
+            }
+
+            # Remove None values
+            defaults = {k: v for k, v in defaults.items() if v is not None}
+
+            try:
+                player, was_created = CountyPlayer.objects.update_or_create(
+                    national_id_number=national_id,
+                    defaults={**defaults, 'discipline': discipline},
+                )
+                if was_created:
+                    created_count += 1
+                else:
+                    updated_count += 1
+            except Exception as e:
+                skipped.append(f"Row {i}: {e}")
+
+        # Log the activity
+        ActivityLog.objects.create(
+            user=request.user,
+            action='PLAYER_CREATE',
+            description=(
+                f'{request.user.get_full_name()} uploaded verified player list: '
+                f'{created_count} created, {updated_count} updated for '
+                f'{county_reg.county} — {discipline.get_sport_type_display()}'
+            ),
+            ip_address=request.META.get('REMOTE_ADDR', ''),
+        )
+        request._activity_logged = True
+
+        # Send notifications to County Sports Director + Team Managers
+        _notify_player_upload(
+            county_reg, discipline, created_count + updated_count, request.user
+        )
+
+        msg = f'Successfully uploaded: {created_count} players created, {updated_count} updated.'
+        if skipped:
+            msg += f' {len(skipped)} rows skipped.'
+        messages.success(request, msg)
+        return redirect('cm_upload_players')
+
+    return render(request, 'portal/cm/upload_players.html', {
+        'approved_counties': approved_counties,
+        'disciplines': disciplines,
+        'sport_types': SportType.choices,
+    })
+
+
+def _parse_player_upload(uploaded_file, filename):
+    """Parse CSV or Excel file for verified player upload. Returns (rows, errors)."""
+    REQUIRED = ['first_name', 'last_name', 'date_of_birth', 'national_id_number']
+    OPTIONAL = ['phone', 'position', 'jersey_number', 'shirt_number', 'huduma_number']
+
+    if filename.endswith('.csv'):
+        return _parse_player_csv(uploaded_file, REQUIRED)
+    else:
+        return _parse_player_excel(uploaded_file, REQUIRED)
+
+
+def _parse_player_csv(file_obj, required_cols):
+    """Parse CSV for player upload."""
+    import io
+    from datetime import datetime as dt
+    try:
+        content = file_obj.read().decode('utf-8-sig')
+    except UnicodeDecodeError:
+        content = file_obj.read().decode('latin-1')
+
+    reader = csv.DictReader(io.StringIO(content))
+    headers = [h.strip().lower().replace(' ', '_') for h in (reader.fieldnames or [])]
+    missing = [c for c in required_cols if c not in headers]
+    if missing:
+        return [], [{'row': 0, 'error': f'Missing columns: {", ".join(missing)}'}]
+
+    rows, errors = [], []
+    for i, raw_row in enumerate(reader, start=2):
+        row = {k.strip().lower().replace(' ', '_'): (v.strip() if v else '') for k, v in raw_row.items()}
+        row_errors = []
+        for col in required_cols:
+            if not row.get(col):
+                row_errors.append(f"Missing '{col}'")
+
+        dob = row.get('date_of_birth', '')
+        parsed_dob = None
+        if dob:
+            for fmt in ('%Y-%m-%d', '%d/%m/%Y', '%d-%m-%Y', '%m/%d/%Y'):
+                try:
+                    parsed_dob = dt.strptime(dob, fmt).date()
+                    break
+                except ValueError:
+                    continue
+            if not parsed_dob:
+                row_errors.append(f"Invalid date '{dob}'")
+        row['_parsed_dob'] = parsed_dob
+
+        if row_errors:
+            errors.append({'row': i, 'errors': row_errors})
+        rows.append(row)
+    return rows, errors
+
+
+def _parse_player_excel(file_obj, required_cols):
+    """Parse Excel for player upload."""
+    from datetime import datetime as dt
+    try:
+        import openpyxl
+    except ImportError:
+        return [], [{'row': 0, 'error': 'openpyxl required for Excel. Use CSV instead.'}]
+
+    try:
+        wb = openpyxl.load_workbook(file_obj, read_only=True, data_only=True)
+        ws = wb.active
+    except Exception as e:
+        return [], [{'row': 0, 'error': f'Cannot read file: {e}'}]
+
+    header_row = next(ws.iter_rows(min_row=1, max_row=1, values_only=True), None)
+    if not header_row:
+        return [], [{'row': 0, 'error': 'Empty spreadsheet'}]
+
+    headers = [str(h or '').strip().lower().replace(' ', '_') for h in header_row]
+    missing = [c for c in required_cols if c not in headers]
+    if missing:
+        return [], [{'row': 0, 'error': f'Missing columns: {", ".join(missing)}'}]
+
+    rows, errors = [], []
+    for i, excel_row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+        raw = {headers[j]: (str(v).strip() if v is not None else '') for j, v in enumerate(excel_row) if j < len(headers)}
+        row_errors = []
+        for col in required_cols:
+            if not raw.get(col):
+                row_errors.append(f"Missing '{col}'")
+
+        dob_val = raw.get('date_of_birth', '')
+        parsed_dob = None
+        dob_idx = headers.index('date_of_birth') if 'date_of_birth' in headers else None
+        if dob_idx is not None and isinstance(excel_row[dob_idx], dt):
+            parsed_dob = excel_row[dob_idx].date()
+        elif dob_val:
+            for fmt in ('%Y-%m-%d', '%d/%m/%Y', '%d-%m-%Y', '%Y-%m-%d %H:%M:%S'):
+                try:
+                    parsed_dob = dt.strptime(dob_val, fmt).date()
+                    break
+                except ValueError:
+                    continue
+            if not parsed_dob:
+                row_errors.append(f"Invalid date '{dob_val}'")
+        raw['_parsed_dob'] = parsed_dob
+
+        if row_errors:
+            errors.append({'row': i, 'errors': row_errors})
+        rows.append(raw)
+
+    wb.close()
+    return rows, errors
+
+
+def _notify_player_upload(county_reg, discipline, player_count, uploader):
+    """Notify County Sports Director and relevant Team Managers about uploaded players."""
+    from kyisa_cms.email_utils import _base_html, _info_box, _action_button, _send
+
+    sport_label = discipline.get_sport_type_display()
+    county_name = county_reg.county
+
+    # 1. Notify County Sports Director
+    director = User.objects.filter(
+        role='county_sports_admin', county=county_name, is_active=True
+    ).first()
+
+    if director:
+        body = f"""
+        <p>Dear <strong>{director.get_full_name()}</strong>,</p>
+        <p>The Organising Secretary has uploaded a <strong>verified player list</strong> for your county.</p>
+        {_info_box([
+            ("County", county_name),
+            ("Discipline", sport_label),
+            ("Players Uploaded", str(player_count)),
+            ("Uploaded By", uploader.get_full_name()),
+        ])}
+        <p>Please log in to the KYISA CMS to review the verified players.</p>
+        {_action_button("https://kyisa.org/portal/login/", "View Players")}
+        """
+        html = _base_html("Verified Player List Uploaded", body)
+        _send(
+            subject=f"Verified Players: {county_name} — {sport_label}",
+            body_html=html,
+            to=[director.email],
+        )
+
+    # 2. Notify Team Managers for this county + discipline
+    # Find teams in this county with matching sport type
+    team_managers = User.objects.filter(
+        role='team_manager',
+        county=county_name,
+        is_active=True,
+    ).distinct()
+
+    for manager in team_managers:
+        body = f"""
+        <p>Dear <strong>{manager.get_full_name()}</strong>,</p>
+        <p>A <strong>verified player list</strong> has been uploaded for your county and discipline.</p>
+        {_info_box([
+            ("County", county_name),
+            ("Discipline", sport_label),
+            ("Players", str(player_count)),
+        ])}
+        <p>Log in to view the updated roster and prepare your match-day squads.</p>
+        {_action_button("https://kyisa.org/portal/login/", "View Players")}
+        """
+        html = _base_html("Verified Players Available", body)
+        _send(
+            subject=f"Verified Players: {county_name} — {sport_label}",
+            body_html=html,
+            to=[manager.email],
+        )
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 #   VERIFICATION OFFICER — COUNTY-BASED VERIFICATION FLOW
 # ══════════════════════════════════════════════════════════════════════════════
@@ -6598,3 +6889,83 @@ def scout_remove_from_shortlist_view(request, pk):
         entry.delete()
         messages.success(request, f'{name} removed from your shortlist.')
     return redirect('scout_shortlist')
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   SYSTEM ADMIN PORTAL
+# ══════════════════════════════════════════════════════════════════════════════
+
+@role_required('admin')
+def sys_admin_dashboard_view(request):
+    """System Admin dashboard — full system oversight with rich stats."""
+    from admin_dashboard.models import ActivityLog, EmailLog
+    from appeals.models import Appeal, AppealStatus
+    from django.db.models import Count
+
+    # ── Core counts ──────────────────────────────────────────────────────
+    total_users = User.objects.count()
+    total_competitions = Competition.objects.count()
+    total_teams = Team.objects.count()
+    total_players = Player.objects.count()
+    total_referees = RefereeProfile.objects.filter(is_approved=True).count()
+    total_fixtures = Fixture.objects.count()
+    pending_verifications = CountyPlayer.objects.filter(verification_status='pending').count()
+    pending_registrations = CountyRegistration.objects.filter(status='pending').count()
+
+    # ── Email stats ──────────────────────────────────────────────────────
+    today = timezone.now().date()
+    email_total = EmailLog.objects.count()
+    email_sent = EmailLog.objects.filter(status='sent').count()
+    email_failed = EmailLog.objects.filter(status='failed').count()
+    email_today = EmailLog.objects.filter(sent_at__date=today).count()
+    email_stats = {
+        'total': email_total,
+        'sent': email_sent,
+        'failed': email_failed,
+        'today': email_today,
+    }
+
+    # ── Appeals ──────────────────────────────────────────────────────────
+    pending_appeals = Appeal.objects.filter(status=AppealStatus.SUBMITTED).count()
+
+    # ── Recent activity ──────────────────────────────────────────────────
+    recent_activity = ActivityLog.objects.select_related('user').exclude(
+        action__in=['LOGIN', 'LOGOUT']
+    ).order_by('-timestamp')[:15]
+
+    # ── Recent users ─────────────────────────────────────────────────────
+    recent_users = User.objects.order_by('-date_joined')[:8]
+
+    # ── Recent fixtures ──────────────────────────────────────────────────
+    recent_fixtures = Fixture.objects.select_related(
+        'competition', 'home_team', 'away_team'
+    ).order_by('-match_date')[:8]
+
+    # ── Role distribution ────────────────────────────────────────────────
+    role_counts = (
+        User.objects.values('role')
+        .annotate(count=Count('id'))
+        .order_by('-count')
+    )
+    role_display_map = dict(UserRole.choices)
+    role_distribution = [
+        {'role': r['role'], 'role_display': role_display_map.get(r['role'], r['role']), 'count': r['count']}
+        for r in role_counts
+    ]
+
+    return render(request, 'portal/admin/dashboard.html', {
+        'total_users': total_users,
+        'total_competitions': total_competitions,
+        'total_teams': total_teams,
+        'total_players': total_players,
+        'total_referees': total_referees,
+        'total_fixtures': total_fixtures,
+        'pending_verifications': pending_verifications,
+        'pending_registrations': pending_registrations,
+        'email_stats': email_stats,
+        'pending_appeals': pending_appeals,
+        'recent_activity': recent_activity,
+        'recent_users': recent_users,
+        'recent_fixtures': recent_fixtures,
+        'role_distribution': role_distribution,
+    })
