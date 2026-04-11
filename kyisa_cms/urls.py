@@ -6,6 +6,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+from django.contrib.admin.views.decorators import staff_member_required
 
 from teams.verification_views import (
     player_clearance_dashboard as _clearance_dashboard,
@@ -47,7 +48,6 @@ from .web_views import (
     contact_view,
     # Public registration
     team_register_view, team_register_success_view,
-    referee_register_view, referee_register_success_view,
     county_admin_register_view, county_admin_register_success_view,
     # CMS portal
     web_login_view, web_logout_view, dashboard_view,
@@ -93,6 +93,7 @@ from .web_views import (
     cm_edit_standings_view,
     cm_edit_fixture_view,
     cm_competition_rules_view,
+    cm_upload_verified_players_view,
     # County Sports Admin portal
     county_admin_complete_registration_view,
     county_admin_dashboard_view,
@@ -157,11 +158,19 @@ from .web_views import (
     scout_add_to_shortlist_view,
     scout_edit_shortlist_view,
     scout_remove_from_shortlist_view,
+    # System Admin portal
+    sys_admin_dashboard_view,
     # M-Pesa STK push endpoint
     mpesa_stk_push_view,
 )
 
+from .web_views import robots_txt, sitemap_xml
+
 urlpatterns = [
+    # ── SEO ───────────────────────────────────────────────────────────────────
+    path("robots.txt",                    robots_txt,                     name="robots_txt"),
+    path("sitemap.xml",                   sitemap_xml,                    name="sitemap_xml"),
+
     # ── PUBLIC WEBSITE ────────────────────────────────────────────────────────
     path("",                              home_view,                      name="home"),
     path("about/",                        about_view,                     name="about"),
@@ -179,8 +188,7 @@ urlpatterns = [
     # ── PUBLIC REGISTRATION ───────────────────────────────────────────────────
     path("register/team/",            team_register_view,          name="team_register"),
     path("register/team/success/",    team_register_success_view,  name="team_register_success"),
-    path("register/referee/",         referee_register_view,       name="referee_register"),
-    path("register/referee/success/", referee_register_success_view, name="referee_register_success"),
+    # Referee public registration removed — referees are added via admin portal
     path("register/county-admin/",           county_admin_register_view,         name="county_admin_register"),
     path("register/county-admin/success/",   county_admin_register_success_view, name="county_admin_register_success"),
     path("api/mpesa/stk-push/",              mpesa_stk_push_view,               name="mpesa_stk_push"),
@@ -295,6 +303,7 @@ urlpatterns = [
          cm_edit_fixture_view, name="cm_edit_fixture"),
     path("portal/cm/competitions/<int:pk>/rules/",         cm_competition_rules_view,     name="cm_competition_rules"),
     path("portal/cm/venues/",                              cm_manage_venues_view,         name="cm_venues"),
+    path("portal/cm/upload-players/",                      cm_upload_verified_players_view, name="cm_upload_players"),
 
     # ── VERIFICATION OFFICER — COUNTY-BASED FLOW ─────────────────────────
     path("portal/verification/counties/",                                 vo_registered_counties_view,     name="vo_registered_counties"),
@@ -359,13 +368,16 @@ urlpatterns = [
     path("portal/scout/shortlist/<int:pk>/edit/",      scout_edit_shortlist_view,         name="scout_edit_shortlist"),
     path("portal/scout/shortlist/<int:pk>/remove/",    scout_remove_from_shortlist_view,  name="scout_remove_from_shortlist"),
 
+    # ── SYSTEM ADMIN PORTAL ────────────────────────────────────────────────────
+    path("portal/system/",                      sys_admin_dashboard_view,    name="sys_admin_dashboard"),
+
     # ── ADMIN DASHBOARD ───────────────────────────────────────────────────────
     path("portal/admin-dashboard/", include("admin_dashboard.urls")),
 
     # ── APPEALS & JURY ────────────────────────────────────────────────────────
     path("portal/appeals/", include("appeals.urls")),
 
-    # ── DJANGO ADMIN ─────────────────────────────────────────────────────────
+    # ── DJANGO ADMIN (staff-only, behind portal login) ─────────────────────
     path("admin/", admin.site.urls),
 
     # ── API v1 ────────────────────────────────────────────────────────────────
@@ -375,10 +387,10 @@ urlpatterns = [
     path("api/v1/teams/",        include("teams.urls")),
     path("api/v1/matches/",      include("matches.urls")),
 
-    # ── API DOCUMENTATION ─────────────────────────────────────────────────────
-    path("api/schema/", SpectacularAPIView.as_view(),                        name="schema"),
-    path("api/docs/",   SpectacularSwaggerView.as_view(url_name="schema"),   name="swagger-ui"),
-    path("api/redoc/",  SpectacularRedocView.as_view(url_name="schema"),     name="redoc"),
+    # ── API DOCUMENTATION (staff-only) ─────────────────────────────────────────
+    path("api/schema/", staff_member_required(SpectacularAPIView.as_view()),                        name="schema"),
+    path("api/docs/",   staff_member_required(SpectacularSwaggerView.as_view(url_name="schema")),   name="swagger-ui"),
+    path("api/redoc/",  staff_member_required(SpectacularRedocView.as_view(url_name="schema")),     name="redoc"),
 ]
 
 # ── SERVE MEDIA IN DEVELOPMENT ────────────────────────────────────────────────

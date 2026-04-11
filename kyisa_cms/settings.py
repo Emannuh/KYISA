@@ -265,14 +265,71 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE          = "Africa/Nairobi"
 
 # ── EMAIL ──────────────────────────────────────────────────────────────────────
-# Dev: console backend. Production: set EMAIL_BACKEND + SMTP credentials.
+# Dev: console backend. Production: set EMAIL_BACKEND to django_ses.
 EMAIL_BACKEND    = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
 EMAIL_HOST       = env("EMAIL_HOST", default="localhost")
 EMAIL_PORT       = env.int("EMAIL_PORT", default=587)
 EMAIL_USE_TLS    = True
 EMAIL_HOST_USER  = env("EMAIL_HOST_USER",     default="")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="KYISA CMS <noreply@kyisa.ke>")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="KYISA Administration <admin@kyisa.org>")
+
+# ── AWS SES (used when EMAIL_BACKEND = django_ses.SESBackend) ─────────────────
+AWS_SES_REGION_NAME      = env("AWS_SES_REGION_NAME", default="eu-west-1")
+AWS_SES_REGION_ENDPOINT  = env("AWS_SES_REGION_ENDPOINT", default="email.eu-west-1.amazonaws.com")
+
+# ── ADMINS (receive 500-error emails + system alerts) ─────────────────────────
+ADMINS = [
+    ("KYISA Admin", env("ADMIN_EMAIL", default="admin@kyisa.org")),
+]
+MANAGERS = ADMINS
+SERVER_EMAIL = env("SERVER_EMAIL", default="server@kyisa.org")
+
+# ── LOGGING (email admins on server errors) ───────────────────────────────────
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "require_debug_false": {
+            "()": "django.utils.log.RequireDebugFalse",
+        },
+    },
+    "formatters": {
+        "verbose": {
+            "format": "[{asctime}] {levelname} {name} {module}:{lineno} — {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        "mail_admins": {
+            "level": "ERROR",
+            "filters": ["require_debug_false"],
+            "class": "django.utils.log.AdminEmailHandler",
+            "include_html": True,
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "mail_admins"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        "django.request": {
+            "handlers": ["mail_admins"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+        "kyisa_cms": {
+            "handlers": ["console", "mail_admins"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+    },
+}
 
 # ── LOCALISATION ───────────────────────────────────────────────────────────────
 LANGUAGE_CODE = "en-us"

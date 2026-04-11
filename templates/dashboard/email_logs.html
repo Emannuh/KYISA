@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% block title %}Email Logs — KYISA CMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
+        <div>
+            <h1><i class="bi bi-envelope"></i> Email Centre</h1>
+            <p>System email logs, compose &amp; diagnostics</p>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+            <a href="{% url 'email_compose' %}" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Compose</a>
+            <form method="post" action="{% url 'test_email' %}" style="display:inline">
+                {% csrf_token %}
+                <input type="hidden" name="test_email" value="{{ user.email }}">
+                <button type="submit" class="btn btn-outline"><i class="bi bi-send-check"></i> Test Email</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="stats-grid" style="margin-bottom:1.2rem">
+    <div class="stat-card blue">
+        <div class="stat-icon blue"><i class="bi bi-envelope-fill"></i></div>
+        <div class="stat-info"><h3>{{ stats.total }}</h3><p>Total Emails</p></div>
+    </div>
+    <div class="stat-card green">
+        <div class="stat-icon green"><i class="bi bi-check-circle-fill"></i></div>
+        <div class="stat-info"><h3>{{ stats.sent }}</h3><p>Sent</p></div>
+    </div>
+    <div class="stat-card red">
+        <div class="stat-icon red"><i class="bi bi-x-circle-fill"></i></div>
+        <div class="stat-info"><h3>{{ stats.failed }}</h3><p>Failed</p></div>
+    </div>
+    <div class="stat-card yellow">
+        <div class="stat-icon yellow"><i class="bi bi-clock-fill"></i></div>
+        <div class="stat-info"><h3>{{ stats.today }}</h3><p>Today</p></div>
+    </div>
+</div>
+
+<!-- Quick Send Presets -->
+<div class="card" style="margin-bottom:1rem">
+    <div class="card-header"><h3><i class="bi bi-lightning"></i> Quick Send</h3></div>
+    <div style="padding:.75rem;display:flex;gap:.5rem;flex-wrap:wrap">
+        <a href="{% url 'email_compose' %}?preset=all_managers" class="btn btn-outline"><i class="bi bi-people"></i> All Team Managers</a>
+        <a href="{% url 'email_compose' %}?preset=all_referees" class="btn btn-outline"><i class="bi bi-flag"></i> All Referees</a>
+        <a href="{% url 'email_compose' %}?preset=all_admins" class="btn btn-outline"><i class="bi bi-shield"></i> All Admins</a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card" style="margin-bottom:1rem">
+    <form method="get" style="padding:.75rem;display:flex;gap:.5rem;flex-wrap:wrap;align-items:end">
+        <div style="flex:1;min-width:180px">
+            <label style="font-size:.72rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.2rem">Search</label>
+            <input type="text" name="q" value="{{ search_query }}" placeholder="Subject, recipient..." class="form-input" style="width:100%">
+        </div>
+        <div style="min-width:120px">
+            <label style="font-size:.72rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.2rem">Status</label>
+            <select name="status" class="form-input">
+                <option value="">All</option>
+                <option value="sent" {% if status_filter == 'sent' %}selected{% endif %}>Sent</option>
+                <option value="failed" {% if status_filter == 'failed' %}selected{% endif %}>Failed</option>
+            </select>
+        </div>
+        <div style="min-width:140px">
+            <label style="font-size:.72rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.2rem">From</label>
+            <input type="date" name="from" value="{{ date_from }}" class="form-input">
+        </div>
+        <div style="min-width:140px">
+            <label style="font-size:.72rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.2rem">To</label>
+            <input type="date" name="to" value="{{ date_to }}" class="form-input">
+        </div>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Filter</button>
+        <a href="{% url 'email_logs' %}" class="btn btn-outline">Clear</a>
+    </form>
+</div>
+
+<!-- Email Logs Table -->
+<div class="card">
+    <div class="card-header"><h3><i class="bi bi-list-ul"></i> Email Logs ({{ page_obj.paginator.count }})</h3></div>
+    <div style="overflow-x:auto">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width:50px">Status</th>
+                    <th>Subject</th>
+                    <th>To</th>
+                    <th>Sent At</th>
+                    <th>Sent By</th>
+                    <th style="width:80px">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for email in page_obj %}
+                <tr>
+                    <td>
+                        {% if email.status == 'sent' %}
+                        <span class="badge badge-success"><i class="bi bi-check-circle"></i></span>
+                        {% elif email.status == 'failed' %}
+                        <span class="badge badge-danger"><i class="bi bi-x-circle"></i></span>
+                        {% else %}
+                        <span class="badge badge-secondary"><i class="bi bi-pencil"></i></span>
+                        {% endif %}
+                    </td>
+                    <td><a href="{% url 'email_detail' email.pk %}" style="font-weight:500">{{ email.subject|truncatechars:60 }}</a></td>
+                    <td style="font-size:.78rem;color:var(--gray)">{{ email.to_emails|truncatechars:40 }}</td>
+                    <td style="font-size:.78rem;white-space:nowrap">{{ email.sent_at|date:"d M Y H:i" }}</td>
+                    <td style="font-size:.78rem">{% if email.sent_by %}{{ email.sent_by.first_name }}{% else %}System{% endif %}</td>
+                    <td>
+                        <a href="{% url 'email_detail' email.pk %}" class="btn btn-outline" style="padding:.2rem .5rem;font-size:.7rem"><i class="bi bi-eye"></i></a>
+                        {% if email.status == 'failed' %}
+                        <form method="post" action="{% url 'email_resend' email.pk %}" style="display:inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary" style="padding:.2rem .5rem;font-size:.7rem" title="Resend"><i class="bi bi-arrow-repeat"></i></button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--gray)"><i class="bi bi-inbox" style="font-size:2rem;display:block;margin-bottom:.5rem"></i>No emails found</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if page_obj.has_other_pages %}
+    <div style="padding:.75rem;display:flex;justify-content:center;gap:.25rem">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&status={{ status_filter }}&from={{ date_from }}&to={{ date_to }}" class="btn btn-outline" style="padding:.3rem .6rem;font-size:.75rem">&laquo; Prev</a>
+        {% endif %}
+        <span style="padding:.3rem .6rem;font-size:.75rem;color:var(--gray)">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&status={{ status_filter }}&from={{ date_from }}&to={{ date_to }}" class="btn btn-outline" style="padding:.3rem .6rem;font-size:.75rem">Next &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -23,48 +23,93 @@ logger = logging.getLogger(__name__)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def _base_html(title, body_content):
-    """Wrap email content in the branded KYISA two-column template."""
+    """Wrap email content in the branded KYISA template — logo header, title bar, body, footer."""
+    year = timezone.now().year
     return f"""<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0; padding:0; background:#f4f6f9; font-family: Arial, Helvetica, sans-serif;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f9;">
-<tr><td align="center" style="padding: 24px 0;">
-<table role="presentation" width="640" cellpadding="0" cellspacing="0"
-       style="max-width:640px; width:100%; border:1px solid #e0e0e0; border-radius:8px; overflow:hidden; background:#fff;">
-  <!-- Logo Bar -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
+</head>
+<body style="margin:0;padding:0;background:#f0f2f5;font-family:'Segoe UI',Roboto,Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased;">
+
+<!-- Outer wrapper -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f0f2f5;">
+<tr><td align="center" style="padding:32px 16px;">
+
+<!-- Email card -->
+<table role="presentation" width="600" cellpadding="0" cellspacing="0"
+       style="max-width:600px;width:100%;border-radius:16px;overflow:hidden;background:#ffffff;box-shadow:0 4px 24px rgba(0,0,0,.08);">
+
+  <!-- ═══ LOGO HEADER ═══ -->
   <tr>
-    <td style="background: linear-gradient(135deg, #004D1A 0%, #006B23 100%); color:#fff; padding:20px 30px; text-align:center;">
-      <h1 style="margin:0; font-size:20px; letter-spacing:1px;">KENYA YOUTH INTERCOUNTY SPORTS ASSOCIATION</h1>
-      <p style="margin:4px 0 0; font-size:12px; opacity:0.8;">KYISA &bull; 11th Edition</p>
+    <td style="background:linear-gradient(135deg,#003311 0%,#004D1A 50%,#006B23 100%);padding:28px 32px;text-align:center;">
+      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+        <tr>
+          <td style="vertical-align:middle;padding-right:14px;">
+            <img src="https://kyisa.org/static/img/kyisa_logo_official.jpg"
+                 alt="KYISA" width="52" height="52"
+                 style="width:52px;height:52px;border-radius:50%;border:2px solid rgba(255,255,255,.25);display:block;">
+          </td>
+          <td style="vertical-align:middle;text-align:left;">
+            <p style="margin:0;font-size:18px;font-weight:800;color:#ffffff;letter-spacing:1.5px;line-height:1.2;">KYISA</p>
+            <p style="margin:2px 0 0;font-size:10px;font-weight:500;color:rgba(255,255,255,.65);letter-spacing:2px;text-transform:uppercase;">Kenya Youth Intercounty Sports Association</p>
+          </td>
+        </tr>
+      </table>
     </td>
   </tr>
-  <!-- Title Bar -->
+
+  <!-- ═══ TITLE BAR ═══ -->
   <tr>
-    <td style="background:#003311; color:#fff; padding:14px 30px;">
-      <h2 style="margin:0; font-size:16px; font-weight:600;">{title}</h2>
+    <td style="background:#002208;padding:14px 32px;">
+      <h2 style="margin:0;font-size:15px;font-weight:700;color:#ffffff;letter-spacing:.5px;">{title}</h2>
     </td>
   </tr>
-  <!-- Body -->
+
+  <!-- ═══ GREEN ACCENT LINE ═══ -->
   <tr>
-    <td style="padding:28px 30px; color:#333; font-size:14px; line-height:1.6;">
+    <td style="height:3px;background:linear-gradient(90deg,#4CAF50,#81C784,#4CAF50);font-size:0;line-height:0;">&nbsp;</td>
+  </tr>
+
+  <!-- ═══ BODY CONTENT ═══ -->
+  <tr>
+    <td style="padding:32px 32px 28px;color:#333333;font-size:14px;line-height:1.7;">
       {body_content}
     </td>
   </tr>
-  <!-- Footer -->
+
+  <!-- ═══ DIVIDER ═══ -->
   <tr>
-    <td style="background:#f8f9fa; padding:20px 30px; border-top:1px solid #e0e0e0; text-align:center; font-size:11px; color:#888;">
-      <p style="margin:0;">Kenya Youth Inter-Secondary School Association (KYISA)</p>
-      <p style="margin:4px 0 0;">Email: info@kyisa.ke &bull; Website: www.kyisa.ke</p>
-      <p style="margin:4px 0 0;">&copy; {timezone.now().year} KYISA. All rights reserved.</p>
-      <p style="margin:8px 0 0; font-size:10px; color:#aaa;">
-        This is an automated message. Please do not reply directly to this email.
-      </p>
+    <td style="padding:0 32px;">
+      <div style="height:1px;background:linear-gradient(90deg,transparent,#e0e0e0,transparent);"></div>
     </td>
   </tr>
+
+  <!-- ═══ FOOTER ═══ -->
+  <tr>
+    <td style="padding:24px 32px;text-align:center;">
+      <p style="margin:0;font-size:12px;font-weight:600;color:#555;letter-spacing:.5px;">Kenya Youth Intercounty Sports Association</p>
+      <p style="margin:6px 0 0;font-size:11px;color:#999;">
+        <a href="mailto:admin@kyisa.org" style="color:#4CAF50;text-decoration:none;">admin@kyisa.org</a>
+        &nbsp;&bull;&nbsp;
+        <a href="https://kyisa.org" style="color:#4CAF50;text-decoration:none;">www.kyisa.org</a>
+      </p>
+      <p style="margin:12px 0 0;font-size:10px;color:#bbb;">&copy; {year} KYISA. All rights reserved.</p>
+      <p style="margin:4px 0 0;font-size:9px;color:#ccc;">This is an automated message. Please do not reply directly.</p>
+    </td>
+  </tr>
+
 </table>
+<!-- /Email card -->
+
 </td></tr>
 </table>
+<!-- /Outer wrapper -->
+
 </body>
 </html>"""
 
@@ -77,19 +122,20 @@ def _info_box(items):
     rows = ""
     for label, value in items:
         rows += f"""<tr>
-          <td style="padding:6px 0; border-bottom:1px solid #e8eef3; font-weight:bold; color:#555; width:40%; vertical-align:top;">{label}</td>
-          <td style="padding:6px 0; border-bottom:1px solid #e8eef3; color:#333;">{value}</td>
+          <td style="padding:10px 14px;border-bottom:1px solid #e8eef3;font-weight:700;color:#333;width:38%;vertical-align:top;font-size:13px;">{label}</td>
+          <td style="padding:10px 14px;border-bottom:1px solid #e8eef3;color:#555;font-size:13px;">{value}</td>
         </tr>"""
-    return f"""<div style="background:#eef6ff; border-left:4px solid #2196F3; padding:16px; border-radius:4px; margin:16px 0;">
+    return f"""<div style="background:#f4f9f4;border-left:4px solid #4CAF50;border-radius:8px;margin:20px 0;overflow:hidden;">
     <table style="width:100%; border-collapse:collapse;">{rows}</table>
     </div>"""
 
 
 def _action_button(url, label, color="#004D1A"):
     """Build a CTA button for emails."""
-    return f"""<div style="text-align:center; margin:24px 0;">
-    <a href="{url}" style="display:inline-block; padding:12px 28px; background:{color}; color:#fff;
-       text-decoration:none; border-radius:6px; font-weight:bold; font-size:14px;">{label}</a>
+    return f"""<div style="text-align:center;margin:28px 0;">
+    <a href="{url}" style="display:inline-block;padding:14px 36px;background:{color};color:#ffffff;
+       text-decoration:none;border-radius:8px;font-weight:700;font-size:14px;letter-spacing:.5px;
+       box-shadow:0 2px 8px rgba(0,77,26,.25);">{label}</a>
     </div>"""
 
 
@@ -114,7 +160,7 @@ def _send(subject, html_body, recipients, fail_silently=True, sent_by=None, cc=N
         from admin_dashboard.models import EmailLog
 
         plain_body = strip_tags(html_body)
-        from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@kyisa.ke")
+        from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "KYISA Administration <admin@kyisa.org>")
         max_retries = 3
         last_error = ""
 

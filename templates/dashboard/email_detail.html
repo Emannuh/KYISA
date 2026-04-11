@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}Email: {{ email.subject|truncatechars:40 }} — KYISA CMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'email_logs' %}"><i class="bi bi-envelope"></i> Email Centre</a>
+        <span>/</span>
+        <span>{{ email.subject|truncatechars:50 }}</span>
+    </div>
+    <h1>
+        {% if email.status == 'sent' %}<span class="badge badge-success">Sent</span>
+        {% elif email.status == 'failed' %}<span class="badge badge-danger">Failed</span>
+        {% else %}<span class="badge badge-secondary">Draft</span>{% endif %}
+        {{ email.subject }}
+    </h1>
+</div>
+
+<!-- Email Metadata -->
+<div class="card" style="margin-bottom:1rem">
+    <div class="card-header"><h3><i class="bi bi-info-circle"></i> Details</h3></div>
+    <div style="padding:.85rem">
+        <div style="display:grid;grid-template-columns:120px 1fr;gap:.4rem .8rem;font-size:.85rem">
+            <strong style="color:var(--gray)">From:</strong>
+            <span>{{ email.from_email }}</span>
+
+            <strong style="color:var(--gray)">To:</strong>
+            <span>{{ email.to_emails }}</span>
+
+            {% if email.cc_emails %}
+            <strong style="color:var(--gray)">CC:</strong>
+            <span>{{ email.cc_emails }}</span>
+            {% endif %}
+
+            <strong style="color:var(--gray)">Date:</strong>
+            <span>{{ email.sent_at|date:"d M Y H:i:s" }} EAT</span>
+
+            <strong style="color:var(--gray)">Sent By:</strong>
+            <span>{% if email.sent_by %}{{ email.sent_by.get_full_name }} ({{ email.sent_by.email }}){% else %}System{% endif %}</span>
+
+            {% if email.message_id %}
+            <strong style="color:var(--gray)">Message ID:</strong>
+            <span style="font-family:monospace;font-size:.75rem;word-break:break-all">{{ email.message_id }}</span>
+            {% endif %}
+
+            {% if email.error_message %}
+            <strong style="color:var(--danger)">Error:</strong>
+            <span style="color:var(--danger);font-family:monospace;font-size:.78rem">{{ email.error_message }}</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Email Body -->
+<div class="card" style="margin-bottom:1rem">
+    <div class="card-header">
+        <h3><i class="bi bi-body-text"></i> Message Body</h3>
+    </div>
+    <div style="padding:0">
+        {% if email.body_html %}
+        <div style="border:1px solid var(--border);border-radius:8px;margin:.85rem;overflow:hidden">
+            <iframe id="emailFrame" srcdoc="{{ email.body_html|escapejs }}" style="width:100%;border:none;min-height:300px" sandbox="allow-same-origin"></iframe>
+        </div>
+        {% else %}
+        <pre style="padding:.85rem;margin:0;white-space:pre-wrap;font-size:.82rem">{{ email.body_text }}</pre>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Actions -->
+<div style="display:flex;gap:.5rem;flex-wrap:wrap">
+    {% if email.status == 'failed' %}
+    <form method="post" action="{% url 'email_resend' email.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary"><i class="bi bi-arrow-repeat"></i> Resend</button>
+    </form>
+    {% endif %}
+    <a href="{% url 'email_logs' %}" class="btn btn-outline"><i class="bi bi-arrow-left"></i> Back to Logs</a>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/* Auto-resize iframe to fit email content */
+var frame = document.getElementById('emailFrame');
+if (frame) {
+    frame.onload = function() {
+        try { frame.style.height = frame.contentDocument.body.scrollHeight + 20 + 'px'; }
+        catch(e) {}
+    };
+}
+</script>
+{% endblock %}

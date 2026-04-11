@@ -83,6 +83,10 @@ class ActivityLoggingMiddleware(MiddlewareMixin):
         if any(seg in request.path for seg in ('/login/', '/logout/')):
             return response
 
+        # Skip if the view already logged explicitly (avoids duplicates)
+        if getattr(request, '_activity_logged', False):
+            return response
+
         # Get the action type based on path
         action = self._get_action_type(request.path)
         if not action:

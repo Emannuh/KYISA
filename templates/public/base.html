@@ -30,8 +30,8 @@
     .preloader-bar{width:180px;height:2px;background:rgba(27,94,32,.1);border-radius:2px;margin:1.5rem auto 0;overflow:hidden}
     .preloader-bar-fill{height:100%;width:0;background:linear-gradient(90deg,#1B5E20,#4CAF50);border-radius:2px;transition:width .12s}
     /* Navbar */
-    .fkf-nav{position:fixed;top:0;left:0;right:0;z-index:10000;padding:0 2rem;height:70px;display:flex;align-items:center;background:transparent;transition:all .35s}
-    .fkf-nav--solid{background:rgba(255,255,255,.97);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 1px 12px rgba(0,0,0,.08)}
+    .fkf-nav{position:fixed;top:0;left:0;right:0;z-index:10000;padding:0 2rem;height:70px;display:flex;align-items:center;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none;transition:background .4s ease,box-shadow .4s ease,backdrop-filter .4s ease}
+    .fkf-nav--solid{background:linear-gradient(135deg,rgba(10,26,13,.97),rgba(13,40,16,.95));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 2px 24px rgba(0,0,0,.35)}
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -85,7 +85,6 @@
                 <a href="#" class="{% if active_page == 'register' %}active{% endif %}" onclick="this.parentElement.classList.toggle('open');return false;">Register ▾</a>
                 <ul class="dropdown-menu">
                     <li><a href="{% url 'county_admin_register' %}">🏛️ County Registration</a></li>
-                    <li><a href="{% url 'referee_register' %}">🏁 Register as Referee</a></li>
                 </ul>
             </li>
         </ul>
@@ -144,10 +143,7 @@
                     <h4>Resources</h4>
                     <ul>
                             <li><a href="{% url 'county_admin_register' %}">County Registration</a></li>
-                        <li><a href="{% url 'referee_register' %}">Register Referee</a></li>
                         <li><a href="{% url 'web_login' %}">Staff Portal</a></li>
-                        <li><a href="/api/docs/">API Docs</a></li>
-                        <li><a href="/admin/">Admin Panel</a></li>
                     </ul>
                 </div>
                 <div>

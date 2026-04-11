@@ -8,6 +8,7 @@ from . import reschedule_admin_views
 from . import activity_views
 from . import export_views
 from . import audit_report_views
+from . import email_views
 
 
 urlpatterns = [
@@ -45,12 +46,12 @@ urlpatterns = [
     path('transfers/override/<int:transfer_id>/', views.admin_override_transfer, name='override_transfer'),
     
     # User Management (Super Admin Only)
-    path('users/', views.manage_league_admins, name='manage_league_admins'),
-    path('users/create/', views.create_league_admin, name='create_league_admin'),
+    path('users/', views.manage_users, name='manage_users'),
+    path('users/create/', views.create_user, name='create_user'),
     path('users/<int:user_id>/', views.user_detail_view, name='user_detail'),
     path('users/<int:user_id>/edit/', views.user_edit_profile, name='user_edit_profile'),
-    path('users/<int:user_id>/toggle/', views.toggle_league_admin_status, name='toggle_league_admin_status'),
-    path('users/<int:user_id>/reset-password/', views.reset_league_admin_password, name='reset_league_admin_password'),
+    path('users/<int:user_id>/toggle/', views.toggle_user_status, name='toggle_user_status'),
+    path('users/<int:user_id>/reset-password/', views.reset_user_password, name='reset_user_password'),
     path('users/<int:user_id>/set-password/', views.user_force_password, name='user_force_password'),
     path('users/<int:user_id>/edit-roles/', views.edit_user_roles, name='edit_user_roles'),
     path('users/<int:user_id>/suspend/', views.user_suspend_toggle, name='user_suspend_toggle'),
@@ -60,4 +61,11 @@ urlpatterns = [
     # Per-user activity log exports
     path('users/<int:user_id>/export/excel/', export_views.export_user_logs_excel, name='export_user_logs_excel'),
     path('users/<int:user_id>/export/pdf/', export_views.export_user_logs_pdf, name='export_user_logs_pdf'),
+
+    # Email Centre
+    path('emails/', email_views.email_logs, name='email_logs'),
+    path('emails/compose/', email_views.email_compose, name='email_compose'),
+    path('emails/<int:email_id>/', email_views.email_detail, name='email_detail'),
+    path('emails/<int:email_id>/resend/', email_views.email_resend, name='email_resend'),
+    path('emails/test/', email_views.test_email, name='test_email'),
 ]

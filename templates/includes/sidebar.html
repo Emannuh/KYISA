@@ -5,7 +5,7 @@
     <div class="sidebar-section">
         <div class="sidebar-section-toggle"><h4>Administration</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
         <div class="sidebar-section-body">
-            <a href="{% url 'dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <a href="{% url 'sys_admin_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'sys_admin_dashboard' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-bar-chart-line"></i></span> Dashboard
             </a>
             <a href="{% url 'admin:index' %}" class="sidebar-link" target="_blank">
@@ -34,9 +34,10 @@
     <div class="sidebar-section">
         <div class="sidebar-section-toggle"><h4>System</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
         <div class="sidebar-section-body">
-            <a href="{% url 'manage_league_admins' %}" class="sidebar-link"><span class="icon"><i class="bi bi-people-fill"></i></span> User Management</a>
+            <a href="{% url 'manage_users' %}" class="sidebar-link"><span class="icon"><i class="bi bi-people-fill"></i></span> User Management</a>
             <a href="{% url 'activity_logs' %}" class="sidebar-link"><span class="icon"><i class="bi bi-journal-text"></i></span> Activity Logs</a>
             <a href="{% url 'audit_report' %}" class="sidebar-link"><span class="icon"><i class="bi bi-shield-check"></i></span> Audit Report</a>
+            <a href="{% url 'email_logs' %}" class="sidebar-link {% if request.resolver_match.url_name == 'email_logs' or request.resolver_match.url_name == 'email_compose' or request.resolver_match.url_name == 'email_detail' %}active{% endif %}"><span class="icon"><i class="bi bi-envelope"></i></span> Email Centre</a>
             <a href="{% url 'appeals_list' %}" class="sidebar-link"><span class="icon"><i class="bi bi-briefcase"></i></span> Appeals</a>
         </div>
     </div>
@@ -67,6 +68,9 @@
             </a>
             <a href="{% url 'cm_venues' %}" class="sidebar-link {% if request.resolver_match.url_name == 'cm_venues' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-geo-alt"></i></span> Venues
+            </a>
+            <a href="{% url 'cm_upload_players' %}" class="sidebar-link {% if request.resolver_match.url_name == 'cm_upload_players' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-cloud-upload"></i></span> Upload Verified Players
             </a>
         </div>
     </div>
@@ -315,6 +319,9 @@
             </a>
             <a href="{% url 'activity_logs' %}" class="sidebar-link {% if request.resolver_match.url_name == 'activity_logs' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-list-ul"></i></span> Activity Logs
+            </a>
+            <a href="{% url 'email_logs' %}" class="sidebar-link {% if request.resolver_match.url_name == 'email_logs' or request.resolver_match.url_name == 'email_compose' or request.resolver_match.url_name == 'email_detail' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-envelope"></i></span> Email Centre
             </a>
         </div>
     </div>
