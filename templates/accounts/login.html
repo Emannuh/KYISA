@@ -9,27 +9,34 @@
     <link rel="icon" href="{% static 'img/kyisa_logo_official.jpg' %}" type="image/jpeg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #1B5E20;
-            --primary-dark: #0d3311;
-            --primary-light: #2E7D32;
-            --accent: #F9A825;
-            --bg-dark: #060f08;
-            --success: #4CAF50;
-            --error: #ef4444;
-            --warning: #f59e0b;
-            --info: #3b82f6;
-            --transition: cubic-bezier(0.4, 0, 0.2, 1);
+            --green-900: #064e1a;
+            --green-800: #0a6b24;
+            --green-700: #15803d;
+            --green-600: #16a34a;
+            --green-500: #22c55e;
+            --gold: #eab308;
+            --gold-light: #fde047;
+            --surface: rgba(255,255,255,.07);
+            --surface-hover: rgba(255,255,255,.12);
+            --border: rgba(255,255,255,.1);
+            --border-focus: rgba(34,197,94,.5);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255,255,255,.65);
+            --text-muted: rgba(255,255,255,.4);
+            --radius: 16px;
+            --ease: cubic-bezier(.4,0,.2,1);
         }
 
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { height: 100%; }
+        html { height: 100%; }
         body {
-            font-family: 'Manrope', -apple-system, system-ui, sans-serif;
+            min-height: 100%;
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
             -webkit-font-smoothing: antialiased;
-            background: radial-gradient(circle at 12% 8%, #eef6ef 0%, #e9eff2 45%, #e4ebed 100%);
+            -moz-osx-font-smoothing: grayscale;
             overflow-x: hidden;
         }
 
@@ -40,620 +47,828 @@
             }
         }
 
-        /* ═══ FULL-SCREEN LAYOUT — fits viewport ═══ */
-        .login-page {
+        /* FULL-PAGE LAYOUT */
+        .page {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* LEFT PANEL — Brand */
+        .brand-panel {
+            flex: 1;
+            background:
+                linear-gradient(160deg, #031d07 0%, #064e1a 35%, #0a6b24 60%, #042a0c 100%);
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem 2.5rem;
             position: relative;
             overflow: hidden;
         }
 
-        /* ═══ ANIMATED BACKGROUND ═══ */
-        .bg-layer {
-            position: fixed; inset: 0; z-index: 0;
-            background:
-            radial-gradient(ellipse at 16% 16%, rgba(27,94,32,.1) 0%, transparent 52%),
-            radial-gradient(ellipse at 88% 84%, rgba(249,168,37,.08) 0%, transparent 50%),
-            linear-gradient(120deg, #edf4ee 0%, #ecf2f5 45%, #e5edf0 100%);
+        .brand-panel::before {
+            content: '';
+            position: absolute;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(234, 179, 8, .08) 0%, transparent 70%);
+            top: -200px; right: -150px;
+            pointer-events: none;
         }
-        .bg-layer::after {
-            content: ''; position: absolute; inset: 0;
+        .brand-panel::after {
+            content: '';
+            position: absolute;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(34, 197, 94, .1) 0%, transparent 70%);
+            bottom: -180px; left: -120px;
+            pointer-events: none;
+        }
+
+        .brand-panel__mesh {
+            position: absolute; inset: 0;
             background-image:
-                linear-gradient(rgba(27,94,32,.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(27,94,32,.03) 1px, transparent 1px);
-            background-size: 52px 52px;
+                radial-gradient(rgba(255,255,255,.03) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
         }
 
-        /* Floating orbs — reduced */
-        .orb { position: fixed; border-radius: 50%; filter: blur(100px); z-index: 0; opacity: .2; }
-        .orb--1 { width: 260px; height: 260px; background: rgba(27,94,32,.15); top: 4vh; left: 4vw; animation: orb-drift 20s ease-in-out infinite; }
-        .orb--2 { width: 220px; height: 220px; background: rgba(249,168,37,.08); bottom: 4vh; right: 4vw; animation: orb-drift 25s ease-in-out infinite reverse; }
-        @keyframes orb-drift {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -40px) scale(1.05); }
-            66% { transform: translate(-20px, 30px) scale(.95); }
-        }
-
-        /* ═══ MAIN CONTENT — fills available space ═══ */
-        .login-main {
-            flex: 1; display: flex; align-items: center; justify-content: center;
-            padding: 1rem 1.5rem; position: relative; z-index: 1;
-            min-height: 0;
-        }
-
-        .login-card {
-            width: 100%; max-width: 440px;
-            background: linear-gradient(155deg, rgba(8,25,13,.95) 0%, rgba(10,31,14,.92) 48%, rgba(8,20,10,.9) 100%);
-            border: 1px solid rgba(167, 214, 173, .2);
-            border-radius: 22px;
-            padding: 1.5rem 2rem 1.25rem;
-            box-shadow: 0 30px 80px rgba(5, 22, 10, .3), 0 8px 32px rgba(13, 68, 24, .22);
-            backdrop-filter: blur(8px);
-            animation: card-enter .7s var(--transition) both;
-        }
-        @keyframes card-enter {
-            from { opacity: 0; transform: translateY(20px) scale(.97); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        /* ═══ HEADER — dual logos ═══ */
-        .login-header { text-align: center; margin-bottom: 1rem; }
-
-        .login-logos {
-            display: flex; align-items: center; justify-content: center;
-            gap: 1.25rem; margin-bottom: .75rem;
-        }
-        .login-logos img {
-            width: 64px; height: 64px; border-radius: 50%;
-            object-fit: cover; background: #fff;
-            border: 2px solid rgba(255,255,255,.12);
-            box-shadow: 0 6px 24px rgba(0,0,0,.25);
-        }
-        .login-logos__divider {
-            width: 1px; height: 44px;
-            background: linear-gradient(to bottom, transparent, rgba(255,255,255,.15), transparent);
-        }
-
-        .login-brand {
-            font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 700;
-            color: #fff; letter-spacing: 5px; margin-bottom: .1rem;
-        }
-        .login-tagline {
-            font-size: .6rem; color: rgba(255,255,255,.35);
-            text-transform: uppercase; letter-spacing: 2.5px; font-weight: 600;
-            margin-bottom: .5rem;
-        }
-
-        .status-badge {
-            display: inline-flex; align-items: center; gap: .35rem;
-            padding: .2rem .6rem; border-radius: 50px;
-            font-size: .55rem; font-weight: 700; letter-spacing: 1.5px;
-            text-transform: uppercase; color: var(--success);
-            background: rgba(76,175,80,.08); border: 1px solid rgba(76,175,80,.15);
-        }
-        .status-dot {
-            width: 5px; height: 5px; border-radius: 50%;
-            background: var(--success);
-            animation: pulse-ring 2s ease infinite;
-        }
-        @keyframes pulse-ring {
-            0% { box-shadow: 0 0 0 0 rgba(76,175,80,.7); }
-            70% { box-shadow: 0 0 0 6px rgba(76,175,80,0); }
-            100% { box-shadow: 0 0 0 0 rgba(76,175,80,0); }
-        }
-
-        /* ═══ FORM — compact ═══ */
-        .form-title {
-            font-family: 'Space Grotesk', sans-serif; font-size: 1.15rem; font-weight: 700;
-            color: #fff; margin-bottom: .15rem; letter-spacing: -.3px;
-        }
-        .form-subtitle {
-            font-size: .75rem; color: rgba(255,255,255,.4);
-            margin-bottom: 1rem; font-weight: 500;
-        }
-
-        /* Messages */
-        .msg {
-            padding: .75rem .9rem; border-radius: 10px;
-            font-size: .78rem; font-weight: 500;
-            margin-bottom: 1rem; display: flex;
-            align-items: flex-start; gap: .5rem;
-            animation: slide-down .4s var(--transition); line-height: 1.5;
-        }
-        @keyframes slide-down { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .msg svg { flex-shrink: 0; margin-top: 2px; }
-        .msg--danger { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.2); color: #fca5a5; }
-        .msg--success { background: rgba(76,175,80,.1); border: 1px solid rgba(76,175,80,.2); color: #86efac; }
-        .msg--warning { background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.2); color: #fcd34d; }
-        .msg--info { background: rgba(59,130,246,.1); border: 1px solid rgba(59,130,246,.2); color: #93c5fd; }
-
-        /* Fields */
-        .fields { display: flex; flex-direction: column; gap: .85rem; }
-        .field-group { position: relative; }
-        .field-lbl {
-            display: block; font-size: .68rem; font-weight: 600;
-            color: rgba(255,255,255,.5); margin-bottom: .3rem; letter-spacing: .3px;
-        }
-        .input-box { position: relative; display: flex; align-items: center; }
-        .input-box__icon {
-            position: absolute; left: .85rem; color: rgba(255,255,255,.25);
-            pointer-events: none; transition: color .25s; display: flex; z-index: 1;
-        }
-        .input-box__icon svg { width: 16px; height: 16px; }
-        .input-box__field {
-            width: 100%; padding: .7rem .85rem .7rem 2.6rem;
-            border: 1.5px solid rgba(255,255,255,.08);
-            border-radius: 10px; font-size: .85rem;
-            font-family: inherit; color: #fff;
-            background: rgba(255,255,255,.04);
-            outline: none; transition: all .25s var(--transition); font-weight: 500;
-        }
-        .input-box__field::placeholder { color: rgba(255,255,255,.2); font-size: .85rem; font-weight: 400; }
-        .input-box__field:hover { border-color: rgba(255,255,255,.15); background: rgba(255,255,255,.06); }
-        .input-box__field:focus {
-            border-color: var(--primary-light); background: rgba(255,255,255,.06);
-            box-shadow: 0 0 0 4px rgba(46,125,50,.12);
-        }
-        .input-box__field:focus ~ .input-box__icon,
-        .input-box__field:focus + .input-box__icon { color: var(--success); }
-        .field-group.has-value .field-lbl,
-        .field-group.is-focused .field-lbl { color: var(--success); }
-
-        /* Eye toggle */
-        .eye-btn {
-            position: absolute; right: .75rem; background: none; border: none;
-            cursor: pointer; color: rgba(255,255,255,.25); padding: 5px;
-            border-radius: 6px; display: flex; transition: all .2s; z-index: 1;
-        }
-        .eye-btn:hover { color: rgba(255,255,255,.5); background: rgba(255,255,255,.05); }
-        .eye-btn:focus { outline: 2px solid var(--primary-light); outline-offset: 2px; }
-        .eye-btn svg { width: 17px; height: 17px; }
-
-        /* Remember row */
-        .remember-row { display: flex; align-items: center; justify-content: space-between; margin-top: .3rem; }
-        .checkbox-wrap { display: flex; align-items: center; gap: .4rem; }
-        .checkbox-wrap input[type="checkbox"] {
-            width: 16px; height: 16px; border-radius: 4px;
-            cursor: pointer; accent-color: var(--success);
-        }
-        .checkbox-wrap label { font-size: .76rem; color: rgba(255,255,255,.4); cursor: pointer; user-select: none; }
-        .forgot-link {
-            font-size: .76rem; color: var(--accent); text-decoration: none;
-            font-weight: 600; transition: color .2s; cursor: pointer;
-        }
-        .forgot-link:hover { color: #ffd54f; text-decoration: underline; }
-
-        /* Submit button */
-        .submit-btn {
-            width: 100%; margin-top: .5rem; padding: .72rem; border: none;
-            border-radius: 10px; font-family: 'Space Grotesk', sans-serif;
-            font-size: .85rem; font-weight: 700; color: #fff; cursor: pointer;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            box-shadow: 0 4px 20px rgba(27,94,32,.3);
-            transition: all .3s var(--transition); letter-spacing: .5px;
-            position: relative; overflow: hidden;
-        }
-        .submit-btn::before {
-            content: ''; position: absolute; top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent);
-            transition: left .5s;
-        }
-        .submit-btn:hover::before { left: 100%; }
-        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(27,94,32,.4); }
-        .submit-btn:active { transform: translateY(0); }
-        .submit-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
-        .submit-btn.loading { pointer-events: none; }
-        .submit-btn .btn-text { display: inline-block; transition: opacity .2s; }
-        .submit-btn.loading .btn-text { opacity: 0; }
-        .submit-btn .spinner {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
-            width: 20px; height: 20px;
-            border: 2px solid rgba(255,255,255,.3); border-top-color: #fff;
-            border-radius: 50%; animation: spin .6s linear infinite; opacity: 0;
-        }
-        .submit-btn.loading .spinner { opacity: 1; }
-        @keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
-
-        .kbd-hint {
-            display: inline-flex; align-items: center; gap: .3rem;
-            font-size: .65rem; color: rgba(255,255,255,.2); margin-top: .4rem;
-        }
-        .kbd {
-            display: inline-block; padding: .12rem .35rem;
-            background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
-            border-radius: 4px; font-family: 'Consolas', monospace;
-            font-size: .6rem; font-weight: 600; color: rgba(255,255,255,.35);
-        }
-
-        /* Divider */
-        .divider { display: flex; align-items: center; gap: .8rem; margin: .75rem 0 .5rem; }
-        .divider::before, .divider::after {
-            content: ''; flex: 1; height: 1px;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,.08), transparent);
-        }
-        .divider span { font-size: .65rem; color: rgba(255,255,255,.2); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
-
-        .form-footer { text-align: center; font-size: .72rem; color: rgba(255,255,255,.35); line-height: 1.5; }
-        .form-footer a { color: var(--accent); font-weight: 600; text-decoration: none; transition: color .2s; }
-        .form-footer a:hover { color: #ffd54f; text-decoration: underline; }
-
-        /* Back link */
-        .back-home {
-            display: inline-flex; align-items: center; gap: .35rem;
-            font-size: .7rem; color: rgba(255,255,255,.35);
-            text-decoration: none; font-weight: 600;
-            transition: color .2s; margin-bottom: .75rem;
-        }
-        .back-home:hover { color: var(--accent); }
-        .back-home svg { width: 14px; height: 14px; }
-
-        /* ═══ PARTNERS BAR — compact single strip ═══ */
-        .partners-bar {
-            position: relative; z-index: 1;
-            padding: .95rem 1.15rem .8rem;
+        .brand-content {
+            position: relative;
+            z-index: 1;
             text-align: center;
-            background:
-                radial-gradient(circle at 12% 20%, rgba(249,168,37,.12), transparent 35%),
-                radial-gradient(circle at 88% 80%, rgba(76,175,80,.16), transparent 45%),
-                linear-gradient(135deg, #08250c 0%, #0f3a15 52%, #0b280f 100%);
-            border-top: 1px solid rgba(255,255,255,.1);
+            max-width: 420px;
         }
-        .partners-bar__label {
-            font-size: .53rem; color: rgba(255,255,255,.58);
-            text-transform: uppercase; letter-spacing: 2.5px; font-weight: 700;
-            margin-bottom: .5rem; display: block;
-        }
-        .partners-bar__logos {
-            display: grid;
-            grid-template-columns: repeat(6, minmax(80px, 1fr));
-            gap: .65rem;
-            align-items: stretch;
-            max-width: 940px;
-            margin: 0 auto;
-        }
-        .partner-item {
+
+        .brand-logos {
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: .32rem;
-            border-radius: 16px;
-            padding: .45rem .35rem;
-            background: rgba(255,255,255,.05);
-            border: 1px solid rgba(255,255,255,.09);
-            opacity: .92;
-            transition: transform .25s var(--transition), border-color .25s var(--transition), background .25s var(--transition);
-            cursor: default;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
-        .partner-item:hover {
-            transform: translateY(-2px);
-            border-color: rgba(249,168,37,.35);
-            background: rgba(255,255,255,.08);
-        }
-        .partner-item img {
-            width: 38px;
-            height: 38px;
+        .brand-logos img {
+            width: 80px; height: 80px;
             border-radius: 50%;
             object-fit: cover;
             background: #fff;
-            border: 2px solid rgba(255,255,255,.34);
-            filter: brightness(1.02) drop-shadow(0 2px 8px rgba(0,0,0,.24));
+            border: 3px solid rgba(255,255,255,.15);
+            box-shadow: 0 8px 32px rgba(0,0,0,.3);
         }
-        .partner-item__abbr {
-            font-size: .6rem;
-            color: #f5d57a;
-            text-transform: uppercase;
-            letter-spacing: .9px;
+        .brand-logos__sep {
+            width: 2px; height: 50px;
+            background: linear-gradient(to bottom, transparent, rgba(255,255,255,.2), transparent);
+            border-radius: 1px;
+        }
+
+        .brand-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 2.8rem;
             font-weight: 800;
-            line-height: 1;
+            color: #fff;
+            letter-spacing: 8px;
+            margin-bottom: .25rem;
         }
-        .partner-item__desc {
-            font-size: .47rem;
-            color: rgba(255,255,255,.62);
-            letter-spacing: .4px;
-            line-height: 1.2;
-            text-align: center;
+        .brand-subtitle {
+            font-size: .7rem;
+            color: rgba(255,255,255,.4);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+        .brand-tagline {
+            font-size: .95rem;
+            color: rgba(255,255,255,.5);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+        .brand-tagline strong {
+            color: var(--gold);
+            font-weight: 700;
         }
 
-        .partners-bar__copy {
-            display: block; margin-top: .5rem;
-            font-size: .48rem; color: rgba(255,255,255,.18);
-            letter-spacing: 1.5px; text-transform: uppercase;
+        .brand-stats {
+            display: flex;
+            gap: 2.5rem;
+            justify-content: center;
+            margin-top: 2.5rem;
+        }
+        .brand-stat { text-align: center; }
+        .brand-stat__num {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--gold);
+        }
+        .brand-stat__label {
+            font-size: .65rem;
+            color: rgba(255,255,255,.35);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            margin-top: .15rem;
         }
 
-        /* ═══ FORGOT MODAL ═══ */
-        .modal-overlay {
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,.7); backdrop-filter: blur(6px);
-            display: none; align-items: center; justify-content: center;
-            z-index: 1000;
-        }
-        .modal-overlay.active { display: flex; }
-        .modal {
-            background: #1a1a1a; border: 1px solid rgba(255,255,255,.1);
-            border-radius: 20px; padding: 2rem;
-            max-width: 440px; width: 90%;
-            box-shadow: 0 30px 80px rgba(0,0,0,.5);
-            animation: modal-in .3s var(--transition);
+        /* RIGHT PANEL — Form */
+        .form-panel {
+            width: 520px;
+            min-width: 420px;
+            background: #0c0c0c;
+            display: flex;
+            flex-direction: column;
             position: relative;
         }
-        @keyframes modal-in { from { opacity: 0; transform: translateY(20px) scale(.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        .modal-close {
-            position: absolute; top: 1rem; right: 1rem;
-            background: none; border: none; cursor: pointer;
-            color: rgba(255,255,255,.3); padding: .5rem; border-radius: 6px;
+
+        .form-panel__main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2.5rem 3rem;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 380px;
+            animation: fadeUp .6s var(--ease) both;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            font-size: .78rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            transition: color .2s;
+        }
+        .back-link:hover { color: var(--green-500); }
+        .back-link svg { width: 15px; height: 15px; }
+
+        .mobile-logo {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .mobile-logo img {
+            width: 52px; height: 52px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #fff;
+            border: 2px solid rgba(255,255,255,.1);
+        }
+        .mobile-logo__text {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 5px;
+        }
+
+        .form-heading {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: .35rem;
+            letter-spacing: -.5px;
+        }
+        .form-desc {
+            font-size: .88rem;
+            color: var(--text-muted);
+            margin-bottom: 1.75rem;
+            font-weight: 400;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            padding: .3rem .75rem;
+            border-radius: 50px;
+            background: rgba(34,197,94,.08);
+            border: 1px solid rgba(34,197,94,.15);
+            font-size: .68rem;
+            font-weight: 600;
+            color: var(--green-500);
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+        .status-pill__dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--green-500);
+            animation: pulse 2s ease infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(34,197,94,.6); }
+            70% { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+            100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+        }
+
+        .alert {
+            padding: .75rem 1rem;
+            border-radius: 12px;
+            font-size: .82rem;
+            font-weight: 500;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: flex-start;
+            gap: .5rem;
+            line-height: 1.5;
+            animation: slideIn .35s var(--ease);
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } }
+        .alert svg { flex-shrink: 0; margin-top: 1px; }
+        .alert--error, .alert--danger { background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.15); color: #fca5a5; }
+        .alert--success { background: rgba(34,197,94,.08); border: 1px solid rgba(34,197,94,.15); color: #86efac; }
+        .alert--warning { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.15); color: #fcd34d; }
+        .alert--info { background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.15); color: #93c5fd; }
+
+        /* FORM FIELDS */
+        .form-fields { display: flex; flex-direction: column; gap: 1.15rem; }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: .4rem;
+        }
+        .field__label {
+            font-size: .76rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            letter-spacing: .2px;
+            transition: color .2s;
+        }
+        .field__input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .field__icon {
+            position: absolute;
+            left: 1rem;
+            color: rgba(255,255,255,.2);
+            pointer-events: none;
+            transition: color .2s;
+            display: flex;
+        }
+        .field__icon svg { width: 18px; height: 18px; }
+        .field__input {
+            width: 100%;
+            padding: .82rem 1rem .82rem 2.85rem;
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: .9rem;
+            font-family: inherit;
+            font-weight: 500;
+            outline: none;
+            transition: all .2s var(--ease);
+        }
+        .field__input::placeholder {
+            color: rgba(255,255,255,.2);
+            font-weight: 400;
+        }
+        .field__input:hover {
+            border-color: rgba(255,255,255,.18);
+            background: var(--surface-hover);
+        }
+        .field__input:focus {
+            border-color: var(--border-focus);
+            background: var(--surface-hover);
+            box-shadow: 0 0 0 4px rgba(34,197,94,.1);
+        }
+        .field__input:focus ~ .field__icon { color: var(--green-500); }
+        .field.is-focused .field__label { color: var(--green-500); }
+
+        .eye-toggle {
+            position: absolute;
+            right: .75rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: rgba(255,255,255,.2);
+            padding: 6px;
+            border-radius: 8px;
+            display: flex;
             transition: all .2s;
         }
-        .modal-close:hover { background: rgba(255,255,255,.05); color: rgba(255,255,255,.6); }
-        .modal-icon {
-            width: 52px; height: 52px;
-            background: rgba(27,94,32,.15); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 1.25rem; color: var(--success);
+        .eye-toggle:hover { color: rgba(255,255,255,.45); background: rgba(255,255,255,.05); }
+        .eye-toggle:focus-visible { outline: 2px solid var(--green-500); outline-offset: 2px; }
+        .eye-toggle svg { width: 18px; height: 18px; }
+
+        .options-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: .15rem;
         }
-        .modal h3 {
-            font-family: 'Outfit', sans-serif; font-size: 1.35rem; font-weight: 800;
-            color: #fff; margin-bottom: .6rem; text-align: center;
+        .check-wrap {
+            display: flex;
+            align-items: center;
+            gap: .45rem;
         }
-        .modal p { color: rgba(255,255,255,.45); font-size: .85rem; line-height: 1.6; margin-bottom: 1.5rem; text-align: center; }
-        .modal-actions { display: flex; gap: .75rem; }
+        .check-wrap input[type="checkbox"] {
+            width: 16px; height: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            accent-color: var(--green-500);
+        }
+        .check-wrap label {
+            font-size: .78rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            user-select: none;
+        }
+        .forgot-btn {
+            font-size: .78rem;
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color .2s;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .forgot-btn:hover { color: var(--gold-light); }
+
+        .submit-btn {
+            width: 100%;
+            margin-top: .75rem;
+            padding: .85rem;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .9rem;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--green-700) 0%, var(--green-600) 100%);
+            box-shadow: 0 4px 16px rgba(22,163,74,.25);
+            transition: all .25s var(--ease);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: .3px;
+        }
+        .submit-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent);
+            transform: translateX(-100%);
+            transition: transform .5s;
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(22,163,74,.35);
+        }
+        .submit-btn:hover::after { transform: translateX(100%); }
+        .submit-btn:active { transform: translateY(0); }
+        .submit-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+        .submit-btn.is-loading { pointer-events: none; }
+        .submit-btn .btn-label { transition: opacity .2s; }
+        .submit-btn.is-loading .btn-label { opacity: 0; }
+        .submit-btn .btn-spinner {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px; height: 20px;
+            border: 2.5px solid rgba(255,255,255,.25);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin .6s linear infinite;
+            opacity: 0;
+        }
+        .submit-btn.is-loading .btn-spinner { opacity: 1; }
+        @keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+        .form-divider {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            margin: 1.25rem 0 .75rem;
+        }
+        .form-divider::before, .form-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+        .form-divider span {
+            font-size: .68rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 600;
+        }
+
+        .form-help {
+            text-align: center;
+            font-size: .78rem;
+            color: var(--text-muted);
+        }
+        .form-help a {
+            color: var(--gold);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color .2s;
+        }
+        .form-help a:hover { color: var(--gold-light); }
+
+        /* PARTNERS STRIP */
+        .partners-strip {
+            padding: 1.25rem 2rem;
+            background: rgba(255,255,255,.02);
+            border-top: 1px solid rgba(255,255,255,.06);
+        }
+        .partners-strip__heading {
+            font-size: .58rem;
+            color: rgba(255,255,255,.3);
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: .85rem;
+        }
+        .partners-grid {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: .65rem;
+        }
+        .partner {
+            display: flex;
+            align-items: center;
+            gap: .55rem;
+            padding: .45rem .75rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            transition: all .2s var(--ease);
+            cursor: default;
+        }
+        .partner:hover {
+            background: var(--surface-hover);
+            border-color: rgba(234,179,8,.2);
+            transform: translateY(-1px);
+        }
+        .partner__logo {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #fff;
+            border: 2px solid rgba(255,255,255,.12);
+            flex-shrink: 0;
+        }
+        .partner__info { line-height: 1.2; }
+        .partner__abbr {
+            font-size: .68rem;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: .5px;
+        }
+        .partner__name {
+            font-size: .55rem;
+            color: var(--text-muted);
+        }
+
+        .partners-strip__copy {
+            text-align: center;
+            font-size: .55rem;
+            color: rgba(255,255,255,.15);
+            margin-top: .85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,.65);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-overlay.is-open { display: flex; }
+        .modal-box {
+            background: #141414;
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 20px;
+            padding: 2.25rem;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 32px 64px rgba(0,0,0,.5);
+            animation: modalIn .3s var(--ease);
+            position: relative;
+        }
+        @keyframes modalIn { from { opacity: 0; transform: translateY(16px) scale(.97); } }
+        .modal-box__close {
+            position: absolute;
+            top: 1rem; right: 1rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: rgba(255,255,255,.25);
+            padding: .5rem;
+            border-radius: 8px;
+            transition: all .2s;
+        }
+        .modal-box__close:hover { background: rgba(255,255,255,.05); color: rgba(255,255,255,.5); }
+        .modal-box__icon {
+            width: 56px; height: 56px;
+            background: rgba(34,197,94,.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.25rem;
+            color: var(--green-500);
+        }
+        .modal-box h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: .5rem;
+            text-align: center;
+        }
+        .modal-box p {
+            color: var(--text-muted);
+            font-size: .88rem;
+            line-height: 1.65;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .modal-btns { display: flex; gap: .75rem; }
         .modal-btn {
-            flex: 1; padding: .7rem; border-radius: 10px;
-            font-weight: 600; font-size: .82rem; cursor: pointer;
-            transition: all .2s; border: none;
+            flex: 1;
+            padding: .72rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: .85rem;
+            cursor: pointer;
+            transition: all .2s;
+            border: none;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            font-family: inherit;
         }
-        .modal-btn-primary { background: var(--primary-light); color: #fff; }
-        .modal-btn-primary:hover { background: var(--primary); }
-        .modal-btn-secondary { background: rgba(255,255,255,.06); color: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.1); }
-        .modal-btn-secondary:hover { background: rgba(255,255,255,.1); }
+        .modal-btn--primary { background: var(--green-700); color: #fff; }
+        .modal-btn--primary:hover { background: var(--green-600); }
+        .modal-btn--ghost { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); }
+        .modal-btn--ghost:hover { background: var(--surface-hover); }
 
-        /* Keep microcopy readable across devices without enlarging headings. */
-        .login-page :is(a, p, span, label, small, button) {
-            font-size: clamp(.75rem, 1em, 1em);
-        }
-
-        /* ═══ RESPONSIVE ═══ */
-        @media (max-width: 768px) {
-            .login-card { max-width: 100%; }
-            .form-title { font-size: 1.05rem; }
-            .remember-row { flex-direction: column; align-items: flex-start; gap: .5rem; }
-            .partners-bar__logos {
-                grid-template-columns: repeat(3, minmax(84px, 1fr));
-                gap: .55rem;
+        /* RESPONSIVE */
+        @media (max-width: 960px) {
+            .page { flex-direction: column; }
+            .brand-panel {
+                padding: 2rem 1.5rem;
+                min-height: auto;
             }
-            .partner-item img { width: 34px; height: 34px; }
-            .orb { filter: blur(80px); opacity: .15; }
-        }
-        @media (max-width: 480px) {
-            .login-main { padding: .75rem .75rem; }
-            .login-card { padding: 1.25rem 1.15rem 1rem; border-radius: 18px; }
-            .login-logos img { width: 50px; height: 50px; }
-            .login-logos__divider { height: 34px; }
-            .login-brand { font-size: 1.25rem; letter-spacing: 4px; }
-            .login-tagline { font-size: .55rem; letter-spacing: 2px; }
-            .form-title { font-size: .95rem; }
-            .form-subtitle { font-size: .7rem; margin-bottom: .75rem; }
-            .input-box__field { padding: .6rem .75rem .6rem 2.4rem; font-size: .82rem; }
-            .fields { gap: .7rem; }
-            .submit-btn { padding: .65rem; font-size: .82rem; }
-            .partners-bar { padding: .6rem .65rem; }
-            .partners-bar__logos {
-                grid-template-columns: repeat(2, minmax(90px, 1fr));
-                gap: .45rem;
+            .brand-title { font-size: 2rem; letter-spacing: 6px; }
+            .brand-tagline { display: none; }
+            .brand-stats { display: none; }
+            .brand-logos img { width: 60px; height: 60px; }
+            .form-panel {
+                width: 100%;
+                min-width: unset;
             }
-            .partner-item { border-radius: 12px; padding: .42rem .25rem; }
-            .partner-item img { width: 30px; height: 30px; }
-            .partner-item__abbr { font-size: .56rem; }
-            .partner-item__desc { font-size: .42rem; }
-            .partners-bar__copy { font-size: .42rem; margin-top: .35rem; }
-            .back-home { margin-bottom: .5rem; font-size: .65rem; }
-            .divider { margin: .5rem 0 .35rem; }
-            .form-footer { font-size: .68rem; }
-            .kbd-hint { display: none; }
-            .orb { display: none; }
+            .form-panel__main { padding: 2rem 1.5rem; }
         }
-        @media (max-height: 700px) {
-            .login-main { padding: .5rem 1rem; }
-            .login-card { padding: 1rem 1.5rem .85rem; }
-            .login-header { margin-bottom: .6rem; }
-            .login-logos img { width: 48px; height: 48px; }
-            .login-brand { font-size: 1.2rem; }
-            .form-subtitle { margin-bottom: .6rem; }
-            .fields { gap: .6rem; }
-            .input-box__field { padding: .55rem .75rem .55rem 2.4rem; }
-            .submit-btn { margin-top: .3rem; padding: .6rem; }
-            .divider { margin: .4rem 0 .25rem; }
-            .partners-bar { padding: .5rem .9rem; }
-            .partners-bar__logos {
-                grid-template-columns: repeat(3, minmax(84px, 1fr));
-                gap: .4rem;
+        @media (max-width: 640px) {
+            .brand-panel { display: none; }
+            .mobile-logo { display: flex; }
+            .form-panel__main { padding: 1.5rem 1.25rem; }
+            .form-container { max-width: 100%; }
+            .form-heading { font-size: 1.4rem; }
+            .partners-grid { gap: .5rem; }
+            .partner {
+                padding: .35rem .55rem;
+                border-radius: 8px;
             }
-            .partner-item img { width: 30px; height: 30px; }
+            .partner__logo { width: 26px; height: 26px; }
+            .partner__abbr { font-size: .62rem; }
+            .partner__name { font-size: .5rem; }
         }
     </style>
 </head>
 
 <body>
-    <div class="login-page">
-        <!-- Background -->
-        <div class="bg-layer"></div>
-        <div class="orb orb--1"></div>
-        <div class="orb orb--2"></div>
-
-        <!-- ═══ MAIN LOGIN ═══ -->
-        <div class="login-main">
-            <div class="login-card">
-                <!-- Back to home -->
-                <a href="{% url 'home' %}" class="back-home">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
-                    Back to Home
-                </a>
-
-                <!-- Header — dual logos -->
-                <div class="login-header">
-                    <div class="login-logos">
-                        <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="KYISA Logo">
-                        <div class="login-logos__divider"></div>
-                        <img src="{% static 'img/COG.jpg' %}" alt="Council of Governors">
-                    </div>
-                    <h1 class="login-brand">KYISA</h1>
-                    <p class="login-tagline">Competition Management System</p>
-                    <div class="status-badge">
-                        <span class="status-dot"></span>
-                        System Online
-                    </div>
+    <div class="page">
+        <!-- LEFT — Brand Panel -->
+        <div class="brand-panel">
+            <div class="brand-panel__mesh"></div>
+            <div class="brand-content">
+                <div class="brand-logos">
+                    <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="KYISA Logo">
+                    <div class="brand-logos__sep"></div>
+                    <img src="{% static 'img/COG.jpg' %}" alt="Council of Governors">
                 </div>
-
-                <!-- Form -->
-                <h2 class="form-title">Welcome back</h2>
-                <p class="form-subtitle">Sign in to your KYISA portal</p>
-
-                {% if messages %}
-                {% for message in messages %}
-                <div class="msg msg--{{ message.tags }}" role="alert">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                    </svg>
-                    <span>{{ message }}</span>
-                </div>
-                {% endfor %}
-                {% endif %}
-
-                {% if error %}
-                <div class="msg msg--danger" role="alert">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
-                    </svg>
-                    <span>{{ error }}</span>
-                </div>
-                {% endif %}
-
-                <form method="post" action="{% url 'web_login' %}" class="fields" id="loginForm" novalidate>
-                    {% csrf_token %}
-
-                    <div class="field-group">
-                        <label for="email" class="field-lbl">Email Address</label>
-                        <div class="input-box">
-                            <input type="email" id="email" name="email" class="input-box__field"
-                                placeholder="you@example.com" required autofocus autocomplete="email"
-                                value="{{ email|default:'' }}">
-                            <span class="input-box__icon" aria-hidden="true">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                    <polyline points="22,6 12,13 2,6"/>
-                                </svg>
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="field-group">
-                        <label for="password" class="field-lbl">Password</label>
-                        <div class="input-box">
-                            <input type="password" id="password" name="password" class="input-box__field"
-                                placeholder="Enter your password" required autocomplete="current-password">
-                            <span class="input-box__icon" aria-hidden="true">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                                    <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                                </svg>
-                            </span>
-                            <button type="button" class="eye-btn" id="togglePw" aria-label="Toggle password visibility">
-                                <svg id="eyeIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="remember-row">
-                        <div class="checkbox-wrap">
-                            <input type="checkbox" id="remember" name="remember" value="1">
-                            <label for="remember">Remember me</label>
-                        </div>
-                        <a href="#" class="forgot-link" id="forgotLink">Forgot password?</a>
-                    </div>
-
-                    <button type="submit" class="submit-btn" id="submitBtn">
-                        <span class="btn-text">Sign In</span>
-                        <span class="spinner" aria-hidden="true"></span>
-                    </button>
-
-                    <div class="kbd-hint" aria-hidden="true">
-                        Press <span class="kbd">Enter</span> to sign in
-                    </div>
-                </form>
-
-                <div class="divider"><span>Need help?</span></div>
-
-                <p class="form-footer">
-                    Contact your <a href="{% url 'contact' %}">KYISA administrator</a> for account access.
+                <h1 class="brand-title">KYISA</h1>
+                <p class="brand-subtitle">Competition Management System</p>
+                <p class="brand-tagline">
+                    Kenya's premier platform for managing <strong>youth intercounty sports</strong> competitions, teams, officials, and results — all in one place.
                 </p>
+                <div class="brand-stats">
+                    <div class="brand-stat">
+                        <div class="brand-stat__num">47</div>
+                        <div class="brand-stat__label">Counties</div>
+                    </div>
+                    <div class="brand-stat">
+                        <div class="brand-stat__num">6</div>
+                        <div class="brand-stat__label">Sports</div>
+                    </div>
+                    <div class="brand-stat">
+                        <div class="brand-stat__num">2026</div>
+                        <div class="brand-stat__label">Season</div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- ═══ PARTNERS BAR ═══ -->
-        <div class="partners-bar">
-            <span class="partners-bar__label">Official Partners &amp; Stakeholders</span>
-            <div class="partners-bar__logos">
-                <div class="partner-item">
-                    <img src="{% static 'img/GOK.png' %}" alt="Government of Kenya">
-                    <span class="partner-item__abbr">GOK</span>
-                    <span class="partner-item__desc">Government of Kenya</span>
-                </div>
+        <!-- RIGHT — Form Panel -->
+        <div class="form-panel">
+            <div class="form-panel__main">
+                <div class="form-container">
+                    <a href="{% url 'home' %}" class="back-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+                        Back to Home
+                    </a>
 
-                <div class="partner-item">
-                    <img src="{% static 'img/COG.jpg' %}" alt="Council of Governors">
-                    <span class="partner-item__abbr">COG</span>
-                    <span class="partner-item__desc">Council of Governors</span>
-                </div>
+                    <div class="mobile-logo">
+                        <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="KYISA">
+                        <span class="mobile-logo__text">KYISA</span>
+                    </div>
 
-                <div class="partner-item">
-                    <img src="{% static 'img/fkf_logo.png' %}" alt="Football Kenya Federation">
-                    <span class="partner-item__abbr">FKF</span>
-                    <span class="partner-item__desc">Football Kenya Federation</span>
-                </div>
+                    <div class="status-pill">
+                        <span class="status-pill__dot"></span>
+                        System Online
+                    </div>
 
-                <div class="partner-item">
-                    <img src="{% static 'img/kbf_logo.jpg' %}" alt="Kenya Basketball Federation">
-                    <span class="partner-item__abbr">KBF</span>
-                    <span class="partner-item__desc">Kenya Basketball Federation</span>
-                </div>
+                    <h2 class="form-heading">Welcome back</h2>
+                    <p class="form-desc">Sign in to your KYISA portal</p>
 
-                <div class="partner-item">
-                    <img src="{% static 'img/khf_logo.png' %}" alt="Kenya Handball Federation">
-                    <span class="partner-item__abbr">KHF</span>
-                    <span class="partner-item__desc">Kenya Handball Federation</span>
-                </div>
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert--{{ message.tags }}" role="alert">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        <span>{{ message }}</span>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
 
-                <div class="partner-item">
-                    <img src="{% static 'img/kvf_logo.png' %}" alt="Kenya Volleyball Federation">
-                    <span class="partner-item__abbr">KVF</span>
-                    <span class="partner-item__desc">Kenya Volleyball Federation</span>
+                    {% if error %}
+                    <div class="alert alert--error" role="alert">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+                        </svg>
+                        <span>{{ error }}</span>
+                    </div>
+                    {% endif %}
+
+                    <form method="post" action="{% url 'web_login' %}" class="form-fields" id="loginForm" novalidate>
+                        {% csrf_token %}
+
+                        <div class="field">
+                            <label for="email" class="field__label">Email Address</label>
+                            <div class="field__input-wrap">
+                                <input type="email" id="email" name="email" class="field__input"
+                                    placeholder="you@example.com" required autofocus autocomplete="email"
+                                    value="{{ email|default:'' }}">
+                                <span class="field__icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                        <polyline points="22,6 12,13 2,6"/>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="password" class="field__label">Password</label>
+                            <div class="field__input-wrap">
+                                <input type="password" id="password" name="password" class="field__input"
+                                    placeholder="Enter your password" required autocomplete="current-password">
+                                <span class="field__icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                        <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                    </svg>
+                                </span>
+                                <button type="button" class="eye-toggle" id="togglePw" aria-label="Toggle password visibility">
+                                    <svg id="eyeIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="options-row">
+                            <div class="check-wrap">
+                                <input type="checkbox" id="remember" name="remember" value="1">
+                                <label for="remember">Remember me</label>
+                            </div>
+                            <button type="button" class="forgot-btn" id="forgotLink">Forgot password?</button>
+                        </div>
+
+                        <button type="submit" class="submit-btn" id="submitBtn">
+                            <span class="btn-label">Sign In</span>
+                            <span class="btn-spinner" aria-hidden="true"></span>
+                        </button>
+                    </form>
+
+                    <div class="form-divider"><span>Need help?</span></div>
+                    <p class="form-help">
+                        Contact your <a href="{% url 'contact' %}">KYISA administrator</a> for account access.
+                    </p>
                 </div>
             </div>
-            <span class="partners-bar__copy">&copy; 2026 Kenya Youth Intercounty Sports Association. All rights reserved.</span>
+
+            <div class="partners-strip">
+                <div class="partners-strip__heading">Official Partners &amp; Stakeholders</div>
+                <div class="partners-grid">
+                    <div class="partner">
+                        <img class="partner__logo" src="{% static 'img/GOK.png' %}" alt="GOK">
+                        <div class="partner__info">
+                            <div class="partner__abbr">GOK</div>
+                            <div class="partner__name">Government of Kenya</div>
+                        </div>
+                    </div>
+                    <div class="partner">
+                        <img class="partner__logo" src="{% static 'img/COG.jpg' %}" alt="COG">
+                        <div class="partner__info">
+                            <div class="partner__abbr">COG</div>
+                            <div class="partner__name">Council of Governors</div>
+                        </div>
+                    </div>
+                    <div class="partner">
+                        <img class="partner__logo" src="{% static 'img/fkf_logo.png' %}" alt="FKF">
+                        <div class="partner__info">
+                            <div class="partner__abbr">FKF</div>
+                            <div class="partner__name">Football Kenya Federation</div>
+                        </div>
+                    </div>
+                    <div class="partner">
+                        <img class="partner__logo" src="{% static 'img/kbf_logo.jpg' %}" alt="KBF">
+                        <div class="partner__info">
+                            <div class="partner__abbr">KBF</div>
+                            <div class="partner__name">Kenya Basketball Federation</div>
+                        </div>
+                    </div>
+                    <div class="partner">
+                        <img class="partner__logo" src="{% static 'img/khf_logo.png' %}" alt="KHF">
+                        <div class="partner__info">
+                            <div class="partner__abbr">KHF</div>
+                            <div class="partner__name">Kenya Handball Federation</div>
+                        </div>
+                    </div>
+                    <div class="partner">
+                        <img class="partner__logo" src="{% static 'img/kvf_logo.png' %}" alt="KVF">
+                        <div class="partner__info">
+                            <div class="partner__abbr">KVF</div>
+                            <div class="partner__name">Kenya Volleyball Federation</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="partners-strip__copy">&copy; 2026 Kenya Youth Intercounty Sports Association. All rights reserved.</div>
+            </div>
         </div>
     </div>
 
     <!-- Forgot Password Modal -->
     <div class="modal-overlay" id="forgotModal">
-        <div class="modal">
-            <button class="modal-close" id="closeModal" aria-label="Close">
+        <div class="modal-box">
+            <button class="modal-box__close" id="closeModal" aria-label="Close">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
             </button>
-            <div class="modal-icon">
+            <div class="modal-box__icon">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
                 </svg>
             </div>
             <h3>Forgot Your Password?</h3>
             <p>For security reasons, password resets must be initiated by your KYISA administrator. Please contact them directly for assistance.</p>
-            <div class="modal-actions">
-                <button class="modal-btn modal-btn-secondary" id="modalCancel">Close</button>
-                <a href="{% url 'contact' %}" class="modal-btn modal-btn-primary" style="text-align:center;text-decoration:none;display:block;">Contact Support</a>
+            <div class="modal-btns">
+                <button class="modal-btn modal-btn--ghost" id="modalCancel">Close</button>
+                <a href="{% url 'contact' %}" class="modal-btn modal-btn--primary">Contact Support</a>
             </div>
         </div>
     </div>
@@ -665,11 +880,11 @@
         const closeModal = document.getElementById('closeModal');
         const modalCancel = document.getElementById('modalCancel');
 
-        forgotLink.addEventListener('click', e => { e.preventDefault(); forgotModal.classList.add('active'); });
-        closeModal.addEventListener('click', () => forgotModal.classList.remove('active'));
-        modalCancel.addEventListener('click', () => forgotModal.classList.remove('active'));
-        forgotModal.addEventListener('click', e => { if (e.target === forgotModal) forgotModal.classList.remove('active'); });
-        document.addEventListener('keydown', e => { if (e.key === 'Escape' && forgotModal.classList.contains('active')) forgotModal.classList.remove('active'); });
+        forgotLink.addEventListener('click', e => { e.preventDefault(); forgotModal.classList.add('is-open'); });
+        closeModal.addEventListener('click', () => forgotModal.classList.remove('is-open'));
+        modalCancel.addEventListener('click', () => forgotModal.classList.remove('is-open'));
+        forgotModal.addEventListener('click', e => { if (e.target === forgotModal) forgotModal.classList.remove('is-open'); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape' && forgotModal.classList.contains('is-open')) forgotModal.classList.remove('is-open'); });
 
         /* Password toggle */
         const tog = document.getElementById('togglePw');
@@ -687,31 +902,22 @@
         /* Form loading state */
         const form = document.getElementById('loginForm');
         const submitBtn = document.getElementById('submitBtn');
-        form.addEventListener('submit', () => { submitBtn.classList.add('loading'); submitBtn.disabled = true; });
+        form.addEventListener('submit', () => { submitBtn.classList.add('is-loading'); submitBtn.disabled = true; });
 
         /* Field focus states */
-        document.querySelectorAll('.input-box__field').forEach(field => {
-            const group = field.closest('.field-group');
+        document.querySelectorAll('.field__input').forEach(field => {
+            const group = field.closest('.field');
             field.addEventListener('focus', () => group.classList.add('is-focused'));
-            field.addEventListener('blur', () => {
-                group.classList.remove('is-focused');
-                field.value ? group.classList.add('has-value') : group.classList.remove('has-value');
-            });
-            if (field.value) group.classList.add('has-value');
-        });
-
-        /* Ctrl+K shortcut */
-        document.addEventListener('keydown', e => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); document.getElementById('email').focus(); }
+            field.addEventListener('blur', () => group.classList.remove('is-focused'));
         });
 
         /* Auto-dismiss messages */
-        document.querySelectorAll('.msg').forEach(msg => {
+        document.querySelectorAll('.alert').forEach(el => {
             setTimeout(() => {
-                msg.style.transition = 'opacity .3s, transform .3s';
-                msg.style.opacity = '0';
-                msg.style.transform = 'translateY(-10px)';
-                setTimeout(() => msg.remove(), 300);
+                el.style.transition = 'opacity .3s, transform .3s';
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(-8px)';
+                setTimeout(() => el.remove(), 300);
             }, 5000);
         });
     </script>
