@@ -18,6 +18,12 @@ SECRET_KEY = env("SECRET_KEY", default="django-insecure-change-me-in-production"
 DEBUG      = env("DEBUG", default=True)
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 
+# Keep explicit local hosts available for Docker/local access even when
+# ALLOWED_HOSTS is provided via environment variables.
+for _host in ("localhost", "127.0.0.1", "[::1]"):
+    if _host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(_host)
+
 # ── APPS ───────────────────────────────────────────────────────────────────────
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -142,6 +148,9 @@ CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+for _origin in ("http://localhost:8080", "http://127.0.0.1:8080"):
+    if _origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(_origin)
 
 # ── SPECTACULAR (API DOCS) ─────────────────────────────────────────────────────
 SPECTACULAR_SETTINGS = {
