@@ -56,16 +56,6 @@ jobs:
             echo "=== Collecting static files ==="
             docker exec kyisa-cms python manage.py collectstatic --noinput
 
-            echo "=== TEMP: Reset admin password ==="
-            docker exec kyisa-cms python manage.py shell -c "
-            from django.contrib.auth import get_user_model
-            User = get_user_model()
-            u = User.objects.get(email='admin@kyisa.org')
-            u.set_password('KyisaAdmin2026!')
-            u.save()
-            print('Admin password reset OK')
-            "
-
             echo "=== Tagging image ==="
             docker tag kyisa-cms-new kyisa-cms
             docker image prune -f
