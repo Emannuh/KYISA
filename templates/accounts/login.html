@@ -9,7 +9,7 @@
     <link rel="icon" href="{% static 'img/kyisa_logo_official.jpg' %}" type="image/jpeg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #1B5E20;
@@ -27,9 +27,9 @@
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { height: 100%; }
         body {
-            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            font-family: 'Manrope', -apple-system, system-ui, sans-serif;
             -webkit-font-smoothing: antialiased;
-            background: #f5f7fa;
+            background: radial-gradient(circle at 12% 8%, #eef6ef 0%, #e9eff2 45%, #e4ebed 100%);
             overflow-x: hidden;
         }
 
@@ -53,16 +53,16 @@
         .bg-layer {
             position: fixed; inset: 0; z-index: 0;
             background:
-                radial-gradient(ellipse at 20% 20%, rgba(46,125,50,.06) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 80%, rgba(249,168,37,.04) 0%, transparent 45%),
-                #f5f7fa;
+            radial-gradient(ellipse at 16% 16%, rgba(27,94,32,.1) 0%, transparent 52%),
+            radial-gradient(ellipse at 88% 84%, rgba(249,168,37,.08) 0%, transparent 50%),
+            linear-gradient(120deg, #edf4ee 0%, #ecf2f5 45%, #e5edf0 100%);
         }
         .bg-layer::after {
             content: ''; position: absolute; inset: 0;
             background-image:
                 linear-gradient(rgba(27,94,32,.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(27,94,32,.03) 1px, transparent 1px);
-            background-size: 60px 60px;
+            background-size: 52px 52px;
         }
 
         /* Floating orbs — reduced */
@@ -84,11 +84,12 @@
 
         .login-card {
             width: 100%; max-width: 440px;
-            background: linear-gradient(145deg, #0d2a12 0%, #0a1f0e 50%, #081a0b 100%);
-            border: 1px solid rgba(255,255,255,.06);
+            background: linear-gradient(155deg, rgba(8,25,13,.95) 0%, rgba(10,31,14,.92) 48%, rgba(8,20,10,.9) 100%);
+            border: 1px solid rgba(167, 214, 173, .2);
             border-radius: 22px;
             padding: 1.5rem 2rem 1.25rem;
-            box-shadow: 0 30px 80px rgba(0,0,0,.15), 0 8px 30px rgba(27,94,32,.1);
+            box-shadow: 0 30px 80px rgba(5, 22, 10, .3), 0 8px 32px rgba(13, 68, 24, .22);
+            backdrop-filter: blur(8px);
             animation: card-enter .7s var(--transition) both;
         }
         @keyframes card-enter {
@@ -115,7 +116,7 @@
         }
 
         .login-brand {
-            font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 900;
+            font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 700;
             color: #fff; letter-spacing: 5px; margin-bottom: .1rem;
         }
         .login-tagline {
@@ -144,7 +145,7 @@
 
         /* ═══ FORM — compact ═══ */
         .form-title {
-            font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 800;
+            font-family: 'Space Grotesk', sans-serif; font-size: 1.15rem; font-weight: 700;
             color: #fff; margin-bottom: .15rem; letter-spacing: -.3px;
         }
         .form-subtitle {
@@ -226,7 +227,7 @@
         /* Submit button */
         .submit-btn {
             width: 100%; margin-top: .5rem; padding: .72rem; border: none;
-            border-radius: 10px; font-family: 'Outfit', sans-serif;
+            border-radius: 10px; font-family: 'Space Grotesk', sans-serif;
             font-size: .85rem; font-weight: 700; color: #fff; cursor: pointer;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
             box-shadow: 0 4px 20px rgba(27,94,32,.3);
@@ -291,38 +292,69 @@
         /* ═══ PARTNERS BAR — compact single strip ═══ */
         .partners-bar {
             position: relative; z-index: 1;
-            padding: .75rem 1.5rem;
+            padding: .95rem 1.15rem .8rem;
             text-align: center;
-            background: linear-gradient(135deg, #0d3311 0%, #1B5E20 50%, #0d3311 100%);
-            border-top: 1px solid rgba(255,255,255,.06);
+            background:
+                radial-gradient(circle at 12% 20%, rgba(249,168,37,.12), transparent 35%),
+                radial-gradient(circle at 88% 80%, rgba(76,175,80,.16), transparent 45%),
+                linear-gradient(135deg, #08250c 0%, #0f3a15 52%, #0b280f 100%);
+            border-top: 1px solid rgba(255,255,255,.1);
         }
         .partners-bar__label {
-            font-size: .5rem; color: rgba(255,255,255,.4);
+            font-size: .53rem; color: rgba(255,255,255,.58);
             text-transform: uppercase; letter-spacing: 2.5px; font-weight: 700;
             margin-bottom: .5rem; display: block;
         }
         .partners-bar__logos {
-            display: flex; align-items: center; justify-content: center;
-            gap: 1.25rem; flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(6, minmax(80px, 1fr));
+            gap: .65rem;
+            align-items: stretch;
+            max-width: 940px;
+            margin: 0 auto;
         }
         .partner-item {
-            display: flex; flex-direction: column; align-items: center; gap: .25rem;
-            opacity: .7; transition: opacity .3s; cursor: default;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: .32rem;
+            border-radius: 16px;
+            padding: .45rem .35rem;
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.09);
+            opacity: .92;
+            transition: transform .25s var(--transition), border-color .25s var(--transition), background .25s var(--transition);
+            cursor: default;
         }
-        .partner-item:hover { opacity: 1; }
+        .partner-item:hover {
+            transform: translateY(-2px);
+            border-color: rgba(249,168,37,.35);
+            background: rgba(255,255,255,.08);
+        }
         .partner-item img {
-            height: 36px; width: auto; object-fit: contain;
-            filter: brightness(1.1) drop-shadow(0 2px 8px rgba(0,0,0,.25));
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #fff;
+            border: 2px solid rgba(255,255,255,.34);
+            filter: brightness(1.02) drop-shadow(0 2px 8px rgba(0,0,0,.24));
         }
-        .partner-item span {
-            font-size: .45rem; color: rgba(255,255,255,.45);
-            text-transform: uppercase; letter-spacing: 1px; font-weight: 600;
-            white-space: nowrap;
+        .partner-item__abbr {
+            font-size: .6rem;
+            color: #f5d57a;
+            text-transform: uppercase;
+            letter-spacing: .9px;
+            font-weight: 800;
+            line-height: 1;
         }
-
-        .partners-bar__divider {
-            width: 1px; height: 28px;
-            background: linear-gradient(to bottom, transparent, rgba(255,255,255,.12), transparent);
+        .partner-item__desc {
+            font-size: .47rem;
+            color: rgba(255,255,255,.62);
+            letter-spacing: .4px;
+            line-height: 1.2;
+            text-align: center;
         }
 
         .partners-bar__copy {
@@ -387,8 +419,11 @@
             .login-card { max-width: 100%; }
             .form-title { font-size: 1.05rem; }
             .remember-row { flex-direction: column; align-items: flex-start; gap: .5rem; }
-            .partners-bar__logos { gap: 1rem; }
-            .partner-item img { height: 30px; }
+            .partners-bar__logos {
+                grid-template-columns: repeat(3, minmax(84px, 1fr));
+                gap: .55rem;
+            }
+            .partner-item img { width: 34px; height: 34px; }
             .orb { filter: blur(80px); opacity: .15; }
         }
         @media (max-width: 480px) {
@@ -403,11 +438,15 @@
             .input-box__field { padding: .6rem .75rem .6rem 2.4rem; font-size: .82rem; }
             .fields { gap: .7rem; }
             .submit-btn { padding: .65rem; font-size: .82rem; }
-            .partners-bar { padding: .6rem .75rem; }
-            .partners-bar__logos { gap: .6rem; }
-            .partners-bar__divider { display: none; }
-            .partner-item img { height: 26px; }
-            .partner-item span { font-size: .4rem; }
+            .partners-bar { padding: .6rem .65rem; }
+            .partners-bar__logos {
+                grid-template-columns: repeat(2, minmax(90px, 1fr));
+                gap: .45rem;
+            }
+            .partner-item { border-radius: 12px; padding: .42rem .25rem; }
+            .partner-item img { width: 30px; height: 30px; }
+            .partner-item__abbr { font-size: .56rem; }
+            .partner-item__desc { font-size: .42rem; }
             .partners-bar__copy { font-size: .42rem; margin-top: .35rem; }
             .back-home { margin-bottom: .5rem; font-size: .65rem; }
             .divider { margin: .5rem 0 .35rem; }
@@ -426,8 +465,12 @@
             .input-box__field { padding: .55rem .75rem .55rem 2.4rem; }
             .submit-btn { margin-top: .3rem; padding: .6rem; }
             .divider { margin: .4rem 0 .25rem; }
-            .partners-bar { padding: .5rem 1rem; }
-            .partner-item img { height: 28px; }
+            .partners-bar { padding: .5rem .9rem; }
+            .partners-bar__logos {
+                grid-template-columns: repeat(3, minmax(84px, 1fr));
+                gap: .4rem;
+            }
+            .partner-item img { width: 30px; height: 30px; }
         }
     </style>
 </head>
@@ -555,49 +598,38 @@
             <div class="partners-bar__logos">
                 <div class="partner-item">
                     <img src="{% static 'img/GOK.png' %}" alt="Government of Kenya">
-                    <span>Government of Kenya</span>
+                    <span class="partner-item__abbr">GOK</span>
+                    <span class="partner-item__desc">Government of Kenya</span>
                 </div>
-
-                <div class="partners-bar__divider"></div>
 
                 <div class="partner-item">
                     <img src="{% static 'img/COG.jpg' %}" alt="Council of Governors">
-                    <span>Council of Governors</span>
+                    <span class="partner-item__abbr">COG</span>
+                    <span class="partner-item__desc">Council of Governors</span>
                 </div>
-
-                <div class="partners-bar__divider"></div>
-
-                <div class="partner-item">
-                    <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="KYISA">
-                    <span>KYISA</span>
-                </div>
-
-                <div class="partners-bar__divider"></div>
 
                 <div class="partner-item">
                     <img src="{% static 'img/fkf_logo.png' %}" alt="Football Kenya Federation">
-                    <span>FKF</span>
+                    <span class="partner-item__abbr">FKF</span>
+                    <span class="partner-item__desc">Football Kenya Federation</span>
                 </div>
-
-                <div class="partners-bar__divider"></div>
 
                 <div class="partner-item">
                     <img src="{% static 'img/kbf_logo.jpg' %}" alt="Kenya Basketball Federation">
-                    <span>KBF</span>
+                    <span class="partner-item__abbr">KBF</span>
+                    <span class="partner-item__desc">Kenya Basketball Federation</span>
                 </div>
-
-                <div class="partners-bar__divider"></div>
 
                 <div class="partner-item">
                     <img src="{% static 'img/khf_logo.png' %}" alt="Kenya Handball Federation">
-                    <span>KHF</span>
+                    <span class="partner-item__abbr">KHF</span>
+                    <span class="partner-item__desc">Kenya Handball Federation</span>
                 </div>
-
-                <div class="partners-bar__divider"></div>
 
                 <div class="partner-item">
                     <img src="{% static 'img/kvf_logo.png' %}" alt="Kenya Volleyball Federation">
-                    <span>KVF</span>
+                    <span class="partner-item__abbr">KVF</span>
+                    <span class="partner-item__desc">Kenya Volleyball Federation</span>
                 </div>
             </div>
             <span class="partners-bar__copy">&copy; 2026 Kenya Youth Intercounty Sports Association. All rights reserved.</span>
