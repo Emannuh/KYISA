@@ -113,8 +113,13 @@
 <!-- ══════════════════════════════════════════════════════════════════════════
      PAGE HERO — DARK CINEMATIC
      ══════════════════════════════════════════════════════════════════════════ -->
-<section class="page-hero">
+<section class="page-hero page-hero--has-img">
     <div class="page-hero__bg">
+        {% if article.featured_image %}
+        <div class="page-hero__img" style="background-image:url('{{ article.featured_image.url }}')"></div>
+        {% else %}
+        <div class="page-hero__img" style="background-image:url('{% static 'img/ky.png' %}')"></div>
+        {% endif %}
         <div class="page-hero__gradient"></div>
         <canvas class="page-hero__canvas" id="pageCanvas"></canvas>
     </div>

@@ -2042,14 +2042,25 @@ img { max-width: 100%; }
    PAGE HERO — DARK CINEMATIC (inner pages)
    ────────────────────────────────────────────────────────────────────────── */
 .page-hero {
-    position: relative; min-height: 280px;
+    position: relative; min-height: 340px;
     display: flex; align-items: center; justify-content: center;
     text-align: center; overflow: hidden;
-    padding-top: 85px; padding-bottom: 2rem;
+    padding-top: 90px; padding-bottom: 2.5rem;
     background: #0a0f0a;
 }
 .page-hero__bg {
     position: absolute; inset: 0;
+}
+.page-hero__img {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    z-index: 0;
+}
+.page-hero__img::after {
+    content: ""; position: absolute; inset: 0;
+    background:
+        linear-gradient(180deg, rgba(10,15,10,.7) 0%, rgba(10,26,13,.5) 50%, rgba(10,15,10,.85) 100%),
+        radial-gradient(ellipse at 30% 40%, rgba(27,94,32,.15) 0%, transparent 55%);
 }
 .page-hero__gradient {
     position: absolute; inset: 0;
@@ -2058,37 +2069,54 @@ img { max-width: 100%; }
         radial-gradient(ellipse at 75% 30%, rgba(249,168,37,.07) 0%, transparent 45%),
         radial-gradient(ellipse at 50% 90%, rgba(198,40,40,.05) 0%, transparent 40%),
         linear-gradient(180deg, #0a1a0d 0%, #0d2810 40%, #091508 100%);
+    z-index: 1;
+}
+.page-hero--has-img .page-hero__gradient {
+    background:
+        radial-gradient(ellipse at 30% 40%, rgba(27,94,32,.1) 0%, transparent 55%),
+        radial-gradient(ellipse at 75% 30%, rgba(249,168,37,.05) 0%, transparent 45%);
 }
 .page-hero__canvas {
     position: absolute; inset: 0; width: 100%; height: 100%;
-    z-index: 1; pointer-events: none;
+    z-index: 2; pointer-events: none;
 }
 .page-hero__inner {
     position: relative; z-index: 3;
+    animation: pageHeroFadeIn .8s ease-out both;
+}
+@keyframes pageHeroFadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 .page-hero__badge {
-    display: inline-block; padding: .3rem .85rem;
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .35rem .95rem;
     border: 1px solid rgba(249,168,37,.3); border-radius: 50px;
-    font-size: .75rem; font-weight: 700; text-transform: uppercase;
+    font-size: .72rem; font-weight: 700; text-transform: uppercase;
     letter-spacing: 2.5px; color: #F9A825;
-    background: rgba(249,168,37,.08); margin-bottom: .75rem;
+    background: rgba(249,168,37,.08);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    margin-bottom: .85rem;
 }
 .page-hero__title {
     font-family: 'Outfit', sans-serif;
-    font-size: 2.4rem; font-weight: 900; line-height: 1.1;
-    color: #fff; margin-bottom: .4rem; letter-spacing: -.5px;
+    font-size: 2.8rem; font-weight: 900; line-height: 1.08;
+    color: #fff; margin-bottom: .5rem; letter-spacing: -.5px;
 }
 .text-gold { color: #F9A825; }
 .page-hero__sub {
-    font-size: .88rem; color: rgba(255,255,255,.5);
-    max-width: 520px; margin: 0 auto .6rem; line-height: 1.6;
+    font-size: .9rem; color: rgba(255,255,255,.55);
+    max-width: 540px; margin: 0 auto .75rem; line-height: 1.7;
 }
 .page-hero__breadcrumb {
-    display: flex; align-items: center; justify-content: center;
-    gap: .4rem; font-size: .75rem; color: rgba(255,255,255,.35);
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: .4rem; font-size: .72rem; color: rgba(255,255,255,.35);
+    background: rgba(255,255,255,.05); border-radius: 20px;
+    padding: .35rem .85rem;
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
 }
 .page-hero__breadcrumb a {
-    color: rgba(255,255,255,.5); transition: color .2s;
+    color: rgba(255,255,255,.55); transition: color .2s;
 }
 .page-hero__breadcrumb a:hover { color: #F9A825; }
 .page-hero__breadcrumb svg { opacity: .4; }
@@ -2517,7 +2545,7 @@ img { max-width: 100%; }
     .mc-stats__row { grid-template-columns: repeat(4, 1fr); }
 
     /* Page hero */
-    .page-hero__title { font-size: 2.4rem; }
+    .page-hero__title { font-size: 2.5rem; }
 
     /* About stats */
     .about-stats__grid { grid-template-columns: repeat(3, 1fr); }
@@ -2581,8 +2609,8 @@ img { max-width: 100%; }
     .cta-box h2 { font-size: 1.5rem; }
 
     /* Page hero 768 */
-    .page-hero { min-height: 280px; padding-top: 80px; padding-bottom: 2rem; }
-    .page-hero__title { font-size: 2rem; }
+    .page-hero { min-height: 300px; padding-top: 80px; padding-bottom: 2rem; }
+    .page-hero__title { font-size: 2.2rem; }
     .page-hero__sub { font-size: .85rem; }
 
     /* About page 768 */
@@ -2602,17 +2630,20 @@ img { max-width: 100%; }
 
     /* Hero split → stacked on tablet */
     .hero { min-height: auto; align-items: flex-start; padding-top: 70px; padding-bottom: 1rem; }
-    .hero-split { flex-direction: column; gap: 1rem; padding: 1.5rem 1.25rem; align-items: stretch; }
+    .hero-split { flex-direction: column; gap: 1.25rem; padding: 1.5rem 1.25rem; align-items: center; }
     .hero-left {
         min-height: unset;
         position: relative;
         overflow: visible;
+        width: 100%;
+        text-align: center;
     }
     .hero-right {
-        width: 100%; max-width: 340px; margin: 0 auto;
+        width: 100%; max-width: 360px; margin: 0 auto;
+        display: flex; flex-direction: column; gap: .75rem;
     }
 
-    /* On mobile: keep absolute stacking but use visibility+opacity for smooth fade */
+    /* On mobile: phases stack — only active one takes space */
     .hero-phase {
         position: absolute;
         top: 0; left: 0; right: 0;
@@ -2653,16 +2684,16 @@ img { max-width: 100%; }
 }
 @media (max-width: 480px) {
     /* ── Hero phone layout ────────────────────────────────────── */
-    .hero { padding-top: 60px; padding-bottom: 0; }
-    .hero-split { padding: .75rem 1rem; gap: .75rem; }
-    .hero--dark .hero-title { font-size: 1.4rem; line-height: 1.2; }
+    .hero { padding-top: 60px; padding-bottom: .5rem; }
+    .hero-split { padding: .75rem 1rem; gap: 1rem; }
+    .hero--dark .hero-title { font-size: 1.5rem; line-height: 1.2; }
     .hero--dark .hero-tagline { font-size: .68rem; letter-spacing: 1.5px; }
-    .hero-logo-img { width: 72px; height: auto; }
+    .hero-logo-img { width: 64px; height: auto; }
     .hero-logo-wrap { margin-bottom: .4rem; }
-    .hero-logo-ring { width: 90px; height: 90px; }
-    .hero-actions { flex-direction: column; gap: .5rem; align-items: center; }
-    .hero-actions .btn { width: 100%; max-width: 220px; text-align: center; font-size: .8rem; padding: .55rem .9rem; }
-    .hero-quote { font-size: .75rem; line-height: 1.4; max-width: 280px; margin: .4rem auto; }
+    .hero-logo-ring { width: 82px; height: 82px; }
+    .hero-actions { flex-direction: row; gap: .5rem; justify-content: center; flex-wrap: wrap; }
+    .hero-actions .btn { font-size: .78rem; padding: .5rem .85rem; }
+    .hero-quote { font-size: .75rem; line-height: 1.4; max-width: 300px; margin: .4rem auto; }
 
     /* Phase B showcase */
     .hero-showcase { width: 140px; height: 140px; }
@@ -2677,7 +2708,7 @@ img { max-width: 100%; }
     .flag-text-block { padding: 0 .5rem; }
 
     /* ── Countdown card phone ─────────────────────────────────── */
-    .hero-right { width: 100%; max-width: 100%; padding: 0; }
+    .hero-right { width: 100%; max-width: 100%; padding: 0; display: flex; flex-direction: column; gap: .5rem; }
     .cd-card-entrance { min-height: unset; padding: 0; }
     .cd-card--mini { width: 100%; max-width: 300px; margin: 0 auto; border-radius: 18px; }
     .cd-card--mini .cd-card__inner { padding: 1rem .85rem; border-radius: 18px; }
@@ -2703,9 +2734,9 @@ img { max-width: 100%; }
     .stat-num { font-size: 2rem; }
 
     /* Page hero 480 */
-    .page-hero { min-height: 240px; padding-top: 75px; }
-    .page-hero__title { font-size: 1.6rem; }
-    .page-hero__badge { font-size: .75rem; }
+    .page-hero { min-height: 260px; padding-top: 75px; padding-bottom: 1.5rem; }
+    .page-hero__title { font-size: 1.8rem; }
+    .page-hero__badge { font-size: .68rem; letter-spacing: 2px; padding: .3rem .7rem; }
 
     /* About 480 */
     .values-grid { grid-template-columns: 1fr; }

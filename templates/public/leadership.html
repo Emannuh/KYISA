@@ -241,15 +241,16 @@
 <!-- ══════════════════════════════════════════════════════════════════════════
      PAGE HERO
      ══════════════════════════════════════════════════════════════════════════ -->
-<section class="page-hero">
+<section class="page-hero page-hero--has-img">
     <div class="page-hero__bg">
+        <div class="page-hero__img" style="background-image:url('{% static 'img/kyisa_women_football.jpg' %}')"></div>
         <div class="page-hero__gradient"></div>
         <canvas class="page-hero__canvas" id="pageCanvas"></canvas>
     </div>
     <div class="container page-hero__inner">
-        <span class="page-hero__badge reveal">Officials</span>
+        <span class="page-hero__badge reveal"><i class="bi bi-people"></i> Officials</span>
         <h1 class="page-hero__title reveal">Our <span class="text-gold">Leadership</span></h1>
-        <p class="page-hero__sub reveal">Meet the dedicated officials guiding KYISA's mission to nurture Kenya's youth sporting talent.</p>
+        <p class="page-hero__sub reveal">Meet the dedicated officials guiding KYISA's mission to enhance the spirit of devolution through sports.</p>
         <div class="page-hero__breadcrumb reveal">
             <a href="{% url 'home' %}">Home</a>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>

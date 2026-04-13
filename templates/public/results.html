@@ -12,13 +12,14 @@
 <!-- ══════════════════════════════════════════════════════════════════════════
      PAGE HERO — DARK CINEMATIC
      ══════════════════════════════════════════════════════════════════════════ -->
-<section class="page-hero">
+<section class="page-hero page-hero--has-img">
     <div class="page-hero__bg">
+        <div class="page-hero__img" style="background-image:url('{% static 'img/kyisa_men_football.jpg' %}')"></div>
         <div class="page-hero__gradient"></div>
         <canvas class="page-hero__canvas" id="pageCanvas"></canvas>
     </div>
     <div class="container page-hero__inner">
-        <span class="page-hero__badge reveal">Live Scores</span>
+        <span class="page-hero__badge reveal"><i class="bi bi-broadcast"></i> Live Scores</span>
         <h1 class="page-hero__title reveal">Results & <span class="text-gold">Statistics</span></h1>
         <p class="page-hero__sub reveal">Live scores, standings, and player leaderboards from KYISA competitions</p>
         <div class="page-hero__breadcrumb reveal">
