@@ -33,6 +33,7 @@ from teams.forms import (
     CountyAdminRegistrationForm, CountyPaymentForm, CountyPlayerForm,
     TechnicalBenchForm, CountyDelegationMemberForm,
 )
+from news_media.models import NewsArticle, GalleryAlbum, Video
 from referees.models import (
     RefereeProfile, RefereeAppointment, RefereeAvailability,
     AppointmentStatus, AvailabilityStatus, AppointmentRole, RefereeType,
@@ -171,12 +172,33 @@ def home_view(request):
         'competition', 'home_team', 'away_team', 'venue'
     ).order_by('-match_date')[:6]
 
+    # Media highlights for homepage
+    latest_articles = NewsArticle.objects.filter(
+        status='published'
+    ).select_related('category', 'author').order_by('-published_at')[:6]
+
+    featured_articles = NewsArticle.objects.filter(
+        status='published', is_featured=True
+    ).select_related('category', 'author').order_by('-published_at')[:3]
+
+    latest_albums = GalleryAlbum.objects.filter(
+        is_published=True
+    ).order_by('-event_date')[:6]
+
+    latest_videos = Video.objects.filter(
+        is_published=True
+    ).order_by('-created_at')[:4]
+
     return render(request, 'public/home.html', {
         'active_page': 'home',
         'stats': stats,
         'live_matches': live_matches,
         'upcoming_fixtures': upcoming_fixtures,
         'recent_results': recent_results,
+        'latest_articles': latest_articles,
+        'featured_articles': featured_articles,
+        'latest_albums': latest_albums,
+        'latest_videos': latest_videos,
     })
 
 

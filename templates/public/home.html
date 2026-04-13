@@ -277,66 +277,166 @@
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════════════════
-     STORIES — IMMERSIVE FULLSCREEN WITH LOGO WATERMARK
+     MEDIA HIGHLIGHTS — PHOTOS, NEWS, VIDEOS FROM MEDIA MANAGER
      ══════════════════════════════════════════════════════════════════════════ -->
-<section class="stories-hero" id="news">
-    <!-- Watermark logo -->
-    <div class="stories-hero__watermark">
-        <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="">
-    </div>
+<section class="sec media-highlights" id="news">
+    <div class="container">
 
-    <!-- Story panels (fullscreen bg images) -->
-    <div class="stories-hero__slides" id="storySlides">
-        <div class="story-panel story-panel--active" data-idx="0">
-            <img src="{% static 'img/kyisa_women_football.jpg' %}" alt="Women's football" class="story-panel__bg">
-            <div class="story-panel__overlay"></div>
-            <div class="story-panel__content">
-                <span class="story-panel__tag">Women's Football</span>
-                <h3 class="story-panel__title">High-intensity action on the pitch</h3>
-            </div>
+        <!-- Section hero intro -->
+        <div class="mh-hero reveal">
+            <span class="mh-hero__badge"><i class="bi bi-broadcast"></i> News & Media</span>
+            <h2 class="mh-hero__title">Latest from <span class="text-gold">KYISA</span></h2>
+            <p class="mh-hero__sub">Photos, news highlights, featured stories, and videos from KYISA events across Kenya's 47 counties.</p>
         </div>
-        <div class="story-panel" data-idx="1">
-            <img src="{% static 'img/kyisa_men_football.jpg' %}" alt="Men's football" class="story-panel__bg">
-            <div class="story-panel__overlay"></div>
-            <div class="story-panel__content">
-                <span class="story-panel__tag">KYISA 2025 · Homa Bay</span>
-                <h3 class="story-panel__title">Makueni County Dominates at KYISA Games</h3>
-                <p class="story-panel__desc">A stunning 1-0 victory against defending champions Busia sealed their place in history. The women footballers produced a commanding 2-0 win over Kajiado.</p>
-            </div>
-        </div>
-        <div class="story-panel" data-idx="2">
-            <img src="{% static 'img/kyisa_basketball.jpg' %}" alt="Basketball" class="story-panel__bg">
-            <div class="story-panel__overlay"></div>
-            <div class="story-panel__content">
-                <span class="story-panel__tag">Basketball</span>
-                <h3 class="story-panel__title">Thrilling court action across counties</h3>
-            </div>
-        </div>
-        <div class="story-panel" data-idx="3">
-            <img src="{% static 'img/kyisa_champions.jpg' %}" alt="Champions" class="story-panel__bg">
-            <div class="story-panel__overlay"></div>
-            <div class="story-panel__content">
-                <span class="story-panel__tag">Champions · 10th Edition</span>
-                <h3 class="story-panel__title">Makueni's Historic Triple Crown</h3>
-                <p class="story-panel__desc">Women's football title defended for the third consecutive year, defeating Kajiado 5-4 on penalties in a thrilling final.</p>
-            </div>
-        </div>
-    </div>
 
-    <!-- Navigation -->
-    <div class="stories-hero__nav">
-        <div class="stories-hero__dots" id="storyDots">
-            <button class="sh-dot sh-dot--active" data-idx="0"></button>
-            <button class="sh-dot" data-idx="1"></button>
-            <button class="sh-dot" data-idx="2"></button>
-            <button class="sh-dot" data-idx="3"></button>
+        <!-- ── Photo Albums ──────────────────────────────────────────── -->
+        {% if latest_albums %}
+        <div class="mh-block">
+            <div class="mh-header">
+                <h2 class="sec-title"><i class="bi bi-images"></i> Photo Gallery</h2>
+                <a href="{% url 'news_media:gallery_list' %}" class="mh-view-all">View All <i class="bi bi-arrow-right"></i></a>
+            </div>
+            <div class="mh-grid mh-grid--albums">
+                {% for album in latest_albums %}
+                <a href="{% url 'news_media:gallery_detail' album.slug %}" class="mh-album-card">
+                    <div class="mh-album-card__img">
+                        {% if album.display_cover %}
+                        <img src="{{ album.display_cover.url }}" alt="{{ album.title }}" loading="lazy">
+                        {% else %}
+                        <div class="mh-album-card__placeholder"><i class="bi bi-camera"></i></div>
+                        {% endif %}
+                        <div class="mh-album-card__overlay">
+                            <span class="mh-album-card__count"><i class="bi bi-image"></i> {{ album.photo_count }}</span>
+                        </div>
+                    </div>
+                    <div class="mh-album-card__body">
+                        <h4 class="mh-album-card__title">{{ album.title }}</h4>
+                        {% if album.event_date %}
+                        <span class="mh-album-card__date"><i class="bi bi-calendar3"></i> {{ album.event_date|date:"M d, Y" }}</span>
+                        {% endif %}
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
         </div>
-        <div class="stories-hero__progress" id="storyProgress"></div>
-    </div>
+        {% endif %}
 
-    <!-- Slide counter -->
-    <div class="stories-hero__counter">
-        <span id="storyCounter">01</span> / 04
+        <!-- ── Latest News ───────────────────────────────────────────── -->
+        {% if latest_articles %}
+        <div class="mh-block">
+            <div class="mh-header">
+                <h2 class="sec-title"><i class="bi bi-newspaper"></i> Latest News</h2>
+                <a href="{% url 'news_media:news_list' %}" class="mh-view-all">View All <i class="bi bi-arrow-right"></i></a>
+            </div>
+            <div class="mh-grid mh-grid--news">
+                {% for article in latest_articles %}
+                <a href="{% url 'news_media:news_detail' article.slug %}" class="mh-news-card">
+                    <div class="mh-news-card__img">
+                        {% if article.featured_image %}
+                        <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" loading="lazy">
+                        {% else %}
+                        <div class="mh-news-card__placeholder"><i class="bi bi-newspaper"></i></div>
+                        {% endif %}
+                        {% if article.category %}
+                        <span class="mh-news-card__cat">{{ article.category.name }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="mh-news-card__body">
+                        <h4 class="mh-news-card__title">{{ article.title }}</h4>
+                        {% if article.excerpt %}
+                        <p class="mh-news-card__excerpt">{{ article.excerpt|truncatewords:18 }}</p>
+                        {% endif %}
+                        <div class="mh-news-card__meta">
+                            <span><i class="bi bi-clock"></i> {{ article.published_at|timesince }} ago</span>
+                            {% if article.reading_time %}
+                            <span><i class="bi bi-book"></i> {{ article.reading_time }} min read</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- ── Featured News ─────────────────────────────────────────── -->
+        {% if featured_articles %}
+        <div class="mh-block">
+            <div class="mh-header">
+                <h2 class="sec-title"><i class="bi bi-star"></i> Featured Stories</h2>
+            </div>
+            <div class="mh-grid mh-grid--featured">
+                {% for article in featured_articles %}
+                <a href="{% url 'news_media:news_detail' article.slug %}" class="mh-featured-card">
+                    <div class="mh-featured-card__img">
+                        {% if article.featured_image %}
+                        <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" loading="lazy">
+                        {% else %}
+                        <div class="mh-featured-card__placeholder"><i class="bi bi-star"></i></div>
+                        {% endif %}
+                    </div>
+                    <div class="mh-featured-card__body">
+                        {% if article.category %}
+                        <span class="mh-featured-card__cat">{{ article.category.name }}</span>
+                        {% endif %}
+                        <h3 class="mh-featured-card__title">{{ article.title }}</h3>
+                        {% if article.excerpt %}
+                        <p class="mh-featured-card__excerpt">{{ article.excerpt|truncatewords:25 }}</p>
+                        {% endif %}
+                        <div class="mh-featured-card__meta">
+                            <span><i class="bi bi-calendar3"></i> {{ article.published_at|date:"M d, Y" }}</span>
+                            {% if article.author %}
+                            <span><i class="bi bi-person"></i> {{ article.author.get_full_name|default:article.author.username }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- ── Videos ────────────────────────────────────────────────── -->
+        {% if latest_videos %}
+        <div class="mh-block">
+            <div class="mh-header">
+                <h2 class="sec-title"><i class="bi bi-play-circle"></i> Videos</h2>
+                <a href="{% url 'news_media:videos_list' %}" class="mh-view-all">View All <i class="bi bi-arrow-right"></i></a>
+            </div>
+            <div class="mh-grid mh-grid--videos">
+                {% for video in latest_videos %}
+                <div class="mh-video-card">
+                    <div class="mh-video-card__thumb">
+                        {% if video.thumbnail %}
+                        <img src="{{ video.thumbnail.url }}" alt="{{ video.title }}" loading="lazy">
+                        {% elif video.youtube_id %}
+                        <img src="https://img.youtube.com/vi/{{ video.youtube_id }}/hqdefault.jpg" alt="{{ video.title }}" loading="lazy">
+                        {% else %}
+                        <div class="mh-video-card__placeholder"><i class="bi bi-play-circle"></i></div>
+                        {% endif %}
+                        <div class="mh-video-card__play"><i class="bi bi-play-fill"></i></div>
+                        {% if video.duration %}
+                        <span class="mh-video-card__dur">{{ video.duration }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="mh-video-card__body">
+                        <h4 class="mh-video-card__title">{{ video.title }}</h4>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Empty state when no media content -->
+        {% if not latest_albums and not latest_articles and not latest_videos %}
+        <div class="mh-empty">
+            <i class="bi bi-camera-reels"></i>
+            <h3>Media Highlights Coming Soon</h3>
+            <p>Photos, news, and videos from KYISA events will appear here.</p>
+        </div>
+        {% endif %}
+
     </div>
 </section>
 
@@ -729,47 +829,6 @@
             showCountdownCard();
             setTimeout(switchHeroPhase, phaseDurations[activePhase]);
         }, 4500);
-    }
-
-    /* ── Stories fullscreen carousel ──────────────────────────────────── */
-    var panels = document.querySelectorAll('.story-panel');
-    var shDots = document.querySelectorAll('.sh-dot');
-    var storyCounter = document.getElementById('storyCounter');
-    var storyProgress = document.getElementById('storyProgress');
-    var curPanel = 0;
-    var panelCount = panels.length;
-    var storyAutoInt;
-
-    function goToPanel(idx) {
-        panels[curPanel].classList.remove('story-panel--active');
-        shDots[curPanel].classList.remove('sh-dot--active');
-        curPanel = (idx + panelCount) % panelCount;
-        panels[curPanel].classList.add('story-panel--active');
-        shDots[curPanel].classList.add('sh-dot--active');
-        if (storyCounter) storyCounter.textContent = (curPanel + 1 < 10 ? '0' : '') + (curPanel + 1);
-        if (storyProgress) {
-            storyProgress.style.animation = 'none';
-            storyProgress.offsetHeight;
-            storyProgress.style.animation = '';
-        }
-    }
-
-    function startStoryAuto() {
-        storyAutoInt = setInterval(function(){ goToPanel(curPanel + 1); }, 5000);
-    }
-    function resetStoryAuto() {
-        clearInterval(storyAutoInt);
-        startStoryAuto();
-    }
-
-    if (panelCount > 0) {
-        shDots.forEach(function(dot) {
-            dot.addEventListener('click', function(){
-                goToPanel(parseInt(dot.getAttribute('data-idx')));
-                resetStoryAuto();
-            });
-        });
-        startStoryAuto();
     }
 
     /* ── Canvas particles ───────────────────────────────────────────── */
