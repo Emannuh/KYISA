@@ -1,0 +1,26 @@
+name: Check Email Config
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check email config on server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          command_timeout: 2m
+          script: |
+            echo "=== EMAIL CONFIG ==="
+            grep -i "email\|ses\|smtp\|FROM_EMAIL" /opt/kyisa/.env 2>/dev/null || echo "No email vars found in .env"
+            echo ""
+            echo "=== DOCKER LOGS (last 30 email-related lines) ==="
+            docker logs kyisa-cms 2>&1 | grep -i "email\|smtp\|ses\|mail\|send" | tail -30 || echo "No email logs found"
+            echo ""
+            echo "=== CURRENT EMAIL BACKEND (from Django) ==="
+            docker exec kyisa-cms python -c "from django.conf import settings; print('BACKEND:', settings.EMAIL_BACKEND); print('HOST:', settings.EMAIL_HOST); print('PORT:', settings.EMAIL_PORT); print('FROM:', settings.DEFAULT_FROM_EMAIL); print('TLS:', settings.EMAIL_USE_TLS)" 2>&1 || echo "Could not query Django settings"
