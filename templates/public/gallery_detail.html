@@ -2,6 +2,10 @@
 {% load static %}
 
 {% block title %}{{ album.title }} — Gallery{% endblock %}
+{% block meta_description %}{{ album.description|default:album.title }} — KYISA Photo Gallery{% endblock %}
+{% block canonical_url %}https://kyisa.org/media-hub/gallery/{{ album.slug }}/{% endblock %}
+{% block og_title %}{{ album.title }} — KYISA Gallery{% endblock %}
+{% block og_url %}https://kyisa.org/media-hub/gallery/{{ album.slug }}/{% endblock %}
 
 {% block extra_css %}
 <style>

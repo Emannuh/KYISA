@@ -118,22 +118,49 @@ def robots_txt(request):
 
 
 def sitemap_xml(request):
-    urls = [
-        ("https://kyisa.org/", "daily", "1.0"),
-        ("https://kyisa.org/about/", "monthly", "0.8"),
-        ("https://kyisa.org/leadership/", "monthly", "0.7"),
-        ("https://kyisa.org/competitions/public/", "daily", "0.9"),
-        ("https://kyisa.org/results/", "daily", "0.9"),
-        ("https://kyisa.org/results/statistics/", "weekly", "0.7"),
-        ("https://kyisa.org/contact/", "monthly", "0.5"),
-        ("https://kyisa.org/media-hub/", "daily", "0.8"),
-        ("https://kyisa.org/register/team/", "monthly", "0.6"),
+    today = timezone.now().strftime('%Y-%m-%d')
 
+    # Static pages
+    urls = [
+        ("https://kyisa.org/", "daily", "1.0", today),
+        ("https://kyisa.org/about/", "monthly", "0.8", None),
+        ("https://kyisa.org/leadership/", "monthly", "0.7", None),
+        ("https://kyisa.org/competitions/public/", "daily", "0.9", today),
+        ("https://kyisa.org/results/", "daily", "0.9", today),
+        ("https://kyisa.org/results/statistics/", "weekly", "0.7", None),
+        ("https://kyisa.org/contact/", "monthly", "0.5", None),
+        ("https://kyisa.org/media-hub/news/", "daily", "0.8", today),
+        ("https://kyisa.org/media-hub/gallery/", "daily", "0.8", None),
+        ("https://kyisa.org/media-hub/videos/", "weekly", "0.7", None),
+        ("https://kyisa.org/register/county-admin/", "monthly", "0.6", None),
     ]
+
+    # Dynamic: Competitions
+    for comp in Competition.objects.all():
+        lastmod = comp.updated_at.strftime('%Y-%m-%d') if comp.updated_at else today
+        urls.append((f"https://kyisa.org/competitions/public/{comp.pk}/", "weekly", "0.7", lastmod))
+        urls.append((f"https://kyisa.org/results/competitions/{comp.pk}/standings/", "daily", "0.8", lastmod))
+
+    # Dynamic: News articles
+    for article in NewsArticle.objects.filter(status='published'):
+        lastmod = article.published_at.strftime('%Y-%m-%d') if article.published_at else today
+        urls.append((f"https://kyisa.org/media-hub/news/{article.slug}/", "monthly", "0.7", lastmod))
+
+    # Dynamic: Gallery albums
+    for album in GalleryAlbum.objects.filter(is_published=True):
+        lastmod = album.event_date.strftime('%Y-%m-%d') if album.event_date else today
+        urls.append((f"https://kyisa.org/media-hub/gallery/{album.slug}/", "monthly", "0.6", lastmod))
+
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-    for loc, freq, priority in urls:
-        xml += f'  <url><loc>{loc}</loc><changefreq>{freq}</changefreq><priority>{priority}</priority></url>\n'
+    for loc, freq, priority, lastmod in urls:
+        xml += '  <url>\n'
+        xml += f'    <loc>{loc}</loc>\n'
+        xml += f'    <changefreq>{freq}</changefreq>\n'
+        xml += f'    <priority>{priority}</priority>\n'
+        if lastmod:
+            xml += f'    <lastmod>{lastmod}</lastmod>\n'
+        xml += '  </url>\n'
     xml += '</urlset>'
     return HttpResponse(xml, content_type="application/xml")
 

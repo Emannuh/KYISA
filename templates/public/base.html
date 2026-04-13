@@ -5,12 +5,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}KYISA{% endblock %} — Kenya Youth Intercounty Sports Association</title>
+    <meta name="description" content="{% block meta_description %}Kenya Youth Intercounty Sports Association (KYISA) — enhancing the spirit of devolution through sports. Live scores, fixtures, results, and news from KYISA competitions.{% endblock %}">
+    <link rel="canonical" href="{% block canonical_url %}https://kyisa.org/{% endblock %}">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:site_name" content="KYISA — Kenya Youth Intercounty Sports Association">
+    <meta property="og:title" content="{% block og_title %}KYISA — Kenya Youth Intercounty Sports Association{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Kenya Youth Intercounty Sports Association — enhancing the spirit of devolution through sports. Live scores, fixtures, results, and news.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}https://kyisa.org{% static 'img/kyisa_logo_official.jpg' %}{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}https://kyisa.org/{% endblock %}">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}KYISA — Kenya Youth Intercounty Sports Association{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Kenya Youth Intercounty Sports Association — enhancing the spirit of devolution through sports.{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}https://kyisa.org{% static 'img/kyisa_logo_official.jpg' %}{% endblock %}">
+
     <link rel="icon" href="{% static 'img/kyisa_logo_official.jpg' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}?v=20260316a">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SportsOrganization",
+        "name": "Kenya Youth Intercounty Sports Association",
+        "alternateName": "KYISA",
+        "url": "https://kyisa.org",
+        "logo": "https://kyisa.org{% static 'img/kyisa_logo_official.jpg' %}",
+        "description": "Kenya Youth Intercounty Sports Association — enhancing the spirit of devolution through sports.",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "P.O BOX 20655-00200",
+            "addressLocality": "Nairobi",
+            "addressCountry": "KE"
+        },
+        "email": "info@kyisa.org",
+        "sport": ["Football", "Volleyball", "Basketball", "Handball"]
+    }
+    </script>
+    {% block extra_jsonld %}{% endblock %}
+
     <!-- Critical inline CSS so above-the-fold always renders correctly -->
     <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}

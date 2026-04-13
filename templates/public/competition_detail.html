@@ -2,6 +2,10 @@
 {% load static %}
 
 {% block title %}{{ competition.name }}{% endblock %}
+{% block meta_description %}{{ competition.name }} — teams, fixtures, and results from KYISA competition.{% endblock %}
+{% block canonical_url %}https://kyisa.org/competitions/public/{{ competition.pk }}/{% endblock %}
+{% block og_title %}{{ competition.name }} — KYISA{% endblock %}
+{% block og_url %}https://kyisa.org/competitions/public/{{ competition.pk }}/{% endblock %}
 
 {% block content %}
 
