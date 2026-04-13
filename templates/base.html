@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/portal.css' %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="icon" href="{% static 'img/kyisa_logo_official.jpg' %}" type="image/jpeg">
     {% block extra_css %}{% endblock %}
@@ -157,6 +158,22 @@
             if (window.innerWidth <= 768) closeMobileSidebar();
         });
     });
+
+    /* ── Auto-logout after 10 minutes of inactivity ────────────────── */
+    (function(){
+        var TIMEOUT = 10 * 60 * 1000; // 10 minutes in ms
+        var timer;
+        function resetTimer(){
+            clearTimeout(timer);
+            timer = setTimeout(function(){
+                window.location.href = "{% url 'web_logout' %}";
+            }, TIMEOUT);
+        }
+        ['mousemove','mousedown','keypress','scroll','touchstart','click'].forEach(function(evt){
+            document.addEventListener(evt, resetTimer, {passive:true});
+        });
+        resetTimer();
+    })();
     </script>
     {% block extra_js %}{% endblock %}
 </body>

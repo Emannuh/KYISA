@@ -304,25 +304,29 @@
      MATCH CENTER — FIXTURES + STATS + RESULTS
      ══════════════════════════════════════════════════════════════════════════ -->
 <section class="match-center" id="fixtures">
-    <!-- Stats strip -->
+    <!-- Results & Statistics strip -->
     <div class="mc-stats">
         <div class="container">
+            <div class="mc-stats__header reveal" style="text-align:center;padding-bottom:.5rem;">
+                <h2 style="color:#fff;font-family:'Outfit',sans-serif;font-size:1.6rem;font-weight:700;letter-spacing:1px;margin:0;">Results &amp; Statistics</h2>
+                <p style="color:rgba(255,255,255,.7);font-size:.85rem;margin-top:.25rem;">A decade of youth sports excellence across Kenya</p>
+            </div>
             <div class="mc-stats__row">
                 <div class="mc-stat reveal">
-                    <span class="mc-stat__num" data-count="{{ stats.competitions|default:'0' }}">0</span>
-                    <span class="mc-stat__label">Competitions</span>
+                    <span class="mc-stat__num" data-count="10">0</span>
+                    <span class="mc-stat__label">Editions Completed</span>
                 </div>
                 <div class="mc-stat reveal" style="--delay:.06s">
-                    <span class="mc-stat__num" data-count="{{ stats.teams|default:'0' }}">0</span>
-                    <span class="mc-stat__label">Teams</span>
+                    <span class="mc-stat__num" data-count="30000" data-suffix="+">0</span>
+                    <span class="mc-stat__label">Participants</span>
                 </div>
                 <div class="mc-stat reveal" style="--delay:.12s">
-                    <span class="mc-stat__num" data-count="{{ stats.players|default:'0' }}">0</span>
-                    <span class="mc-stat__label">Players</span>
+                    <span class="mc-stat__num" data-count="47">0</span>
+                    <span class="mc-stat__label">Counties Represented</span>
                 </div>
                 <div class="mc-stat reveal" style="--delay:.18s">
-                    <span class="mc-stat__num" data-count="47">0</span>
-                    <span class="mc-stat__label">Counties</span>
+                    <span class="mc-stat__num" data-count="{{ stats.competitions|default:'0' }}">0</span>
+                    <span class="mc-stat__label">Competitions</span>
                 </div>
             </div>
         </div>
@@ -525,13 +529,14 @@
             if(e.isIntersecting){
                 var el = e.target;
                 var target = parseInt(el.getAttribute('data-count')) || 0;
+                var suffix = el.getAttribute('data-suffix') || '';
                 if(!target){ el.textContent='0'; counterObs.unobserve(el); return; }
                 var cur = 0;
                 var step = Math.max(1, Math.ceil(target / 50));
                 var t = setInterval(function(){
                     cur += step;
                     if(cur >= target){ cur = target; clearInterval(t); }
-                    el.textContent = cur.toLocaleString();
+                    el.textContent = cur.toLocaleString() + suffix;
                 }, 35);
                 counterObs.unobserve(el);
             }

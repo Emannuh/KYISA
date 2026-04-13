@@ -41,3 +41,4 @@ staticfiles/
 # DigitalOcean (not used)
 .do/
 DIGITALOCEAN_DEPLOY.md
+*.bak

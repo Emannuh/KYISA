@@ -240,6 +240,9 @@ img { max-width: 100%; }
 .fkf-nav-links a.active::after,
 .fkf-nav-links a:hover::after { width: 18px; }
 
+/* Hide mobile-only login link on desktop */
+.nav-mobile-login { display: none; }
+
 .fkf-nav-actions { display: flex; gap: .75rem; align-items: center; }
 .fkf-nav-btn {
     padding: .45rem 1.1rem; border: 1.5px solid rgba(255,255,255,.7);
@@ -2362,6 +2365,20 @@ img { max-width: 100%; }
     .fkf-nav-links.open { display: flex; }
     .fkf-nav-links a { font-size: 1.4rem; padding: .85rem; color: #333; }
     .fkf-nav-actions { display: none; }
+    .nav-mobile-login { display: list-item; margin-top: .5rem; }
+    .nav-mobile-login a {
+        display: inline-block;
+        background: linear-gradient(135deg, #1B5E20, #2E7D32);
+        color: #fff !important;
+        padding: .75rem 2rem;
+        border-radius: 8px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        letter-spacing: .5px;
+        transition: background .3s;
+    }
+    .nav-mobile-login a i { margin-right: .4rem; }
+    .nav-mobile-login a:hover { background: linear-gradient(135deg, #2E7D32, #388E3C); }
 
     .hero--dark .hero-title { font-size: 2.4rem; }
     .hero-logo-img { width: 150px; height: auto; }
@@ -3531,6 +3548,21 @@ textarea.form-control { resize: vertical; min-height: 90px; }
 
     /* ── Form inputs: bigger touch targets ────────────────────────────── */
     input, select, textarea { min-height: 40px; font-size: 16px !important; }
+
+    /* ── Inline 2-col grids: stack on mobile ─────────────────────────── */
+    .main-content [style*="grid-template-columns: 1fr 1fr"],
+    .main-content [style*="grid-template-columns:1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+    .main-content [style*="grid-template-columns: 240px"],
+    .main-content [style*="grid-template-columns:240px"] {
+        grid-template-columns: 1fr !important;
+    }
+    /* Inline multi-col grids: make scrollable */
+    .main-content [style*="grid-template-columns: 120px"],
+    .main-content [style*="grid-template-columns:120px"] {
+        overflow-x: auto;
+    }
 }
 
 /* ── Extra small screens (320px-480px) ──────────────────────────────────── */

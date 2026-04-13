@@ -139,6 +139,11 @@ SIMPLE_JWT = {
     "TOKEN_OBTAIN_SERIALIZER": "accounts.serializers.KYISATokenObtainSerializer",
 }
 
+# ── SESSION — Auto-logout after 10 minutes of inactivity ──────────────────────
+SESSION_COOKIE_AGE = 600             # 10 minutes in seconds
+SESSION_SAVE_EVERY_REQUEST = True    # Reset expiry on every request (activity)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 # ── CORS ───────────────────────────────────────────────────────────────────────
 CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[
     "http://localhost:3000",

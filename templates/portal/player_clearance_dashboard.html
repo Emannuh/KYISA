@@ -2,86 +2,93 @@
 {% block title %}Player Clearance Dashboard — KYISA CMS{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <div class="breadcrumb">
-        <a href="{% url 'dashboard' %}">Dashboard</a>
-        <span>Player Clearance</span>
-    </div>
-    <h1>🛡️ Player Clearance Dashboard</h1>
-    <p>Three-step verification: <strong>Document Check</strong> → <strong>Huduma Kenya (Age)</strong> → <strong>FIFA Connect (League Check)</strong>. Only players cleared in ALL steps can participate.</p>
+<!-- Hero Banner -->
+<div class="dash-hero dash-hero--green">
+    <div class="hero-decor"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <span class="hero-badge"><span class="pulse-dot" style="background:#4CAF50"></span> Player Clearance</span>
+    <h1><i class="bi bi-shield-check"></i> Player Clearance Dashboard</h1>
+    <p>Three-step verification: <strong>Document Check</strong> &rarr; <strong>Huduma Kenya (Age)</strong> &rarr; <strong>FIFA Connect (League Check)</strong>. Only players cleared in ALL steps can participate.</p>
 </div>
 
-<!-- ── Overall Stats ── -->
-<div class="stats-grid" style="margin-bottom:1.5rem">
-    <div class="stat-card green">
-        <div class="stat-icon green">🛡️</div>
-        <div class="stat-info"><h3>{{ stats.fully_cleared }}</h3><p>Fully Cleared</p></div>
+<!-- Overall Stats -->
+<div class="dash-section-title"><i class="bi bi-graph-up"></i> Clearance Overview</div>
+<div class="dash-stats">
+    <div class="dash-stat dash-stat--green">
+        <div class="stat-icon"><i class="bi bi-shield-fill-check"></i></div>
+        <div class="stat-num">{{ stats.fully_cleared }}</div>
+        <div class="stat-lbl">Fully Cleared</div>
     </div>
-    <div class="stat-card yellow">
-        <div class="stat-icon yellow">⏳</div>
-        <div class="stat-info"><h3>{{ stats.docs_pending }}</h3><p>Docs Pending</p></div>
+    <div class="dash-stat dash-stat--amber">
+        <div class="stat-icon"><i class="bi bi-file-earmark-text"></i></div>
+        <div class="stat-num">{{ stats.docs_pending }}</div>
+        <div class="stat-lbl">Docs Pending</div>
     </div>
-    <div class="stat-card blue">
-        <div class="stat-icon blue">🏛️</div>
-        <div class="stat-info"><h3>{{ stats.huduma_verified }} / {{ stats.total }}</h3><p>Huduma Verified</p></div>
+    <div class="dash-stat dash-stat--blue">
+        <div class="stat-icon"><i class="bi bi-person-vcard"></i></div>
+        <div class="stat-num">{{ stats.huduma_verified }} / {{ stats.total }}</div>
+        <div class="stat-lbl">Huduma Verified</div>
     </div>
-    <div class="stat-card" style="border-left:4px solid #1565C0">
-        <div class="stat-icon" style="background:#e3f2fd;color:#1565C0">⚽</div>
-        <div class="stat-info"><h3>{{ stats.fifa_clear }} / {{ stats.total }}</h3><p>FIFA Connect Clear</p></div>
+    <div class="dash-stat dash-stat--teal">
+        <div class="stat-icon"><i class="bi bi-globe2"></i></div>
+        <div class="stat-num">{{ stats.fifa_clear }} / {{ stats.total }}</div>
+        <div class="stat-lbl">FIFA Connect Clear</div>
     </div>
-    <div class="stat-card" style="border-left:4px solid #C62828">
-        <div class="stat-icon" style="background:#fce4ec;color:#C62828">🚩</div>
-        <div class="stat-info"><h3>{{ stats.fifa_flagged }}</h3><p>FIFA Flagged</p></div>
+    <div class="dash-stat dash-stat--red">
+        <div class="stat-icon"><i class="bi bi-flag-fill"></i></div>
+        <div class="stat-num">{{ stats.fifa_flagged }}</div>
+        <div class="stat-lbl">FIFA Flagged</div>
     </div>
 </div>
 
-<!-- ── Step Progress Overview ── -->
-<div class="card" style="margin-bottom:1.5rem">
-    <div class="card-header"><h3>📊 Verification Pipeline</h3></div>
-    <div class="card-body">
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem">
-            <!-- Step 1: Documents -->
-            <div style="padding:1rem;background:#f5f7f5;border-radius:10px;border-left:4px solid #FF9800">
-                <h4 style="margin:0 0 .5rem;color:#e65100">Step 1: Document Verification</h4>
-                <div style="display:flex;justify-content:space-between;font-size:.9rem">
-                    <span>✅ Verified: <strong>{{ stats.docs_verified }}</strong></span>
-                    <span>⏳ Pending: <strong>{{ stats.docs_pending }}</strong></span>
+<!-- Verification Pipeline -->
+<div class="dash-panel" style="margin-bottom:1.5rem">
+    <div class="dash-panel-head">
+        <span><i class="bi bi-bar-chart-steps"></i> Verification Pipeline</span>
+    </div>
+    <div class="dash-panel-body">
+        <div class="pc-pipeline">
+            <!-- Step 1 -->
+            <div class="pc-step" style="border-left:4px solid #FF9800;">
+                <h4 style="margin:0 0 .5rem;color:#E65100;font-size:.88rem;"><i class="bi bi-1-circle-fill"></i> Document Verification</h4>
+                <div style="display:flex;justify-content:space-between;font-size:.85rem;flex-wrap:wrap;gap:.25rem;">
+                    <span><i class="bi bi-check-circle" style="color:#1B5E20"></i> Verified: <strong>{{ stats.docs_verified }}</strong></span>
+                    <span><i class="bi bi-clock" style="color:#E65100"></i> Pending: <strong>{{ stats.docs_pending }}</strong></span>
                 </div>
                 {% if stats.total > 0 %}
                 <div style="margin-top:.5rem;background:#e0e0e0;border-radius:4px;height:6px;overflow:hidden">
-                    <div style="width:{% widthratio stats.docs_verified stats.total 100 %}%;height:100%;background:#4CAF50;border-radius:4px"></div>
+                    <div style="width:{% widthratio stats.docs_verified stats.total 100 %}%;height:100%;background:linear-gradient(90deg,#4CAF50,#66BB6A);border-radius:4px;transition:width .5s ease"></div>
                 </div>
                 {% endif %}
             </div>
-            <!-- Step 2: Huduma Kenya -->
-            <div style="padding:1rem;background:#f5f7f5;border-radius:10px;border-left:4px solid #1565C0">
-                <h4 style="margin:0 0 .5rem;color:#0D47A1">Step 2: Huduma Kenya (Age)</h4>
-                <div style="display:flex;justify-content:space-between;font-size:.9rem">
-                    <span>✅ Verified: <strong>{{ stats.huduma_verified }}</strong></span>
-                    <span>⏳ Not Checked: <strong>{{ stats.huduma_not_checked }}</strong></span>
+            <!-- Step 2 -->
+            <div class="pc-step" style="border-left:4px solid #1565C0;">
+                <h4 style="margin:0 0 .5rem;color:#0D47A1;font-size:.88rem;"><i class="bi bi-2-circle-fill"></i> Huduma Kenya (Age)</h4>
+                <div style="display:flex;justify-content:space-between;font-size:.85rem;flex-wrap:wrap;gap:.25rem;">
+                    <span><i class="bi bi-check-circle" style="color:#1B5E20"></i> Verified: <strong>{{ stats.huduma_verified }}</strong></span>
+                    <span><i class="bi bi-clock" style="color:#E65100"></i> Not Checked: <strong>{{ stats.huduma_not_checked }}</strong></span>
                 </div>
-                <div style="display:flex;justify-content:space-between;font-size:.85rem;color:#888;margin-top:.25rem">
-                    <span>❌ Failed: {{ stats.huduma_failed }}</span>
+                <div style="font-size:.8rem;color:#888;margin-top:.25rem">
+                    <i class="bi bi-x-circle" style="color:#C62828"></i> Failed: {{ stats.huduma_failed }}
                 </div>
                 {% if stats.total > 0 %}
                 <div style="margin-top:.5rem;background:#e0e0e0;border-radius:4px;height:6px;overflow:hidden">
-                    <div style="width:{% widthratio stats.huduma_verified stats.total 100 %}%;height:100%;background:#1565C0;border-radius:4px"></div>
+                    <div style="width:{% widthratio stats.huduma_verified stats.total 100 %}%;height:100%;background:linear-gradient(90deg,#1565C0,#42A5F5);border-radius:4px;transition:width .5s ease"></div>
                 </div>
                 {% endif %}
             </div>
-            <!-- Step 3: FIFA Connect -->
-            <div style="padding:1rem;background:#f5f7f5;border-radius:10px;border-left:4px solid #1B5E20">
-                <h4 style="margin:0 0 .5rem;color:#1B5E20">Step 3: FIFA Connect (League)</h4>
-                <div style="display:flex;justify-content:space-between;font-size:.9rem">
-                    <span>✅ Clear: <strong>{{ stats.fifa_clear }}</strong></span>
-                    <span>⏳ Not Checked: <strong>{{ stats.fifa_not_checked }}</strong></span>
+            <!-- Step 3 -->
+            <div class="pc-step" style="border-left:4px solid #1B5E20;">
+                <h4 style="margin:0 0 .5rem;color:#1B5E20;font-size:.88rem;"><i class="bi bi-3-circle-fill"></i> FIFA Connect (League)</h4>
+                <div style="display:flex;justify-content:space-between;font-size:.85rem;flex-wrap:wrap;gap:.25rem;">
+                    <span><i class="bi bi-check-circle" style="color:#1B5E20"></i> Clear: <strong>{{ stats.fifa_clear }}</strong></span>
+                    <span><i class="bi bi-clock" style="color:#E65100"></i> Not Checked: <strong>{{ stats.fifa_not_checked }}</strong></span>
                 </div>
-                <div style="display:flex;justify-content:space-between;font-size:.85rem;color:#888;margin-top:.25rem">
-                    <span>🚩 Flagged: <strong style="color:#C62828">{{ stats.fifa_flagged }}</strong></span>
+                <div style="font-size:.8rem;color:#888;margin-top:.25rem">
+                    <i class="bi bi-flag-fill" style="color:#C62828"></i> Flagged: <strong style="color:#C62828">{{ stats.fifa_flagged }}</strong>
                 </div>
                 {% if stats.total > 0 %}
                 <div style="margin-top:.5rem;background:#e0e0e0;border-radius:4px;height:6px;overflow:hidden">
-                    <div style="width:{% widthratio stats.fifa_clear stats.total 100 %}%;height:100%;background:#1B5E20;border-radius:4px"></div>
+                    <div style="width:{% widthratio stats.fifa_clear stats.total 100 %}%;height:100%;background:linear-gradient(90deg,#1B5E20,#4CAF50);border-radius:4px;transition:width .5s ease"></div>
                 </div>
                 {% endif %}
             </div>
@@ -89,67 +96,72 @@
     </div>
 </div>
 
-<!-- ── Bulk Operations ── -->
-<div class="card" style="margin-bottom:1.5rem">
-    <div class="card-header"><h3>⚡ Bulk Operations</h3></div>
-    <div class="card-body">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+<!-- Bulk Operations -->
+<div class="dash-panel" style="margin-bottom:1.5rem">
+    <div class="dash-panel-head">
+        <span><i class="bi bi-lightning-charge"></i> Bulk Operations</span>
+    </div>
+    <div class="dash-panel-body">
+        <div class="pc-bulk-grid">
             <form method="post" action="{% url 'bulk_huduma_check' %}">
                 {% csrf_token %}
-                <div style="display:flex;gap:.75rem;align-items:end">
-                    <div style="flex:1">
-                        <label style="font-size:.85rem;font-weight:600;color:#333">🏛️ Bulk Huduma Kenya Check</label>
-                        <select name="team_id" required style="width:100%;padding:.5rem;border:1px solid #ddd;border-radius:6px;margin-top:.25rem">
+                <div style="display:flex;gap:.75rem;align-items:end;flex-wrap:wrap">
+                    <div style="flex:1;min-width:180px;">
+                        <label style="font-size:.82rem;font-weight:600;color:#333;display:flex;align-items:center;gap:.35rem"><i class="bi bi-person-vcard" style="color:#1565C0"></i> Bulk Huduma Kenya Check</label>
+                        <select name="team_id" required style="width:100%;padding:.5rem;border:1px solid #ddd;border-radius:8px;margin-top:.25rem;font-size:.85rem">
                             <option value="">Select Team...</option>
                             {% for t in teams %}<option value="{{ t.pk }}">{{ t.name }}</option>{% endfor %}
                         </select>
                     </div>
-                    <button type="submit" style="padding:.5rem 1.25rem;background:#1565C0;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;white-space:nowrap">Run Check</button>
+                    <button type="submit" style="padding:.5rem 1.25rem;background:linear-gradient(135deg,#1565C0,#1E88E5);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;white-space:nowrap;font-size:.85rem">Run Check</button>
                 </div>
             </form>
             <form method="post" action="{% url 'bulk_fifa_connect_check' %}">
                 {% csrf_token %}
-                <div style="display:flex;gap:.75rem;align-items:end">
-                    <div style="flex:1">
-                        <label style="font-size:.85rem;font-weight:600;color:#333">⚽ Bulk FIFA Connect Check</label>
-                        <select name="team_id" required style="width:100%;padding:.5rem;border:1px solid #ddd;border-radius:6px;margin-top:.25rem">
+                <div style="display:flex;gap:.75rem;align-items:end;flex-wrap:wrap">
+                    <div style="flex:1;min-width:180px;">
+                        <label style="font-size:.82rem;font-weight:600;color:#333;display:flex;align-items:center;gap:.35rem"><i class="bi bi-globe2" style="color:#1B5E20"></i> Bulk FIFA Connect Check</label>
+                        <select name="team_id" required style="width:100%;padding:.5rem;border:1px solid #ddd;border-radius:8px;margin-top:.25rem;font-size:.85rem">
                             <option value="">Select Team...</option>
                             {% for t in teams %}<option value="{{ t.pk }}">{{ t.name }}</option>{% endfor %}
                         </select>
                     </div>
-                    <button type="submit" style="padding:.5rem 1.25rem;background:#1B5E20;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;white-space:nowrap">Run Check</button>
+                    <button type="submit" style="padding:.5rem 1.25rem;background:linear-gradient(135deg,#1B5E20,#2E7D32);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;white-space:nowrap;font-size:.85rem">Run Check</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- ── Filters & Search ── -->
-<div class="card" style="margin-bottom:1.5rem">
-    <div class="card-body" style="padding:.75rem 1rem">
-        <form method="get" style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
-            <input type="text" name="q" value="{{ search }}" placeholder="Search player name, ID..." style="padding:.5rem .75rem;border:1px solid #ddd;border-radius:6px;flex:1;min-width:200px">
-            <select name="team" style="padding:.5rem;border:1px solid #ddd;border-radius:6px">
+<!-- Filters & Search -->
+<div class="dash-panel" style="margin-bottom:1.5rem">
+    <div class="dash-panel-body" style="padding:.85rem 1.25rem">
+        <form method="get" style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap">
+            <input type="text" name="q" value="{{ search }}" placeholder="Search player name, ID..." style="padding:.5rem .75rem;border:1px solid #ddd;border-radius:8px;flex:1;min-width:180px;font-size:.85rem">
+            <select name="team" style="padding:.5rem;border:1px solid #ddd;border-radius:8px;font-size:.85rem">
                 <option value="">All Teams</option>
                 {% for t in teams %}<option value="{{ t.pk }}" {% if team_filter == t.pk|stringformat:"d" %}selected{% endif %}>{{ t.name }}</option>{% endfor %}
             </select>
-            <select name="status" style="padding:.5rem;border:1px solid #ddd;border-radius:6px">
+            <select name="status" style="padding:.5rem;border:1px solid #ddd;border-radius:8px;font-size:.85rem">
                 <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Statuses</option>
-                <option value="cleared" {% if status_filter == 'cleared' %}selected{% endif %}>✅ Fully Cleared</option>
-                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>⏳ Pending Steps</option>
-                <option value="flagged" {% if status_filter == 'flagged' %}selected{% endif %}>🚩 Flagged / Failed</option>
+                <option value="cleared" {% if status_filter == 'cleared' %}selected{% endif %}>Fully Cleared</option>
+                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending Steps</option>
+                <option value="flagged" {% if status_filter == 'flagged' %}selected{% endif %}>Flagged / Failed</option>
             </select>
-            <button type="submit" style="padding:.5rem 1rem;background:#1B5E20;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600">Filter</button>
+            <button type="submit" style="padding:.5rem 1rem;background:linear-gradient(135deg,#1B5E20,#2E7D32);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:.85rem"><i class="bi bi-funnel"></i> Filter</button>
             {% if search or team_filter or status_filter != 'all' %}
-            <a href="{% url 'player_clearance_dashboard' %}" style="color:#888;font-size:.85rem">Clear Filters</a>
+            <a href="{% url 'player_clearance_dashboard' %}" style="color:#888;font-size:.82rem;text-decoration:none"><i class="bi bi-x-circle"></i> Clear</a>
             {% endif %}
         </form>
     </div>
 </div>
 
-<!-- ── Players Table ── -->
-<div class="card">
-    <div class="card-body">
+<!-- Players Table -->
+<div class="dash-panel">
+    <div class="dash-panel-head">
+        <span><i class="bi bi-table"></i> Player Clearance Status</span>
+    </div>
+    <div class="dash-panel-body" style="padding:0">
         {% if players %}
         <div class="table-responsive">
             <table>
@@ -167,10 +179,10 @@
                 </thead>
                 <tbody>
                     {% for p in players %}
-                    <tr{% if p.fifa_connect_status == 'flagged' %} style="background:#fce4ec"{% elif p.is_fully_cleared %} style="background:#e8f5e9"{% endif %}>
+                    <tr{% if p.fifa_connect_status == 'flagged' %} style="background:#fce4ec"{% elif p.is_fully_cleared %} style="background:#f1f8e9"{% endif %}>
                         <td>
                             <strong>{{ p.first_name }} {{ p.last_name }}</strong>
-                            <br><small style="color:#888">#{{ p.shirt_number }} · {{ p.get_position_display }}</small>
+                            <br><small style="color:#888">#{{ p.shirt_number }} &middot; {{ p.get_position_display }}</small>
                             {% if p.fifa_connect_id %}<br><small style="color:#1565C0">FIFA: {{ p.fifa_connect_id }}</small>{% endif %}
                         </td>
                         <td>{{ p.team.name }}<br><small style="color:#888">{{ p.team.county }}</small></td>
@@ -178,55 +190,51 @@
                             {% if p.is_age_eligible %}
                             <span style="color:#1B5E20;font-weight:600">{{ p.age }}</span>
                             {% else %}
-                            <span style="color:#C62828;font-weight:700">{{ p.age }} ⛔</span>
+                            <span style="color:#C62828;font-weight:700">{{ p.age }} <i class="bi bi-exclamation-octagon-fill"></i></span>
                             {% endif %}
                         </td>
-                        <!-- Step 1: Document Verification -->
                         <td style="text-align:center">
                             {% if p.verification_status == 'verified' %}
-                            <span style="background:#e8f5e9;color:#1B5E20;padding:.2rem .5rem;border-radius:4px;font-size:.8rem;font-weight:600">✅ Verified</span>
+                            <span class="dash-badge" style="background:#E8F5E9;color:#1B5E20;"><i class="bi bi-check-circle-fill"></i> Verified</span>
                             {% elif p.verification_status == 'rejected' %}
-                            <span style="background:#fce4ec;color:#C62828;padding:.2rem .5rem;border-radius:4px;font-size:.8rem;font-weight:600">❌ Rejected</span>
+                            <span class="dash-badge" style="background:#FFEBEE;color:#C62828;"><i class="bi bi-x-circle-fill"></i> Rejected</span>
                             {% else %}
-                            <span style="background:#fff3e0;color:#e65100;padding:.2rem .5rem;border-radius:4px;font-size:.8rem;font-weight:600">⏳ Pending</span>
+                            <span class="dash-badge" style="background:#FFF3E0;color:#E65100;"><i class="bi bi-clock"></i> Pending</span>
                             {% endif %}
                         </td>
-                        <!-- Step 2: Huduma Kenya -->
                         <td style="text-align:center">
                             {% if p.huduma_status == 'verified' %}
-                            <span style="background:#e8f5e9;color:#1B5E20;padding:.2rem .5rem;border-radius:4px;font-size:.8rem;font-weight:600">✅ Verified</span>
+                            <span class="dash-badge" style="background:#E8F5E9;color:#1B5E20;"><i class="bi bi-check-circle-fill"></i> Verified</span>
                             {% elif p.huduma_status == 'failed' %}
-                            <span style="background:#fce4ec;color:#C62828;padding:.2rem .5rem;border-radius:4px;font-size:.8rem;font-weight:600">❌ Failed</span>
+                            <span class="dash-badge" style="background:#FFEBEE;color:#C62828;"><i class="bi bi-x-circle-fill"></i> Failed</span>
                             {% elif p.huduma_status == 'pending' %}
-                            <span style="background:#fff3e0;color:#e65100;padding:.2rem .5rem;border-radius:4px;font-size:.8rem;font-weight:600">⏳ Pending</span>
+                            <span class="dash-badge" style="background:#FFF3E0;color:#E65100;"><i class="bi bi-clock"></i> Pending</span>
                             {% else %}
-                            <span style="background:#f5f5f5;color:#888;padding:.2rem .5rem;border-radius:4px;font-size:.8rem">— Not Checked</span>
+                            <span class="dash-badge" style="background:#F5F5F5;color:#888;">— Not Checked</span>
                             {% endif %}
                         </td>
-                        <!-- Step 3: FIFA Connect -->
                         <td style="text-align:center">
                             {% if p.fifa_connect_status == 'clear' %}
-                            <span style="background:#e8f5e9;color:#1B5E20;padding:.2rem .5rem;border-radius:4px;font-size:.8rem;font-weight:600">✅ Clear</span>
+                            <span class="dash-badge" style="background:#E8F5E9;color:#1B5E20;"><i class="bi bi-check-circle-fill"></i> Clear</span>
                             {% elif p.fifa_connect_status == 'flagged' %}
-                            <span style="background:#fce4ec;color:#C62828;padding:.2rem .5rem;border-radius:4px;font-size:.8rem;font-weight:600">🚩 Flagged</span>
+                            <span class="dash-badge" style="background:#FFEBEE;color:#C62828;"><i class="bi bi-flag-fill"></i> Flagged</span>
                             {% elif p.fifa_connect_status == 'error' %}
-                            <span style="background:#fff3e0;color:#e65100;padding:.2rem .5rem;border-radius:4px;font-size:.8rem;font-weight:600">⚠️ Error</span>
+                            <span class="dash-badge" style="background:#FFF3E0;color:#E65100;"><i class="bi bi-exclamation-triangle"></i> Error</span>
                             {% else %}
-                            <span style="background:#f5f5f5;color:#888;padding:.2rem .5rem;border-radius:4px;font-size:.8rem">— Not Checked</span>
+                            <span class="dash-badge" style="background:#F5F5F5;color:#888;">— Not Checked</span>
                             {% endif %}
                         </td>
-                        <!-- Final Clearance -->
                         <td style="text-align:center">
                             {% if p.is_fully_cleared and p.status == 'eligible' %}
-                            <span style="background:#1B5E20;color:#fff;padding:.3rem .75rem;border-radius:20px;font-size:.8rem;font-weight:700">🛡️ CLEARED</span>
+                            <span class="dash-badge" style="background:#1B5E20;color:#fff;padding:.3rem .75rem;border-radius:20px;font-weight:700"><i class="bi bi-shield-fill-check"></i> CLEARED</span>
                             {% elif p.is_fully_cleared %}
-                            <span style="background:#FF9800;color:#fff;padding:.3rem .75rem;border-radius:20px;font-size:.8rem;font-weight:600">Awaiting</span>
+                            <span class="dash-badge" style="background:#FF9800;color:#fff;padding:.3rem .75rem;border-radius:20px;">Awaiting</span>
                             {% else %}
-                            <span style="background:#f5f5f5;color:#888;padding:.3rem .75rem;border-radius:20px;font-size:.8rem">Incomplete</span>
+                            <span class="dash-badge" style="background:#F5F5F5;color:#888;padding:.3rem .75rem;border-radius:20px;">Incomplete</span>
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{% url 'player_clearance_detail' player_pk=p.pk %}" style="display:inline-block;padding:.3rem .75rem;background:#1B5E20;color:#fff;border-radius:6px;text-decoration:none;font-size:.8rem;font-weight:600">Review</a>
+                            <a href="{% url 'player_clearance_detail' player_pk=p.pk %}" class="dash-badge" style="background:linear-gradient(135deg,#1B5E20,#2E7D32);color:#fff;text-decoration:none;padding:.3rem .75rem;border-radius:6px;font-weight:600">Review</a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -234,10 +242,10 @@
             </table>
         </div>
         {% else %}
-        <div class="empty-state" style="padding:3rem;text-align:center">
-            <div style="font-size:3rem">🔍</div>
-            <h3>No players found</h3>
-            <p style="color:#888">Adjust your filters or search criteria.</p>
+        <div class="dash-empty" style="padding:3rem">
+            <i class="bi bi-search" style="font-size:2.5rem;color:#C8E6C9;"></i>
+            <h3 style="color:#666;margin:.75rem 0 .25rem;">No players found</h3>
+            <p>Adjust your filters or search criteria.</p>
         </div>
         {% endif %}
     </div>

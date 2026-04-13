@@ -2,44 +2,50 @@
 {% block title %}CEC Sports Caucus Portal — KYISA{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <div class="breadcrumb">
-        <a href="{% url 'dashboard' %}">Dashboard</a>
-        <span>CEC Sports Caucus</span>
-    </div>
+<!-- Hero Banner -->
+<div class="dash-hero dash-hero--blue">
+    <div class="hero-decor"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <span class="hero-badge"><span class="pulse-dot" style="background:#42A5F5"></span> CEC Sports Caucus</span>
     <h1><i class="bi bi-people-fill"></i> CEC Sports Caucus Portal</h1>
     <p>View-only access for CEC Members and Chief Officers Caucus.</p>
 </div>
 
-<div style="margin-bottom:1rem;padding:1rem 1.2rem;border-radius:10px;background:#e3f2fd;border-left:4px solid #1565c0;">
-    <strong style="color:#0d47a1;">Read-only mode:</strong>
-    <span style="color:#555;">this portal is for oversight and monitoring only.</span>
+<div style="margin-bottom:1.25rem;padding:1rem 1.2rem;border-radius:12px;background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-left:4px solid #1565C0;">
+    <strong style="color:#0D47A1;"><i class="bi bi-eye"></i> Read-only mode:</strong>
+    <span style="color:#555;"> this portal is for oversight and monitoring only.</span>
 </div>
 
-<div class="stats-grid" style="margin-bottom:1.25rem">
-    <div class="stat-card green">
-        <div class="stat-icon green">🏁</div>
-        <div class="stat-info"><h3>{{ competitions|length }}</h3><p>Recent Competitions</p></div>
+<!-- Stats -->
+<div class="dash-section-title"><i class="bi bi-graph-up"></i> Overview</div>
+<div class="dash-stats">
+    <div class="dash-stat dash-stat--green">
+        <div class="stat-icon"><i class="bi bi-trophy"></i></div>
+        <div class="stat-num">{{ competitions|length }}</div>
+        <div class="stat-lbl">Recent Competitions</div>
     </div>
-    <div class="stat-card blue">
-        <div class="stat-icon blue">🏛️</div>
-        <div class="stat-info"><h3>{{ counties_registered }}</h3><p>Approved Counties</p></div>
+    <div class="dash-stat dash-stat--blue">
+        <div class="stat-icon"><i class="bi bi-globe2"></i></div>
+        <div class="stat-num">{{ counties_registered }}</div>
+        <div class="stat-lbl">Approved Counties</div>
     </div>
-    <div class="stat-card yellow">
-        <div class="stat-icon yellow">⏳</div>
-        <div class="stat-info"><h3>{{ pending_players }}</h3><p>Pending Player Checks</p></div>
+    <div class="dash-stat dash-stat--amber">
+        <div class="stat-icon"><i class="bi bi-clock-history"></i></div>
+        <div class="stat-num">{{ pending_players }}</div>
+        <div class="stat-lbl">Pending Player Checks</div>
     </div>
-    <div class="stat-card green">
-        <div class="stat-icon green">✅</div>
-        <div class="stat-info"><h3>{{ verified_players }}</h3><p>Verified County Players</p></div>
+    <div class="dash-stat dash-stat--teal">
+        <div class="stat-icon"><i class="bi bi-shield-check"></i></div>
+        <div class="stat-num">{{ verified_players }}</div>
+        <div class="stat-lbl">Verified County Players</div>
     </div>
 </div>
 
-<div class="card">
-    <div class="card-header">
-        <h3 style="margin:0">Competition Snapshot</h3>
+<!-- Competition Snapshot -->
+<div class="dash-panel">
+    <div class="dash-panel-head">
+        <span><i class="bi bi-calendar-event"></i> Competition Snapshot</span>
     </div>
-    <div class="card-body">
+    <div class="dash-panel-body">
         {% if competitions %}
         <div class="table-responsive">
             <table>
@@ -56,7 +62,7 @@
                     <tr>
                         <td><strong>{{ comp.name }}</strong></td>
                         <td>{{ comp.get_sport_type_display }}</td>
-                        <td>{{ comp.get_status_display }}</td>
+                        <td><span class="dash-badge" style="background:#E8F5E9;color:#1B5E20;">{{ comp.get_status_display }}</span></td>
                         <td>{{ comp.start_date|date:"d M Y" }} - {{ comp.end_date|date:"d M Y" }}</td>
                     </tr>
                     {% endfor %}
@@ -64,7 +70,10 @@
             </table>
         </div>
         {% else %}
-        <p style="color:#777;margin:0">No competitions available yet.</p>
+        <div class="dash-empty">
+            <i class="bi bi-calendar-x" style="font-size:2.5rem;color:#BBDEFB;"></i>
+            <p>No competitions available yet.</p>
+        </div>
         {% endif %}
     </div>
 </div>

@@ -2,18 +2,17 @@
 {% block title %}Treasurer Dashboard &#8212; KYISA{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <div class="breadcrumb">
-        <a href="{% url 'treasurer_dashboard' %}">Treasurer</a>
-        <span>Dashboard</span>
-    </div>
+<!-- Hero -->
+<div class="dash-hero dash-hero--blue">
+    <div class="hero-decor"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <span class="hero-badge"><span class="pulse-dot" style="background:#64B5F6"></span> Treasurer</span>
     <h1><i class="bi bi-cash-stack"></i> Treasurer Dashboard</h1>
-    <p>Review incoming county registrations, verify payments, and approve county admins.</p>
+    <p>Review incoming county registrations, verify payments, and approve county admins</p>
 </div>
 
 <!-- County Payment Banner -->
 {% if current_season %}
-<div style="background:#e3f2fd;border:1px solid #90caf9;border-radius:10px;padding:1rem 1.4rem;margin-bottom:1.2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
+<div style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border:1px solid #90caf9;border-radius:12px;padding:1rem 1.4rem;margin-bottom:1.2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
     <div style="display:flex;align-items:center;gap:.75rem">
         <span style="font-size:1.5rem"><i class="bi bi-building"></i></span>
         <span style="font-size:.92rem">
@@ -22,59 +21,64 @@
             KSh {{ total_collected|floatformat:0 }} collected
         </span>
     </div>
-    <a href="{% url 'treasurer_county_payments' %}" class="btn btn--primary" style="padding:.4rem 1rem;font-size:.85rem">
+    <a href="{% url 'treasurer_county_payments' %}" class="btn btn--primary" style="padding:.4rem 1rem;font-size:.85rem;border-radius:8px">
         Manage County Payments &#8594;
     </a>
 </div>
 {% endif %}
 
 <!-- Fee reminder -->
-<div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:10px;padding:.9rem 1.4rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem">
+<div style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border:1px solid #a5d6a7;border-radius:12px;padding:.9rem 1.4rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem">
     <span style="font-size:1.5rem"><i class="bi bi-credit-card"></i></span>
     <span style="font-size:.92rem"><strong style="color:#1b5e20">Standard one-time county registration fee: KSh {{ registration_fee|floatformat:0 }}</strong> &mdash; confirm this exact amount before approving any county registration.</span>
 </div>
 
 <!-- Stats -->
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1rem;margin-bottom:2rem">
-    <div class="card" style="padding:1.4rem;text-align:center;border-top:4px solid #f57c00">
-        <div style="font-size:2.2rem;font-weight:800;color:#f57c00">{{ pending_count }}</div>
-        <div style="color:#888;font-size:.85rem;margin-top:.3rem">Awaiting Review</div>
+<div class="dash-section-title"><i class="bi bi-graph-up"></i> Overview</div>
+<div class="dash-stats">
+    <div class="dash-stat dash-stat--amber">
+        <div class="stat-icon"><i class="bi bi-hourglass-split"></i></div>
+        <div class="stat-num">{{ pending_count }}</div>
+        <div class="stat-lbl">Awaiting Review</div>
     </div>
-    <div class="card" style="padding:1.4rem;text-align:center;border-top:4px solid #1565c0">
-        <div style="font-size:2.2rem;font-weight:800;color:#1565c0">{{ paid_count }}</div>
-        <div style="color:#888;font-size:.85rem;margin-top:.3rem">Payment Submitted</div>
+    <div class="dash-stat dash-stat--blue">
+        <div class="stat-icon"><i class="bi bi-credit-card"></i></div>
+        <div class="stat-num">{{ paid_count }}</div>
+        <div class="stat-lbl">Payment Submitted</div>
     </div>
-    <div class="card" style="padding:1.4rem;text-align:center;border-top:4px solid #2e7d32">
-        <div style="font-size:2.2rem;font-weight:800;color:#2e7d32">{{ approved_count }}</div>
-        <div style="color:#888;font-size:.85rem;margin-top:.3rem">Approved Counties</div>
+    <div class="dash-stat dash-stat--green">
+        <div class="stat-icon"><i class="bi bi-check-circle"></i></div>
+        <div class="stat-num">{{ approved_count }}</div>
+        <div class="stat-lbl">Approved Counties</div>
     </div>
-    <div class="card" style="padding:1.4rem;text-align:center;border-top:4px solid #c62828">
-        <div style="font-size:2.2rem;font-weight:800;color:#c62828">{{ rejected_count }}</div>
-        <div style="color:#888;font-size:.85rem;margin-top:.3rem">Rejected</div>
+    <div class="dash-stat dash-stat--red">
+        <div class="stat-icon"><i class="bi bi-x-circle"></i></div>
+        <div class="stat-num">{{ rejected_count }}</div>
+        <div class="stat-lbl">Rejected</div>
     </div>
 </div>
 
 <!-- Quick action -->
 {% if pending_count or paid_count %}
-<div class="card" style="margin-bottom:1.5rem;padding:1.2rem 1.5rem;background:#fff8e1;border-left:4px solid #f9a825">
+<div style="background:linear-gradient(135deg,#fff8e1,#ffecb3);border:1px solid #ffe082;border-radius:12px;padding:1rem 1.5rem;margin-bottom:1.5rem;border-left:4px solid #f9a825;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
     <strong><i class="bi bi-exclamation-triangle"></i> Action Required:</strong>
     {% if pending_count %}
-    <span style="margin-left:.5rem">{{ pending_count }} county registration{{ pending_count|pluralize }} waiting for review.</span>
+    <span>{{ pending_count }} county registration{{ pending_count|pluralize }} waiting for review.</span>
     {% endif %}
     {% if paid_count %}
-    <span style="margin-left:.5rem">{{ paid_count }} county registration{{ paid_count|pluralize }} with payment submitted awaiting approval.</span>
+    <span>{{ paid_count }} county registration{{ paid_count|pluralize }} with payment submitted awaiting approval.</span>
     {% endif %}
-    <a href="{% url 'treasurer_county_registrations' %}" class="btn btn--primary" style="margin-left:1rem;padding:.4rem 1rem;font-size:.85rem">Go to County Registrations &#8594;</a>
+    <a href="{% url 'treasurer_county_registrations' %}" class="btn btn--primary" style="margin-left:auto;padding:.4rem 1rem;font-size:.85rem;border-radius:8px">Go to County Registrations &#8594;</a>
 </div>
 {% endif %}
 
 <!-- Recent registrations -->
-<div class="card">
-    <div class="card-header">
-        <h3>Recent County Registrations</h3>
-        <a href="{% url 'treasurer_county_registrations' %}" style="font-size:.85rem">View All →</a>
+<div class="dash-panel">
+    <div class="dash-panel-head" style="display:flex;justify-content:space-between;align-items:center">
+        <span><i class="bi bi-building"></i> Recent County Registrations</span>
+        <a href="{% url 'treasurer_county_registrations' %}" style="font-size:.85rem;color:#1B5E20;text-decoration:none;font-weight:600">View All →</a>
     </div>
-    <div class="card-body">
+    <div class="dash-panel-body">
         {% if recent_teams %}
         <table>
             <thead>
@@ -103,7 +107,7 @@
             </tbody>
         </table>
         {% else %}
-        <p style="color:#888;text-align:center;padding:2rem">No pending registrations.</p>
+        <div class="dash-empty"><i class="bi bi-building"></i><p>No pending registrations.</p></div>
         {% endif %}
     </div>
 </div>
