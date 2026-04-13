@@ -53,6 +53,9 @@ jobs:
             echo "=== Running migrations ==="
             docker exec kyisa-cms python manage.py migrate --noinput
 
+            echo "=== Seeding default competitions ==="
+            docker exec kyisa-cms python manage.py seed_competitions --season 2026
+
             echo "=== Collecting static files ==="
             docker exec kyisa-cms python manage.py collectstatic --noinput
 

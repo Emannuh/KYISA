@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}Media Dashboard — KYISA{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <span>Media</span>
+    </div>
+    <h1><i class="bi bi-newspaper"></i> Media Manager</h1>
+    <p>Manage news articles, photo galleries, and videos.</p>
+</div>
+
+<!-- Stats -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:2rem">
+    <div class="card" style="padding:1.25rem;text-align:center">
+        <div style="font-size:2rem;font-weight:800;color:#1B5E20">{{ total_articles }}</div>
+        <div style="color:#888;font-size:.85rem">Articles</div>
+    </div>
+    <div class="card" style="padding:1.25rem;text-align:center">
+        <div style="font-size:2rem;font-weight:800;color:#2E7D32">{{ published_articles }}</div>
+        <div style="color:#888;font-size:.85rem">Published</div>
+    </div>
+    <div class="card" style="padding:1.25rem;text-align:center">
+        <div style="font-size:2rem;font-weight:800;color:#f57c00">{{ draft_articles }}</div>
+        <div style="color:#888;font-size:.85rem">Drafts</div>
+    </div>
+    <div class="card" style="padding:1.25rem;text-align:center">
+        <div style="font-size:2rem;font-weight:800;color:#1565C0">{{ total_albums }}</div>
+        <div style="color:#888;font-size:.85rem">Albums</div>
+    </div>
+    <div class="card" style="padding:1.25rem;text-align:center">
+        <div style="font-size:2rem;font-weight:800;color:#6A1B9A">{{ total_photos }}</div>
+        <div style="color:#888;font-size:.85rem">Photos</div>
+    </div>
+    <div class="card" style="padding:1.25rem;text-align:center">
+        <div style="font-size:2rem;font-weight:800;color:#C62828">{{ total_videos }}</div>
+        <div style="color:#888;font-size:.85rem">Videos</div>
+    </div>
+    <div class="card" style="padding:1.25rem;text-align:center">
+        <div style="font-size:2rem;font-weight:800;color:#333">{{ total_categories }}</div>
+        <div style="color:#888;font-size:.85rem">Categories</div>
+    </div>
+</div>
+
+<!-- Quick links -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;margin-bottom:2rem">
+    <a href="{% url 'media_article_list' %}" class="card" style="padding:1.5rem;text-decoration:none;color:inherit;border-left:4px solid #1B5E20">
+        <h3 style="margin:0 0 .3rem"><i class="bi bi-file-text"></i> Articles</h3>
+        <p style="margin:0;color:#888;font-size:.88rem">Create, edit and publish news articles</p>
+    </a>
+    <a href="{% url 'media_categories' %}" class="card" style="padding:1.5rem;text-decoration:none;color:inherit;border-left:4px solid #f57c00">
+        <h3 style="margin:0 0 .3rem"><i class="bi bi-tags"></i> Categories</h3>
+        <p style="margin:0;color:#888;font-size:.88rem">Manage article categories</p>
+    </a>
+    <a href="{% url 'media_album_list' %}" class="card" style="padding:1.5rem;text-decoration:none;color:inherit;border-left:4px solid #1565C0">
+        <h3 style="margin:0 0 .3rem"><i class="bi bi-images"></i> Photo Gallery</h3>
+        <p style="margin:0;color:#888;font-size:.88rem">Manage photo albums</p>
+    </a>
+    <a href="{% url 'media_video_list' %}" class="card" style="padding:1.5rem;text-decoration:none;color:inherit;border-left:4px solid #C62828">
+        <h3 style="margin:0 0 .3rem"><i class="bi bi-play-circle"></i> Videos</h3>
+        <p style="margin:0;color:#888;font-size:.88rem">Manage video content</p>
+    </a>
+</div>
+
+<!-- Recent articles -->
+{% if recent_articles %}
+<div class="card" style="margin-bottom:1.5rem">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+        <h3>Recent Articles</h3>
+        <a href="{% url 'media_article_create' %}" style="background:#1B5E20;color:#fff;text-decoration:none;padding:.4rem .9rem;border-radius:6px;font-size:.85rem;font-weight:600"><i class="bi bi-plus"></i> New Article</a>
+    </div>
+    <div class="card-body">
+        <table>
+            <thead><tr><th>Title</th><th>Category</th><th>Status</th><th>Date</th></tr></thead>
+            <tbody>
+                {% for a in recent_articles %}
+                <tr>
+                    <td><a href="{% url 'media_article_edit' a.pk %}">{{ a.title|truncatechars:50 }}</a></td>
+                    <td>{{ a.category|default:"—" }}</td>
+                    <td>
+                        {% if a.status == 'published' %}
+                        <span style="background:#e8f5e9;color:#1B5E20;padding:.2rem .5rem;border-radius:4px;font-size:.8rem;font-weight:600">Published</span>
+                        {% else %}
+                        <span style="background:#fff3e0;color:#e65100;padding:.2rem .5rem;border-radius:4px;font-size:.8rem;font-weight:600">Draft</span>
+                        {% endif %}
+                    </td>
+                    <td style="font-size:.85rem;color:#888">{{ a.created_at|date:"M d, Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

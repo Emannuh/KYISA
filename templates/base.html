@@ -50,9 +50,6 @@
                 </div>
             </li>
             {% endif %}
-            {% if user.role == 'admin' or user.role == 'competition_manager' or user.role == 'secretary_general' or user.role == 'verification_officer' or user.role == 'cec_sports' %}
-            <li><a href="{% url 'cec_sports_portal' %}" class="{% if request.resolver_match.url_name == 'cec_sports_portal' %}active{% endif %}"><i class="bi bi-people-fill"></i> CEC Sports</a></li>
-            {% endif %}
             {% if user.role == 'treasurer' %}
             <li><a href="{% url 'treasurer_dashboard' %}" class="{% if 'treasurer' in request.resolver_match.url_name %}active{% endif %}"><i class="bi bi-cash-stack"></i> Treasurer</a></li>
             {% endif %}

@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}News Categories — KYISA Media{% endblock %}
+
+{% block content %}
+<div class="portal-page-head">
+    <div class="portal-breadcrumb">
+        <a href="{% url 'media_dashboard' %}">Media</a>
+        <span class="sep"><i class="bi bi-chevron-right"></i></span>
+        <span>Categories</span>
+    </div>
+    <h1><i class="bi bi-tags"></i> News Categories</h1>
+    <p>Manage categories for news articles.</p>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 340px;gap:2rem;align-items:start">
+    <!-- Categories list -->
+    <div class="portal-table-wrap">
+        <div class="portal-table-head">
+            <h3><i class="bi bi-tags"></i> All Categories ({{ categories|length }})</h3>
+        </div>
+        <div class="portal-table-scroll">
+            {% if categories %}
+            <table class="portal-table">
+                <thead>
+                    <tr>
+                        <th>Icon</th>
+                        <th>Name</th>
+                        <th>Slug</th>
+                        <th>Articles</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cat in categories %}
+                    <tr>
+                        <td><i class="bi {{ cat.icon }}" style="font-size:1.2rem"></i></td>
+                        <td style="font-weight:600">{{ cat.name }}</td>
+                        <td style="color:#888">{{ cat.slug }}</td>
+                        <td>{{ cat.articles.count }}</td>
+                        <td>
+                            <form method="post" action="{% url 'media_category_delete' cat.pk %}" style="display:inline"
+                                  onsubmit="return confirm('Delete category &quot;{{ cat.name }}&quot;? Articles in this category will be uncategorised.')">
+                                {% csrf_token %}
+                                <button type="submit" class="pbtn pbtn-sm pbtn-outline-danger"><i class="bi bi-trash"></i> Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="portal-empty">
+                <i class="bi bi-tags"></i>
+                <h4>No categories yet</h4>
+                <p>Create one using the form.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Create form -->
+    <div class="portal-form-card">
+        <div class="portal-form-header">
+            <h2><i class="bi bi-plus-circle"></i> Add Category</h2>
+        </div>
+        <div class="portal-form-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="palert palert-danger">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div>{% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}</div>
+                </div>
+                {% endif %}
+
+                {% for field in form %}
+                <div class="pf-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}<div class="pf-hint">{{ field.help_text }}</div>{% endif %}
+                    {% if field.errors %}<div class="pf-error-msg"><i class="bi bi-exclamation-circle"></i> {{ field.errors.0 }}</div>{% endif %}
+                </div>
+                {% endfor %}
+
+                <button type="submit" class="pbtn pbtn-primary" style="width:100%">
+                    <i class="bi bi-plus-circle"></i> Create Category
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

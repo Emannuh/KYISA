@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}{% if editing %}Edit Video{% else %}New Video{% endif %} — KYISA Media{% endblock %}
+
+{% block content %}
+<div class="portal-page-head">
+    <div class="portal-breadcrumb">
+        <a href="{% url 'media_dashboard' %}">Media</a>
+        <span class="sep"><i class="bi bi-chevron-right"></i></span>
+        <a href="{% url 'media_video_list' %}">Videos</a>
+        <span class="sep"><i class="bi bi-chevron-right"></i></span>
+        <span>{% if editing %}Edit{% else %}New{% endif %}</span>
+    </div>
+    <h1><i class="bi bi-{% if editing %}pencil{% else %}plus-circle{% endif %}"></i> {% if editing %}Edit Video{% else %}New Video{% endif %}</h1>
+</div>
+
+<div class="portal-form">
+    <div class="portal-form-card">
+        <div class="portal-form-header">
+            <h2><i class="bi bi-play-circle"></i> Video Details</h2>
+        </div>
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            <div class="portal-form-body">
+
+                {% if form.non_field_errors %}
+                <div class="palert palert-danger">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div>{% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}</div>
+                </div>
+                {% endif %}
+
+                {% for field in form %}
+                <div class="pf-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}<div class="pf-hint">{{ field.help_text }}</div>{% endif %}
+                    {% if field.errors %}<div class="pf-error-msg"><i class="bi bi-exclamation-circle"></i> {{ field.errors.0 }}</div>{% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="portal-form-actions">
+                <a href="{% url 'media_video_list' %}" class="pbtn pbtn-secondary">Cancel</a>
+                <button type="submit" class="pbtn pbtn-primary">
+                    <i class="bi bi-check-circle"></i> {% if editing %}Update{% else %}Add{% endif %} Video
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

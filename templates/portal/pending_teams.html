@@ -2,96 +2,101 @@
 {% block title %}Pending Teams — KYISA CMS{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <div class="breadcrumb">
+<div class="portal-page-head">
+    <div class="portal-breadcrumb">
         <a href="{% url 'dashboard' %}">Dashboard</a>
+        <span class="sep"><i class="bi bi-chevron-right"></i></span>
         <a href="{% url 'teams_list' %}">Teams</a>
+        <span class="sep"><i class="bi bi-chevron-right"></i></span>
         <span>Pending Approvals</span>
     </div>
-    <h1>⚽ Pending Team Registrations</h1>
+    <h1><i class="bi bi-people"></i> Pending Team Registrations</h1>
     <p>Review and approve or reject team registration requests.</p>
 </div>
 
 <!-- Stats Cards -->
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem">
-    <div class="card" style="padding:1.25rem;text-align:center">
-        <div style="font-size:2rem;font-weight:800;color:#f57c00">{{ stats.pending }}</div>
-        <div style="color:#888;font-size:.85rem">Pending</div>
+<div class="dash-stats" style="margin-bottom:1.75rem">
+    <div class="dash-stat dash-stat--amber">
+        <div class="stat-icon"><i class="bi bi-clock-history"></i></div>
+        <div class="stat-num">{{ stats.pending }}</div>
+        <div class="stat-lbl">Pending</div>
     </div>
-    <div class="card" style="padding:1.25rem;text-align:center">
-        <div style="font-size:2rem;font-weight:800;color:#1B5E20">{{ stats.registered }}</div>
-        <div style="color:#888;font-size:.85rem">Approved</div>
+    <div class="dash-stat dash-stat--green">
+        <div class="stat-icon"><i class="bi bi-check-circle"></i></div>
+        <div class="stat-num">{{ stats.registered }}</div>
+        <div class="stat-lbl">Approved</div>
     </div>
-    <div class="card" style="padding:1.25rem;text-align:center">
-        <div style="font-size:2rem;font-weight:800;color:#333">{{ stats.total }}</div>
-        <div style="color:#888;font-size:.85rem">Total</div>
+    <div class="dash-stat dash-stat--grey">
+        <div class="stat-icon"><i class="bi bi-people"></i></div>
+        <div class="stat-num">{{ stats.total }}</div>
+        <div class="stat-lbl">Total</div>
     </div>
 </div>
 
-<div class="card">
-    <div class="card-header">
-        <h3>Pending Registrations ({{ stats.pending }})</h3>
+<div class="portal-table-wrap">
+    <div class="portal-table-head">
+        <h3><i class="bi bi-clock-history"></i> Pending Registrations ({{ stats.pending }})</h3>
     </div>
-    <div class="card-body">
+    <div class="portal-table-scroll">
         {% if pending_teams %}
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Team Name</th>
-                        <th>County</th>
-                        <th>Contact Email</th>
-                        <th>Contact Phone</th>
-                        <th>Kit Colours</th>
-                        <th>Registered</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for team in pending_teams %}
-                    <tr>
-                        <td>
-                            <strong>{{ team.name }}</strong>
-                            {% if team.badge %}
-                            <br><img src="{{ team.badge.url }}" alt="" style="width:30px;height:30px;border-radius:4px;margin-top:4px">
-                            {% endif %}
-                        </td>
-                        <td>{{ team.county }}</td>
-                        <td>{{ team.contact_email|default:"—" }}</td>
-                        <td>{{ team.contact_phone|default:"—" }}</td>
-                        <td>
-                            {% if team.home_colour %}
-                            <span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:{{ team.home_colour }};border:1px solid #ddd;vertical-align:middle"></span>
-                            {{ team.home_colour }}
-                            {% else %}—{% endif %}
-                            {% if team.away_colour %}
-                            /
-                            <span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:{{ team.away_colour }};border:1px solid #ddd;vertical-align:middle"></span>
-                            {{ team.away_colour }}
-                            {% endif %}
-                        </td>
-                        <td style="white-space:nowrap">{{ team.registered_at|date:"d M Y" }}</td>
-                        <td style="white-space:nowrap">
-                            <form method="post" style="display:inline">
-                                {% csrf_token %}
-                                <input type="hidden" name="team_id" value="{{ team.pk }}">
-                                <button type="submit" name="action" value="approve" class="btn btn-outline btn-sm" style="background:#1B5E20;color:#fff;border-color:#1B5E20;margin-right:.25rem" onclick="return confirm('Approve {{ team.name }}?')">
-                                    ✅ Approve
+        <table class="portal-table">
+            <thead>
+                <tr>
+                    <th>Team Name</th>
+                    <th>County</th>
+                    <th>Contact Email</th>
+                    <th>Contact Phone</th>
+                    <th>Kit Colours</th>
+                    <th>Registered</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for team in pending_teams %}
+                <tr>
+                    <td>
+                        <strong>{{ team.name }}</strong>
+                        {% if team.badge %}
+                        <br><img src="{{ team.badge.url }}" alt="" style="width:30px;height:30px;border-radius:6px;margin-top:4px;object-fit:cover">
+                        {% endif %}
+                    </td>
+                    <td>{{ team.county }}</td>
+                    <td>{{ team.contact_email|default:"—" }}</td>
+                    <td>{{ team.contact_phone|default:"—" }}</td>
+                    <td>
+                        {% if team.home_colour %}
+                        <span style="display:inline-block;width:14px;height:14px;border-radius:4px;background:{{ team.home_colour }};border:1px solid #ddd;vertical-align:middle"></span>
+                        {{ team.home_colour }}
+                        {% else %}—{% endif %}
+                        {% if team.away_colour %}
+                        /
+                        <span style="display:inline-block;width:14px;height:14px;border-radius:4px;background:{{ team.away_colour }};border:1px solid #ddd;vertical-align:middle"></span>
+                        {{ team.away_colour }}
+                        {% endif %}
+                    </td>
+                    <td style="white-space:nowrap">{{ team.registered_at|date:"d M Y" }}</td>
+                    <td>
+                        <form method="post" style="display:inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="team_id" value="{{ team.pk }}">
+                            <div class="pbtn-group">
+                                <button type="submit" name="action" value="approve" class="pbtn pbtn-sm pbtn-primary" onclick="return confirm('Approve {{ team.name }}?')">
+                                    <i class="bi bi-check-circle"></i> Approve
                                 </button>
-                                <button type="submit" name="action" value="reject" class="btn btn-outline btn-sm" style="color:#C62828;border-color:#C62828" onclick="return confirm('Reject {{ team.name }}? This cannot be undone.')">
-                                    ❌ Reject
+                                <button type="submit" name="action" value="reject" class="pbtn pbtn-sm pbtn-outline-danger" onclick="return confirm('Reject {{ team.name }}? This cannot be undone.')">
+                                    <i class="bi bi-x-circle"></i> Reject
                                 </button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                            </div>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
         {% else %}
-        <div class="empty-state">
-            <div class="icon">✅</div>
-            <h3>No pending registrations</h3>
+        <div class="portal-empty">
+            <i class="bi bi-check-circle"></i>
+            <h4>No pending registrations</h4>
             <p>All team registrations have been processed.</p>
         </div>
         {% endif %}

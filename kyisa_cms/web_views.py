@@ -142,15 +142,25 @@ def sitemap_xml(request):
 # ══════════════════════════════════════════════════════════════════════════════
 
 def home_view(request):
-    """Public homepage with hero, upcoming fixtures, recent results, stats."""
+    """Public homepage with hero, upcoming fixtures, live matches, recent results, stats."""
     now = timezone.now()
     stats = {
         'competitions': Competition.objects.count(),
         'teams': Team.objects.count(),
         'players': Player.objects.count(),
     }
+
+    # Live matches — currently in progress
+    live_matches = Fixture.objects.filter(
+        status='live'
+    ).select_related(
+        'competition', 'home_team', 'away_team', 'venue'
+    ).order_by('-live_started_at')[:6]
+
     upcoming_fixtures = Fixture.objects.filter(
         match_date__gte=now
+    ).exclude(
+        status__in=['completed', 'live', 'cancelled']
     ).select_related(
         'competition', 'home_team', 'away_team', 'venue'
     ).order_by('match_date')[:6]
@@ -164,6 +174,7 @@ def home_view(request):
     return render(request, 'public/home.html', {
         'active_page': 'home',
         'stats': stats,
+        'live_matches': live_matches,
         'upcoming_fixtures': upcoming_fixtures,
         'recent_results': recent_results,
     })

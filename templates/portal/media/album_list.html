@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Photo Albums — KYISA Media{% endblock %}
+
+{% block content %}
+<div class="portal-page-head">
+    <div class="portal-breadcrumb">
+        <a href="{% url 'media_dashboard' %}">Media</a>
+        <span class="sep"><i class="bi bi-chevron-right"></i></span>
+        <span>Albums</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+        <div>
+            <h1><i class="bi bi-images"></i> Photo Albums</h1>
+            <p>Manage gallery albums and photos.</p>
+        </div>
+        <a href="{% url 'media_album_create' %}" class="pbtn pbtn-primary"><i class="bi bi-plus-circle"></i> New Album</a>
+    </div>
+</div>
+
+{% if albums %}
+<div class="portal-card-grid">
+    {% for album in albums %}
+    <div class="portal-card">
+        {% if album.display_cover %}
+        <img class="portal-card-img" src="{{ album.display_cover }}" alt="{{ album.title }}" onerror="this.outerHTML='<div class=\'portal-card-img\' style=\'background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:2rem\'><i class=\'bi bi-image\'></i></div>'">
+        {% else %}
+        <div class="portal-card-img" style="background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:2rem"><i class="bi bi-image"></i></div>
+        {% endif %}
+        <div class="portal-card-body">
+            <h4>{{ album.title }}</h4>
+            <p>
+                {{ album.photo_count }} photo{{ album.photo_count|pluralize }}
+                {% if album.event_date %}&bull; {{ album.event_date|date:"M d, Y" }}{% endif %}
+            </p>
+            {% if album.is_published %}
+            <span class="pstatus pstatus--success" style="margin-top:.5rem">Live</span>
+            {% else %}
+            <span class="pstatus pstatus--warning" style="margin-top:.5rem"><i class="bi bi-eye-slash"></i> Unpublished</span>
+            {% endif %}
+        </div>
+        <div class="portal-card-footer">
+            <div class="pbtn-group">
+                <a href="{% url 'media_album_edit' album.pk %}" class="pbtn pbtn-sm pbtn-outline"><i class="bi bi-pencil"></i> Edit</a>
+                <a href="{% url 'media_album_delete' album.pk %}" class="pbtn pbtn-sm pbtn-outline-danger"><i class="bi bi-trash"></i></a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="portal-empty">
+    <i class="bi bi-images"></i>
+    <h4>No albums yet</h4>
+    <p><a href="{% url 'media_album_create' %}">Create your first album</a></p>
+</div>
+{% endif %}
+{% endblock %}

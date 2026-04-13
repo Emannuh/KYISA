@@ -175,10 +175,49 @@
 
         </div>
 
-        <!-- RIGHT: Countdown — modern glass card -->
+        <!-- RIGHT: Hero cards — Live Match Center + Countdown -->
         <div class="hero-right">
-            <div class="cd-card-entrance">
-                <div class="cd-card cd-card--mini cd-card--corner-pop" id="countdownCard">
+            <!-- ── LIVE MATCH CARD — shown when matches are live, auto-cycles with countdown ── -->
+            {% if live_matches %}
+            <div class="cd-card-entrance hero-card-slot" id="liveMatchCard">
+                <div class="cd-card cd-card--mini cd-card--live" style="border:2px solid rgba(229,57,53,.5);">
+                    <div class="cd-card__glow" style="background:radial-gradient(circle,rgba(229,57,53,.15),transparent 70%)"></div>
+                    <div class="cd-card__inner">
+                        <span class="cd-edition" style="color:#E53935;display:flex;align-items:center;gap:.4rem;">
+                            <span style="width:8px;height:8px;border-radius:50%;background:#E53935;animation:livePulse 1.5s infinite;"></span>
+                            LIVE NOW
+                        </span>
+                        <h2 class="cd-title" style="font-size:1.1rem;margin:.5rem 0;">Match Center</h2>
+                        <div class="live-hero-matches">
+                            {% for m in live_matches %}
+                            <div class="live-hero-match{% if forloop.first %} live-hero-match--active{% endif %}" data-idx="{{ forloop.counter0 }}">
+                                <div style="font-size:.65rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.35rem;">{{ m.competition.name }}</div>
+                                <div style="display:flex;align-items:center;justify-content:center;gap:.75rem;">
+                                    <span style="font-size:.85rem;font-weight:600;text-align:right;flex:1;">{{ m.home_team.name|truncatewords:2 }}</span>
+                                    <div style="background:rgba(229,57,53,.2);border-radius:8px;padding:.25rem .6rem;min-width:60px;text-align:center;">
+                                        <span style="font-size:1.3rem;font-weight:800;color:#fff;">{{ m.home_score|default:"0" }} – {{ m.away_score|default:"0" }}</span>
+                                    </div>
+                                    <span style="font-size:.85rem;font-weight:600;text-align:left;flex:1;">{{ m.away_team.name|truncatewords:2 }}</span>
+                                </div>
+                                <div style="font-size:.6rem;color:rgba(255,255,255,.4);margin-top:.3rem;">
+                                    {% if m.live_half == 1 %}1st Half{% elif m.live_half == 2 %}2nd Half{% elif m.live_half == 3 %}Extra Time{% else %}HT{% endif %}
+                                    · {{ m.venue.name|default:"TBD" }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="cd-cta" style="margin-top:.75rem;">
+                            <a href="#fixtures" class="btn btn--gold btn--sm" style="font-size:.75rem;">
+                                <span style="width:6px;height:6px;border-radius:50%;background:#E53935;display:inline-block;margin-right:.3rem;animation:livePulse 1.5s infinite;"></span>
+                                View All Live →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="cd-card-entrance hero-card-slot{% if live_matches %} hero-card-slot--hidden{% endif %}" id="countdownCard">
                     <div class="cd-card__glow"></div>
                     <div class="cd-card__inner">
                         <span class="cd-edition">11th Edition</span>
@@ -335,6 +374,42 @@
     <!-- Fixtures + Results grid -->
     <div class="mc-content">
         <div class="container">
+
+            <!-- ── LIVE MATCHES STRIP ── -->
+            {% if live_matches %}
+            <div class="mc-live-strip reveal">
+                <div class="mc-live-strip__header">
+                    <span class="mc-badge mc-badge--red" style="animation:livePulse 1.5s infinite;">
+                        <span style="width:6px;height:6px;border-radius:50%;background:#fff;display:inline-block;margin-right:.25rem;"></span>
+                        LIVE
+                    </span>
+                    <h3 style="color:#fff;font-size:1rem;font-weight:700;margin:0;">Live Matches</h3>
+                </div>
+                <div class="mc-live-cards">
+                    {% for m in live_matches %}
+                    <div class="mc-live-card" data-fixture-id="{{ m.id }}">
+                        <div class="mc-live-card__comp">{{ m.competition.name }}</div>
+                        <div class="mc-live-card__body">
+                            <div class="mc-live-card__team">{{ m.home_team.name }}</div>
+                            <div class="mc-live-card__score">
+                                <span class="mc-live-card__num">{{ m.home_score|default:"0" }}</span>
+                                <span class="mc-live-card__sep">–</span>
+                                <span class="mc-live-card__num">{{ m.away_score|default:"0" }}</span>
+                            </div>
+                            <div class="mc-live-card__team">{{ m.away_team.name }}</div>
+                        </div>
+                        <div class="mc-live-card__meta">
+                            <span class="mc-live-card__half">
+                                {% if m.live_half == 1 %}1st Half{% elif m.live_half == 2 %}2nd Half{% elif m.live_half == 3 %}ET{% else %}HT{% endif %}
+                            </span>
+                            <span>{{ m.venue.name|default:"TBD" }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
             <div class="mc-grid">
                 <!-- Fixtures column -->
                 <div class="mc-col">
@@ -417,6 +492,61 @@
 {% block extra_js %}
 <script>
 (function(){
+    /* ── Hero Card Cycling (Live ↔ Countdown) ─────────────────────── */
+    var liveCard = document.getElementById('liveMatchCard');
+    var cdCard   = document.getElementById('countdownCard');
+    if (liveCard && cdCard) {
+        var showingLive = true;
+        setInterval(function(){
+            if (showingLive) {
+                liveCard.classList.add('hero-card-slot--hidden');
+                cdCard.classList.remove('hero-card-slot--hidden');
+            } else {
+                cdCard.classList.add('hero-card-slot--hidden');
+                liveCard.classList.remove('hero-card-slot--hidden');
+            }
+            showingLive = !showingLive;
+        }, 8000);
+
+        /* Cycle through multiple live matches inside the hero card */
+        var heroMatches = liveCard.querySelectorAll('.live-hero-match');
+        if (heroMatches.length > 1) {
+            var hmIdx = 0;
+            setInterval(function(){
+                heroMatches[hmIdx].classList.remove('live-hero-match--active');
+                hmIdx = (hmIdx + 1) % heroMatches.length;
+                heroMatches[hmIdx].classList.add('live-hero-match--active');
+            }, 5000);
+        }
+    }
+
+    /* ── Live Score Auto-Refresh ───────────────────────────────────── */
+    var liveCards = document.querySelectorAll('.mc-live-card[data-fixture-id]');
+    if (liveCards.length > 0) {
+        setInterval(function(){
+            liveCards.forEach(function(card){
+                var fid = card.getAttribute('data-fixture-id');
+                fetch('/api/v1/matches/live/' + fid + '/scoreboard/')
+                    .then(function(r){ return r.ok ? r.json() : null; })
+                    .then(function(d){
+                        if (!d) return;
+                        var scoreEl = card.querySelector('.mc-live-card__score');
+                        if (scoreEl) {
+                            var nums = scoreEl.querySelectorAll('.mc-live-card__num');
+                            if (nums[0]) nums[0].textContent = d.home_score || '0';
+                            if (nums[1]) nums[1].textContent = d.away_score || '0';
+                        }
+                        var halfEl = card.querySelector('.mc-live-card__half');
+                        if (halfEl && d.live_half) {
+                            var labels = {1:'1st Half', 2:'2nd Half', 3:'ET'};
+                            halfEl.textContent = labels[d.live_half] || 'HT';
+                        }
+                    })
+                    .catch(function(){});
+            });
+        }, 30000);
+    }
+
     /* ── Preloader ──────────────────────────────────────────────────── */
     var bar = document.getElementById('preloaderBar');
     var preloader = document.getElementById('preloader');

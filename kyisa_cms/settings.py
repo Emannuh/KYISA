@@ -225,7 +225,7 @@ elif STORAGE_BACKEND == "s3":
     AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
     AWS_S3_REGION_NAME      = env("AWS_S3_REGION_NAME", default="af-south-1")
     AWS_S3_ENDPOINT_URL     = env("AWS_S3_ENDPOINT_URL", default=None)  # for DO Spaces / other S3-compatible
-    AWS_S3_CUSTOM_DOMAIN    = env("AWS_S3_CUSTOM_DOMAIN", default=f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com")
+    AWS_S3_CUSTOM_DOMAIN    = env("AWS_S3_CUSTOM_DOMAIN", default=f"{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com")
     AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
     AWS_DEFAULT_ACL          = None
     AWS_QUERYSTRING_AUTH     = False
