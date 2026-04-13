@@ -538,6 +538,21 @@
     }
     /* ── Live Match Card — Cycle through live matches ─────────────── */
     var liveCard = document.getElementById('liveMatchCard');
+    var ceremonyCard = document.getElementById('ceremonyCountdown');
+
+    /* Show ceremony countdown card with entrance animation */
+    if (ceremonyCard) {
+        var cCard = ceremonyCard.querySelector('.cd-card');
+        if (cCard) {
+            var cCorners = ['cd-pop--top-left', 'cd-pop--top-right', 'cd-pop--bottom-left', 'cd-pop--bottom-right'];
+            cCard.classList.add(cCorners[Math.floor(Math.random() * cCorners.length)]);
+            setTimeout(function(){
+                cCard.offsetHeight;
+                cCard.classList.add('cd-card--show');
+            }, 800);
+        }
+    }
+
     if (liveCard) {
         var heroMatches = liveCard.querySelectorAll('.live-hero-match');
         if (heroMatches.length > 1) {
