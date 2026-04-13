@@ -81,8 +81,9 @@
                     <div class="cd-card__inner" style="padding:.85rem .75rem;">
                         <span class="cd-edition" style="color:#F9A825;display:flex;align-items:center;gap:.4rem;">
                             <i class="bi bi-calendar-event" style="font-size:.7rem;"></i>
-                            OPENING CEREMONY
+                            KYISA 11TH EDITION
                         </span>
+                        <h3 style="font-size:.82rem;color:rgba(255,255,255,.7);font-weight:600;letter-spacing:1px;margin:.15rem 0 .1rem;text-transform:uppercase;">Opening Ceremony</h3>
                         <h2 class="cd-title" style="font-size:.95rem;margin:.35rem 0 .25rem;"><i class="bi bi-geo-alt-fill" style="font-size:.8rem;opacity:.7;color:#F9A825;"></i> Nyahururu Stadium</h2>
                         <p style="font-size:.7rem;color:rgba(255,255,255,.45);margin:0 0 .5rem;">14th April 2026 · 11:00 AM</p>
                         <div class="cd-timer" id="ceremonyTimer" style="display:flex;justify-content:center;gap:.5rem;">
@@ -563,17 +564,15 @@
                 heroMatches[hmIdx].classList.add('live-hero-match--active');
             }, 5000);
         }
-        /* Show card with entrance animation */
+        /* Show match center card immediately (no toss) */
         setTimeout(function(){
-            var corners = ['cd-pop--top-left', 'cd-pop--top-right', 'cd-pop--bottom-left', 'cd-pop--bottom-right'];
-            var corner = corners[Math.floor(Math.random() * corners.length)];
             var card = liveCard.querySelector('.cd-card');
             if (card) {
-                card.classList.add(corner);
-                card.offsetHeight;
-                card.classList.add('cd-card--show');
+                card.style.transition = 'opacity .6s ease';
+                card.style.opacity = '1';
+                card.style.pointerEvents = 'auto';
             }
-        }, 2000);
+        }, 1200);
     }
 
     /* ── Live Score Auto-Refresh ───────────────────────────────────── */
