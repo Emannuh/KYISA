@@ -69,7 +69,7 @@
         <ul class="fkf-nav-links" id="navLinks">
             <li><a href="{% url 'home' %}" class="{% if active_page == 'home' %}active{% endif %}">Home</a></li>
             <li><a href="{% url 'about' %}" class="{% if active_page == 'about' %}active{% endif %}">About</a></li>
-            <!-- <li><a href="{% url 'leadership' %}" class="{% if active_page == 'leadership' %}active{% endif %}">Leadership</a></li> -->
+            <li><a href="{% url 'leadership' %}" class="{% if active_page == 'leadership' %}active{% endif %}">Leadership</a></li>
             <li><a href="{% url 'public_competitions' %}" class="{% if active_page == 'competitions' %}active{% endif %}">Competitions</a></li>
             <li><a href="{% url 'public_results' %}" class="{% if active_page == 'results' %}active{% endif %}">Results</a></li>
             <li class="nav-dropdown">
@@ -203,6 +203,41 @@
     }, 30);
     /* Fallback: hide after 2s no matter what */
     setTimeout(function(){ pre.classList.add('preloader--done'); }, 2000);
+})();
+
+/* Navbar: solid on scroll — all pages */
+(function(){
+    var nav = document.getElementById('fkfNav');
+    if (!nav) return;
+    function checkScroll(){
+        if(window.scrollY > 60) nav.classList.add('fkf-nav--solid');
+        else nav.classList.remove('fkf-nav--solid');
+    }
+    window.addEventListener('scroll', checkScroll);
+    checkScroll();
+})();
+
+/* Mobile nav toggle — all pages */
+(function(){
+    var toggle = document.getElementById('navToggle');
+    var links = document.getElementById('navLinks');
+    if(!toggle || !links) return;
+    toggle.addEventListener('click', function(){
+        toggle.classList.toggle('open');
+        links.classList.toggle('open');
+    });
+    links.querySelectorAll('a').forEach(function(a){
+        a.addEventListener('click', function(){
+            toggle.classList.remove('open');
+            links.classList.remove('open');
+        });
+    });
+    /* Close dropdowns when clicking outside */
+    document.addEventListener('click', function(e){
+        if(!e.target.closest('.nav-dropdown')){
+            document.querySelectorAll('.nav-dropdown.open').forEach(function(d){ d.classList.remove('open'); });
+        }
+    });
 })();
 </script>
 {% block extra_js %}{% endblock %}

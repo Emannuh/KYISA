@@ -674,28 +674,7 @@
     }, {threshold: 0.5});
     document.querySelectorAll('.mc-stat__num').forEach(function(el){ counterObs.observe(el); });
 
-    /* ── Navbar solid on scroll ─────────────────────────────────────── */
-    var nav = document.getElementById('fkfNav');
-    window.addEventListener('scroll', function(){
-        if(window.scrollY > 60) nav.classList.add('fkf-nav--solid');
-        else nav.classList.remove('fkf-nav--solid');
-    });
-
-    /* ── Mobile nav toggle ──────────────────────────────────────────── */
-    var toggle = document.getElementById('navToggle');
-    var links = document.getElementById('navLinks');
-    if(toggle){
-        toggle.addEventListener('click', function(){
-            toggle.classList.toggle('open');
-            links.classList.toggle('open');
-        });
-        links.querySelectorAll('a').forEach(function(a){
-            a.addEventListener('click', function(){
-                toggle.classList.remove('open');
-                links.classList.remove('open');
-            });
-        });
-    }
+    /* Navbar scroll + mobile toggle now in base.html */
 
     /* ── Hero phase switcher + countdown entrance ─────────────────────── */
     var phaseA = document.getElementById('heroPhaseA');

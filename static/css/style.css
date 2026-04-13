@@ -1869,10 +1869,10 @@ img { max-width: 100%; }
    PAGE HERO — DARK CINEMATIC (inner pages)
    ────────────────────────────────────────────────────────────────────────── */
 .page-hero {
-    position: relative; min-height: 340px;
+    position: relative; min-height: 280px;
     display: flex; align-items: center; justify-content: center;
     text-align: center; overflow: hidden;
-    padding-top: 90px; padding-bottom: 2.5rem;
+    padding-top: 85px; padding-bottom: 2rem;
     background: #0a0f0a;
 }
 .page-hero__bg {
@@ -1902,13 +1902,13 @@ img { max-width: 100%; }
 }
 .page-hero__title {
     font-family: 'Outfit', sans-serif;
-    font-size: 2.8rem; font-weight: 900; line-height: 1.1;
-    color: #fff; margin-bottom: .5rem; letter-spacing: -.5px;
+    font-size: 2.4rem; font-weight: 900; line-height: 1.1;
+    color: #fff; margin-bottom: .4rem; letter-spacing: -.5px;
 }
 .text-gold { color: #F9A825; }
 .page-hero__sub {
-    font-size: .95rem; color: rgba(255,255,255,.5);
-    max-width: 540px; margin: 0 auto .75rem; line-height: 1.6;
+    font-size: .88rem; color: rgba(255,255,255,.5);
+    max-width: 520px; margin: 0 auto .6rem; line-height: 1.6;
 }
 .page-hero__breadcrumb {
     display: flex; align-items: center; justify-content: center;
