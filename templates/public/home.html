@@ -49,23 +49,7 @@
                 </div>
             </div>
 
-            <!-- Phase B (logo showcase) -->
-            <div class="hero-phase" id="heroPhaseB">
-                <div class="hero-showcase">
-                    <div class="hero-showcase__orbit">
-                        <div class="hero-showcase__ring hero-showcase__ring--1"></div>
-                        <div class="hero-showcase__ring hero-showcase__ring--2"></div>
-                        <div class="hero-showcase__ring hero-showcase__ring--3"></div>
-                    </div>
-                    <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="KYISA" class="hero-showcase__logo">
-                </div>
-                <h2 class="hero-showcase__text">KYISA</h2>
-                <p class="hero-showcase__sub">Empowering Youth Through Sports</p>
-                <div class="hero-actions">
-                    <a href="{% url 'public_competitions' %}" class="btn btn--gold btn--lg">View Competitions</a>
-                    <a href="{% url 'about' %}" class="btn btn--outline-light btn--lg">Learn More</a>
-                </div>
-            </div>
+
 
             <!-- Phase C (Kenyan flag) -->
             <div class="hero-phase" id="heroPhaseC">
@@ -176,19 +160,26 @@
 
         </div>
 
-        <!-- RIGHT: Hero cards — Live Match Center + Countdown -->
+        <!-- RIGHT: Live Match Center Card -->
         <div class="hero-right">
-            <!-- ── LIVE MATCH CARD — shown when matches are live, auto-cycles with countdown ── -->
-            {% if live_matches %}
             <div class="cd-card-entrance hero-card-slot" id="liveMatchCard">
-                <div class="cd-card cd-card--mini cd-card--live" style="border:2px solid rgba(229,57,53,.5);">
+                <div class="cd-card cd-card--mini" style="border:2px solid rgba(229,57,53,.5);cursor:pointer;" onclick="document.getElementById('fixtures').scrollIntoView({behavior:'smooth'})">
                     <div class="cd-card__glow" style="background:radial-gradient(circle,rgba(229,57,53,.15),transparent 70%)"></div>
                     <div class="cd-card__inner">
+                        {% if live_matches %}
                         <span class="cd-edition" style="color:#E53935;display:flex;align-items:center;gap:.4rem;">
                             <span style="width:8px;height:8px;border-radius:50%;background:#E53935;animation:livePulse 1.5s infinite;"></span>
                             LIVE NOW
                         </span>
-                        <h2 class="cd-title" style="font-size:1.1rem;margin:.5rem 0;">Match Center</h2>
+                        {% else %}
+                        <span class="cd-edition" style="color:#F9A825;display:flex;align-items:center;gap:.4rem;">
+                            <i class="bi bi-broadcast" style="font-size:.75rem;"></i>
+                            MATCH CENTER
+                        </span>
+                        {% endif %}
+                        <h2 class="cd-title" style="font-size:1.1rem;margin:.5rem 0;"><i class="bi bi-trophy" style="font-size:.9rem;opacity:.7;"></i> Live &amp; Upcoming</h2>
+
+                        {% if live_matches %}
                         <div class="live-hero-matches">
                             {% for m in live_matches %}
                             <div class="live-hero-match{% if forloop.first %} live-hero-match--active{% endif %}" data-idx="{{ forloop.counter0 }}">
@@ -207,65 +198,38 @@
                             </div>
                             {% endfor %}
                         </div>
+                        {% elif upcoming_fixtures %}
+                        <!-- Show next upcoming fixtures when no live matches -->
+                        <div style="margin-top:.5rem;">
+                            {% for match in upcoming_fixtures|slice:":3" %}
+                            <div style="padding:.5rem 0;{% if not forloop.last %}border-bottom:1px solid rgba(255,255,255,.08);{% endif %}">
+                                <div style="font-size:.6rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.25rem;">{{ match.competition.name }}</div>
+                                <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
+                                    <span style="font-size:.8rem;font-weight:600;color:#fff;flex:1;text-align:left;">{{ match.home_team.name|truncatewords:2 }}</span>
+                                    <div style="background:rgba(249,168,37,.15);border-radius:6px;padding:.2rem .5rem;text-align:center;">
+                                        <span style="font-size:.68rem;font-weight:700;color:#F9A825;">{{ match.match_date|date:"d M · H:i" }}</span>
+                                    </div>
+                                    <span style="font-size:.8rem;font-weight:600;color:#fff;flex:1;text-align:right;">{{ match.away_team.name|truncatewords:2 }}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div style="text-align:center;padding:1rem 0;color:rgba(255,255,255,.4);font-size:.8rem;">
+                            <i class="bi bi-calendar3" style="font-size:1.5rem;display:block;margin-bottom:.35rem;opacity:.4;"></i>
+                            No matches scheduled yet
+                        </div>
+                        {% endif %}
+
                         <div class="cd-cta" style="margin-top:.75rem;">
                             <a href="#fixtures" class="btn btn--gold btn--sm" style="font-size:.75rem;">
+                                {% if live_matches %}
                                 <span style="width:6px;height:6px;border-radius:50%;background:#E53935;display:inline-block;margin-right:.3rem;animation:livePulse 1.5s infinite;"></span>
                                 View All Live →
+                                {% else %}
+                                View All Fixtures →
+                                {% endif %}
                             </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-
-            <div class="cd-card-entrance hero-card-slot{% if live_matches %} hero-card-slot--hidden{% endif %}" id="countdownCard">
-                    <div class="cd-card__glow"></div>
-                    <div class="cd-card__inner">
-                        <span class="cd-edition">11th Edition</span>
-                        <h2 class="cd-title">KYISA 2026</h2>
-                        <p class="cd-host">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                            Laikipia County
-                        </p>
-                        <div class="cd-timer" id="countdownTimer">
-                            <div class="cd-unit">
-                                <div class="cd-ring">
-                                    <svg viewBox="0 0 80 80"><circle class="cd-ring__track" cx="40" cy="40" r="36"/><circle class="cd-ring__fill cd-ring__fill--days" cx="40" cy="40" r="36"/></svg>
-                                    <span class="cd-num" id="cdDays">00</span>
-                                </div>
-                                <span class="cd-label">Days</span>
-                            </div>
-                            <div class="cd-unit">
-                                <div class="cd-ring">
-                                    <svg viewBox="0 0 80 80"><circle class="cd-ring__track" cx="40" cy="40" r="36"/><circle class="cd-ring__fill cd-ring__fill--hrs" cx="40" cy="40" r="36"/></svg>
-                                    <span class="cd-num" id="cdHours">00</span>
-                                </div>
-                                <span class="cd-label">Hours</span>
-                            </div>
-                            <div class="cd-unit">
-                                <div class="cd-ring">
-                                    <svg viewBox="0 0 80 80"><circle class="cd-ring__track" cx="40" cy="40" r="36"/><circle class="cd-ring__fill cd-ring__fill--min" cx="40" cy="40" r="36"/></svg>
-                                    <span class="cd-num" id="cdMins">00</span>
-                                </div>
-                                <span class="cd-label">Min</span>
-                            </div>
-                            <div class="cd-unit">
-                                <div class="cd-ring">
-                                    <svg viewBox="0 0 80 80"><circle class="cd-ring__track" cx="40" cy="40" r="36"/><circle class="cd-ring__fill cd-ring__fill--sec" cx="40" cy="40" r="36"/></svg>
-                                    <span class="cd-num" id="cdSecs">00</span>
-                                </div>
-                                <span class="cd-label">Sec</span>
-                            </div>
-                        </div>
-                        <div class="cd-meta">
-                            <p class="cd-date">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                13th Apr — 19th Apr 2026
-                            </p>
-                        </div>
-                        <div class="cd-cta">
-                            <span class="cd-live"><span class="cd-live__dot"></span> Registration Open</span>
-                            <a href="{% url 'county_admin_register' %}" class="btn btn--gold btn--sm">Register Your County →</a>
                         </div>
                     </div>
                 </div>
@@ -286,7 +250,7 @@
         <div class="mh-hero reveal">
             <span class="mh-hero__badge"><i class="bi bi-broadcast"></i> News & Media</span>
             <h2 class="mh-hero__title">Latest from <span class="text-gold">KYISA</span></h2>
-            <p class="mh-hero__sub">Photos, news highlights, featured stories, and videos from KYISA events across Kenya's 47 counties.</p>
+            <p class="mh-hero__sub">Photos, news highlights, featured stories, and videos from KYISA's 11th edition.</p>
         </div>
 
         <!-- ── Photo Albums ──────────────────────────────────────────── -->
@@ -301,7 +265,7 @@
                 <a href="{% url 'news_media:gallery_detail' album.slug %}" class="mh-album-card">
                     <div class="mh-album-card__img">
                         {% if album.display_cover %}
-                        <img src="{{ album.display_cover.url }}" alt="{{ album.title }}" loading="lazy">
+                        <img src="{{ album.display_cover }}" alt="{{ album.title }}" loading="lazy">
                         {% else %}
                         <div class="mh-album-card__placeholder"><i class="bi bi-camera"></i></div>
                         {% endif %}
@@ -593,23 +557,9 @@
 {% block extra_js %}
 <script>
 (function(){
-    /* ── Hero Card Cycling (Live ↔ Countdown) ─────────────────────── */
+    /* ── Live Match Card — Cycle through live matches ─────────────── */
     var liveCard = document.getElementById('liveMatchCard');
-    var cdCard   = document.getElementById('countdownCard');
-    if (liveCard && cdCard) {
-        var showingLive = true;
-        setInterval(function(){
-            if (showingLive) {
-                liveCard.classList.add('hero-card-slot--hidden');
-                cdCard.classList.remove('hero-card-slot--hidden');
-            } else {
-                cdCard.classList.add('hero-card-slot--hidden');
-                liveCard.classList.remove('hero-card-slot--hidden');
-            }
-            showingLive = !showingLive;
-        }, 8000);
-
-        /* Cycle through multiple live matches inside the hero card */
+    if (liveCard) {
         var heroMatches = liveCard.querySelectorAll('.live-hero-match');
         if (heroMatches.length > 1) {
             var hmIdx = 0;
@@ -619,6 +569,17 @@
                 heroMatches[hmIdx].classList.add('live-hero-match--active');
             }, 5000);
         }
+        /* Show card with entrance animation */
+        setTimeout(function(){
+            var corners = ['cd-pop--top-left', 'cd-pop--top-right', 'cd-pop--bottom-left', 'cd-pop--bottom-right'];
+            var corner = corners[Math.floor(Math.random() * corners.length)];
+            var card = liveCard.querySelector('.cd-card');
+            if (card) {
+                card.classList.add(corner);
+                card.offsetHeight;
+                card.classList.add('cd-card--show');
+            }
+        }, 2000);
     }
 
     /* ── Live Score Auto-Refresh ───────────────────────────────────── */
@@ -663,84 +624,40 @@
         }
     }, 100);
 
-    /* ── Countdown timer + ring animation ─────────────────────────── */
-    var targetDate = new Date('2026-04-13T08:00:00+03:00').getTime();
-    var cdCard = document.querySelector('.cd-card');
-    var cdDays = document.getElementById('cdDays');
-    var cdHours = document.getElementById('cdHours');
-    var cdMins = document.getElementById('cdMins');
-    var cdSecs = document.getElementById('cdSecs');
-    var CIRC = 2 * Math.PI * 36; // ~226.2 matches stroke-dasharray
-    var ringFills = {
-        days: document.querySelector('.cd-ring__fill--days'),
-        hrs:  document.querySelector('.cd-ring__fill--hrs'),
-        min:  document.querySelector('.cd-ring__fill--min'),
-        sec:  document.querySelector('.cd-ring__fill--sec')
-    };
+    /* ── Hero phase switcher (A ↔ C only) ─────────────────────────── */
+    var phaseA = document.getElementById('heroPhaseA');
+    var phaseC = document.getElementById('heroPhaseC');
+    if (phaseA && phaseC) {
+        var heroPhases = [phaseA, phaseC];
+        var phaseDurations = [5000, 4000];
+        var activePhase = 0;
 
-    if (cdCard) {
-        var cdThemes = ['cd-theme--aurora', 'cd-theme--sunset', 'cd-theme--forest'];
-        var cdThemeIndex = 0;
-        var cdThemeInterval = null;
-
-        function applyCountdownTheme(idx) {
-            cdThemes.forEach(function(cls){ cdCard.classList.remove(cls); });
-            cdCard.classList.add(cdThemes[idx]);
-        }
-
-        function nextCountdownTheme() {
-            cdThemeIndex = (cdThemeIndex + 1) % cdThemes.length;
-            applyCountdownTheme(cdThemeIndex);
-        }
-
-        applyCountdownTheme(cdThemeIndex);
-        cdThemeInterval = setInterval(nextCountdownTheme, 10000);
-
-        var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (!prefersReducedMotion) {
-            cdCard.addEventListener('mousemove', function(e){
-                var rect = cdCard.getBoundingClientRect();
-                var relX = ((e.clientX - rect.left) / rect.width) - 0.5;
-                var relY = ((e.clientY - rect.top) / rect.height) - 0.5;
-                var rotY = relX * 9;
-                var rotX = relY * -7;
-                cdCard.style.transform = 'translateY(-4px) rotateX(' + rotX.toFixed(2) + 'deg) rotateY(' + rotY.toFixed(2) + 'deg)';
-            });
-            cdCard.addEventListener('mouseleave', function(){
-                cdCard.style.transform = '';
+        /* ── Background image slideshow ── */
+        var bgSlides = document.querySelectorAll('.hero-bg-slide');
+        var activeBg = 0;
+        var bgCount = bgSlides.length;
+        function nextBgSlide() {
+            bgSlides[activeBg].classList.remove('hero-bg-slide--active', 'hero-bg-slide--zoom');
+            activeBg = (activeBg + 1) % bgCount;
+            bgSlides[activeBg].classList.add('hero-bg-slide--active');
+            requestAnimationFrame(function(){
+                bgSlides[activeBg].classList.add('hero-bg-slide--zoom');
             });
         }
-    }
-
-    function setRing(el, fraction) {
-        if (el) el.style.strokeDashoffset = CIRC * (1 - fraction);
-    }
-
-    function updateCountdown() {
-        var now = new Date().getTime();
-        var diff = targetDate - now;
-        if (diff <= 0) {
-            cdDays.textContent = '00'; cdHours.textContent = '00';
-            cdMins.textContent = '00'; cdSecs.textContent = '00';
-            setRing(ringFills.days, 0); setRing(ringFills.hrs, 0);
-            setRing(ringFills.min, 0); setRing(ringFills.sec, 0);
-            return;
+        if (bgCount > 1) {
+            setInterval(nextBgSlide, 6000);
         }
-        var d = Math.floor(diff / (1000 * 60 * 60 * 24));
-        var h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        var m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        var s = Math.floor((diff % (1000 * 60)) / 1000);
-        cdDays.textContent = d < 10 ? '0' + d : d;
-        cdHours.textContent = h < 10 ? '0' + h : h;
-        cdMins.textContent = m < 10 ? '0' + m : m;
-        cdSecs.textContent = s < 10 ? '0' + s : s;
-        setRing(ringFills.days, Math.min(d / 365, 1));
-        setRing(ringFills.hrs, h / 24);
-        setRing(ringFills.min, m / 60);
-        setRing(ringFills.sec, s / 60);
+
+        function switchHeroPhase() {
+            heroPhases[activePhase].classList.remove('hero-phase--active');
+            activePhase = (activePhase + 1) % heroPhases.length;
+            heroPhases[activePhase].classList.add('hero-phase--active');
+            setTimeout(switchHeroPhase, phaseDurations[activePhase]);
+        }
+        setTimeout(function(){
+            setTimeout(switchHeroPhase, phaseDurations[activePhase]);
+        }, 4500);
     }
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
 
     /* ── Scroll reveals ─────────────────────────────────────────────── */
     var revealEls = document.querySelectorAll('.reveal, .anim-up, .anim-zoom');
@@ -776,60 +693,6 @@
     document.querySelectorAll('.mc-stat__num').forEach(function(el){ counterObs.observe(el); });
 
     /* Navbar scroll + mobile toggle now in base.html */
-
-    /* ── Hero phase switcher + countdown entrance ─────────────────────── */
-    var phaseA = document.getElementById('heroPhaseA');
-    var phaseB = document.getElementById('heroPhaseB');
-    var phaseC = document.getElementById('heroPhaseC');
-    var countdownCard = document.getElementById('countdownCard');
-    if (phaseA && phaseB && phaseC && countdownCard) {
-        var heroPhases = [phaseA, phaseB, phaseC];
-        var phaseDurations = [4000, 3500, 4000];
-        var activePhase = 0;
-        var countdownShown = false;
-
-        /* ── Background image slideshow ── */
-        var bgSlides = document.querySelectorAll('.hero-bg-slide');
-        var activeBg = 0;
-        var bgCount = bgSlides.length;
-        function nextBgSlide() {
-            bgSlides[activeBg].classList.remove('hero-bg-slide--active', 'hero-bg-slide--zoom');
-            activeBg = (activeBg + 1) % bgCount;
-            bgSlides[activeBg].classList.add('hero-bg-slide--active');
-            // Trigger zoom with slight delay for reflow
-            requestAnimationFrame(function(){
-                bgSlides[activeBg].classList.add('hero-bg-slide--zoom');
-            });
-        }
-        if (bgCount > 1) {
-            setInterval(nextBgSlide, 6000);
-        }
-
-        function showCountdownCard() {
-            if (!countdownShown) {
-                // Pick a random corner to pop in from
-                var corners = ['cd-pop--top-left', 'cd-pop--top-right', 'cd-pop--bottom-left', 'cd-pop--bottom-right'];
-                var corner = corners[Math.floor(Math.random() * corners.length)];
-                countdownCard.classList.add(corner);
-                // Force reflow then trigger entrance
-                countdownCard.offsetHeight;
-                countdownCard.classList.add('cd-card--show');
-                countdownShown = true;
-            }
-        }
-
-        function switchHeroPhase() {
-            heroPhases[activePhase].classList.remove('hero-phase--active');
-            activePhase = (activePhase + 1) % heroPhases.length;
-            heroPhases[activePhase].classList.add('hero-phase--active');
-            setTimeout(switchHeroPhase, phaseDurations[activePhase]);
-        }
-        // Show countdown after Phase A finishes
-        setTimeout(function(){
-            showCountdownCard();
-            setTimeout(switchHeroPhase, phaseDurations[activePhase]);
-        }, 4500);
-    }
 
     /* ── Canvas particles ───────────────────────────────────────────── */
     var canvas = document.getElementById('heroCanvas');
