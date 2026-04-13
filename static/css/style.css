@@ -2601,7 +2601,7 @@ img { max-width: 100%; }
     .fkf-nav-actions { display: none; }
 
     /* Mobile login button — prominent */
-    .nav-mobile-login { display: list-item; margin-top: 1.25rem; padding: 0 1rem; }
+    .nav-mobile-login { display: flex !important; margin-top: 1.25rem; padding: 0 1rem; justify-content: center; }
     .nav-mobile-login a {
         display: flex !important; align-items: center; justify-content: center; gap: .5rem;
         background: linear-gradient(135deg, #1B5E20, #2E7D32) !important;
