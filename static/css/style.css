@@ -324,8 +324,8 @@ img { max-width: 100%; }
 .hero-bg-slide::after {
     content: ""; position: absolute; inset: 0;
     background:
-        linear-gradient(180deg, rgba(10,15,10,.85) 0%, rgba(10,26,13,.55) 40%, rgba(10,15,10,.8) 100%),
-        radial-gradient(ellipse at 30% 40%, rgba(27,94,32,.15) 0%, transparent 60%);
+        linear-gradient(180deg, rgba(10,15,10,.55) 0%, rgba(10,26,13,.3) 40%, rgba(10,15,10,.6) 100%),
+        radial-gradient(ellipse at 30% 40%, rgba(27,94,32,.1) 0%, transparent 60%);
 }
 .hero-bg-slide--active { opacity: 1; }
 .hero-bg-slide--zoom {
