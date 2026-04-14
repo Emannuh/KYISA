@@ -142,8 +142,8 @@ SIMPLE_JWT = {
     "TOKEN_OBTAIN_SERIALIZER": "accounts.serializers.KYISATokenObtainSerializer",
 }
 
-# ── SESSION — Auto-logout after 10 minutes of inactivity ──────────────────────
-SESSION_COOKIE_AGE = 600             # 10 minutes in seconds
+# ── SESSION — Auto-logout after 15 minutes of inactivity ──────────────────────
+SESSION_COOKIE_AGE = 900             # 15 minutes in seconds
 SESSION_SAVE_EVERY_REQUEST = True    # Reset expiry on every request (activity)
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 

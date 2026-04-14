@@ -156,9 +156,9 @@
         });
     });
 
-    /* ── Auto-logout after 10 minutes of inactivity ────────────────── */
+    /* ── Auto-logout after 15 minutes of inactivity ────────────────── */
     (function(){
-        var TIMEOUT = 10 * 60 * 1000; // 10 minutes in ms
+        var TIMEOUT = 15 * 60 * 1000; // 15 minutes in ms
         var timer;
         function resetTimer(){
             clearTimeout(timer);

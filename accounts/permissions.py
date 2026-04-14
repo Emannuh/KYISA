@@ -150,6 +150,20 @@ class IsAnyStaff(BasePermission):
         )
 
 
+class IsFixtureEditor(BasePermission):
+    """Competition Manager, Admin, or Media Manager can edit fixtures."""
+    message = "You must be a Competition Manager, Admin, or Media Manager to perform this action."
+    def has_permission(self, request, view):
+        return bool(
+            request.user and request.user.is_authenticated and
+            (request.user.is_staff or request.user.role in [
+                UserRole.COMPETITION_MANAGER,
+                UserRole.ADMIN,
+                UserRole.MEDIA_MANAGER,
+            ])
+        )
+
+
 class ReadOnly(BasePermission):
     """Authenticated users can read; only admins/managers can write."""
     def has_permission(self, request, view):

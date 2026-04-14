@@ -12,7 +12,7 @@ from .serializers import (
     CompetitionSerializer, VenueSerializer,
     PoolSerializer, PoolTeamSerializer, FixtureSerializer,
 )
-from accounts.permissions import IsCompetitionManager, ReadOnly
+from accounts.permissions import IsCompetitionManager, IsFixtureEditor, ReadOnly
 
 
 # ── COMPETITION ───────────────────────────────────────────────────────────────
@@ -87,7 +87,7 @@ class PoolTeamManageView(generics.CreateAPIView):
 
 class FixtureViewSet(ModelViewSet):
     """
-    Competition Manager: create, update, delete.
+    Competition Manager, Admin, Media Manager: create, update, delete.
     Authenticated users: read.
     """
     queryset = Fixture.objects.all().select_related(
@@ -101,7 +101,7 @@ class FixtureViewSet(ModelViewSet):
     def get_permissions(self):
         if self.action in ("list", "retrieve"):
             return [permissions.IsAuthenticated()]
-        return [IsCompetitionManager()]
+        return [IsFixtureEditor()]
 
     @extend_schema(tags=["fixtures"])
     def list(self, request, *args, **kwargs):

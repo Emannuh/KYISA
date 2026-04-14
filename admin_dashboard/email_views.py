@@ -182,7 +182,7 @@ def email_resend(request, email_id):
         msg = EmailMultiAlternatives(
             subject=original.subject,
             body=original.body_text,
-            from_email=original.from_email,
+            from_email=django_settings.DEFAULT_FROM_EMAIL,
             to=to_list,
             cc=cc_list if cc_list else None,
         )
