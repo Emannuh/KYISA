@@ -1865,7 +1865,7 @@ def match_report_detail_view(request, report_pk):
     })
 
 
-@role_required('coordinator', 'admin')
+@role_required('coordinator', 'admin', 'media_manager')
 def match_report_review_view(request, report_pk):
     """Referee Manager approves or returns a match report."""
     report = get_object_or_404(MatchReport, pk=report_pk)
@@ -2849,7 +2849,7 @@ def coordinator_match_reports_view(request):
         'reports': reports,
         'status_filter': status_filter,
         'status_choices': MatchReportStatus.choices,
-        'discipline_label': dict(SportType.choices).get(discipline, discipline or 'Not Assigned'),
+        'discipline_label': 'All Disciplines' if request.user.role == 'media_manager' else dict(SportType.choices).get(discipline, discipline or 'Not Assigned'),
     })
 
 
