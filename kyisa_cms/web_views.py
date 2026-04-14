@@ -2217,15 +2217,20 @@ def coordinator_dashboard_view(request):
     })
 
 
-@role_required('coordinator', 'admin')
+@role_required('coordinator', 'admin', 'media_manager')
 def coordinator_competitions_view(request):
     """List all competitions for the coordinator's discipline."""
     from competitions.models import Competition, SportType, CompetitionStatus
 
     discipline = _coordinator_discipline(request.user)
-    competitions = Competition.objects.filter(
-        sport_type=discipline
-    ).order_by('-start_date') if discipline else Competition.objects.none()
+    if request.user.role == 'media_manager':
+        competitions = Competition.objects.all().order_by('-start_date')
+    elif discipline:
+        competitions = Competition.objects.filter(
+            sport_type=discipline
+        ).order_by('-start_date')
+    else:
+        competitions = Competition.objects.none()
 
     status_filter = request.GET.get('status', '')
     if status_filter:
@@ -2239,7 +2244,7 @@ def coordinator_competitions_view(request):
     })
 
 
-@role_required('coordinator', 'admin')
+@role_required('coordinator', 'admin', 'media_manager')
 def coordinator_competition_manage_view(request, pk):
     """Central hub for a coordinator to manage a single competition in their discipline."""
     from competitions.models import (
@@ -2249,9 +2254,9 @@ def coordinator_competition_manage_view(request, pk):
 
     competition = get_object_or_404(Competition, pk=pk)
 
-    # Verify discipline ownership
+    # Verify discipline ownership (media managers can access all)
     discipline = _coordinator_discipline(request.user)
-    if discipline and competition.sport_type != discipline and not request.user.is_superuser:
+    if discipline and competition.sport_type != discipline and not request.user.is_superuser and request.user.role != 'media_manager':
         messages.error(request, 'This competition is not in your discipline.')
         return redirect('coordinator_dashboard')
 
@@ -2587,14 +2592,14 @@ def coordinator_allocate_venue_view(request, pk):
     })
 
 
-@role_required('coordinator', 'admin')
+@role_required('coordinator', 'admin', 'media_manager')
 def coordinator_edit_fixture_view(request, pk, fixture_pk):
     """Coordinator: Edit a specific fixture."""
     from competitions.models import Competition, Fixture, Venue, FixtureStatus
 
     competition = get_object_or_404(Competition, pk=pk)
     discipline = _coordinator_discipline(request.user)
-    if discipline and competition.sport_type != discipline and not request.user.is_superuser:
+    if discipline and competition.sport_type != discipline and not request.user.is_superuser and request.user.role != 'media_manager':
         messages.error(request, 'This competition is not in your discipline.')
         return redirect('coordinator_dashboard')
 
@@ -2816,13 +2821,15 @@ def coordinator_edit_standings_view(request, pk):
     })
 
 
-@role_required('coordinator', 'admin')
+@role_required('coordinator', 'admin', 'media_manager')
 def coordinator_match_reports_view(request):
     """Coordinator: View and approve match reports for their discipline."""
     from matches.models import MatchReport, MatchReportStatus
 
     discipline = _coordinator_discipline(request.user)
-    if discipline:
+    if request.user.role == 'media_manager':
+        reports = MatchReport.objects.all()
+    elif discipline:
         reports = MatchReport.objects.filter(
             fixture__competition__sport_type=discipline
         )
