@@ -24,6 +24,9 @@ for _host in ("localhost", "127.0.0.1", "[::1]"):
     if _host not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(_host)
 
+# Trust the X-Forwarded-Proto header from Nginx reverse proxy
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 # ── APPS ───────────────────────────────────────────────────────────────────────
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -331,6 +334,11 @@ LOGGING = {
             "handlers": ["console", "mail_admins"],
             "level": "INFO",
             "propagate": True,
+        },
+        "django.security.DisallowedHost": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
         },
         "django.request": {
             "handlers": ["mail_admins"],
