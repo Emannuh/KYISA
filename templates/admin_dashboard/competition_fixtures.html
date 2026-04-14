@@ -149,7 +149,7 @@
                     <td><strong>{{ fx.home_team.name }}</strong></td>
                     <td style="text-align:center;">
                         {% if fx.status == 'completed' %}
-                            <span class="score-badge completed">{{ fx.home_score }} - {{ fx.away_score }}</span>
+                            <a href="{% url 'admin_edit_fixture' pk=competition.pk fixture_pk=fx.pk %}" class="score-badge completed" style="text-decoration:none;cursor:pointer;" title="Click to edit result">{{ fx.home_score }} - {{ fx.away_score }}</a>
                         {% elif fx.status == 'live' %}
                             <span class="score-badge live">{{ fx.home_score|default:"0" }} - {{ fx.away_score|default:"0" }}</span>
                         {% else %}
@@ -218,7 +218,7 @@
                     <td><strong>{{ fx.home_team.name|default:"TBA" }}</strong></td>
                     <td style="text-align:center;">
                         {% if fx.status == 'completed' %}
-                            <span class="score-badge completed">{{ fx.home_score }} - {{ fx.away_score }}</span>
+                            <a href="{% url 'admin_edit_fixture' pk=competition.pk fixture_pk=fx.pk %}" class="score-badge completed" style="text-decoration:none;cursor:pointer;" title="Click to edit result">{{ fx.home_score }} - {{ fx.away_score }}</a>
                         {% elif fx.status == 'live' %}
                             <span class="score-badge live">{{ fx.home_score|default:"0" }} - {{ fx.away_score|default:"0" }}</span>
                         {% else %}
@@ -267,7 +267,7 @@
                     <td><strong>{{ fx.home_team.name }}</strong></td>
                     <td style="text-align:center;">
                         {% if fx.status == 'completed' %}
-                            <span class="score-badge completed">{{ fx.home_score }} - {{ fx.away_score }}</span>
+                            <a href="{% url 'admin_edit_fixture' pk=competition.pk fixture_pk=fx.pk %}" class="score-badge completed" style="text-decoration:none;cursor:pointer;" title="Click to edit result">{{ fx.home_score }} - {{ fx.away_score }}</a>
                         {% else %}
                             <form method="post" action="{% url 'admin_quick_result' pk=competition.pk fixture_pk=fx.pk %}" class="quick-score-form">
                                 {% csrf_token %}
