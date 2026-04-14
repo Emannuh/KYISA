@@ -16,11 +16,30 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           command_timeout: 2m
           script: |
-            echo "=== EMAIL CONFIG ==="
-            grep -i "email\|ses\|smtp\|FROM_EMAIL" /opt/kyisa/.env 2>/dev/null || echo "No email vars found in .env"
+            echo "=== AWS CREDENTIALS CHECK ==="
+            grep -i "AWS_ACCESS_KEY\|AWS_SECRET\|AWS_SESSION\|AWS_ROLE\|AWS_PROFILE" /opt/kyisa/.env 2>/dev/null | sed 's/=.*/=***REDACTED***/' || echo "No AWS credential vars in .env"
             echo ""
-            echo "=== DOCKER LOGS (last 30 email-related lines) ==="
-            docker logs kyisa-cms 2>&1 | grep -i "email\|smtp\|ses\|mail\|send" | tail -30 || echo "No email logs found"
+            echo "=== FULL .env KEYS (no values) ==="
+            awk -F= '{print $1}' /opt/kyisa/.env 2>/dev/null || echo "Cannot read .env"
             echo ""
-            echo "=== CURRENT EMAIL BACKEND (from Django) ==="
-            docker exec kyisa-cms python -c "from django.conf import settings; print('BACKEND:', settings.EMAIL_BACKEND); print('HOST:', settings.EMAIL_HOST); print('PORT:', settings.EMAIL_PORT); print('FROM:', settings.DEFAULT_FROM_EMAIL); print('TLS:', settings.EMAIL_USE_TLS)" 2>&1 || echo "Could not query Django settings"
+            echo "=== EC2 IAM ROLE CHECK ==="
+            curl -s --max-time 3 http://169.254.169.254/latest/meta-data/iam/security-credentials/ 2>/dev/null || echo "No IAM role attached"
+            echo ""
+            echo "=== DJANGO TEST EMAIL ==="
+            docker exec kyisa-cms python -c "
+            import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','kyisa_cms.settings')
+            import django; django.setup()
+            from django.core.mail import send_mail
+            from django.conf import settings
+            print('BACKEND:', settings.EMAIL_BACKEND)
+            print('FROM:', settings.DEFAULT_FROM_EMAIL)
+            print('SES_REGION:', getattr(settings, 'AWS_SES_REGION_NAME', 'NOT SET'))
+            try:
+                result = send_mail('KYISA Test', 'Test email from diagnostic workflow', settings.DEFAULT_FROM_EMAIL, ['admin@kyisa.org'], fail_silently=False)
+                print('SEND RESULT:', result)
+            except Exception as e:
+                print('SEND ERROR:', type(e).__name__, str(e))
+            " 2>&1
+            echo ""
+            echo "=== DOCKER LOGS (last 50 lines) ==="
+            docker logs kyisa-cms 2>&1 | tail -50
