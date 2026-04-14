@@ -538,7 +538,7 @@
                                 <span class="text-muted mx-1">vs</span>
                                 {% if item.match.away_team %}{{ item.match.away_team.display_name }}{% else %}TBD{% endif %}
                             </td>
-                            <td>{{ item.match.match_date|date:"d M Y, H:i" }}</td>
+                            <td>{{ item.match.match_date|date:"d M Y" }}, {{ item.match.kickoff_time|time:"H:i" }}</td>
                             <td>{{ item.match.venue|default:"TBD" }}</td>
                             <td>
                                 {% if item.squad %}

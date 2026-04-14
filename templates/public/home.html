@@ -157,7 +157,7 @@
                                 <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
                                     <span style="font-size:.8rem;font-weight:600;color:#fff;flex:1;text-align:left;">{{ match.home_team.name|truncatewords:2 }}</span>
                                     <div style="background:rgba(249,168,37,.15);border-radius:6px;padding:.2rem .5rem;text-align:center;">
-                                        <span style="font-size:.68rem;font-weight:700;color:#F9A825;">{{ match.match_date|date:"d M · H:i" }}</span>
+                                        <span style="font-size:.68rem;font-weight:700;color:#F9A825;">{{ match.match_date|date:"d M" }} · {{ match.kickoff_time|time:"H:i" }}</span>
                                     </div>
                                     <span style="font-size:.8rem;font-weight:600;color:#fff;flex:1;text-align:right;">{{ match.away_team.name|truncatewords:2 }}</span>
                                 </div>
@@ -441,7 +441,7 @@
                                 <span class="mc-card__team">{{ match.home_team.name }}</span>
                                 <div class="mc-card__vs">
                                     <strong>VS</strong>
-                                    <small>{{ match.match_date|date:"d M · H:i" }}</small>
+                                    <small>{{ match.match_date|date:"d M" }} · {{ match.kickoff_time|time:"H:i" }}</small>
                                 </div>
                                 <span class="mc-card__team">{{ match.away_team.name }}</span>
                             </div>
