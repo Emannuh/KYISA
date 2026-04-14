@@ -607,6 +607,7 @@ def public_competition_standings_view(request, pk):
     from matches.stats_engine import (
         get_top_scorers, get_top_assisters,
         get_disciplinary_table, get_clean_sheet_leaders,
+        get_fair_play_table,
     )
 
     competition = get_object_or_404(Competition, pk=pk)
