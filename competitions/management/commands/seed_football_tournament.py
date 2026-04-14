@@ -18,11 +18,11 @@ from teams.models import Team, County
 
 # ── VENUE DEFINITIONS ─────────────────────────────────────────────────────
 VENUES = {
-    "Stadium 1": {"county": "Meru", "city": "Meru", "capacity": 5000, "surface": "Natural Grass"},
-    "Stadium 2": {"county": "Meru", "city": "Meru", "capacity": 5000, "surface": "Natural Grass"},
-    "Ndururumo 1": {"county": "Meru", "city": "Meru", "capacity": 2000, "surface": "Natural Grass"},
-    "Ndururumo 2": {"county": "Meru", "city": "Meru", "capacity": 2000, "surface": "Natural Grass"},
-    "Ndururumo 3": {"county": "Meru", "city": "Meru", "capacity": 2000, "surface": "Natural Grass"},
+    "Nyahururu Stadium Pitch 1": {"county": "Laikipia", "city": "Nyahururu", "capacity": 5000, "surface": "Natural Grass"},
+    "Nyahururu Stadium Pitch 2": {"county": "Laikipia", "city": "Nyahururu", "capacity": 5000, "surface": "Natural Grass"},
+    "Ndururumo 1": {"county": "Laikipia", "city": "Nyahururu", "capacity": 2000, "surface": "Natural Grass"},
+    "Ndururumo 2": {"county": "Laikipia", "city": "Nyahururu", "capacity": 2000, "surface": "Natural Grass"},
+    "Ndururumo 3": {"county": "Laikipia", "city": "Nyahururu", "capacity": 2000, "surface": "Natural Grass"},
 }
 
 # ── MEN'S POOLS ───────────────────────────────────────────────────────────
@@ -44,67 +44,67 @@ WOMEN_POOLS = {
 #           is_knockout, knockout_round, bracket_position)
 FIXTURES = [
     # ── TUESDAY 14/04/2026 ─────────────────────────────────
-    (1,  "2026-04-14", "14:30", "Stadium 1",   "Laikipia",      "Narok",       "M", "Pool A", False, "", 0),
+    (1,  "2026-04-14", "14:30", "Nyahururu Stadium Pitch 1",   "Laikipia",      "Narok",       "M", "Pool A", False, "", 0),
     (2,  "2026-04-14", "15:00", "Ndururumo 1",  "Wajir",         "Kirinyaga",   "M", "Pool B", False, "", 0),
     (3,  "2026-04-14", "15:00", "Ndururumo 3",  "Tharaka Nithi", "Busia",       "M", "Pool C", False, "", 0),
-    (4,  "2026-04-14", "15:00", "Stadium 2",    "Nyandarua",     "Garissa",     "M", "Pool D", False, "", 0),
+    (4,  "2026-04-14", "15:00", "Nyahururu Stadium Pitch 2",    "Nyandarua",     "Garissa",     "M", "Pool D", False, "", 0),
     (5,  "2026-04-14", "15:00", "Ndururumo 2",  "Laikipia",      "Kajiado",     "W", "Pool A", False, "", 0),
 
     # ── WEDNESDAY 15/04/2026 ───────────────────────────────
-    (6,  "2026-04-15", "09:00", "Stadium 1",    "Makueni",       "Nakuru",      "M", "Pool A", False, "", 0),
+    (6,  "2026-04-15", "09:00", "Nyahururu Stadium Pitch 1",    "Makueni",       "Nakuru",      "M", "Pool A", False, "", 0),
     (7,  "2026-04-15", "09:00", "Ndururumo 1",  "Mandera",       "Kilifi",      "M", "Pool B", False, "", 0),
     (8,  "2026-04-15", "09:00", "Ndururumo 3",  "Tana River",    "Siaya",       "M", "Pool C", False, "", 0),
-    (9,  "2026-04-15", "09:00", "Stadium 2",    "Meru",          "Migori",      "M", "Pool D", False, "", 0),
+    (9,  "2026-04-15", "09:00", "Nyahururu Stadium Pitch 2",    "Meru",          "Migori",      "M", "Pool D", False, "", 0),
     (10, "2026-04-15", "09:00", "Ndururumo 2",  "Meru",          "Siaya",       "W", "Pool A", False, "", 0),
     (11, "2026-04-15", "11:00", "Ndururumo 2",  "Makueni",       "Narok",       "W", "Pool B", False, "", 0),
-    (12, "2026-04-15", "13:00", "Stadium 1",    "Laikipia",      "Makueni",     "M", "Pool A", False, "", 0),
+    (12, "2026-04-15", "13:00", "Nyahururu Stadium Pitch 1",    "Laikipia",      "Makueni",     "M", "Pool A", False, "", 0),
     (13, "2026-04-15", "13:00", "Ndururumo 1",  "Wajir",         "Mandera",     "M", "Pool B", False, "", 0),
     (14, "2026-04-15", "13:00", "Ndururumo 3",  "Tharaka Nithi", "Tana River",  "M", "Pool C", False, "", 0),
-    (15, "2026-04-15", "13:00", "Stadium 2",    "Meru",          "Nyandarua",   "M", "Pool D", False, "", 0),
+    (15, "2026-04-15", "13:00", "Nyahururu Stadium Pitch 2",    "Meru",          "Nyandarua",   "M", "Pool D", False, "", 0),
     (16, "2026-04-15", "13:00", "Ndururumo 2",  "Laikipia",      "Meru",        "W", "Pool A", False, "", 0),
-    (17, "2026-04-15", "15:00", "Stadium 1",    "Narok",         "Nakuru",      "M", "Pool A", False, "", 0),
+    (17, "2026-04-15", "15:00", "Nyahururu Stadium Pitch 1",    "Narok",         "Nakuru",      "M", "Pool A", False, "", 0),
     (18, "2026-04-15", "15:00", "Ndururumo 1",  "Kirinyaga",     "Kilifi",      "M", "Pool B", False, "", 0),
     (19, "2026-04-15", "15:00", "Ndururumo 3",  "Busia",         "Siaya",       "M", "Pool C", False, "", 0),
-    (20, "2026-04-15", "15:00", "Stadium 2",    "Migori",        "Garissa",     "M", "Pool D", False, "", 0),
+    (20, "2026-04-15", "15:00", "Nyahururu Stadium Pitch 2",    "Migori",        "Garissa",     "M", "Pool D", False, "", 0),
     (21, "2026-04-15", "15:00", "Ndururumo 2",  "Kajiado",       "Siaya",       "W", "Pool A", False, "", 0),
 
     # ── THURSDAY 16/04/2026 ────────────────────────────────
-    (22, "2026-04-16", "09:00", "Stadium 1",    "Nakuru",        "Laikipia",    "M", "Pool A", False, "", 0),
+    (22, "2026-04-16", "09:00", "Nyahururu Stadium Pitch 1",    "Nakuru",        "Laikipia",    "M", "Pool A", False, "", 0),
     (23, "2026-04-16", "09:00", "Ndururumo 1",  "Kilifi",        "Wajir",       "M", "Pool B", False, "", 0),
     (24, "2026-04-16", "09:00", "Ndururumo 3",  "Siaya",         "Tharaka Nithi","M","Pool C", False, "", 0),
-    (25, "2026-04-16", "09:00", "Stadium 2",    "Garissa",       "Meru",        "M", "Pool D", False, "", 0),
+    (25, "2026-04-16", "09:00", "Nyahururu Stadium Pitch 2",    "Garissa",       "Meru",        "M", "Pool D", False, "", 0),
     (26, "2026-04-16", "09:00", "Ndururumo 2",  "Siaya",         "Laikipia",    "W", "Pool A", False, "", 0),
     (27, "2026-04-16", "11:00", "Ndururumo 2",  "Kirinyaga",     "Makueni",     "W", "Pool B", False, "", 0),
-    (28, "2026-04-16", "11:00", "Stadium 1",    "Narok",         "Makueni",     "M", "Pool A", False, "", 0),
+    (28, "2026-04-16", "11:00", "Nyahururu Stadium Pitch 1",    "Narok",         "Makueni",     "M", "Pool A", False, "", 0),
     (29, "2026-04-16", "11:00", "Ndururumo 1",  "Kirinyaga",     "Mandera",     "M", "Pool B", False, "", 0),
     (30, "2026-04-16", "11:00", "Ndururumo 3",  "Busia",         "Tana River",  "M", "Pool C", False, "", 0),
-    (31, "2026-04-16", "11:00", "Stadium 2",    "Migori",        "Nyandarua",   "M", "Pool D", False, "", 0),
+    (31, "2026-04-16", "11:00", "Nyahururu Stadium Pitch 2",    "Migori",        "Nyandarua",   "M", "Pool D", False, "", 0),
     (32, "2026-04-16", "13:00", "Ndururumo 2",  "Kajiado",       "Meru",        "W", "Pool A", False, "", 0),
     (33, "2026-04-16", "15:00", "Ndururumo 2",  "Narok",         "Kirinyaga",   "W", "Pool B", False, "", 0),
 
     # ── THURSDAY 16/04 KNOCKOUT: MEN QFs ───────────────────
-    (34, "2026-04-16", "15:00", "Stadium 1",    None, None,      "M", "", True, KnockoutRound.QUARTERFINAL, 1),
+    (34, "2026-04-16", "15:00", "Nyahururu Stadium Pitch 1",    None, None,      "M", "", True, KnockoutRound.QUARTERFINAL, 1),
     (35, "2026-04-16", "15:00", "Ndururumo 1",  None, None,      "M", "", True, KnockoutRound.QUARTERFINAL, 2),
     (36, "2026-04-16", "15:00", "Ndururumo 3",  None, None,      "M", "", True, KnockoutRound.QUARTERFINAL, 3),
-    (37, "2026-04-16", "15:00", "Stadium 2",    None, None,      "M", "", True, KnockoutRound.QUARTERFINAL, 4),
+    (37, "2026-04-16", "15:00", "Nyahururu Stadium Pitch 2",    None, None,      "M", "", True, KnockoutRound.QUARTERFINAL, 4),
 
     # ── FRIDAY 17/04/2026 ──────────────────────────────────
     # Women Semis
     (38, "2026-04-17", "09:00", "Ndururumo 1",  None, None,      "W", "", True, KnockoutRound.SEMIFINAL, 1),
     (39, "2026-04-17", "09:00", "Ndururumo 3",  None, None,      "W", "", True, KnockoutRound.SEMIFINAL, 2),
     # Men Semis
-    (40, "2026-04-17", "09:00", "Stadium 1",    None, None,      "M", "", True, KnockoutRound.SEMIFINAL, 1),
-    (41, "2026-04-17", "09:00", "Stadium 2",    None, None,      "M", "", True, KnockoutRound.SEMIFINAL, 2),
+    (40, "2026-04-17", "09:00", "Nyahururu Stadium Pitch 1",    None, None,      "M", "", True, KnockoutRound.SEMIFINAL, 1),
+    (41, "2026-04-17", "09:00", "Nyahururu Stadium Pitch 2",    None, None,      "M", "", True, KnockoutRound.SEMIFINAL, 2),
     # Women 3rd place
-    (42, "2026-04-17", "15:00", "Stadium 2",    None, None,      "W", "", True, KnockoutRound.THIRD_PLACE, 1),
+    (42, "2026-04-17", "15:00", "Nyahururu Stadium Pitch 2",    None, None,      "W", "", True, KnockoutRound.THIRD_PLACE, 1),
     # Men 3rd place
-    (43, "2026-04-17", "15:00", "Stadium 1",    None, None,      "M", "", True, KnockoutRound.THIRD_PLACE, 1),
+    (43, "2026-04-17", "15:00", "Nyahururu Stadium Pitch 1",    None, None,      "M", "", True, KnockoutRound.THIRD_PLACE, 1),
 
     # ── SATURDAY 18/04/2026 ────────────────────────────────
     # Women Final
-    (44, "2026-04-18", "10:30", "Stadium 1",    None, None,      "W", "", True, KnockoutRound.FINAL, 1),
+    (44, "2026-04-18", "10:30", "Nyahururu Stadium Pitch 1",    None, None,      "W", "", True, KnockoutRound.FINAL, 1),
     # Men Final
-    (45, "2026-04-18", "14:00", "Stadium 1",    None, None,      "M", "", True, KnockoutRound.FINAL, 1),
+    (45, "2026-04-18", "14:00", "Nyahururu Stadium Pitch 1",    None, None,      "M", "", True, KnockoutRound.FINAL, 1),
 ]
 
 # Knockout match descriptions (for display)

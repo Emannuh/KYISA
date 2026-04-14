@@ -193,6 +193,74 @@
 <!-- ══════════════════════════════════════════════════════════════════════════
      MEDIA HIGHLIGHTS — PHOTOS, NEWS, VIDEOS FROM MEDIA MANAGER
      ══════════════════════════════════════════════════════════════════════════ -->
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     GROUP STANDINGS
+     ══════════════════════════════════════════════════════════════════════════ -->
+{% if standings_data %}
+<section class="sec" id="standings" style="background:#f8f9fa;padding:3rem 0;">
+    <div class="container">
+        <div class="reveal" style="text-align:center;margin-bottom:2rem;">
+            <span style="display:inline-block;background:#1B5E20;color:#fff;padding:.3rem .8rem;border-radius:20px;font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:.5rem;"><i class="bi bi-table"></i> Standings</span>
+            <h2 style="font-family:'Outfit',sans-serif;font-size:1.6rem;font-weight:700;color:#1a1a1a;margin:0;">Group Tables</h2>
+            <p style="color:#888;font-size:.88rem;margin-top:.3rem;">Live standings updated after each match</p>
+        </div>
+
+        {% for comp_data in standings_data %}
+        <div class="reveal" style="margin-bottom:2.5rem;">
+            <h3 style="font-family:'Outfit',sans-serif;font-size:1.15rem;font-weight:700;color:#1B5E20;margin-bottom:1rem;padding-left:.5rem;border-left:3px solid #F9A825;">
+                <i class="bi bi-trophy"></i> {{ comp_data.competition.name }}
+            </h3>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.25rem;">
+                {% for pool_info in comp_data.pools %}
+                <div class="card" style="border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);">
+                    <div style="background:linear-gradient(135deg,#003311,#006B23);padding:.6rem 1rem;">
+                        <h4 style="margin:0;color:#fff;font-size:.9rem;font-weight:700;letter-spacing:.5px;">{{ pool_info.pool.name }}</h4>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%;border-collapse:collapse;font-size:.8rem;">
+                            <thead>
+                                <tr style="background:#f0f2f5;">
+                                    <th style="padding:.5rem .6rem;text-align:left;font-weight:700;color:#555;width:40%;">Team</th>
+                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:700;color:#555;">P</th>
+                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:700;color:#555;">W</th>
+                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:700;color:#555;">D</th>
+                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:700;color:#555;">L</th>
+                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:700;color:#555;">GF</th>
+                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:700;color:#555;">GA</th>
+                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:700;color:#555;">GD</th>
+                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:800;color:#1B5E20;">Pts</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pt in pool_info.teams %}
+                                <tr style="border-bottom:1px solid #eee;{% if forloop.counter <= 2 %}background:rgba(27,94,32,.04);{% endif %}">
+                                    <td style="padding:.5rem .6rem;font-weight:600;color:#1a1a1a;white-space:nowrap;">
+                                        <span style="display:inline-block;width:18px;text-align:center;color:#888;font-size:.75rem;margin-right:.25rem;">{{ forloop.counter }}</span>
+                                        {{ pt.team.name }}
+                                    </td>
+                                    <td style="padding:.5rem .4rem;text-align:center;color:#555;">{{ pt.played }}</td>
+                                    <td style="padding:.5rem .4rem;text-align:center;color:#555;">{{ pt.won }}</td>
+                                    <td style="padding:.5rem .4rem;text-align:center;color:#555;">{{ pt.drawn }}</td>
+                                    <td style="padding:.5rem .4rem;text-align:center;color:#555;">{{ pt.lost }}</td>
+                                    <td style="padding:.5rem .4rem;text-align:center;color:#555;">{{ pt.goals_for }}</td>
+                                    <td style="padding:.5rem .4rem;text-align:center;color:#555;">{{ pt.goals_against }}</td>
+                                    <td style="padding:.5rem .4rem;text-align:center;color:#555;">{{ pt.goal_difference }}</td>
+                                    <td style="padding:.5rem .4rem;text-align:center;font-weight:800;color:#1B5E20;">{{ pt.points }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
 <section class="sec media-highlights" id="news">
     <div class="container">
 

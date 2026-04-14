@@ -216,6 +216,27 @@ def home_view(request):
         is_published=True
     ).order_by('-created_at')[:4]
 
+    # Pool standings for active competitions (group_stage)
+    from competitions.models import Pool, PoolTeam
+    active_competitions = Competition.objects.filter(
+        status__in=['group_stage', 'knockout_stage']
+    ).order_by('name')
+
+    standings_data = []
+    for comp in active_competitions:
+        pools = Pool.objects.filter(competition=comp).order_by('name')
+        comp_pools = []
+        for pool in pools:
+            teams = PoolTeam.objects.filter(pool=pool).select_related('team')
+            sorted_teams = sorted(
+                teams,
+                key=lambda pt: (pt.points, pt.goal_difference, pt.goals_for),
+                reverse=True,
+            )
+            comp_pools.append({'pool': pool, 'teams': sorted_teams})
+        if comp_pools:
+            standings_data.append({'competition': comp, 'pools': comp_pools})
+
     return render(request, 'public/home.html', {
         'active_page': 'home',
         'stats': stats,
@@ -226,6 +247,7 @@ def home_view(request):
         'featured_articles': featured_articles,
         'latest_albums': latest_albums,
         'latest_videos': latest_videos,
+        'standings_data': standings_data,
     })
 
 
