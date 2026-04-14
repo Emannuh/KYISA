@@ -2718,6 +2718,15 @@ def coordinator_edit_fixture_view(request, pk, fixture_pk):
                     'away_score_after': fixture.away_score,
                 },
             )
+
+            # Auto-update pool standings and knockout winner
+            from matches.stats_engine import recalculate_pool_standings
+            if fixture.pool:
+                recalculate_pool_standings(fixture.pool)
+            if fixture.is_knockout and fixture.home_score is not None and fixture.away_score is not None:
+                fixture.determine_winner()
+                fixture.save(update_fields=['winner'])
+
         messages.success(request, f'Fixture updated: {fixture}')
         return redirect('coordinator_competition_manage', pk=pk)
 
