@@ -122,6 +122,15 @@
             <p>Manage all competitions, pools &amp; fixtures</p>
         </div>
     </a>
+    <a href="{% url 'admin_manage_fixtures' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);color:#1B5E20;">
+            <i class="bi bi-journal-check"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Fixtures &amp; Results</h4>
+            <p>View pools, edit fixtures, enter results</p>
+        </div>
+    </a>
     <a href="{% url 'teams_list' %}" class="dash-tile">
         <div class="tile-icon" style="background:linear-gradient(135deg,#E0F2F1,#B2DFDB);color:#00695C;">
             <i class="bi bi-people"></i>
@@ -189,6 +198,249 @@
                 {% if pending_appeals %}<span class="tile-badge" style="background:#C62828;color:#fff;">{{ pending_appeals }}</span>{% endif %}
             </h4>
             <p>Filed appeals &amp; jury decisions</p>
+        </div>
+    </a>
+</div>
+
+<!-- Coordinator Functions -->
+<div class="dash-section-title"><i class="bi bi-person-gear"></i> Coordinator Functions</div>
+<div class="dash-actions">
+    <a href="{% url 'coordinator_competitions' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#E0F2F1,#B2DFDB);color:#00695C;">
+            <i class="bi bi-trophy"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Discipline Competitions</h4>
+            <p>View &amp; manage all discipline competitions</p>
+        </div>
+    </a>
+    <a href="{% url 'coordinator_appointments' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);color:#1565C0;">
+            <i class="bi bi-calendar-event"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Referee Appointments</h4>
+            <p>Appoint referees to fixtures</p>
+        </div>
+    </a>
+    <a href="{% url 'coordinator_match_reports' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);color:#E65100;">
+            <i class="bi bi-clipboard-data"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Match Reports
+                {% if pending_reports %}<span class="tile-badge" style="background:#E65100;color:#fff;">{{ pending_reports }}</span>{% endif %}
+            </h4>
+            <p>Review &amp; approve match reports</p>
+        </div>
+    </a>
+    <a href="{% url 'coordinator_referees' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#FFEBEE,#FFCDD2);color:#C62828;">
+            <i class="bi bi-flag"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Manage Referees</h4>
+            <p>Approve pending &amp; manage referees</p>
+        </div>
+    </a>
+    <a href="{% url 'coordinator_squads' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#F3E5F5,#E1BEE7);color:#6A1B9A;">
+            <i class="bi bi-people"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Match Day Squads</h4>
+            <p>View submitted squad lists</p>
+        </div>
+    </a>
+    <a href="{% url 'coordinator_venues' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);color:#2E7D32;">
+            <i class="bi bi-geo-alt"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Venues</h4>
+            <p>Select &amp; manage match venues</p>
+        </div>
+    </a>
+</div>
+
+<!-- Finance & Oversight (Treasurer / SG) -->
+<div class="dash-section-title"><i class="bi bi-cash-stack"></i> Finance &amp; Oversight</div>
+<div class="dash-actions">
+    <a href="{% url 'treasurer_county_payments' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);color:#1B5E20;">
+            <i class="bi bi-credit-card"></i>
+        </div>
+        <div class="tile-text">
+            <h4>County Payments</h4>
+            <p>View &amp; manage county payment submissions</p>
+        </div>
+    </a>
+    <a href="{% url 'treasurer_county_registrations' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#FFF8E1,#FFECB3);color:#F57F17;">
+            <i class="bi bi-building"></i>
+        </div>
+        <div class="tile-text">
+            <h4>County Registrations (Finance)</h4>
+            <p>Review pending registrations with payment status</p>
+        </div>
+    </a>
+    <a href="{% url 'manage_transfers' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);color:#1565C0;">
+            <i class="bi bi-arrow-left-right"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Transfers</h4>
+            <p>Manage player transfer requests</p>
+        </div>
+    </a>
+    <a href="{% url 'view_suspensions' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#FFEBEE,#FFCDD2);color:#C62828;">
+            <i class="bi bi-exclamation-triangle"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Suspensions</h4>
+            <p>Player and team disciplinary actions</p>
+        </div>
+    </a>
+    <a href="{% url 'statistics_dashboard' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#F3E5F5,#E1BEE7);color:#6A1B9A;">
+            <i class="bi bi-bar-chart-line"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Statistics</h4>
+            <p>System-wide statistics dashboard</p>
+        </div>
+    </a>
+</div>
+
+<!-- Secretary General Oversight -->
+<div class="dash-section-title"><i class="bi bi-shield-lock"></i> Secretary General Oversight</div>
+<div class="dash-actions">
+    <a href="{% url 'sg_verifications' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);color:#1B5E20;">
+            <i class="bi bi-person-vcard"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Player Verifications</h4>
+            <p>All verification statuses across every discipline</p>
+        </div>
+    </a>
+    <a href="{% url 'sg_verified_players' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#E0F2F1,#B2DFDB);color:#00695C;">
+            <i class="bi bi-patch-check-fill"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Verified Players</h4>
+            <p>Who was verified, when, and by which official</p>
+        </div>
+    </a>
+    <a href="{% url 'sg_appeals' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#FBE9E7,#FFCCBC);color:#BF360C;">
+            <i class="bi bi-briefcase"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Appeals &amp; Decisions</h4>
+            <p>All appeals, jury responses, and hearing outcomes</p>
+        </div>
+    </a>
+    <a href="{% url 'sg_treasurer_actions' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);color:#E65100;">
+            <i class="bi bi-cash-stack"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Treasurer Actions</h4>
+            <p>All financial operations and payment approvals</p>
+        </div>
+    </a>
+    <a href="{% url 'sg_user_actions' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);color:#1565C0;">
+            <i class="bi bi-journal-text"></i>
+        </div>
+        <div class="tile-text">
+            <h4>User Activity Log</h4>
+            <p>Complete log of all system user actions</p>
+        </div>
+    </a>
+    <a href="{% url 'sg_exceptional_overrides' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#FFEBEE,#FFCDD2);color:#C62828;">
+            <i class="bi bi-shield-exclamation"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Exceptional Overrides</h4>
+            <p>Result and standings overrides submitted to SG tracking</p>
+        </div>
+    </a>
+</div>
+
+<!-- Jury & Data -->
+<div class="dash-section-title"><i class="bi bi-balance-scale"></i> Jury &amp; Competition Data</div>
+<div class="dash-actions">
+    <a href="{% url 'jury_dashboard' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#ECEFF1,#CFD8DC);color:#37474F;">
+            <i class="bi bi-hammer"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Jury Dashboard</h4>
+            <p>Appeals panel management &amp; decisions</p>
+        </div>
+    </a>
+    <a href="{% url 'jury_teams' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);color:#2E7D32;">
+            <i class="bi bi-people-fill"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Registered Teams (Data)</h4>
+            <p>View &amp; export all registered teams</p>
+        </div>
+    </a>
+    <a href="{% url 'jury_players' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#E0F2F1,#B2DFDB);color:#00695C;">
+            <i class="bi bi-person-check-fill"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Approved Players (Data)</h4>
+            <p>View &amp; export approved player lists</p>
+        </div>
+    </a>
+    <a href="{% url 'jury_match_reports' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);color:#E65100;">
+            <i class="bi bi-file-earmark-text"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Match Reports (Data)</h4>
+            <p>View &amp; export all match reports</p>
+        </div>
+    </a>
+    <a href="{% url 'jury_disciplinary' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#FFEBEE,#FFCDD2);color:#C62828;">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Disciplinary Cards</h4>
+            <p>Yellow &amp; red cards — view &amp; export</p>
+        </div>
+    </a>
+</div>
+
+<!-- Scouting -->
+<div class="dash-section-title"><i class="bi bi-binoculars"></i> Scouting</div>
+<div class="dash-actions">
+    <a href="{% url 'scout_players' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);color:#1565C0;">
+            <i class="bi bi-search"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Browse Players</h4>
+            <p>Search and scout verified players</p>
+        </div>
+    </a>
+    <a href="{% url 'scout_shortlist' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#FFF8E1,#FFECB3);color:#F57F17;">
+            <i class="bi bi-bookmark-star"></i>
+        </div>
+        <div class="tile-text">
+            <h4>Scout Shortlist</h4>
+            <p>View and manage shortlisted players</p>
         </div>
     </a>
 </div>

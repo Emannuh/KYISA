@@ -7027,6 +7027,10 @@ def sys_admin_dashboard_view(request):
     # ── Appeals ──────────────────────────────────────────────────────────
     pending_appeals = Appeal.objects.filter(status=AppealStatus.SUBMITTED).count()
 
+    # ── Pending match reports ────────────────────────────────────────────
+    from matches.models import MatchReport
+    pending_reports = MatchReport.objects.filter(status='submitted').count()
+
     # ── Recent activity ──────────────────────────────────────────────────
     recent_activity = ActivityLog.objects.select_related('user').exclude(
         action__in=['LOGIN', 'LOGOUT']
@@ -7063,6 +7067,7 @@ def sys_admin_dashboard_view(request):
         'pending_registrations': pending_registrations,
         'email_stats': email_stats,
         'pending_appeals': pending_appeals,
+        'pending_reports': pending_reports,
         'recent_activity': recent_activity,
         'recent_users': recent_users,
         'recent_fixtures': recent_fixtures,

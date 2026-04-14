@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+{% block title %}{{ competition.name }} — Fixtures &amp; Results &mdash; KYISA CMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .comp-hero {
+        background: linear-gradient(135deg, #0D3B0F 0%, #1B5E20 50%, #2E7D32 100%);
+        border-radius: 16px; padding: 1.5rem 2rem; color: #fff; margin-bottom: 1.5rem;
+        display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;
+    }
+    .comp-hero h1 { font-size: 1.3rem; font-weight: 700; margin-bottom: .2rem; }
+    .comp-hero .meta { font-size: .85rem; opacity: .85; display: flex; flex-wrap: wrap; gap: .75rem; }
+
+    .pool-section { margin-bottom: 2rem; }
+    .pool-header {
+        background: linear-gradient(135deg, #1565C0, #1976D2);
+        color: #fff; padding: .75rem 1.25rem; border-radius: 12px 12px 0 0;
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    .pool-header h3 { margin: 0; font-size: 1rem; font-weight: 600; }
+    .pool-body { background: #fff; border-radius: 0 0 12px 12px; box-shadow: 0 2px 8px rgba(0,0,0,.06); overflow: hidden; }
+
+    .standings-tbl, .fixtures-tbl { width: 100%; border-collapse: collapse; font-size: .83rem; }
+    .standings-tbl th, .fixtures-tbl th { background: #f8f9fa; padding: .5rem .75rem; font-weight: 600; text-align: left; }
+    .standings-tbl td, .fixtures-tbl td { padding: .5rem .75rem; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+    .standings-tbl tr:last-child td, .fixtures-tbl tr:last-child td { border-bottom: none; }
+    .standings-tbl .pos-1 { background: #E8F5E9; }
+    .standings-tbl .pos-2 { background: #F1F8E9; }
+
+    .score-badge {
+        font-weight: 700; font-size: .85rem;
+        padding: .2rem .6rem; border-radius: 6px;
+        display: inline-block; min-width: 45px; text-align: center;
+    }
+    .score-badge.completed { background: #E8F5E9; color: #1B5E20; }
+    .score-badge.pending { background: #f5f5f5; color: #999; }
+    .score-badge.live { background: #FFEBEE; color: #C62828; }
+
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: .3rem; }
+    .status-dot.completed { background: #1B5E20; }
+    .status-dot.pending, .status-dot.confirmed, .status-dot.scheduled { background: #1565C0; }
+    .status-dot.live { background: #C62828; animation: pulse 1s infinite; }
+    .status-dot.postponed { background: #F57F17; }
+    .status-dot.cancelled { background: #999; }
+
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+
+    .quick-score-form {
+        display: flex; align-items: center; gap: .25rem;
+    }
+    .quick-score-form input[type="number"] {
+        width: 48px; padding: .25rem .35rem; border: 1px solid #ddd;
+        border-radius: 6px; text-align: center; font-weight: 600; font-size: .85rem;
+    }
+    .quick-score-form button {
+        border: none; background: #1B5E20; color: #fff;
+        border-radius: 6px; padding: .25rem .5rem; font-size: .75rem;
+        cursor: pointer; transition: background .2s;
+    }
+    .quick-score-form button:hover { background: #2E7D32; }
+
+    .section-label {
+        font-size: .75rem; font-weight: 600; text-transform: uppercase;
+        letter-spacing: .5px; color: #999; margin: 1.25rem .75rem .5rem;
+    }
+
+    .knockout-section .pool-header { background: linear-gradient(135deg, #6A1B9A, #8E24AA); }
+
+    @media (max-width: 768px) {
+        .standings-tbl, .fixtures-tbl { font-size: .78rem; }
+        .quick-score-form input[type="number"] { width: 40px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<div class="comp-hero">
+    <div>
+        <h1><i class="bi bi-trophy"></i> {{ competition.name }}</h1>
+        <div class="meta">
+            <span>{{ competition.get_sport_type_display }}</span>
+            <span>{{ competition.get_age_group_display }}</span>
+            <span>{{ competition.start_date|date:"d M Y" }} — {{ competition.end_date|date:"d M Y" }}</span>
+            <span style="background:rgba(255,255,255,.2);padding:.15rem .5rem;border-radius:6px;">{{ competition.get_status_display }}</span>
+        </div>
+    </div>
+    <a href="{% url 'admin_manage_fixtures' %}" class="btn btn-light btn-sm">&larr; All Competitions</a>
+</div>
+
+{% if messages %}
+<div style="margin-bottom:1rem;">
+    {% for msg in messages %}
+    <div class="alert alert-{{ msg.tags }}" style="border-radius:10px;font-size:.88rem;">{{ msg }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Pool sections -->
+{% for pd in pool_data %}
+<div class="pool-section">
+    <div class="pool-header">
+        <h3><i class="bi bi-grid-3x3-gap"></i> {{ pd.pool.name }}</h3>
+        <span style="font-size:.8rem;opacity:.85;">{{ pd.teams|length }} teams &middot; {{ pd.fixtures|length }} fixtures</span>
+    </div>
+    <div class="pool-body">
+        <!-- Standings table -->
+        <div class="section-label">Standings</div>
+        <table class="standings-tbl">
+            <thead>
+                <tr><th>#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr>
+            </thead>
+            <tbody>
+                {% for pt in pd.teams %}
+                <tr class="{% if forloop.counter <= 2 %}pos-{{ forloop.counter }}{% endif %}">
+                    <td>{{ forloop.counter }}</td>
+                    <td><strong>{{ pt.team.name }}</strong></td>
+                    <td>{{ pt.played }}</td>
+                    <td>{{ pt.won }}</td>
+                    <td>{{ pt.drawn }}</td>
+                    <td>{{ pt.lost }}</td>
+                    <td>{{ pt.goals_for }}</td>
+                    <td>{{ pt.goals_against }}</td>
+                    <td>{{ pt.goal_difference }}</td>
+                    <td><strong>{{ pt.points }}</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Fixtures -->
+        <div class="section-label">Fixtures &amp; Results</div>
+        <table class="fixtures-tbl">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Home</th>
+                    <th style="text-align:center;">Score / Enter Result</th>
+                    <th>Away</th>
+                    <th>Venue</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fx in pd.fixtures %}
+                <tr>
+                    <td>{{ fx.match_date|date:"d M" }}{% if fx.kickoff_time %}<br><span style="color:#999;font-size:.75rem;">{{ fx.kickoff_time|time:"H:i" }}</span>{% endif %}</td>
+                    <td><strong>{{ fx.home_team.name }}</strong></td>
+                    <td style="text-align:center;">
+                        {% if fx.status == 'completed' %}
+                            <span class="score-badge completed">{{ fx.home_score }} - {{ fx.away_score }}</span>
+                        {% elif fx.status == 'live' %}
+                            <span class="score-badge live">{{ fx.home_score|default:"0" }} - {{ fx.away_score|default:"0" }}</span>
+                        {% else %}
+                            <form method="post" action="{% url 'admin_quick_result' pk=competition.pk fixture_pk=fx.pk %}" class="quick-score-form">
+                                {% csrf_token %}
+                                <input type="number" name="home_score" min="0" placeholder="-" value="{{ fx.home_score|default_if_none:'' }}">
+                                <span style="font-weight:600;color:#999;">-</span>
+                                <input type="number" name="away_score" min="0" placeholder="-" value="{{ fx.away_score|default_if_none:'' }}">
+                                <button type="submit" title="Save result"><i class="bi bi-check-lg"></i></button>
+                            </form>
+                        {% endif %}
+                    </td>
+                    <td><strong>{{ fx.away_team.name }}</strong></td>
+                    <td style="font-size:.8rem;color:#757575;">{{ fx.venue.name|default:"TBA" }}</td>
+                    <td>
+                        <span class="status-dot {{ fx.status }}"></span>
+                        <span style="font-size:.8rem;">{{ fx.get_status_display }}</span>
+                    </td>
+                    <td>
+                        <a href="{% url 'admin_edit_fixture' pk=competition.pk fixture_pk=fx.pk %}" class="btn btn-sm btn-outline-secondary" title="Edit fixture"><i class="bi bi-pencil"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% if not pd.fixtures %}
+                <tr><td colspan="7" style="text-align:center;color:#999;padding:1rem;">No fixtures in this pool yet</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endfor %}
+
+{% if not pool_data %}
+<div class="pool-section">
+    <div style="text-align:center;padding:2rem;color:#999;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+        <i class="bi bi-grid-3x3-gap" style="font-size:2rem;opacity:.3;"></i>
+        <p style="margin-top:.5rem;">No pools created yet for this competition</p>
+    </div>
+</div>
+{% endif %}
+
+<!-- Knockout Fixtures -->
+{% if knockout_fixtures %}
+<div class="pool-section knockout-section">
+    <div class="pool-header">
+        <h3><i class="bi bi-trophy"></i> Knockout Stage</h3>
+        <span style="font-size:.8rem;opacity:.85;">{{ knockout_fixtures|length }} fixtures</span>
+    </div>
+    <div class="pool-body">
+        <table class="fixtures-tbl">
+            <thead>
+                <tr>
+                    <th>Round</th>
+                    <th>Home</th>
+                    <th style="text-align:center;">Score / Enter Result</th>
+                    <th>Away</th>
+                    <th>Venue</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fx in knockout_fixtures %}
+                <tr>
+                    <td style="font-size:.8rem;">{{ fx.get_knockout_round_display }}</td>
+                    <td><strong>{{ fx.home_team.name|default:"TBA" }}</strong></td>
+                    <td style="text-align:center;">
+                        {% if fx.status == 'completed' %}
+                            <span class="score-badge completed">{{ fx.home_score }} - {{ fx.away_score }}</span>
+                        {% elif fx.status == 'live' %}
+                            <span class="score-badge live">{{ fx.home_score|default:"0" }} - {{ fx.away_score|default:"0" }}</span>
+                        {% else %}
+                            <form method="post" action="{% url 'admin_quick_result' pk=competition.pk fixture_pk=fx.pk %}" class="quick-score-form">
+                                {% csrf_token %}
+                                <input type="number" name="home_score" min="0" placeholder="-" value="{{ fx.home_score|default_if_none:'' }}">
+                                <span style="font-weight:600;color:#999;">-</span>
+                                <input type="number" name="away_score" min="0" placeholder="-" value="{{ fx.away_score|default_if_none:'' }}">
+                                <button type="submit" title="Save result"><i class="bi bi-check-lg"></i></button>
+                            </form>
+                        {% endif %}
+                    </td>
+                    <td><strong>{{ fx.away_team.name|default:"TBA" }}</strong></td>
+                    <td style="font-size:.8rem;color:#757575;">{{ fx.venue.name|default:"TBA" }}</td>
+                    <td>
+                        <span class="status-dot {{ fx.status }}"></span>
+                        <span style="font-size:.8rem;">{{ fx.get_status_display }}</span>
+                    </td>
+                    <td>
+                        <a href="{% url 'admin_edit_fixture' pk=competition.pk fixture_pk=fx.pk %}" class="btn btn-sm btn-outline-secondary" title="Edit fixture"><i class="bi bi-pencil"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<!-- Unassigned Fixtures -->
+{% if unassigned_fixtures %}
+<div class="pool-section">
+    <div class="pool-header" style="background:linear-gradient(135deg,#E65100,#F57C00);">
+        <h3><i class="bi bi-question-circle"></i> Unassigned Fixtures</h3>
+        <span style="font-size:.8rem;opacity:.85;">{{ unassigned_fixtures|length }} fixtures</span>
+    </div>
+    <div class="pool-body">
+        <table class="fixtures-tbl">
+            <thead>
+                <tr><th>Date</th><th>Home</th><th style="text-align:center;">Score / Enter Result</th><th>Away</th><th>Venue</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody>
+                {% for fx in unassigned_fixtures %}
+                <tr>
+                    <td>{{ fx.match_date|date:"d M" }}{% if fx.kickoff_time %}<br><span style="color:#999;font-size:.75rem;">{{ fx.kickoff_time|time:"H:i" }}</span>{% endif %}</td>
+                    <td><strong>{{ fx.home_team.name }}</strong></td>
+                    <td style="text-align:center;">
+                        {% if fx.status == 'completed' %}
+                            <span class="score-badge completed">{{ fx.home_score }} - {{ fx.away_score }}</span>
+                        {% else %}
+                            <form method="post" action="{% url 'admin_quick_result' pk=competition.pk fixture_pk=fx.pk %}" class="quick-score-form">
+                                {% csrf_token %}
+                                <input type="number" name="home_score" min="0" placeholder="-">
+                                <span style="font-weight:600;color:#999;">-</span>
+                                <input type="number" name="away_score" min="0" placeholder="-">
+                                <button type="submit" title="Save result"><i class="bi bi-check-lg"></i></button>
+                            </form>
+                        {% endif %}
+                    </td>
+                    <td><strong>{{ fx.away_team.name }}</strong></td>
+                    <td style="font-size:.8rem;color:#757575;">{{ fx.venue.name|default:"TBA" }}</td>
+                    <td>
+                        <span class="status-dot {{ fx.status }}"></span>
+                        <span style="font-size:.8rem;">{{ fx.get_status_display }}</span>
+                    </td>
+                    <td>
+                        <a href="{% url 'admin_edit_fixture' pk=competition.pk fixture_pk=fx.pk %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

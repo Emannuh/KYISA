@@ -22,6 +22,12 @@ urlpatterns = [
     path('view-report/<int:report_id>/', views.view_report, name='view_report'),
     path('generate-fixtures/', admin_views.generate_fixtures_admin, name='generate_fixtures_admin'),
     path('reschedule-fixtures/', reschedule_admin_views.reschedule_fixtures_admin, name='reschedule_fixtures_admin'),
+
+    # Fixtures & Results Management
+    path('fixtures/', admin_views.admin_manage_fixtures_view, name='admin_manage_fixtures'),
+    path('fixtures/<int:pk>/', admin_views.admin_competition_fixtures_view, name='admin_competition_fixtures'),
+    path('fixtures/<int:pk>/<int:fixture_pk>/edit/', admin_views.admin_edit_fixture_view, name='admin_edit_fixture'),
+    path('fixtures/<int:pk>/<int:fixture_pk>/result/', admin_views.admin_quick_result_view, name='admin_quick_result'),
     
     # Activity Logs
     path('activity-logs/', activity_views.activity_logs, name='activity_logs'),

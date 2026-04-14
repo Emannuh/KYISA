@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% block title %}Edit Fixture &mdash; {{ competition.name }} &mdash; KYISA CMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .edit-hero {
+        background: linear-gradient(135deg, #0D3B0F 0%, #1B5E20 50%, #2E7D32 100%);
+        border-radius: 16px; padding: 1.5rem 2rem; color: #fff; margin-bottom: 1.5rem;
+        display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+    }
+    .edit-hero h1 { font-size: 1.2rem; font-weight: 700; margin-bottom: .15rem; }
+    .edit-hero .sub { font-size: .85rem; opacity: .85; }
+    .match-banner {
+        background: #fff; border-radius: 12px; padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    .match-banner .teams {
+        display: flex; justify-content: center; align-items: center; gap: 1.5rem;
+        font-size: 1.1rem; font-weight: 700; margin-bottom: .5rem;
+    }
+    .match-banner .vs { color: #999; font-weight: 400; font-size: .9rem; }
+    .match-banner .current-score {
+        font-size: .85rem; color: #757575;
+    }
+    .match-banner .current-score strong { color: #1B5E20; font-size: 1rem; }
+    .form-card {
+        background: #fff; border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06); overflow: hidden; margin-bottom: 1.5rem;
+    }
+    .form-card .card-header {
+        padding: .75rem 1.25rem; border-bottom: 1px solid #eee;
+        font-weight: 600; font-size: .9rem;
+        display: flex; align-items: center; gap: .5rem;
+    }
+    .form-card .card-body { padding: 1.25rem; }
+    .score-input-group {
+        display: flex; align-items: center; justify-content: center; gap: 1rem;
+        padding: 1rem 0;
+    }
+    .score-input-group input {
+        width: 80px; height: 60px; text-align: center;
+        font-size: 1.5rem; font-weight: 700;
+        border: 2px solid #ddd; border-radius: 12px;
+        transition: border-color .2s;
+    }
+    .score-input-group input:focus { border-color: #1B5E20; outline: none; }
+    .score-input-group .dash { font-size: 1.5rem; font-weight: 700; color: #999; }
+    .score-input-group .team-label {
+        font-size: .8rem; color: #757575; text-align: center;
+        max-width: 100px; word-wrap: break-word;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<div class="edit-hero">
+    <div>
+        <h1><i class="bi bi-pencil-square"></i> Edit Fixture</h1>
+        <div class="sub">{{ competition.name }}</div>
+    </div>
+    <a href="{% url 'admin_competition_fixtures' pk=competition.pk %}" class="btn btn-light btn-sm">&larr; Back to Fixtures</a>
+</div>
+
+<!-- Match Banner -->
+<div class="match-banner">
+    <div class="teams">
+        <span>{{ fixture.home_team.name|default:"TBA" }}</span>
+        <span class="vs">vs</span>
+        <span>{{ fixture.away_team.name|default:"TBA" }}</span>
+    </div>
+    <div class="current-score">
+        {% if fixture.home_score is not None %}
+            Current: <strong>{{ fixture.home_score }} - {{ fixture.away_score }}</strong>
+        {% else %}
+            No result entered yet
+        {% endif %}
+        &middot; {{ fixture.match_date|date:"d M Y" }}
+        {% if fixture.kickoff_time %} at {{ fixture.kickoff_time|time:"H:i" }}{% endif %}
+        &middot; {{ fixture.get_status_display }}
+    </div>
+</div>
+
+{% if messages %}
+<div style="margin-bottom:1rem;">
+    {% for msg in messages %}
+    <div class="alert alert-{{ msg.tags }}" style="border-radius:10px;font-size:.88rem;">{{ msg }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+
+    <!-- Score Input -->
+    <div class="form-card">
+        <div class="card-header" style="background:#E8F5E9;color:#1B5E20;">
+            <i class="bi bi-clipboard-data"></i> Result
+        </div>
+        <div class="card-body">
+            <div class="score-input-group">
+                <div>
+                    <div class="team-label">{{ fixture.home_team.name|default:"Home" }}</div>
+                    <input type="number" name="home_score" min="0" value="{{ fixture.home_score|default_if_none:'' }}" placeholder="-">
+                </div>
+                <span class="dash">&ndash;</span>
+                <div>
+                    <div class="team-label">{{ fixture.away_team.name|default:"Away" }}</div>
+                    <input type="number" name="away_score" min="0" value="{{ fixture.away_score|default_if_none:'' }}" placeholder="-">
+                </div>
+            </div>
+            <p style="text-align:center;font-size:.8rem;color:#999;margin:0;">
+                Entering scores will automatically set status to <strong>Completed</strong> and update standings
+            </p>
+        </div>
+    </div>
+
+    <!-- Fixture Details -->
+    <div class="form-card">
+        <div class="card-header">
+            <i class="bi bi-calendar-event"></i> Fixture Details
+        </div>
+        <div class="card-body">
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Match Date</label>
+                    <input type="date" name="match_date" class="form-control" value="{{ fixture.match_date|date:'Y-m-d' }}">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Kickoff Time</label>
+                    <input type="time" name="kickoff_time" class="form-control" value="{{ fixture.kickoff_time|time:'H:i' }}">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select">
+                        {% for val, lbl in status_choices %}
+                        <option value="{{ val }}" {% if fixture.status == val %}selected{% endif %}>{{ lbl }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Venue</label>
+                    <select name="venue_id" class="form-select">
+                        <option value="">— None / TBA —</option>
+                        {% for v in venues %}
+                        <option value="{{ v.pk }}" {% if fixture.venue_id == v.pk %}selected{% endif %}>{{ v.name }} ({{ v.county }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Knockout Team Assignment -->
+    {% if fixture.is_knockout and teams %}
+    <div class="form-card">
+        <div class="card-header" style="background:#F3E5F5;color:#6A1B9A;">
+            <i class="bi bi-trophy"></i> Knockout — Team Assignment
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Home Team</label>
+                    <select name="home_team_id" class="form-select">
+                        <option value="">— TBA —</option>
+                        {% for t in teams %}
+                        <option value="{{ t.pk }}" {% if fixture.home_team_id == t.pk %}selected{% endif %}>{{ t.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Away Team</label>
+                    <select name="away_team_id" class="form-select">
+                        <option value="">— TBA —</option>
+                        {% for t in teams %}
+                        <option value="{{ t.pk }}" {% if fixture.away_team_id == t.pk %}selected{% endif %}>{{ t.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div style="display:flex;gap:.75rem;justify-content:flex-end;">
+        <a href="{% url 'admin_competition_fixtures' pk=competition.pk %}" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary" style="background:#1B5E20;border-color:#1B5E20;">
+            <i class="bi bi-check-circle"></i> Save Changes
+        </button>
+    </div>
+</form>
+{% endblock %}
