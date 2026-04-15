@@ -4358,7 +4358,25 @@ def cm_edit_fixture_view(request, pk, fixture_pk):
                 except Team.DoesNotExist:
                     pass
 
+        # Score update
+        home_score = request.POST.get('home_score', '')
+        away_score = request.POST.get('away_score', '')
+        if home_score != '':
+            fixture.home_score = int(home_score)
+        if away_score != '':
+            fixture.away_score = int(away_score)
+
         fixture.save()
+
+        # Auto-update pool standings if scores were entered
+        if fixture.home_score is not None and fixture.away_score is not None:
+            from matches.stats_engine import recalculate_pool_standings
+            if fixture.pool:
+                recalculate_pool_standings(fixture.pool)
+            if fixture.is_knockout:
+                fixture.determine_winner()
+                fixture.save(update_fields=['winner'])
+
         messages.success(request, f'Fixture updated: {fixture}')
         return redirect('cm_competition_manage', pk=pk)
 
