@@ -61,6 +61,11 @@ jobs:
             docker tag kyisa-cms-new kyisa-cms
             docker image prune -f
 
+            echo "=== Ensuring Nginx upload limit ==="
+            sudo grep -q 'client_max_body_size' /etc/nginx/sites-available/kyisa \
+              || sudo sed -i '/server_name/a\    client_max_body_size 25M;' /etc/nginx/sites-available/kyisa
+            sudo nginx -t && sudo systemctl reload nginx
+
             echo "=== Verifying ==="
             STATUS=$(curl -sk -o /dev/null -w "%{http_code}" -H "Host: kyisa.org" http://localhost:8080/)
             echo "Health check: $STATUS"
