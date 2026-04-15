@@ -27,9 +27,21 @@ def auto_create_team_for_discipline(sender, instance, created, **kwargs):
         defaults={'code': county_name[:3].upper()}
     )
     
-    # Generate team name: "{County} {Sport}"
-    sport_display = dict(SportType.choices).get(instance.sport_type, instance.sport_type)
-    team_name = f"{county_name} {sport_display}"
+    # Generate team name: "{County} {Sport} {Gender}" e.g. "Makueni Soccer Men"
+    SPORT_SHORT_NAMES = {
+        'football_men': 'Soccer Men',
+        'football_women': 'Soccer Women',
+        'volleyball_men': 'Volleyball Men',
+        'volleyball_women': 'Volleyball Women',
+        'basketball_men': 'Basketball Men',
+        'basketball_women': 'Basketball Women',
+        'basketball_3x3_men': 'Basketball 3x3 Men',
+        'basketball_3x3_women': 'Basketball 3x3 Women',
+        'handball_men': 'Handball Men',
+        'handball_women': 'Handball Women',
+    }
+    sport_label = SPORT_SHORT_NAMES.get(instance.sport_type, instance.sport_type)
+    team_name = f"{county_name} {sport_label}"
     
     # Check if team already exists for this discipline
     if Team.objects.filter(discipline=instance).exists():

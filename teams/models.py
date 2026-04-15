@@ -400,7 +400,7 @@ class TeamStatus(models.TextChoices):
 
 
 class Team(models.Model):
-    name        = models.CharField(max_length=200, unique=True)
+    name        = models.CharField(max_length=200)
     county      = models.ForeignKey(County, on_delete=models.CASCADE, related_name="teams", help_text="County this team represents")
     discipline  = models.ForeignKey(
         CountyDiscipline, on_delete=models.CASCADE, null=True, blank=True,
@@ -466,6 +466,7 @@ class Team(models.Model):
 
     class Meta:
         ordering = ["county", "name"]
+        unique_together = [["name", "sport_type"]]
 
     def __str__(self):
         return self.name
