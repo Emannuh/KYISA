@@ -49,12 +49,39 @@
 </div>
 
 {% if user.role == 'competition_manager' or user.role == 'admin' or user.is_superuser %}
-<div style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap">
-    <a href="{% url 'competition_standings' competition.pk %}" class="btn btn--primary" style="padding:.6rem 1.5rem">
-        <i class="bi bi-bar-chart-line"></i> Standings &amp; Statistics
+<div style="display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap">
+    <a href="{% url 'cm_competition_manage' competition.pk %}" class="btn btn--primary" style="padding:.6rem 1.5rem">
+        <i class="bi bi-gear"></i> Manage Competition
+    </a>
+    <a href="{% url 'cm_manage_pools' competition.pk %}" class="btn btn--primary" style="padding:.6rem 1.5rem;background:#2e7d32">
+        <i class="bi bi-grid-3x3"></i> Manage Pools
+    </a>
+    <a href="{% url 'cm_generate_fixtures' competition.pk %}" class="btn btn--primary" style="padding:.6rem 1.5rem;background:#e65100">
+        <i class="bi bi-calendar-plus"></i> Generate Fixtures
+    </a>
+    <a href="{% url 'cm_allocate_venues' competition.pk %}" class="btn btn--primary" style="padding:.6rem 1.5rem;background:#6a1b9a">
+        <i class="bi bi-geo-alt"></i> Allocate Venues
+    </a>
+    <a href="{% url 'competition_standings' competition.pk %}" class="btn btn--primary" style="padding:.6rem 1.5rem;background:#0d47a1">
+        <i class="bi bi-bar-chart-line"></i> Standings
     </a>
     <a href="{% url 'competition_reports' competition.pk %}" class="btn btn--primary" style="padding:.6rem 1.5rem;background:#1565c0">
         <i class="bi bi-clipboard-data"></i> Match Reports
+    </a>
+</div>
+{% elif user.role == 'coordinator' or user.role == 'soccer_coordinator' or user.role == 'handball_coordinator' or user.role == 'basketball_coordinator' or user.role == 'volleyball_coordinator' %}
+<div style="display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap">
+    <a href="{% url 'coordinator_competition_manage' competition.pk %}" class="btn btn--primary" style="padding:.6rem 1.5rem">
+        <i class="bi bi-gear"></i> Manage Competition
+    </a>
+    <a href="{% url 'coordinator_manage_pools' competition.pk %}" class="btn btn--primary" style="padding:.6rem 1.5rem;background:#2e7d32">
+        <i class="bi bi-grid-3x3"></i> Manage Pools
+    </a>
+    <a href="{% url 'coordinator_generate_fixtures' competition.pk %}" class="btn btn--primary" style="padding:.6rem 1.5rem;background:#e65100">
+        <i class="bi bi-calendar-plus"></i> Generate Fixtures
+    </a>
+    <a href="{% url 'competition_standings' competition.pk %}" class="btn btn--primary" style="padding:.6rem 1.5rem;background:#0d47a1">
+        <i class="bi bi-bar-chart-line"></i> Standings
     </a>
 </div>
 {% endif %}

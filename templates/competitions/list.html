@@ -80,8 +80,12 @@
                         <td class="text-nowrap">
                             <a href="{% url 'competition_detail' comp.pk %}" class="btn btn-outline btn-xs">View</a>
                             {% if user.role == 'competition_manager' or user.role == 'admin' or user.is_superuser %}
+                            <a href="{% url 'cm_competition_manage' comp.pk %}" class="btn btn-outline btn-xs btn-green">Manage</a>
                             <a href="{% url 'competition_standings' comp.pk %}" class="btn btn-outline btn-xs btn-blue">Standings</a>
                             <a href="{% url 'competition_reports' comp.pk %}" class="btn btn-outline btn-xs btn-purple">Reports</a>
+                            {% elif user.role == 'coordinator' or user.role == 'soccer_coordinator' or user.role == 'handball_coordinator' or user.role == 'basketball_coordinator' or user.role == 'volleyball_coordinator' %}
+                            <a href="{% url 'coordinator_competition_manage' comp.pk %}" class="btn btn-outline btn-xs btn-green">Manage</a>
+                            <a href="{% url 'competition_standings' comp.pk %}" class="btn btn-outline btn-xs btn-blue">Standings</a>
                             {% endif %}
                         </td>
                     </tr>
