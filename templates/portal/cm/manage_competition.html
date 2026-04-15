@@ -229,7 +229,10 @@
     <div class="pool-card">
         <div class="pool-header">
             {{ pd.pool.name }}
-            <span style="font-size:.75rem;font-weight:500;color:#7B1FA2;">{{ pd.teams|length }} teams</span>
+            <div style="display:flex;align-items:center;gap:.5rem;">
+                <span style="font-size:.75rem;font-weight:500;color:#7B1FA2;">{{ pd.teams|length }} teams</span>
+                <a href="#pool-fixtures-{{ pd.pool.pk }}" class="btn btn-sm" style="font-size:.7rem;padding:.15rem .5rem;background:#7B1FA2;color:#fff;border-radius:4px;text-decoration:none;"><i class="bi bi-calendar-event"></i> Manage</a>
+            </div>
         </div>
         {% if pd.teams %}
         <table class="standings-table">
@@ -273,35 +276,154 @@
 {% endif %}
 
 <!-- Fixtures -->
-<div class="two-col" style="margin-top:.5rem;">
+<div style="margin-top:.5rem;">
     <!-- Group Fixtures -->
     <div>
         <div class="section-title">
             <span><i class="bi bi-calendar-event"></i> Group Stage Fixtures</span>
-            <a href="{% url 'cm_generate_fixtures' pk=competition.pk %}" class="btn btn-primary btn-sm" style="font-size:.75rem;"><i class="bi bi-lightning"></i> Generate</a>
+            <div style="display:flex;gap:.4rem;align-items:center;">
+                {% if group_fixtures %}
+                <form method="post" style="margin:0;" onsubmit="return confirm('Auto-detect and remove duplicate fixtures?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="remove_duplicates">
+                    <button type="submit" class="btn btn-warning btn-sm" style="font-size:.72rem;"><i class="bi bi-layers"></i> Remove Duplicates</button>
+                </form>
+                <form method="post" style="margin:0;" onsubmit="return confirm('Delete ALL fixtures? This cannot be undone.');">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="clear_all_fixtures">
+                    <button type="submit" class="btn btn-danger btn-sm" style="font-size:.72rem;"><i class="bi bi-trash"></i> Clear All</button>
+                </form>
+                {% endif %}
+            </div>
         </div>
-        {% if group_fixtures %}
-        <div class="fixture-list">
-            {% for f in group_fixtures %}
-            <div class="fixture-item">
-                <div class="fixture-teams">
-                    {{ f.home_team.name|default:"TBD" }} vs {{ f.away_team.name|default:"TBD" }}
-                    {% if f.pool %}<span style="font-size:.7rem;color:#7B1FA2;font-weight:400;"> ({{ f.pool.name }})</span>{% endif %}
+        {% if pool_data %}
+            {% for pd in pool_data %}
+            <div id="pool-fixtures-{{ pd.pool.pk }}" style="margin-bottom:1.25rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem .75rem;background:#F3E5F5;border-radius:8px 8px 0 0;margin-bottom:0;">
+                    <h4 style="font-size:.9rem;font-weight:700;color:#4A148C;margin:0;">
+                        <i class="bi bi-collection"></i> {{ pd.pool.name }} Fixtures
+                    </h4>
+                    <button type="button" class="btn btn-sm" style="font-size:.7rem;padding:.2rem .5rem;background:#4A148C;color:#fff;border:none;border-radius:4px;cursor:pointer;"
+                            onclick="document.getElementById('gen-form-{{ pd.pool.pk }}').style.display=document.getElementById('gen-form-{{ pd.pool.pk }}').style.display==='none'?'block':'none'">
+                        <i class="bi bi-lightning-charge"></i> Auto-Generate
+                    </button>
                 </div>
-                <div class="fixture-meta">
-                    {{ f.match_date|date:"d M" }}
-                    {% if f.kickoff_time %}{{ f.kickoff_time|time:"H:i" }}{% endif %}
-                    {% if f.venue %}<br>{{ f.venue.name }}{% endif %}
+                <!-- Per-group generate form (hidden by default) -->
+                <div id="gen-form-{{ pd.pool.pk }}" style="display:none;background:#fff;border:1px solid #E1BEE7;border-top:none;border-radius:0 0 8px 8px;padding:.75rem 1rem;margin-bottom:.5rem;">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="generate_group_fixtures">
+                        <input type="hidden" name="pool_id" value="{{ pd.pool.pk }}">
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;align-items:end;">
+                            <div>
+                                <label style="font-size:.72rem;font-weight:600;color:#666;display:block;margin-bottom:.15rem;">Start Date</label>
+                                <input type="date" name="start_date" value="{{ competition.start_date|date:'Y-m-d' }}" required style="width:100%;padding:.3rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.8rem;">
+                            </div>
+                            <div>
+                                <label style="font-size:.72rem;font-weight:600;color:#666;display:block;margin-bottom:.15rem;">Kickoff Time</label>
+                                <input type="time" name="kickoff_time" value="14:00" style="width:100%;padding:.3rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.8rem;">
+                            </div>
+                            <div>
+                                <label style="font-size:.72rem;font-weight:600;color:#666;display:block;margin-bottom:.15rem;">Venue</label>
+                                <select name="venue_id" style="width:100%;padding:.3rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.8rem;">
+                                    <option value="">— None —</option>
+                                    {% for v in venues %}<option value="{{ v.pk }}">{{ v.name }}</option>{% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div style="margin-top:.6rem;display:flex;gap:.5rem;">
+                            <button type="submit" class="btn btn-primary btn-sm" style="font-size:.75rem;"><i class="bi bi-lightning"></i> Generate {{ pd.pool.name }} Fixtures</button>
+                            <button type="button" class="btn btn-secondary btn-sm" style="font-size:.75rem;" onclick="this.closest('[id^=gen-form]').style.display='none'">Cancel</button>
+                        </div>
+                    </form>
                 </div>
-                <span class="fixture-badge fb-{{ f.status }}">{{ f.get_status_display }}</span>
-                <a href="{% url 'cm_edit_fixture' pk=competition.pk fixture_pk=f.pk %}" style="font-size:.75rem;color:#7B1FA2;" title="Edit"><i class="bi bi-pencil-square"></i></a>
+                <!-- Fixture table with select & inline edit -->
+                {% with pd.pool as current_pool %}
+                <form method="post" id="delete-form-{{ pd.pool.pk }}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_selected">
+                    <table class="standings-table" style="font-size:.8rem;">
+                        <thead>
+                            <tr>
+                                <th style="width:30px;text-align:center;"><input type="checkbox" onclick="document.querySelectorAll('.chk-{{ current_pool.pk }}').forEach(c=>c.checked=this.checked)" title="Select all"></th>
+                                <th>Match</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Venue</th>
+                                <th>Status</th>
+                                <th style="width:80px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for f in group_fixtures %}
+                            {% if f.pool_id == current_pool.pk %}
+                            <tr id="fixture-row-{{ f.pk }}">
+                                <td style="text-align:center;"><input type="checkbox" name="fixture_ids" value="{{ f.pk }}" class="chk-{{ current_pool.pk }}"></td>
+                                <td><strong>{{ f.home_team.name }}</strong> vs <strong>{{ f.away_team.name }}</strong></td>
+                                <td>{{ f.match_date|date:"d M Y" }}</td>
+                                <td>{{ f.kickoff_time|time:"H:i" }}</td>
+                                <td>{{ f.venue.name|default:"—" }}</td>
+                                <td><span class="fixture-badge fb-{{ f.status }}" style="font-size:.68rem;">{{ f.get_status_display }}</span></td>
+                                <td style="white-space:nowrap;">
+                                    <button type="button" class="btn btn-sm" style="font-size:.65rem;padding:.1rem .35rem;background:#7B1FA2;color:#fff;border:none;border-radius:3px;" onclick="toggleEdit({{ f.pk }})" title="Edit"><i class="bi bi-pencil"></i></button>
+                                    <a href="{% url 'cm_edit_fixture' pk=competition.pk fixture_pk=f.pk %}" class="btn btn-sm" style="font-size:.65rem;padding:.1rem .35rem;background:#1565C0;color:#fff;border:none;border-radius:3px;" title="Full Edit"><i class="bi bi-pencil-square"></i></a>
+                                </td>
+                            </tr>
+                            <!-- Inline edit row (hidden) -->
+                            <tr id="edit-row-{{ f.pk }}" style="display:none;background:#F3E5F5;">
+                                <td colspan="7" style="padding:.6rem .8rem;">
+                                    <form method="post" style="display:flex;gap:.5rem;align-items:end;flex-wrap:wrap;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="inline_edit_fixture">
+                                        <input type="hidden" name="fixture_pk" value="{{ f.pk }}">
+                                        <div>
+                                            <label style="font-size:.65rem;font-weight:600;color:#666;display:block;">Date</label>
+                                            <input type="date" name="match_date" value="{{ f.match_date|date:'Y-m-d' }}" style="padding:.25rem .4rem;border:1px solid #ccc;border-radius:4px;font-size:.78rem;">
+                                        </div>
+                                        <div>
+                                            <label style="font-size:.65rem;font-weight:600;color:#666;display:block;">Time</label>
+                                            <input type="time" name="kickoff_time" value="{{ f.kickoff_time|time:'H:i' }}" style="padding:.25rem .4rem;border:1px solid #ccc;border-radius:4px;font-size:.78rem;">
+                                        </div>
+                                        <div>
+                                            <label style="font-size:.65rem;font-weight:600;color:#666;display:block;">Venue</label>
+                                            <select name="venue_id" style="padding:.25rem .4rem;border:1px solid #ccc;border-radius:4px;font-size:.78rem;">
+                                                <option value="">— None —</option>
+                                                {% for v in venues %}<option value="{{ v.pk }}" {% if f.venue_id == v.pk %}selected{% endif %}>{{ v.name }}</option>{% endfor %}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style="font-size:.65rem;font-weight:600;color:#666;display:block;">Status</label>
+                                            <select name="status" style="padding:.25rem .4rem;border:1px solid #ccc;border-radius:4px;font-size:.78rem;">
+                                                <option value="pending" {% if f.status == 'pending' %}selected{% endif %}>Pending</option>
+                                                <option value="confirmed" {% if f.status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                                                <option value="postponed" {% if f.status == 'postponed' %}selected{% endif %}>Postponed</option>
+                                                <option value="cancelled" {% if f.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-sm" style="font-size:.72rem;padding:.25rem .5rem;"><i class="bi bi-check"></i> Save</button>
+                                        <button type="button" class="btn btn-secondary btn-sm" style="font-size:.72rem;padding:.25rem .5rem;" onclick="toggleEdit({{ f.pk }})">Cancel</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" style="text-align:center;padding:1rem;color:#bbb;">No fixtures yet — click <strong>Auto-Generate</strong> above</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div style="display:flex;justify-content:flex-end;padding:.4rem .5rem;background:#FAFAFA;border-radius:0 0 8px 8px;">
+                        <button type="submit" class="btn btn-danger btn-sm" style="font-size:.7rem;" onclick="return confirm('Delete selected fixtures?')"><i class="bi bi-trash"></i> Delete Selected</button>
+                    </div>
+                </form>
+                {% endwith %}
             </div>
             {% endfor %}
-        </div>
         {% else %}
         <div class="no-data" style="background:#fff;border-radius:10px;padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.05);">
             <i class="bi bi-calendar-x"></i>
-            No group fixtures generated yet
+            No pools created yet — <a href="{% url 'cm_manage_pools' pk=competition.pk %}">create pools first</a>
         </div>
         {% endif %}
     </div>
@@ -360,4 +482,11 @@
     </div>
 </div>
 {% endif %}
+
+<script>
+function toggleEdit(pk){
+    var row=document.getElementById('edit-row-'+pk);
+    if(row) row.style.display=row.style.display==='none'?'table-row':'none';
+}
+</script>
 {% endblock %}

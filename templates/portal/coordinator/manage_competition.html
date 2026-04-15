@@ -61,10 +61,6 @@
         <h4><i class="bi bi-grid-3x3-gap"></i> Manage Pools</h4>
         <p>Create pools and assign teams</p>
     </a>
-    <a href="{% url 'coordinator_generate_fixtures' pk=competition.pk %}" class="mgmt-tile">
-        <h4><i class="bi bi-calendar-plus"></i> Generate Fixtures</h4>
-        <p>Auto-generate group &amp; knockout fixtures</p>
-    </a>
     <a href="{% url 'coordinator_allocate_venues' pk=competition.pk %}" class="mgmt-tile">
         <h4><i class="bi bi-geo-alt"></i> Allocate Venues</h4>
         <p>Assign venues to fixtures</p>
@@ -89,7 +85,10 @@
     <div class="card-header"><h3><i class="bi bi-grid-3x3-gap"></i> Pools &amp; Standings ({{ pool_data|length }} pools, {{ teams_in_comp.count }} teams)</h3></div>
     <div class="card-body">
         {% for pd in pool_data %}
-        <h4 style="margin-top:{% if not forloop.first %}1.5rem{% else %}0{% endif %};font-weight:600;">{{ pd.pool.name }}</h4>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:{% if not forloop.first %}1.5rem{% else %}0{% endif %};margin-bottom:.5rem;">
+            <h4 style="font-weight:600;margin:0;">{{ pd.pool.name }}</h4>
+            <a href="#pool-fixtures-{{ pd.pool.pk }}" class="btn btn-sm" style="font-size:.72rem;padding:.2rem .6rem;background:#00695C;color:#fff;border-radius:4px;text-decoration:none;"><i class="bi bi-calendar-event"></i> Manage</a>
+        </div>
         <table class="tbl">
             <thead>
                 <tr><th>#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr>
@@ -117,29 +116,156 @@
 {% endif %}
 
 <!-- Group Fixtures -->
-{% if group_fixtures %}
 <div class="section-card">
-    <div class="card-header"><h3><i class="bi bi-calendar-event"></i> Group Stage Fixtures ({{ group_fixtures|length }})</h3></div>
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.4rem;">
+        <h3 style="margin:0;"><i class="bi bi-calendar-event"></i> Group Stage Fixtures</h3>
+        <div style="display:flex;gap:.4rem;align-items:center;">
+            {% if group_fixtures %}
+            <form method="post" style="margin:0;" onsubmit="return confirm('Auto-detect and remove duplicate fixtures?');">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="remove_duplicates">
+                <button type="submit" class="btn btn-warning btn-sm" style="font-size:.72rem;"><i class="bi bi-layers"></i> Remove Duplicates</button>
+            </form>
+            <form method="post" style="margin:0;" onsubmit="return confirm('Delete ALL fixtures? This cannot be undone.');">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="clear_all_fixtures">
+                <button type="submit" class="btn btn-danger btn-sm" style="font-size:.72rem;"><i class="bi bi-trash"></i> Clear All</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
     <div class="card-body">
-        <table class="tbl">
-            <thead><tr><th>Date</th><th>Home</th><th>Score</th><th>Away</th><th>Venue</th><th>Status</th><th></th></tr></thead>
-            <tbody>
-                {% for fx in group_fixtures %}
-                <tr>
-                    <td>{{ fx.match_date|date:"d M" }}{% if fx.kickoff_time %} {{ fx.kickoff_time|time:"H:i" }}{% endif %}</td>
-                    <td>{{ fx.home_team.name }}</td>
-                    <td>{% if fx.home_score is not None %}{{ fx.home_score }} - {{ fx.away_score }}{% else %}-{% endif %}</td>
-                    <td>{{ fx.away_team.name }}</td>
-                    <td>{{ fx.venue.name|default:"TBA" }}</td>
-                    <td><span class="comp-badge" style="background:#f5f5f5;">{{ fx.get_status_display }}</span></td>
-                    <td><a href="{% url 'coordinator_edit_fixture' pk=competition.pk fixture_pk=fx.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        {% if pool_data %}
+            {% for pd in pool_data %}
+            <div id="pool-fixtures-{{ pd.pool.pk }}" style="margin-bottom:1.25rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem .75rem;background:#E0F2F1;border-radius:8px 8px 0 0;">
+                    <h4 style="font-size:.9rem;font-weight:700;color:#00695C;margin:0;">
+                        <i class="bi bi-collection"></i> {{ pd.pool.name }} Fixtures
+                    </h4>
+                    <button type="button" class="btn btn-sm" style="font-size:.7rem;padding:.2rem .5rem;background:#00695C;color:#fff;border:none;border-radius:4px;cursor:pointer;"
+                            onclick="document.getElementById('gen-form-{{ pd.pool.pk }}').style.display=document.getElementById('gen-form-{{ pd.pool.pk }}').style.display==='none'?'block':'none'">
+                        <i class="bi bi-lightning-charge"></i> Auto-Generate
+                    </button>
+                </div>
+                <!-- Per-group generate form (hidden by default) -->
+                <div id="gen-form-{{ pd.pool.pk }}" style="display:none;background:#fff;border:1px solid #B2DFDB;border-top:none;border-radius:0 0 8px 8px;padding:.75rem 1rem;margin-bottom:.5rem;">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="generate_group_fixtures">
+                        <input type="hidden" name="pool_id" value="{{ pd.pool.pk }}">
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;align-items:end;">
+                            <div>
+                                <label style="font-size:.72rem;font-weight:600;color:#666;display:block;margin-bottom:.15rem;">Start Date</label>
+                                <input type="date" name="start_date" value="{{ competition.start_date|date:'Y-m-d' }}" required style="width:100%;padding:.3rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.8rem;">
+                            </div>
+                            <div>
+                                <label style="font-size:.72rem;font-weight:600;color:#666;display:block;margin-bottom:.15rem;">Kickoff Time</label>
+                                <input type="time" name="kickoff_time" value="14:00" style="width:100%;padding:.3rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.8rem;">
+                            </div>
+                            <div>
+                                <label style="font-size:.72rem;font-weight:600;color:#666;display:block;margin-bottom:.15rem;">Venue</label>
+                                <select name="venue_id" style="width:100%;padding:.3rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.8rem;">
+                                    <option value="">— None —</option>
+                                    {% for v in venues %}<option value="{{ v.pk }}">{{ v.name }}</option>{% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div style="margin-top:.6rem;display:flex;gap:.5rem;">
+                            <button type="submit" class="btn btn-primary btn-sm" style="font-size:.75rem;"><i class="bi bi-lightning"></i> Generate {{ pd.pool.name }} Fixtures</button>
+                            <button type="button" class="btn btn-secondary btn-sm" style="font-size:.75rem;" onclick="this.closest('[id^=gen-form]').style.display='none'">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- Fixture table with select & inline edit -->
+                {% with pd.pool as current_pool %}
+                <form method="post" id="delete-form-{{ pd.pool.pk }}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_selected">
+                    <table class="tbl">
+                        <thead>
+                            <tr>
+                                <th style="width:30px;text-align:center;"><input type="checkbox" onclick="document.querySelectorAll('.chk-{{ current_pool.pk }}').forEach(c=>c.checked=this.checked)" title="Select all"></th>
+                                <th>Home</th>
+                                <th>Away</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Venue</th>
+                                <th>Status</th>
+                                <th style="width:90px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fx in group_fixtures %}
+                            {% if fx.pool_id == current_pool.pk %}
+                            <tr id="fixture-row-{{ fx.pk }}">
+                                <td style="text-align:center;"><input type="checkbox" name="fixture_ids" value="{{ fx.pk }}" class="chk-{{ current_pool.pk }}"></td>
+                                <td><strong>{{ fx.home_team.name }}</strong></td>
+                                <td><strong>{{ fx.away_team.name }}</strong></td>
+                                <td>{{ fx.match_date|date:"d M Y" }}</td>
+                                <td>{{ fx.kickoff_time|time:"H:i" }}</td>
+                                <td>{{ fx.venue.name|default:"TBA" }}</td>
+                                <td><span class="comp-badge" style="background:#f5f5f5;">{{ fx.get_status_display }}</span></td>
+                                <td style="white-space:nowrap;">
+                                    <button type="button" class="btn btn-sm" style="font-size:.65rem;padding:.1rem .35rem;background:#00695C;color:#fff;border:none;border-radius:3px;" onclick="toggleEdit({{ fx.pk }})" title="Quick Edit"><i class="bi bi-pencil"></i></button>
+                                    <a href="{% url 'coordinator_edit_fixture' pk=competition.pk fixture_pk=fx.pk %}" class="btn btn-sm btn-outline-secondary" style="font-size:.65rem;padding:.1rem .35rem;">Full</a>
+                                </td>
+                            </tr>
+                            <!-- Inline edit row (hidden) -->
+                            <tr id="edit-row-{{ fx.pk }}" style="display:none;background:#E0F2F1;">
+                                <td colspan="8" style="padding:.6rem .8rem;">
+                                    <form method="post" style="display:flex;gap:.5rem;align-items:end;flex-wrap:wrap;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="inline_edit_fixture">
+                                        <input type="hidden" name="fixture_pk" value="{{ fx.pk }}">
+                                        <div>
+                                            <label style="font-size:.65rem;font-weight:600;color:#666;display:block;">Date</label>
+                                            <input type="date" name="match_date" value="{{ fx.match_date|date:'Y-m-d' }}" style="padding:.25rem .4rem;border:1px solid #ccc;border-radius:4px;font-size:.78rem;">
+                                        </div>
+                                        <div>
+                                            <label style="font-size:.65rem;font-weight:600;color:#666;display:block;">Time</label>
+                                            <input type="time" name="kickoff_time" value="{{ fx.kickoff_time|time:'H:i' }}" style="padding:.25rem .4rem;border:1px solid #ccc;border-radius:4px;font-size:.78rem;">
+                                        </div>
+                                        <div>
+                                            <label style="font-size:.65rem;font-weight:600;color:#666;display:block;">Venue</label>
+                                            <select name="venue_id" style="padding:.25rem .4rem;border:1px solid #ccc;border-radius:4px;font-size:.78rem;">
+                                                <option value="">— None —</option>
+                                                {% for v in venues %}<option value="{{ v.pk }}" {% if fx.venue_id == v.pk %}selected{% endif %}>{{ v.name }}</option>{% endfor %}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style="font-size:.65rem;font-weight:600;color:#666;display:block;">Status</label>
+                                            <select name="status" style="padding:.25rem .4rem;border:1px solid #ccc;border-radius:4px;font-size:.78rem;">
+                                                <option value="pending" {% if fx.status == 'pending' %}selected{% endif %}>Pending</option>
+                                                <option value="confirmed" {% if fx.status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                                                <option value="postponed" {% if fx.status == 'postponed' %}selected{% endif %}>Postponed</option>
+                                                <option value="cancelled" {% if fx.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-sm" style="font-size:.72rem;padding:.25rem .5rem;"><i class="bi bi-check"></i> Save</button>
+                                        <button type="button" class="btn btn-secondary btn-sm" style="font-size:.72rem;padding:.25rem .5rem;" onclick="toggleEdit({{ fx.pk }})">Cancel</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% empty %}
+                            <tr>
+                                <td colspan="8" style="text-align:center;padding:1rem;color:#bbb;">No fixtures yet — click <strong>Auto-Generate</strong> above</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div style="display:flex;justify-content:flex-end;padding:.4rem .5rem;">
+                        <button type="submit" class="btn btn-danger btn-sm" style="font-size:.7rem;" onclick="return confirm('Delete selected fixtures?')"><i class="bi bi-trash"></i> Delete Selected</button>
+                    </div>
+                </form>
+                {% endwith %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <div style="text-align:center;padding:1.5rem;color:#999;">No pools created yet — <a href="{% url 'coordinator_manage_pools' pk=competition.pk %}">create pools first</a></div>
+        {% endif %}
     </div>
 </div>
-{% endif %}
 
 <!-- Knockout Fixtures -->
 {% if knockout_fixtures %}
@@ -191,4 +317,11 @@
         </div>
     </div>
 </div>
+
+<script>
+function toggleEdit(pk){
+    var row=document.getElementById('edit-row-'+pk);
+    if(row) row.style.display=row.style.display==='none'?'table-row':'none';
+}
+</script>
 {% endblock %}

@@ -161,12 +161,13 @@ def album_create_view(request):
     if request.method == 'POST':
         form = GalleryAlbumForm(request.POST, request.FILES)
         if form.is_valid():
+            # Handle multiple photo uploads
+            photos = request.FILES.getlist('photos')
+
             album = form.save(commit=False)
             album.created_by = request.user
             album.save()
 
-            # Handle multiple photo uploads
-            photos = request.FILES.getlist('photos')
             for i, photo in enumerate(photos):
                 GalleryImage.objects.create(
                     album=album,

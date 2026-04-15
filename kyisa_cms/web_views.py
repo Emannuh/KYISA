@@ -2269,7 +2269,9 @@ def coordinator_competitions_view(request):
 
 @role_required('coordinator', 'admin', 'media_manager', 'competition_manager')
 def coordinator_competition_manage_view(request, pk):
-    """Central hub for a coordinator to manage a single competition in their discipline."""
+    """Central hub for a coordinator to manage a single competition in their discipline.
+    Handles: clear all fixtures, auto-generate per group.
+    """
     from competitions.models import (
         Competition, Pool, PoolTeam, Fixture, Venue, KnockoutRound,
     )
@@ -2282,6 +2284,143 @@ def coordinator_competition_manage_view(request, pk):
     if discipline and competition.sport_type != discipline and not request.user.is_superuser and request.user.role not in ('media_manager', 'competition_manager'):
         messages.error(request, 'This competition is not in your discipline.')
         return redirect('coordinator_dashboard')
+
+    # ── POST actions: clear fixtures, generate per group ──
+    if request.method == 'POST':
+        action = request.POST.get('action', '')
+
+        if action == 'clear_all_fixtures':
+            count = Fixture.objects.filter(competition=competition).count()
+            Fixture.objects.filter(competition=competition).delete()
+            from admin_dashboard.models import ActivityLog
+            ActivityLog.objects.create(
+                user=request.user,
+                action='FIXTURES_CLEARED',
+                description=f'{request.user.get_full_name()} cleared {count} fixtures for {competition.name}',
+                object_repr=str(competition),
+                ip_address=request.META.get('REMOTE_ADDR', ''),
+            )
+            messages.warning(request, f'{count} fixtures cleared.')
+            return redirect('coordinator_competition_manage', pk=pk)
+
+        elif action == 'generate_group_fixtures':
+            pool_id = request.POST.get('pool_id')
+            start_date_str = request.POST.get('start_date', '')
+            kickoff_time_str = request.POST.get('kickoff_time', '14:00')
+
+            from datetime import datetime
+            try:
+                start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            except (ValueError, TypeError):
+                messages.error(request, 'Invalid start date.')
+                return redirect('coordinator_competition_manage', pk=pk)
+            try:
+                kickoff_time = datetime.strptime(kickoff_time_str, '%H:%M').time()
+            except (ValueError, TypeError):
+                kickoff_time = datetime.strptime('14:00', '%H:%M').time()
+
+            pool = get_object_or_404(Pool, pk=pool_id, competition=competition)
+            teams = [pt.team for pt in pool.pool_teams.all()]
+            if len(teams) < 2:
+                messages.error(request, f'{pool.name} needs at least 2 teams to generate fixtures.')
+                return redirect('coordinator_competition_manage', pk=pk)
+
+            from itertools import combinations
+            from datetime import timedelta
+            from django.db.models import Q
+
+            venue_id = request.POST.get('venue_id', '')
+            venue = None
+            if venue_id:
+                try:
+                    venue = Venue.objects.get(pk=venue_id)
+                except Venue.DoesNotExist:
+                    pass
+
+            created_count = 0
+            current_date = start_date
+            round_num = 1
+            for home, away in combinations(teams, 2):
+                already = Fixture.objects.filter(
+                    competition=competition, pool=pool, is_knockout=False
+                ).filter(Q(home_team=home, away_team=away) | Q(home_team=away, away_team=home)).exists()
+                if already:
+                    continue
+                Fixture.objects.create(
+                    competition=competition, pool=pool, home_team=home, away_team=away,
+                    venue=venue, match_date=current_date, kickoff_time=kickoff_time,
+                    status='pending', round_number=round_num, is_knockout=False,
+                    created_by=request.user,
+                )
+                created_count += 1
+                round_num += 1
+                if round_num % 3 == 0:
+                    current_date += timedelta(days=7)
+
+            from admin_dashboard.models import ActivityLog
+            ActivityLog.objects.create(
+                user=request.user,
+                action='FIXTURES_GENERATED',
+                description=f'{request.user.get_full_name()} generated {created_count} fixtures for {pool.name} in {competition.name}',
+                object_repr=str(competition),
+                ip_address=request.META.get('REMOTE_ADDR', ''),
+            )
+            messages.success(request, f'{created_count} fixtures generated for {pool.name}.')
+            return redirect('coordinator_competition_manage', pk=pk)
+
+        elif action == 'remove_duplicates':
+            fixtures = Fixture.objects.filter(competition=competition, is_knockout=False).order_by('id')
+            seen = set()
+            to_delete = []
+            for f in fixtures:
+                key = tuple(sorted([f.home_team_id, f.away_team_id])) + (f.pool_id,)
+                if key in seen:
+                    to_delete.append(f.pk)
+                else:
+                    seen.add(key)
+            count = len(to_delete)
+            if count:
+                Fixture.objects.filter(pk__in=to_delete).delete()
+                messages.success(request, f'{count} duplicate fixture(s) removed.')
+            else:
+                messages.info(request, 'No duplicate fixtures found.')
+            return redirect('coordinator_competition_manage', pk=pk)
+
+        elif action == 'delete_selected':
+            fixture_ids = request.POST.getlist('fixture_ids')
+            if fixture_ids:
+                count = Fixture.objects.filter(
+                    pk__in=fixture_ids, competition=competition
+                ).delete()[0]
+                messages.success(request, f'{count} fixture(s) deleted.')
+            else:
+                messages.warning(request, 'No fixtures selected.')
+            return redirect('coordinator_competition_manage', pk=pk)
+
+        elif action == 'inline_edit_fixture':
+            fixture_pk = request.POST.get('fixture_pk')
+            try:
+                f = Fixture.objects.get(pk=fixture_pk, competition=competition)
+                date_str = request.POST.get('match_date', '')
+                time_str = request.POST.get('kickoff_time', '')
+                venue_id = request.POST.get('venue_id', '')
+                status_val = request.POST.get('status', '')
+                from datetime import datetime
+                if date_str:
+                    f.match_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                if time_str:
+                    f.kickoff_time = datetime.strptime(time_str, '%H:%M').time()
+                if venue_id:
+                    f.venue = Venue.objects.filter(pk=venue_id).first()
+                elif venue_id == '':
+                    f.venue = None
+                if status_val:
+                    f.status = status_val
+                f.save()
+                messages.success(request, f'Fixture updated.')
+            except Fixture.DoesNotExist:
+                messages.error(request, 'Fixture not found.')
+            return redirect('coordinator_competition_manage', pk=pk)
 
     # Pools & teams
     pools = Pool.objects.filter(competition=competition).prefetch_related(
@@ -3869,6 +4008,7 @@ def cm_competition_manage_view(request, pk):
     """
     Central management hub for a competition.
     Shows pools, teams, fixtures, standings at a glance.
+    Handles: clear all fixtures, auto-generate per group.
     """
     from competitions.models import (
         Competition, Pool, PoolTeam, Fixture, Venue, KnockoutRound,
@@ -3877,6 +4017,145 @@ def cm_competition_manage_view(request, pk):
     from matches.models import MatchReport
 
     competition = get_object_or_404(Competition, pk=pk)
+
+    # ── POST actions: clear fixtures, generate per group ──
+    if request.method == 'POST':
+        action = request.POST.get('action', '')
+
+        if action == 'clear_all_fixtures':
+            count = Fixture.objects.filter(competition=competition).count()
+            Fixture.objects.filter(competition=competition).delete()
+            from admin_dashboard.models import ActivityLog
+            ActivityLog.objects.create(
+                user=request.user,
+                action='FIXTURES_CLEARED',
+                description=f'{request.user.get_full_name()} cleared {count} fixtures for {competition.name}',
+                object_repr=str(competition),
+                ip_address=request.META.get('REMOTE_ADDR', ''),
+            )
+            messages.warning(request, f'{count} fixtures cleared.')
+            return redirect('cm_competition_manage', pk=pk)
+
+        elif action == 'generate_group_fixtures':
+            pool_id = request.POST.get('pool_id')
+            start_date_str = request.POST.get('start_date', '')
+            kickoff_time_str = request.POST.get('kickoff_time', '14:00')
+
+            from datetime import datetime
+            try:
+                start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            except (ValueError, TypeError):
+                messages.error(request, 'Invalid start date.')
+                return redirect('cm_competition_manage', pk=pk)
+            try:
+                kickoff_time = datetime.strptime(kickoff_time_str, '%H:%M').time()
+            except (ValueError, TypeError):
+                kickoff_time = datetime.strptime('14:00', '%H:%M').time()
+
+            pool = get_object_or_404(Pool, pk=pool_id, competition=competition)
+            teams = [pt.team for pt in pool.pool_teams.all()]
+            if len(teams) < 2:
+                messages.error(request, f'{pool.name} needs at least 2 teams to generate fixtures.')
+                return redirect('cm_competition_manage', pk=pk)
+
+            from itertools import combinations
+            from datetime import timedelta
+            from django.db.models import Q
+
+            venue_id = request.POST.get('venue_id', '')
+            venue = None
+            if venue_id:
+                try:
+                    venue = Venue.objects.get(pk=venue_id)
+                except Venue.DoesNotExist:
+                    pass
+
+            created_count = 0
+            current_date = start_date
+            round_num = 1
+            for home, away in combinations(teams, 2):
+                already = Fixture.objects.filter(
+                    competition=competition, pool=pool, is_knockout=False
+                ).filter(Q(home_team=home, away_team=away) | Q(home_team=away, away_team=home)).exists()
+                if already:
+                    continue
+                Fixture.objects.create(
+                    competition=competition, pool=pool, home_team=home, away_team=away,
+                    venue=venue, match_date=current_date, kickoff_time=kickoff_time,
+                    status='pending', round_number=round_num, is_knockout=False,
+                    created_by=request.user,
+                )
+                created_count += 1
+                round_num += 1
+                if round_num % 3 == 0:
+                    current_date += timedelta(days=7)
+
+            from admin_dashboard.models import ActivityLog
+            ActivityLog.objects.create(
+                user=request.user,
+                action='FIXTURES_GENERATED',
+                description=f'{request.user.get_full_name()} generated {created_count} fixtures for {pool.name} in {competition.name}',
+                object_repr=str(competition),
+                ip_address=request.META.get('REMOTE_ADDR', ''),
+            )
+            messages.success(request, f'{created_count} fixtures generated for {pool.name}.')
+            return redirect('cm_competition_manage', pk=pk)
+
+        elif action == 'remove_duplicates':
+            from django.db.models import Q, Count, Min
+            # Find duplicate pairs: same competition, pool, home/away teams (either direction)
+            fixtures = Fixture.objects.filter(competition=competition, is_knockout=False).order_by('id')
+            seen = set()
+            to_delete = []
+            for f in fixtures:
+                key = tuple(sorted([f.home_team_id, f.away_team_id])) + (f.pool_id,)
+                if key in seen:
+                    to_delete.append(f.pk)
+                else:
+                    seen.add(key)
+            count = len(to_delete)
+            if count:
+                Fixture.objects.filter(pk__in=to_delete).delete()
+                messages.success(request, f'{count} duplicate fixture(s) removed.')
+            else:
+                messages.info(request, 'No duplicate fixtures found.')
+            return redirect('cm_competition_manage', pk=pk)
+
+        elif action == 'delete_selected':
+            fixture_ids = request.POST.getlist('fixture_ids')
+            if fixture_ids:
+                count = Fixture.objects.filter(
+                    pk__in=fixture_ids, competition=competition
+                ).delete()[0]
+                messages.success(request, f'{count} fixture(s) deleted.')
+            else:
+                messages.warning(request, 'No fixtures selected.')
+            return redirect('cm_competition_manage', pk=pk)
+
+        elif action == 'inline_edit_fixture':
+            fixture_pk = request.POST.get('fixture_pk')
+            try:
+                f = Fixture.objects.get(pk=fixture_pk, competition=competition)
+                date_str = request.POST.get('match_date', '')
+                time_str = request.POST.get('kickoff_time', '')
+                venue_id = request.POST.get('venue_id', '')
+                status_val = request.POST.get('status', '')
+                from datetime import datetime
+                if date_str:
+                    f.match_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                if time_str:
+                    f.kickoff_time = datetime.strptime(time_str, '%H:%M').time()
+                if venue_id:
+                    f.venue = Venue.objects.filter(pk=venue_id).first()
+                elif venue_id == '':
+                    f.venue = None
+                if status_val:
+                    f.status = status_val
+                f.save()
+                messages.success(request, f'Fixture updated.')
+            except Fixture.DoesNotExist:
+                messages.error(request, 'Fixture not found.')
+            return redirect('cm_competition_manage', pk=pk)
 
     # Pools & teams
     pools = Pool.objects.filter(competition=competition).prefetch_related(
