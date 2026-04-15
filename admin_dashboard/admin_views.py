@@ -1,12 +1,85 @@
 # admin_dashboard/admin_views.py — KYISA CMS
-from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.http import HttpResponseForbidden
 from django.utils import timezone
 from competitions.models import Competition, Fixture, Pool, PoolTeam, Venue, FixtureStatus
 
+ADMIN_ROLES = ('admin', 'competition_manager', 'coordinator', 'soccer_coordinator',
+               'handball_coordinator', 'basketball_coordinator', 'volleyball_coordinator')
 
-@staff_member_required
+
+def _deduplicate_fixtures(competition):
+    """Remove duplicate fixtures for a competition, keeping the one with results or the oldest."""
+    from django.db.models import Q
+    pools = Pool.objects.filter(competition=competition)
+    any_deleted = False
+
+    for pool in pools:
+        fixtures = Fixture.objects.filter(competition=competition, pool=pool, is_knockout=False)
+        seen = set()
+        to_delete = []
+        for fx in fixtures.order_by('created_at'):
+            key = tuple(sorted([fx.home_team_id, fx.away_team_id]))
+            if key in seen:
+                # Duplicate — delete the one without results
+                if fx.home_score is None and fx.away_score is None:
+                    to_delete.append(fx.pk)
+                else:
+                    # This dupe has results, delete earlier one without results
+                    earlier = Fixture.objects.filter(
+                        competition=competition, pool=pool, is_knockout=False,
+                        home_score__isnull=True, away_score__isnull=True,
+                    ).filter(
+                        Q(home_team_id=key[0], away_team_id=key[1]) |
+                        Q(home_team_id=key[1], away_team_id=key[0])
+                    ).exclude(pk=fx.pk)
+                    to_delete.extend(earlier.values_list('pk', flat=True))
+            else:
+                seen.add(key)
+
+        if to_delete:
+            Fixture.objects.filter(pk__in=to_delete).delete()
+            any_deleted = True
+
+    # Also dedup knockout fixtures by round+position
+    ko_fixtures = Fixture.objects.filter(competition=competition, is_knockout=True)
+    ko_seen = set()
+    ko_delete = []
+    for fx in ko_fixtures.order_by('created_at'):
+        key = (fx.knockout_round, fx.bracket_position)
+        if key in ko_seen:
+            if fx.home_score is None and fx.away_score is None:
+                ko_delete.append(fx.pk)
+        else:
+            ko_seen.add(key)
+    if ko_delete:
+        Fixture.objects.filter(pk__in=ko_delete).delete()
+        any_deleted = True
+
+    # Recalculate standings for all pools after cleanup
+    if any_deleted:
+        from matches.stats_engine import recalculate_pool_standings
+        for pool in pools:
+            recalculate_pool_standings(pool)
+
+def admin_or_cm_required(view_func):
+    """Allow staff OR users with admin/coordinator roles."""
+    from functools import wraps
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            from django.conf import settings
+            from django.shortcuts import redirect as _redirect
+            return _redirect(settings.LOGIN_URL or 'web_login')
+        if request.user.is_staff or request.user.role in ADMIN_ROLES or request.user.is_superuser:
+            return view_func(request, *args, **kwargs)
+        return HttpResponseForbidden('You do not have permission to access this page.')
+    return wrapper
+
+
+@admin_or_cm_required
 def generate_fixtures_admin(request):
     """Generate fixtures for a competition (placeholder)."""
     competitions = Competition.objects.all().order_by('name')
@@ -22,7 +95,7 @@ def generate_fixtures_admin(request):
     })
 
 
-@staff_member_required
+@admin_or_cm_required
 def admin_manage_fixtures_view(request):
     """Admin: select a competition to manage its fixtures."""
     competitions = Competition.objects.all().order_by('-season', 'name')
@@ -31,10 +104,13 @@ def admin_manage_fixtures_view(request):
     })
 
 
-@staff_member_required
+@admin_or_cm_required
 def admin_competition_fixtures_view(request, pk):
     """Admin: view all pools and fixtures for a competition, enter results."""
     competition = get_object_or_404(Competition, pk=pk)
+
+    # ── Auto-clean duplicate fixtures (same matchup in same pool) ──
+    _deduplicate_fixtures(competition)
 
     pools = Pool.objects.filter(competition=competition).prefetch_related(
         'pool_teams__team', 'fixtures__home_team', 'fixtures__away_team', 'fixtures__venue'
@@ -78,7 +154,7 @@ def admin_competition_fixtures_view(request, pk):
     })
 
 
-@staff_member_required
+@admin_or_cm_required
 def admin_edit_fixture_view(request, pk, fixture_pk):
     """Admin: edit a fixture — date, time, venue, status, scores and results."""
     competition = get_object_or_404(Competition, pk=pk)
@@ -204,7 +280,7 @@ def admin_edit_fixture_view(request, pk, fixture_pk):
     })
 
 
-@staff_member_required
+@admin_or_cm_required
 def admin_quick_result_view(request, pk, fixture_pk):
     """Admin: quick inline result update (AJAX-friendly)."""
     if request.method != 'POST':

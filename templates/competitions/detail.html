@@ -108,13 +108,22 @@
 
 <!-- Fixtures -->
 <div class="card" style="margin-top:1.5rem;">
-    <div class="card-header"><h3>Fixtures</h3></div>
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+        <h3>Fixtures</h3>
+        {% if user.role == 'admin' or user.role == 'competition_manager' or user.is_superuser %}
+        <a href="{% url 'admin_competition_fixtures' pk=competition.pk %}" class="btn btn--primary" style="padding:.4rem 1rem;font-size:.85rem;">
+            <i class="bi bi-pencil-square"></i> Manage Fixtures &amp; Results
+        </a>
+        {% endif %}
+    </div>
     <div class="card-body">
         {% if fixtures %}
         <div class="table-responsive">
             <table>
                 <thead>
-                    <tr><th>Date</th><th>Time</th><th>Home</th><th>Away</th><th>Venue</th><th>Status</th><th>Score</th></tr>
+                    <tr><th>Date</th><th>Time</th><th>Home</th><th>Away</th><th>Venue</th><th>Status</th><th>Score</th>
+                    {% if user.role == 'admin' or user.role == 'competition_manager' or user.is_superuser %}<th>Action</th>{% endif %}
+                    </tr>
                 </thead>
                 <tbody>
                     {% for f in fixtures %}
@@ -126,6 +135,13 @@
                         <td>{{ f.venue|default:"TBD" }}</td>
                         <td><span class="badge badge-{% if f.status == 'completed' %}success{% elif f.status == 'live' %}danger{% elif f.status == 'confirmed' %}info{% else %}gray{% endif %}">{{ f.get_status_display }}</span></td>
                         <td>{% if f.home_score is not None %}<strong>{{ f.home_score }} - {{ f.away_score }}</strong>{% else %}—{% endif %}</td>
+                        {% if user.role == 'admin' or user.role == 'competition_manager' or user.is_superuser %}
+                        <td>
+                            <a href="{% url 'admin_edit_fixture' pk=competition.pk fixture_pk=f.pk %}" class="btn-action btn-action-primary" style="font-size:.8rem;">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                        </td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>

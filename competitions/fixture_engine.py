@@ -16,10 +16,12 @@ def generate_group_fixtures(competition, start_date, kickoff_time, interval_days
     """
     Generate round-robin fixtures for every pool in a competition.
     Each team plays every other team in its pool exactly once.
+    Skips any matchup that already has an existing fixture (prevents duplicates).
 
     Returns the list of created Fixture objects.
     """
     from competitions.models import Pool, PoolTeam, Fixture
+    from django.db.models import Q
 
     pools = Pool.objects.filter(competition=competition).prefetch_related('pool_teams__team')
     if not pools.exists():
@@ -37,6 +39,16 @@ def generate_group_fixtures(competition, start_date, kickoff_time, interval_days
 
             matchups = list(combinations(teams, 2))
             for home, away in matchups:
+                # Skip if fixture already exists (either direction)
+                already_exists = Fixture.objects.filter(
+                    competition=competition, pool=pool, is_knockout=False
+                ).filter(
+                    Q(home_team=home, away_team=away) |
+                    Q(home_team=away, away_team=home)
+                ).exists()
+                if already_exists:
+                    continue
+
                 fixture = Fixture.objects.create(
                     competition=competition,
                     pool=pool,
@@ -67,6 +79,7 @@ def generate_knockout_fixtures(competition, num_teams, start_date, kickoff_time,
     """
     Generate blank knockout bracket fixtures for a competition.
     Creates placeholder fixtures from Round of N down to the Final.
+    Skips rounds that already have fixtures (prevents duplicates).
 
     num_teams must be a power of 2 (4, 8, 16, 32).
     Teams are NOT assigned — they are filled in as group stage completes
@@ -110,23 +123,36 @@ def generate_knockout_fixtures(competition, num_teams, start_date, kickoff_time,
 
             num_matches = current_size // 2
 
+            # Skip this round if knockout fixtures already exist for it
+            existing_in_round = Fixture.objects.filter(
+                competition=competition, is_knockout=True, knockout_round=round_key
+            ).count()
+            if existing_in_round >= num_matches:
+                current_date += timedelta(days=interval_days)
+                current_size //= 2
+                continue
+
             # Add 3rd place playoff before final
             if current_size == 2:
-                # Third place playoff
-                tp = Fixture.objects.create(
-                    competition=competition,
-                    home_team=tbd_home,
-                    away_team=tbd_away,
-                    venue=venue,
-                    match_date=current_date,
-                    kickoff_time=kickoff_time,
-                    status='pending',
-                    is_knockout=True,
-                    knockout_round=KnockoutRound.THIRD_PLACE,
-                    bracket_position=1,
-                    created_by=created_by,
-                )
-                created_fixtures.append(tp)
+                tp_exists = Fixture.objects.filter(
+                    competition=competition, is_knockout=True,
+                    knockout_round=KnockoutRound.THIRD_PLACE
+                ).exists()
+                if not tp_exists:
+                    tp = Fixture.objects.create(
+                        competition=competition,
+                        home_team=tbd_home,
+                        away_team=tbd_away,
+                        venue=venue,
+                        match_date=current_date,
+                        kickoff_time=kickoff_time,
+                        status='pending',
+                        is_knockout=True,
+                        knockout_round=KnockoutRound.THIRD_PLACE,
+                        bracket_position=1,
+                        created_by=created_by,
+                    )
+                    created_fixtures.append(tp)
 
             for pos in range(1, num_matches + 1):
                 fixture = Fixture.objects.create(
