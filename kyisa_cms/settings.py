@@ -181,6 +181,10 @@ SPECTACULAR_SETTINGS = {
     ],
 }
 
+# ── UPLOAD LIMITS ──────────────────────────────────────────────────────────────
+DATA_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024   # 20 MB (for multi-photo uploads)
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024   # 10 MB per file before writing to disk
+
 # ── STATIC & MEDIA ─────────────────────────────────────────────────────────────
 STATIC_URL  = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
