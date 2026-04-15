@@ -570,7 +570,7 @@ server {
     listen 80;
     server_name api.kyisa.ke;
 
-    client_max_body_size 25M;   # allow photo/video uploads up to 25 MB
+    client_max_body_size 500M;  # allow bulk photo/video uploads
 
     location /static/ { root /home/ubuntu/kyisa-cms/staticfiles; }
     location /media/  { root /home/ubuntu/kyisa-cms/media; }
