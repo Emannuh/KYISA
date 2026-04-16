@@ -72,45 +72,8 @@
 
         </div>
 
-        <!-- RIGHT: Countdown + Live Match Center -->
+        <!-- RIGHT: Live Match Center -->
         <div class="hero-right">
-            <!-- Opening Ceremony Countdown -->
-            <div class="cd-card-entrance" id="ceremonyCountdown">
-                <div class="cd-card cd-card--mini" style="border:2px solid rgba(249,168,37,.5);margin-bottom:.75rem;">
-                    <div class="cd-card__glow" style="background:radial-gradient(circle,rgba(249,168,37,.12),transparent 70%)"></div>
-                    <div class="cd-card__inner" style="padding:.85rem .75rem;">
-                        <span class="cd-edition" style="color:#F9A825;display:flex;align-items:center;gap:.4rem;">
-                            <i class="bi bi-calendar-event" style="font-size:.7rem;"></i>
-                            KYISA 11TH EDITION
-                        </span>
-                        <h3 style="font-size:.82rem;color:rgba(255,255,255,.7);font-weight:600;letter-spacing:1px;margin:.15rem 0 .1rem;text-transform:uppercase;">Opening Ceremony</h3>
-                        <h2 class="cd-title" style="font-size:.95rem;margin:.35rem 0 .25rem;"><i class="bi bi-geo-alt-fill" style="font-size:.8rem;opacity:.7;color:#F9A825;"></i> Nyahururu Stadium</h2>
-                        <p style="font-size:.7rem;color:rgba(255,255,255,.45);margin:0 0 .5rem;">14th April 2026 · 11:00 AM</p>
-                        <div class="cd-timer" id="ceremonyTimer" style="display:flex;justify-content:center;gap:.5rem;">
-                            <div class="cd-ring-unit">
-                                <div class="cd-ring"><span class="cd-num" id="cDays">--</span></div>
-                                <span class="cd-label">Days</span>
-                            </div>
-                            <div class="cd-ring-unit">
-                                <div class="cd-ring"><span class="cd-num" id="cHrs">--</span></div>
-                                <span class="cd-label">Hrs</span>
-                            </div>
-                            <div class="cd-ring-unit">
-                                <div class="cd-ring"><span class="cd-num" id="cMins">--</span></div>
-                                <span class="cd-label">Min</span>
-                            </div>
-                            <div class="cd-ring-unit">
-                                <div class="cd-ring"><span class="cd-num" id="cSecs">--</span></div>
-                                <span class="cd-label">Sec</span>
-                            </div>
-                        </div>
-                        <div id="ceremonyPassed" style="display:none;text-align:center;padding:.35rem 0;">
-                            <span style="color:#4CAF50;font-weight:700;font-size:.85rem;"><i class="bi bi-check-circle-fill"></i> KYISA 11th Edition Live Now!</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Live Match Center -->
             <div class="cd-card-entrance hero-card-slot" id="liveMatchCard">
                 <div class="cd-card cd-card--mini" style="border:2px solid rgba(229,57,53,.5);cursor:pointer;" onclick="document.getElementById('fixtures').scrollIntoView({behavior:'smooth'})">
@@ -575,54 +538,8 @@
 {% block extra_js %}
 <script>
 (function(){
-    /* ── Opening Ceremony Countdown ─────────────────────────────── */
-    var target = new Date('2026-04-14T11:00:00+03:00').getTime();
-    var dEl = document.getElementById('cDays');
-    var hEl = document.getElementById('cHrs');
-    var mEl = document.getElementById('cMins');
-    var sEl = document.getElementById('cSecs');
-    var timerEl = document.getElementById('ceremonyTimer');
-    var passedEl = document.getElementById('ceremonyPassed');
-
-    function updateCountdown() {
-        var now = Date.now();
-        var diff = target - now;
-        if (diff <= 0) {
-            if (timerEl) timerEl.style.display = 'none';
-            if (passedEl) passedEl.style.display = 'block';
-            return;
-        }
-        var d = Math.floor(diff / 86400000);
-        var h = Math.floor((diff % 86400000) / 3600000);
-        var m = Math.floor((diff % 3600000) / 60000);
-        var s = Math.floor((diff % 60000) / 1000);
-        if (dEl) dEl.textContent = d;
-        if (hEl) hEl.textContent = h < 10 ? '0' + h : h;
-        if (mEl) mEl.textContent = m < 10 ? '0' + m : m;
-        if (sEl) sEl.textContent = s < 10 ? '0' + s : s;
-    }
-    if (dEl) {
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
-    }
     /* ── Live Match Card — Cycle through live matches ─────────────── */
     var liveCard = document.getElementById('liveMatchCard');
-    var ceremonyCard = document.getElementById('ceremonyCountdown');
-
-    /* Show ceremony countdown card with entrance animation */
-    if (ceremonyCard) {
-        var cCard = ceremonyCard.querySelector('.cd-card');
-        if (cCard) {
-            var cCorners = ['cd-pop--top-left', 'cd-pop--top-right', 'cd-pop--bottom-left', 'cd-pop--bottom-right'];
-            cCard.classList.add(cCorners[Math.floor(Math.random() * cCorners.length)]);
-            setTimeout(function(){
-                cCard.offsetHeight;
-                cCard.classList.add('cd-card--show');
-            }, 800);
-        }
-    }
-
-    if (liveCard) {
         var heroMatches = liveCard.querySelectorAll('.live-hero-match');
         if (heroMatches.length > 1) {
             var hmIdx = 0;
