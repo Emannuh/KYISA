@@ -267,6 +267,92 @@
     </div>
 </div>
 
+<!-- Create Fixture -->
+<div class="section-card">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+        <h3 style="margin:0;"><i class="bi bi-plus-circle"></i> Create Fixture</h3>
+        <button type="button" class="btn btn-sm" style="font-size:.72rem;background:#00695C;color:#fff;border:none;border-radius:4px;padding:.3rem .6rem;"
+                onclick="document.getElementById('createFixtureForm').style.display=document.getElementById('createFixtureForm').style.display==='none'?'block':'none'">
+            <i class="bi bi-plus-lg"></i> New Match
+        </button>
+    </div>
+    <div class="card-body" id="createFixtureForm" style="display:none;">
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="create_fixture">
+
+            <!-- Match Type -->
+            <div style="margin-bottom:.75rem;">
+                <label style="font-size:.75rem;font-weight:600;color:#555;display:block;margin-bottom:.3rem;">Match Type</label>
+                <div style="display:flex;gap:.75rem;">
+                    <label style="font-size:.82rem;cursor:pointer;display:flex;align-items:center;gap:.3rem;">
+                        <input type="radio" name="match_type" value="group" checked onchange="toggleMatchType()"> Group Stage
+                    </label>
+                    <label style="font-size:.82rem;cursor:pointer;display:flex;align-items:center;gap:.3rem;">
+                        <input type="radio" name="match_type" value="knockout" onchange="toggleMatchType()"> Knockout
+                    </label>
+                </div>
+            </div>
+
+            <!-- Pool (for group) -->
+            <div id="poolSelect" style="margin-bottom:.6rem;">
+                <label style="font-size:.72rem;font-weight:600;color:#555;display:block;margin-bottom:.2rem;">Pool</label>
+                <select name="pool_id" style="width:100%;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                    <option value="">— Select Pool —</option>
+                    {% for pd in pool_data %}<option value="{{ pd.pool.pk }}">{{ pd.pool.name }}</option>{% endfor %}
+                </select>
+            </div>
+
+            <!-- Knockout Round (hidden by default) -->
+            <div id="knockoutSelect" style="display:none;margin-bottom:.6rem;">
+                <label style="font-size:.72rem;font-weight:600;color:#555;display:block;margin-bottom:.2rem;">Knockout Round</label>
+                <select name="knockout_round" style="width:100%;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                    {% for val, label in knockout_round_choices %}<option value="{{ val }}">{{ label }}</option>{% endfor %}
+                </select>
+            </div>
+
+            <!-- Teams -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.6rem;">
+                <div>
+                    <label style="font-size:.72rem;font-weight:600;color:#555;display:block;margin-bottom:.2rem;">Home Team</label>
+                    <select name="home_team_id" required style="width:100%;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                        <option value="">— Select —</option>
+                        {% for t in teams_in_comp %}<option value="{{ t.pk }}">{{ t.name }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:.72rem;font-weight:600;color:#555;display:block;margin-bottom:.2rem;">Away Team</label>
+                    <select name="away_team_id" required style="width:100%;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                        <option value="">— Select —</option>
+                        {% for t in teams_in_comp %}<option value="{{ t.pk }}">{{ t.name }}</option>{% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Date, Time, Venue -->
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-bottom:.75rem;">
+                <div>
+                    <label style="font-size:.72rem;font-weight:600;color:#555;display:block;margin-bottom:.2rem;">Date</label>
+                    <input type="date" name="match_date" required style="width:100%;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                </div>
+                <div>
+                    <label style="font-size:.72rem;font-weight:600;color:#555;display:block;margin-bottom:.2rem;">Kickoff</label>
+                    <input type="time" name="kickoff_time" value="14:00" style="width:100%;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                </div>
+                <div>
+                    <label style="font-size:.72rem;font-weight:600;color:#555;display:block;margin-bottom:.2rem;">Venue</label>
+                    <select name="venue_id" style="width:100%;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                        <option value="">— None —</option>
+                        {% for v in venues %}<option value="{{ v.pk }}">{{ v.name }}</option>{% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-sm" style="font-size:.78rem;"><i class="bi bi-plus-circle"></i> Create Fixture</button>
+        </form>
+    </div>
+</div>
+
 <!-- Knockout Fixtures -->
 {% if knockout_fixtures %}
 <div class="section-card">
@@ -322,6 +408,11 @@
 function toggleEdit(pk){
     var row=document.getElementById('edit-row-'+pk);
     if(row) row.style.display=row.style.display==='none'?'table-row':'none';
+}
+function toggleMatchType(){
+    var isKnockout=document.querySelector('input[name="match_type"]:checked').value==='knockout';
+    document.getElementById('poolSelect').style.display=isKnockout?'none':'block';
+    document.getElementById('knockoutSelect').style.display=isKnockout?'block':'none';
 }
 </script>
 {% endblock %}

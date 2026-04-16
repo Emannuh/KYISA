@@ -2422,6 +2422,61 @@ def coordinator_competition_manage_view(request, pk):
                 messages.error(request, 'Fixture not found.')
             return redirect('coordinator_competition_manage', pk=pk)
 
+        elif action == 'create_fixture':
+            from datetime import datetime
+            match_type = request.POST.get('match_type', 'group')
+            pool_id = request.POST.get('pool_id', '')
+            home_team_id = request.POST.get('home_team_id', '')
+            away_team_id = request.POST.get('away_team_id', '')
+            date_str = request.POST.get('match_date', '')
+            time_str = request.POST.get('kickoff_time', '14:00')
+            venue_id = request.POST.get('venue_id', '')
+            knockout_round_val = request.POST.get('knockout_round', '')
+
+            if not home_team_id or not away_team_id or not date_str:
+                messages.error(request, 'Home team, away team, and date are required.')
+                return redirect('coordinator_competition_manage', pk=pk)
+            if home_team_id == away_team_id:
+                messages.error(request, 'Home and away team cannot be the same.')
+                return redirect('coordinator_competition_manage', pk=pk)
+
+            try:
+                home_team = Team.objects.get(pk=home_team_id)
+                away_team = Team.objects.get(pk=away_team_id)
+                match_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                kickoff_time = datetime.strptime(time_str or '14:00', '%H:%M').time()
+            except (Team.DoesNotExist, ValueError):
+                messages.error(request, 'Invalid team or date.')
+                return redirect('coordinator_competition_manage', pk=pk)
+
+            venue = None
+            if venue_id:
+                venue = Venue.objects.filter(pk=venue_id).first()
+
+            pool = None
+            is_knockout = False
+            if match_type == 'knockout':
+                is_knockout = True
+            elif pool_id:
+                pool = Pool.objects.filter(pk=pool_id, competition=competition).first()
+
+            Fixture.objects.create(
+                competition=competition,
+                pool=pool,
+                home_team=home_team,
+                away_team=away_team,
+                venue=venue,
+                match_date=match_date,
+                kickoff_time=kickoff_time,
+                status='pending',
+                is_knockout=is_knockout,
+                knockout_round=knockout_round_val if is_knockout else '',
+                created_by=request.user,
+            )
+            label = f'Knockout ({dict(KnockoutRound.choices).get(knockout_round_val, knockout_round_val)})' if is_knockout else 'Group'
+            messages.success(request, f'{label} fixture created: {home_team.name} vs {away_team.name}')
+            return redirect('coordinator_competition_manage', pk=pk)
+
     # Pools & teams
     pools = Pool.objects.filter(competition=competition).prefetch_related(
         'pool_teams__team'
@@ -2472,6 +2527,7 @@ def coordinator_competition_manage_view(request, pk):
         'group_fixtures': group_fixtures,
         'knockout_fixtures': knockout_fixtures,
         'venues': venues,
+        'knockout_round_choices': KnockoutRound.choices,
         'pending_reports': pending_reports,
         'approved_reports': approved_reports,
     })
@@ -4157,6 +4213,61 @@ def cm_competition_manage_view(request, pk):
                 messages.error(request, 'Fixture not found.')
             return redirect('cm_competition_manage', pk=pk)
 
+        elif action == 'create_fixture':
+            from datetime import datetime
+            match_type = request.POST.get('match_type', 'group')
+            pool_id = request.POST.get('pool_id', '')
+            home_team_id = request.POST.get('home_team_id', '')
+            away_team_id = request.POST.get('away_team_id', '')
+            date_str = request.POST.get('match_date', '')
+            time_str = request.POST.get('kickoff_time', '14:00')
+            venue_id = request.POST.get('venue_id', '')
+            knockout_round_val = request.POST.get('knockout_round', '')
+
+            if not home_team_id or not away_team_id or not date_str:
+                messages.error(request, 'Home team, away team, and date are required.')
+                return redirect('cm_competition_manage', pk=pk)
+            if home_team_id == away_team_id:
+                messages.error(request, 'Home and away team cannot be the same.')
+                return redirect('cm_competition_manage', pk=pk)
+
+            try:
+                home_team = Team.objects.get(pk=home_team_id)
+                away_team = Team.objects.get(pk=away_team_id)
+                match_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                kickoff_time = datetime.strptime(time_str or '14:00', '%H:%M').time()
+            except (Team.DoesNotExist, ValueError):
+                messages.error(request, 'Invalid team or date.')
+                return redirect('cm_competition_manage', pk=pk)
+
+            venue = None
+            if venue_id:
+                venue = Venue.objects.filter(pk=venue_id).first()
+
+            pool = None
+            is_knockout = False
+            if match_type == 'knockout':
+                is_knockout = True
+            elif pool_id:
+                pool = Pool.objects.filter(pk=pool_id, competition=competition).first()
+
+            Fixture.objects.create(
+                competition=competition,
+                pool=pool,
+                home_team=home_team,
+                away_team=away_team,
+                venue=venue,
+                match_date=match_date,
+                kickoff_time=kickoff_time,
+                status='pending',
+                is_knockout=is_knockout,
+                knockout_round=knockout_round_val if is_knockout else '',
+                created_by=request.user,
+            )
+            label = f'Knockout ({dict(KnockoutRound.choices).get(knockout_round_val, knockout_round_val)})' if is_knockout else 'Group'
+            messages.success(request, f'{label} fixture created: {home_team.name} vs {away_team.name}')
+            return redirect('cm_competition_manage', pk=pk)
+
     # Pools & teams
     pools = Pool.objects.filter(competition=competition).prefetch_related(
         'pool_teams__team'
@@ -4218,6 +4329,7 @@ def cm_competition_manage_view(request, pk):
         'group_fixtures': group_fixtures,
         'knockout_fixtures': knockout_fixtures,
         'venues': venues,
+        'knockout_round_choices': KnockoutRound.choices,
         'pending_reports': pending_reports,
         'approved_reports': approved_reports,
     })

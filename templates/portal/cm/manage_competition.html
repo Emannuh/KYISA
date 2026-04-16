@@ -428,6 +428,89 @@
         {% endif %}
     </div>
 
+    <!-- Create Fixture -->
+    <div style="margin-top:1rem;">
+        <div class="section-title" style="cursor:pointer;" onclick="document.getElementById('cmCreateFixtureForm').style.display=document.getElementById('cmCreateFixtureForm').style.display==='none'?'block':'none'">
+            <span><i class="bi bi-plus-circle"></i> Create Fixture</span>
+            <span style="font-size:.75rem;color:#7B1FA2;"><i class="bi bi-chevron-down"></i></span>
+        </div>
+        <div id="cmCreateFixtureForm" style="display:none;background:#fff;border:1px solid #E1BEE7;border-radius:10px;padding:1rem;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,.05);">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create_fixture">
+
+                <!-- Match Type -->
+                <div style="margin-bottom:.75rem;">
+                    <label style="font-size:.75rem;font-weight:600;color:#555;display:block;margin-bottom:.3rem;">Match Type</label>
+                    <div style="display:flex;gap:.75rem;">
+                        <label style="font-size:.82rem;cursor:pointer;display:flex;align-items:center;gap:.3rem;">
+                            <input type="radio" name="match_type" value="group" checked onchange="toggleMatchTypeCM()"> Group Stage
+                        </label>
+                        <label style="font-size:.82rem;cursor:pointer;display:flex;align-items:center;gap:.3rem;">
+                            <input type="radio" name="match_type" value="knockout" onchange="toggleMatchTypeCM()"> Knockout
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pool (for group) -->
+                <div id="cmPoolSelect" style="margin-bottom:.6rem;">
+                    <label style="font-size:.72rem;font-weight:600;color:#555;display:block;margin-bottom:.2rem;">Pool</label>
+                    <select name="pool_id" style="width:100%;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                        <option value="">— Select Pool —</option>
+                        {% for pd in pool_data %}<option value="{{ pd.pool.pk }}">{{ pd.pool.name }}</option>{% endfor %}
+                    </select>
+                </div>
+
+                <!-- Knockout Round (hidden by default) -->
+                <div id="cmKnockoutSelect" style="display:none;margin-bottom:.6rem;">
+                    <label style="font-size:.72rem;font-weight:600;color:#555;display:block;margin-bottom:.2rem;">Knockout Round</label>
+                    <select name="knockout_round" style="width:100%;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                        {% for val, label in knockout_round_choices %}<option value="{{ val }}">{{ label }}</option>{% endfor %}
+                    </select>
+                </div>
+
+                <!-- Teams -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.6rem;">
+                    <div>
+                        <label style="font-size:.72rem;font-weight:600;color:#555;display:block;margin-bottom:.2rem;">Home Team</label>
+                        <select name="home_team_id" required style="width:100%;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                            <option value="">— Select —</option>
+                            {% for t in teams_in_comp %}<option value="{{ t.pk }}">{{ t.name }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size:.72rem;font-weight:600;color:#555;display:block;margin-bottom:.2rem;">Away Team</label>
+                        <select name="away_team_id" required style="width:100%;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                            <option value="">— Select —</option>
+                            {% for t in teams_in_comp %}<option value="{{ t.pk }}">{{ t.name }}</option>{% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Date, Time, Venue -->
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-bottom:.75rem;">
+                    <div>
+                        <label style="font-size:.72rem;font-weight:600;color:#555;display:block;margin-bottom:.2rem;">Date</label>
+                        <input type="date" name="match_date" required style="width:100%;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                    </div>
+                    <div>
+                        <label style="font-size:.72rem;font-weight:600;color:#555;display:block;margin-bottom:.2rem;">Kickoff</label>
+                        <input type="time" name="kickoff_time" value="14:00" style="width:100%;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                    </div>
+                    <div>
+                        <label style="font-size:.72rem;font-weight:600;color:#555;display:block;margin-bottom:.2rem;">Venue</label>
+                        <select name="venue_id" style="width:100%;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                            <option value="">— None —</option>
+                            {% for v in venues %}<option value="{{ v.pk }}">{{ v.name }}</option>{% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm" style="font-size:.78rem;"><i class="bi bi-plus-circle"></i> Create Fixture</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Knockout Fixtures -->
     <div>
         <div class="section-title">
@@ -487,6 +570,11 @@
 function toggleEdit(pk){
     var row=document.getElementById('edit-row-'+pk);
     if(row) row.style.display=row.style.display==='none'?'table-row':'none';
+}
+function toggleMatchTypeCM(){
+    var isKnockout=document.querySelector('input[name="match_type"][value="knockout"]').checked;
+    document.getElementById('cmPoolSelect').style.display=isKnockout?'none':'block';
+    document.getElementById('cmKnockoutSelect').style.display=isKnockout?'block':'none';
 }
 </script>
 {% endblock %}
