@@ -132,6 +132,7 @@
     <button class="gd-lightbox-close" onclick="closeLightbox()"><i class="bi bi-x-lg"></i></button>
     <button class="gd-lightbox-nav gd-lightbox-prev" onclick="navLightbox(-1)"><i class="bi bi-chevron-left"></i></button>
     <button class="gd-lightbox-nav gd-lightbox-next" onclick="navLightbox(1)"><i class="bi bi-chevron-right"></i></button>
+    <a id="lightboxDownload" href="#" class="gd-lightbox-download" title="Download as PNG" style="position:absolute;top:1rem;right:4rem;z-index:10002;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:1.1rem;transition:background .2s;" onmouseover="this.style.background='rgba(0,0,0,.85)'" onmouseout="this.style.background='rgba(0,0,0,.6)'"><i class="bi bi-download"></i></a>
     <img class="gd-lightbox-img" id="lightboxImg" src="" alt="">
     <div class="gd-lightbox-caption" id="lightboxCaption"></div>
 </div>
@@ -142,9 +143,10 @@
 (function() {
     const photos = [
         {% for img in images %}
-        { src: "{{ img.image.url }}", caption: "{{ img.caption|escapejs }}" },
+        { src: "{{ img.image.url }}", caption: "{{ img.caption|escapejs }}", dlUrl: "{% url 'news_media:photo_download_png' pk=img.pk %}" },
         {% endfor %}
     ];
+    const dlBtn = document.getElementById('lightboxDownload');
     let current = 0;
     const lb = document.getElementById('lightbox');
     const lbImg = document.getElementById('lightboxImg');
@@ -167,6 +169,7 @@
     function show() {
         lbImg.src = photos[current].src;
         lbCap.textContent = photos[current].caption || ((current + 1) + ' / ' + photos.length);
+        dlBtn.href = photos[current].dlUrl;
     }
     lb.addEventListener('click', function(e) {
         if (e.target === lb) closeLightbox();

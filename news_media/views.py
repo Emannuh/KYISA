@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
-from .models import NewsArticle, NewsCategory, GalleryAlbum, Video
+from django.http import HttpResponse
+from .models import NewsArticle, NewsCategory, GalleryAlbum, GalleryImage, Video
 
 
 def news_list_view(request):
@@ -70,6 +71,26 @@ def gallery_detail_view(request, slug):
         "album": album,
         "images": images,
     })
+
+
+def photo_download_png(request, pk):
+    """Download a gallery photo converted to PNG."""
+    from PIL import Image
+    import io
+
+    photo = get_object_or_404(GalleryImage, pk=pk)
+    img = Image.open(photo.image.path)
+    img = img.convert("RGBA")
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    buf.seek(0)
+
+    filename = photo.caption or f"photo_{photo.pk}"
+    filename = filename.replace(" ", "_")[:50] + ".png"
+
+    response = HttpResponse(buf.read(), content_type="image/png")
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+    return response
 
 
 def videos_list_view(request):
