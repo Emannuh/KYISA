@@ -79,13 +79,17 @@ def photo_download_png(request, pk):
     import io
 
     photo = get_object_or_404(GalleryImage, pk=pk)
-    img = Image.open(photo.image.path)
+    with photo.image.open("rb") as f:
+        img = Image.open(f)
+        img.load()
     img = img.convert("RGBA")
     buf = io.BytesIO()
     img.save(buf, format="PNG")
     buf.seek(0)
 
     filename = photo.caption or f"photo_{photo.pk}"
+    # Sanitize filename
+    filename = "".join(c if c.isalnum() or c in "._- " else "_" for c in filename)
     filename = filename.replace(" ", "_")[:50] + ".png"
 
     response = HttpResponse(buf.read(), content_type="image/png")
