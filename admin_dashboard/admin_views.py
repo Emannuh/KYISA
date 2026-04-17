@@ -191,6 +191,14 @@ def admin_edit_fixture_view(request, pk, fixture_pk):
         if status:
             fixture.status = status
 
+        # Live period (1st Half, HT, 2nd Half, ET, Penalties)
+        live_half = request.POST.get('live_half', '')
+        if live_half != '':
+            fixture.live_half = int(live_half) if live_half != 'None' else None
+        # Auto-set live_started_at when going live
+        if fixture.status == 'live' and not fixture.live_started_at:
+            fixture.live_started_at = timezone.now()
+
         # Scores
         home_score = request.POST.get('home_score', '')
         away_score = request.POST.get('away_score', '')

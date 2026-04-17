@@ -140,6 +140,21 @@
                     </select>
                 </div>
             </div>
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Live Period</label>
+                    <select name="live_half" class="form-select">
+                        <option value="None" {% if fixture.live_half is None %}selected{% endif %}>— Not set —</option>
+                        <option value="1" {% if fixture.live_half == 1 %}selected{% endif %}>1st Half</option>
+                        <option value="0" {% if fixture.live_half == 0 %}selected{% endif %}>Half Time (HT)</option>
+                        <option value="2" {% if fixture.live_half == 2 %}selected{% endif %}>2nd Half</option>
+                        <option value="3" {% if fixture.live_half == 3 %}selected{% endif %}>Extra Time 1</option>
+                        <option value="4" {% if fixture.live_half == 4 %}selected{% endif %}>Extra Time 2</option>
+                        <option value="99" {% if fixture.live_half == 99 %}selected{% endif %}>Penalties</option>
+                    </select>
+                    <small class="text-muted">Controls what period is shown on the homepage live card</small>
+                </div>
+            </div>
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label">Venue</label>

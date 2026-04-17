@@ -119,7 +119,7 @@
                                 <!-- Status row -->
                                 <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.6rem;padding-top:.5rem;border-top:1px solid rgba(255,255,255,.06);">
                                     <span style="font-size:.68rem;font-weight:700;color:#E53935;text-transform:uppercase;">
-                                        {% if m.live_half == 1 %}1st Half{% elif m.live_half == 2 %}2nd Half{% elif m.live_half == 3 %}Extra Time 1{% elif m.live_half == 4 %}Extra Time 2{% elif m.live_half == 99 %}Penalties{% else %}HT{% endif %}
+                                        {% if m.live_half == 1 %}1st Half{% elif m.live_half == 2 %}2nd Half{% elif m.live_half == 3 %}Extra Time 1{% elif m.live_half == 4 %}Extra Time 2{% elif m.live_half == 99 %}Penalties{% elif m.live_half == 0 %}HT{% else %}LIVE{% endif %}
                                     </span>
                                     <span style="font-size:.62rem;color:rgba(255,255,255,.35);">
                                         <i class="bi bi-geo-alt" style="font-size:.58rem;"></i> {{ m.venue.name|default:"TBD" }}
@@ -527,7 +527,7 @@
                         </div>
                         <div class="mc-live-card__meta">
                             <span class="mc-live-card__half">
-                                {% if m.live_half == 1 %}1st Half{% elif m.live_half == 2 %}2nd Half{% elif m.live_half == 3 %}ET{% else %}HT{% endif %}
+                                {% if m.live_half == 1 %}1st Half{% elif m.live_half == 2 %}2nd Half{% elif m.live_half == 3 %}Extra Time 1{% elif m.live_half == 4 %}Extra Time 2{% elif m.live_half == 99 %}Penalties{% elif m.live_half == 0 %}HT{% else %}LIVE{% endif %}
                             </span>
                             <span>{{ m.venue.name|default:"TBD" }}</span>
                         </div>
