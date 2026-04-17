@@ -183,6 +183,10 @@ def home_view(request):
         status='live',
         home_team__isnull=False,
         away_team__isnull=False,
+    ).exclude(
+        home_team__name__icontains='TBD'
+    ).exclude(
+        away_team__name__icontains='TBD'
     ).select_related(
         'competition', 'home_team', 'away_team', 'venue'
     ).order_by('-live_started_at')[:6]
@@ -193,6 +197,10 @@ def home_view(request):
         away_team__isnull=False,
     ).exclude(
         status__in=['completed', 'live', 'cancelled']
+    ).exclude(
+        home_team__name__icontains='TBD'
+    ).exclude(
+        away_team__name__icontains='TBD'
     ).select_related(
         'competition', 'home_team', 'away_team', 'venue'
     ).order_by('match_date')[:6]
@@ -201,6 +209,10 @@ def home_view(request):
         status='completed',
         home_team__isnull=False,
         away_team__isnull=False,
+    ).exclude(
+        home_team__name__icontains='TBD'
+    ).exclude(
+        away_team__name__icontains='TBD'
     ).select_related(
         'competition', 'home_team', 'away_team', 'venue'
     ).order_by('-match_date')[:6]
@@ -243,12 +255,16 @@ def home_view(request):
         if comp_pools:
             standings_data.append({'competition': comp, 'pools': comp_pools})
 
-    # Knockout fixtures for active competitions (only with both teams assigned)
+    # Knockout fixtures for active competitions (only with real teams assigned)
     knockout_fixtures = Fixture.objects.filter(
         is_knockout=True,
         home_team__isnull=False,
         away_team__isnull=False,
         competition__status__in=['knockout_stage', 'knockout', 'active', 'group_stage'],
+    ).exclude(
+        home_team__name__icontains='TBD'
+    ).exclude(
+        away_team__name__icontains='TBD'
     ).select_related(
         'competition', 'home_team', 'away_team', 'venue', 'winner'
     ).order_by('knockout_round', 'bracket_position', 'match_date')
