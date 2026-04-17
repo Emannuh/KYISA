@@ -43,8 +43,6 @@ class CompetitionFormat(models.TextChoices):
 
 
 class KnockoutRound(models.TextChoices):
-    ROUND_OF_32  = "round_of_32",  "Round of 32"
-    ROUND_OF_16  = "round_of_16",  "Round of 16"
     QUARTERFINAL = "quarterfinal",  "Quarter-final"
     SEMIFINAL    = "semifinal",     "Semi-final"
     THIRD_PLACE  = "third_place",   "3rd Place Play-off"

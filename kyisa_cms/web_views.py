@@ -178,15 +178,19 @@ def home_view(request):
         'players': Player.objects.count(),
     }
 
-    # Live matches — currently in progress
+    # Live matches — currently in progress (only with both teams assigned)
     live_matches = Fixture.objects.filter(
-        status='live'
+        status='live',
+        home_team__isnull=False,
+        away_team__isnull=False,
     ).select_related(
         'competition', 'home_team', 'away_team', 'venue'
     ).order_by('-live_started_at')[:6]
 
     upcoming_fixtures = Fixture.objects.filter(
-        match_date__gte=now
+        match_date__gte=now,
+        home_team__isnull=False,
+        away_team__isnull=False,
     ).exclude(
         status__in=['completed', 'live', 'cancelled']
     ).select_related(
@@ -194,7 +198,9 @@ def home_view(request):
     ).order_by('match_date')[:6]
 
     recent_results = Fixture.objects.filter(
-        status='completed'
+        status='completed',
+        home_team__isnull=False,
+        away_team__isnull=False,
     ).select_related(
         'competition', 'home_team', 'away_team', 'venue'
     ).order_by('-match_date')[:6]
@@ -237,9 +243,11 @@ def home_view(request):
         if comp_pools:
             standings_data.append({'competition': comp, 'pools': comp_pools})
 
-    # Knockout fixtures for active competitions
+    # Knockout fixtures for active competitions (only with both teams assigned)
     knockout_fixtures = Fixture.objects.filter(
         is_knockout=True,
+        home_team__isnull=False,
+        away_team__isnull=False,
         competition__status__in=['knockout_stage', 'knockout', 'active', 'group_stage'],
     ).select_related(
         'competition', 'home_team', 'away_team', 'venue', 'winner'

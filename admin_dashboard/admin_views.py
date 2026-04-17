@@ -494,3 +494,31 @@ def admin_delete_knockout_fixture_view(request, pk, fixture_pk):
         'competition': competition,
         'fixture': fixture,
     })
+
+
+@admin_or_cm_required
+def admin_knockout_hub_view(request):
+    """Admin: knockout management hub — view all knockout fixtures across all competitions."""
+    from competitions.models import KnockoutRound
+
+    competitions = Competition.objects.all().order_by('-season', 'name')
+    competition_data = []
+
+    for comp in competitions:
+        knockouts = Fixture.objects.filter(
+            competition=comp, is_knockout=True
+        ).select_related(
+            'home_team', 'away_team', 'venue', 'winner'
+        ).order_by('knockout_round', 'bracket_position', 'match_date')
+
+        if knockouts.exists() or True:  # always show so admin can create
+            competition_data.append({
+                'competition': comp,
+                'knockout_fixtures': knockouts,
+                'count': knockouts.count(),
+            })
+
+    return render(request, 'admin_dashboard/knockout_hub.html', {
+        'competition_data': competition_data,
+        'knockout_rounds': KnockoutRound.choices,
+    })

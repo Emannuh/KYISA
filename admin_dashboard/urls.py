@@ -25,6 +25,7 @@ urlpatterns = [
 
     # Fixtures & Results Management
     path('fixtures/', admin_views.admin_manage_fixtures_view, name='admin_manage_fixtures'),
+    path('fixtures/knockouts/', admin_views.admin_knockout_hub_view, name='admin_knockout_hub'),
     path('fixtures/<int:pk>/', admin_views.admin_competition_fixtures_view, name='admin_competition_fixtures'),
     path('fixtures/<int:pk>/<int:fixture_pk>/edit/', admin_views.admin_edit_fixture_view, name='admin_edit_fixture'),
     path('fixtures/<int:pk>/<int:fixture_pk>/result/', admin_views.admin_quick_result_view, name='admin_quick_result'),
