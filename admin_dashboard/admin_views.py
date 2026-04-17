@@ -472,10 +472,6 @@ def admin_delete_knockout_fixture_view(request, pk, fixture_pk):
         Fixture, pk=fixture_pk, competition=competition, is_knockout=True
     )
 
-    if fixture.home_score is not None or fixture.status == 'completed':
-        messages.error(request, 'Cannot delete a fixture that already has results.')
-        return redirect('admin_knockout_hub')
-
     if request.method == 'POST':
         label = str(fixture)
         from admin_dashboard.models import ActivityLog
@@ -533,8 +529,7 @@ def admin_bulk_delete_knockout_view(request, pk):
         knockouts = Fixture.objects.filter(
             competition=competition,
             is_knockout=True,
-            home_score__isnull=True,
-        ).exclude(status='completed')
+        )
         count = knockouts.count()
 
         # Log activity
