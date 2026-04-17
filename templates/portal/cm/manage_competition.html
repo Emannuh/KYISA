@@ -517,22 +517,35 @@
             <span><i class="bi bi-diagram-3"></i> Knockout Bracket</span>
         </div>
         {% if knockout_fixtures %}
-        <div class="fixture-list">
-            {% for f in knockout_fixtures %}
-            <div class="fixture-item">
-                <div class="fixture-teams">
-                    {{ f.home_team.name|default:"TBD" }} vs {{ f.away_team.name|default:"TBD" }}
-                    <span style="font-size:.7rem;color:#E65100;font-weight:400;"> {{ f.get_knockout_round_display }}</span>
+        <form method="post" id="ko-delete-form">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete_selected">
+            <div class="fixture-list">
+                <div style="display:flex;align-items:center;gap:.5rem;padding:.4rem .75rem;background:#f9f9f9;border-bottom:1px solid #eee;">
+                    <input type="checkbox" onclick="document.querySelectorAll('.chk-ko').forEach(c=>c.checked=this.checked)" title="Select all" style="cursor:pointer;">
+                    <span style="font-size:.72rem;font-weight:600;color:#666;">Select all</span>
                 </div>
-                <div class="fixture-meta">
-                    {{ f.match_date|date:"d M" }}
-                    {% if f.kickoff_time %}{{ f.kickoff_time|time:"H:i" }}{% endif %}
+                {% for f in knockout_fixtures %}
+                <div class="fixture-item">
+                    <input type="checkbox" name="fixture_ids" value="{{ f.pk }}" class="chk-ko" style="cursor:pointer;margin-right:.4rem;">
+                    <div class="fixture-teams" style="flex:1;">
+                        {{ f.home_team.name|default:"TBD" }} vs {{ f.away_team.name|default:"TBD" }}
+                        <span style="font-size:.7rem;color:#E65100;font-weight:400;"> {{ f.get_knockout_round_display }}</span>
+                    </div>
+                    <div class="fixture-meta">
+                        {{ f.match_date|date:"d M" }}
+                        {% if f.kickoff_time %}{{ f.kickoff_time|time:"H:i" }}{% endif %}
+                    </div>
+                    <span class="fixture-badge fb-{{ f.status }}">{{ f.get_status_display }}</span>
+                    <a href="{% url 'cm_edit_fixture' pk=competition.pk fixture_pk=f.pk %}" style="font-size:.75rem;color:#7B1FA2;" title="Edit"><i class="bi bi-pencil-square"></i></a>
                 </div>
-                <span class="fixture-badge fb-{{ f.status }}">{{ f.get_status_display }}</span>
-                <a href="{% url 'cm_edit_fixture' pk=competition.pk fixture_pk=f.pk %}" style="font-size:.75rem;color:#7B1FA2;" title="Edit"><i class="bi bi-pencil-square"></i></a>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
+            <div style="display:flex;gap:.5rem;margin-top:.5rem;padding:.5rem 0;">
+                <button type="submit" class="btn btn-danger btn-sm" style="font-size:.72rem;" onclick="return confirm('Delete selected knockout fixtures?')"><i class="bi bi-trash"></i> Delete Selected</button>
+                <button type="button" class="btn btn-outline-danger btn-sm" style="font-size:.72rem;" onclick="if(confirm('Delete ALL {{ knockout_fixtures|length }} knockout fixtures?')){document.querySelectorAll('.chk-ko').forEach(c=>c.checked=true);document.getElementById('ko-delete-form').submit();}"><i class="bi bi-trash3"></i> Delete All Knockouts ({{ knockout_fixtures|length }})</button>
+            </div>
+        </form>
         {% else %}
         <div class="no-data" style="background:#fff;border-radius:10px;padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.05);">
             <i class="bi bi-diagram-3"></i>
