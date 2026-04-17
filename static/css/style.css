@@ -8,12 +8,12 @@
     z-index: 10;
 }
 .cd-card--mini {
-    width: 260px;
+    width: 340px;
     min-height: unset;
     border-radius: 22px;
-    box-shadow: 0 12px 40px rgba(0,0,0,.3), 0 0 80px rgba(76,175,80,.12);
-    opacity: 0;
-    pointer-events: none;
+    box-shadow: 0 12px 40px rgba(0,0,0,.3), 0 0 60px rgba(229,57,53,.08);
+    opacity: 1;
+    pointer-events: auto;
     transition: opacity .9s cubic-bezier(.22,1,.36,1),
                 transform .9s cubic-bezier(.22,1,.36,1),
                 box-shadow .4s ease;

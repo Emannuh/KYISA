@@ -76,71 +76,94 @@
         <div class="hero-right">
             <!-- Live Match Center -->
             <div class="cd-card-entrance hero-card-slot" id="liveMatchCard">
-                <div class="cd-card cd-card--mini" style="border:2px solid rgba(229,57,53,.5);cursor:pointer;" onclick="document.getElementById('fixtures').scrollIntoView({behavior:'smooth'})">
-                    <div class="cd-card__glow" style="background:radial-gradient(circle,rgba(229,57,53,.15),transparent 70%)"></div>
-                    <div class="cd-card__inner">
-                        {% if live_matches %}
-                        <span class="cd-edition" style="color:#E53935;display:flex;align-items:center;gap:.4rem;">
-                            <span style="width:8px;height:8px;border-radius:50%;background:#E53935;animation:livePulse 1.5s infinite;"></span>
-                            LIVE NOW
-                        </span>
-                        {% else %}
-                        <span class="cd-edition" style="color:#F9A825;display:flex;align-items:center;gap:.4rem;">
-                            <i class="bi bi-broadcast" style="font-size:.75rem;"></i>
-                            MATCH CENTER
-                        </span>
-                        {% endif %}
-                        <h2 class="cd-title" style="font-size:1.1rem;margin:.5rem 0;"><i class="bi bi-trophy" style="font-size:.9rem;opacity:.7;"></i> Live &amp; Upcoming</h2>
+                <div class="cd-card cd-card--mini cd-card--show" style="width:340px;border:2px solid rgba(229,57,53,.45);cursor:pointer;border-radius:22px;overflow:hidden;" onclick="document.getElementById('fixtures').scrollIntoView({behavior:'smooth'})">
+                    <div class="cd-card__glow" style="background:radial-gradient(circle,rgba(229,57,53,.12),transparent 70%)"></div>
+                    <div class="cd-card__inner" style="padding:1.4rem 1.2rem;border-radius:22px;">
 
                         {% if live_matches %}
+                        <!-- Header -->
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem;">
+                            <div style="display:flex;align-items:center;gap:.45rem;">
+                                <span style="width:9px;height:9px;border-radius:50%;background:#E53935;box-shadow:0 0 8px rgba(229,57,53,.6);animation:livePulse 1.5s infinite;"></span>
+                                <span style="font-size:.72rem;font-weight:700;color:#E53935;text-transform:uppercase;letter-spacing:1.5px;">Live</span>
+                            </div>
+                            <span style="font-size:.68rem;font-weight:600;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;">Match Center</span>
+                        </div>
+
                         <div class="live-hero-matches">
                             {% for m in live_matches %}
                             <div class="live-hero-match{% if forloop.first %} live-hero-match--active{% endif %}" data-idx="{{ forloop.counter0 }}">
-                                <div style="font-size:.65rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.35rem;">{{ m.competition.name }}</div>
-                                <div style="display:flex;align-items:center;justify-content:center;gap:.75rem;">
-                                    <span style="font-size:.85rem;font-weight:600;text-align:right;flex:1;">{{ m.home_team.name|truncatewords:2 }}</span>
-                                    <div style="background:rgba(229,57,53,.2);border-radius:8px;padding:.25rem .6rem;min-width:60px;text-align:center;">
-                                        <span style="font-size:1.3rem;font-weight:800;color:#fff;">{{ m.home_score|default:"0" }} – {{ m.away_score|default:"0" }}</span>
-                                    </div>
-                                    <span style="font-size:.85rem;font-weight:600;text-align:left;flex:1;">{{ m.away_team.name|truncatewords:2 }}</span>
+                                <!-- Competition & Round -->
+                                <div style="text-align:center;margin-bottom:.6rem;">
+                                    <span style="font-size:.62rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.8px;">{{ m.competition.name }}{% if m.is_knockout and m.knockout_round %} · {{ m.get_knockout_round_display }}{% endif %}</span>
                                 </div>
-                                <div style="font-size:.6rem;color:rgba(255,255,255,.4);margin-top:.3rem;">
-                                    {% if m.live_half == 1 %}1st Half{% elif m.live_half == 2 %}2nd Half{% elif m.live_half == 3 %}Extra Time{% else %}HT{% endif %}
-                                    · {{ m.venue.name|default:"TBD" }}
+
+                                <!-- Teams & Score -->
+                                <div style="display:flex;align-items:center;gap:.5rem;">
+                                    <!-- Home -->
+                                    <div style="flex:1;text-align:center;">
+                                        <div style="font-size:.95rem;font-weight:700;color:#fff;line-height:1.2;">{{ m.home_team.name|truncatewords:2 }}</div>
+                                    </div>
+
+                                    <!-- Score -->
+                                    <div style="background:linear-gradient(135deg,rgba(229,57,53,.25),rgba(229,57,53,.12));border:1px solid rgba(229,57,53,.3);border-radius:12px;padding:.45rem .8rem;min-width:72px;text-align:center;">
+                                        <div style="font-size:1.6rem;font-weight:900;color:#fff;letter-spacing:2px;">{{ m.home_score|default:"0" }} – {{ m.away_score|default:"0" }}</div>
+                                    </div>
+
+                                    <!-- Away -->
+                                    <div style="flex:1;text-align:center;">
+                                        <div style="font-size:.95rem;font-weight:700;color:#fff;line-height:1.2;">{{ m.away_team.name|truncatewords:2 }}</div>
+                                    </div>
+                                </div>
+
+                                <!-- Status row -->
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.6rem;padding-top:.5rem;border-top:1px solid rgba(255,255,255,.06);">
+                                    <span style="font-size:.68rem;font-weight:700;color:#E53935;text-transform:uppercase;">
+                                        {% if m.live_half == 1 %}1st Half{% elif m.live_half == 2 %}2nd Half{% elif m.live_half == 3 %}Extra Time 1{% elif m.live_half == 4 %}Extra Time 2{% elif m.live_half == 99 %}Penalties{% else %}HT{% endif %}
+                                    </span>
+                                    <span style="font-size:.62rem;color:rgba(255,255,255,.35);">
+                                        <i class="bi bi-geo-alt" style="font-size:.58rem;"></i> {{ m.venue.name|default:"TBD" }}
+                                    </span>
                                 </div>
                             </div>
                             {% endfor %}
                         </div>
+
                         {% elif upcoming_fixtures %}
-                        <!-- Show next upcoming fixtures when no live matches -->
-                        <div style="margin-top:.5rem;">
+                        <!-- No live matches — show upcoming -->
+                        <div style="display:flex;align-items:center;gap:.45rem;margin-bottom:.75rem;">
+                            <i class="bi bi-calendar-event" style="font-size:.75rem;color:#F9A825;"></i>
+                            <span style="font-size:.72rem;font-weight:700;color:#F9A825;text-transform:uppercase;letter-spacing:1.5px;">Upcoming</span>
+                        </div>
+
+                        <div style="margin-top:.3rem;">
                             {% for match in upcoming_fixtures|slice:":3" %}
-                            <div style="padding:.5rem 0;{% if not forloop.last %}border-bottom:1px solid rgba(255,255,255,.08);{% endif %}">
-                                <div style="font-size:.6rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.25rem;">{{ match.competition.name }}</div>
-                                <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
-                                    <span style="font-size:.8rem;font-weight:600;color:#fff;flex:1;text-align:left;">{{ match.home_team.name|truncatewords:2 }}</span>
-                                    <div style="background:rgba(249,168,37,.15);border-radius:6px;padding:.2rem .5rem;text-align:center;">
-                                        <span style="font-size:.68rem;font-weight:700;color:#F9A825;">{{ match.match_date|date:"d M" }} · {{ match.kickoff_time|time:"H:i" }}</span>
+                            <div style="padding:.55rem 0;{% if not forloop.last %}border-bottom:1px solid rgba(255,255,255,.06);{% endif %}">
+                                <div style="font-size:.58rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.6px;margin-bottom:.3rem;">{{ match.competition.name }}{% if match.is_knockout and match.knockout_round %} · {{ match.get_knockout_round_display }}{% endif %}</div>
+                                <div style="display:flex;align-items:center;gap:.5rem;">
+                                    <span style="font-size:.82rem;font-weight:600;color:#fff;flex:1;text-align:left;">{{ match.home_team.name|truncatewords:2 }}</span>
+                                    <div style="background:rgba(249,168,37,.12);border:1px solid rgba(249,168,37,.25);border-radius:8px;padding:.2rem .55rem;text-align:center;">
+                                        <span style="font-size:.66rem;font-weight:700;color:#F9A825;">{{ match.match_date|date:"d M" }} · {{ match.kickoff_time|time:"H:i" }}</span>
                                     </div>
-                                    <span style="font-size:.8rem;font-weight:600;color:#fff;flex:1;text-align:right;">{{ match.away_team.name|truncatewords:2 }}</span>
+                                    <span style="font-size:.82rem;font-weight:600;color:#fff;flex:1;text-align:right;">{{ match.away_team.name|truncatewords:2 }}</span>
                                 </div>
                             </div>
                             {% endfor %}
                         </div>
                         {% else %}
-                        <div style="text-align:center;padding:1rem 0;color:rgba(255,255,255,.4);font-size:.8rem;">
-                            <i class="bi bi-calendar3" style="font-size:1.5rem;display:block;margin-bottom:.35rem;opacity:.4;"></i>
+                        <div style="text-align:center;padding:1.5rem 0;color:rgba(255,255,255,.4);font-size:.82rem;">
+                            <i class="bi bi-calendar3" style="font-size:1.8rem;display:block;margin-bottom:.5rem;opacity:.35;"></i>
                             No matches scheduled yet
                         </div>
                         {% endif %}
 
-                        <div class="cd-cta" style="margin-top:.75rem;">
-                            <a href="#fixtures" class="btn btn--gold btn--sm" style="font-size:.75rem;">
+                        <div style="text-align:center;margin-top:.85rem;">
+                            <a href="#fixtures" style="display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;font-weight:700;color:#fff;background:linear-gradient(135deg,rgba(229,57,53,.35),rgba(229,57,53,.18));border:1px solid rgba(229,57,53,.3);padding:.45rem 1rem;border-radius:10px;text-decoration:none;transition:all .2s;">
                                 {% if live_matches %}
-                                <span style="width:6px;height:6px;border-radius:50%;background:#E53935;display:inline-block;margin-right:.3rem;animation:livePulse 1.5s infinite;"></span>
+                                <span style="width:6px;height:6px;border-radius:50%;background:#E53935;animation:livePulse 1.5s infinite;"></span>
                                 View All Live →
                                 {% else %}
-                                View All Fixtures →
+                                View Fixtures →
                                 {% endif %}
                             </a>
                         </div>
