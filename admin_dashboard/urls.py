@@ -28,6 +28,8 @@ urlpatterns = [
     path('fixtures/<int:pk>/', admin_views.admin_competition_fixtures_view, name='admin_competition_fixtures'),
     path('fixtures/<int:pk>/<int:fixture_pk>/edit/', admin_views.admin_edit_fixture_view, name='admin_edit_fixture'),
     path('fixtures/<int:pk>/<int:fixture_pk>/result/', admin_views.admin_quick_result_view, name='admin_quick_result'),
+    path('fixtures/<int:pk>/knockout/create/', admin_views.admin_create_knockout_fixture_view, name='admin_create_knockout_fixture'),
+    path('fixtures/<int:pk>/<int:fixture_pk>/delete/', admin_views.admin_delete_knockout_fixture_view, name='admin_delete_knockout_fixture'),
     
     # Activity Logs
     path('activity-logs/', activity_views.activity_logs, name='activity_logs'),

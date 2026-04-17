@@ -224,6 +224,64 @@
 </section>
 {% endif %}
 
+<!-- ══════════════════════════════════════════════════════════════════════════
+     KNOCKOUT BRACKET — Auto-shows when knockout matches exist
+     ══════════════════════════════════════════════════════════════════════════ -->
+{% if knockout_fixtures %}
+<section class="sec" id="knockout" style="background:#fff;padding:3rem 0;">
+    <div class="container">
+        <div class="reveal" style="text-align:center;margin-bottom:2rem;">
+            <span style="display:inline-block;background:#6A1B9A;color:#fff;padding:.3rem .8rem;border-radius:20px;font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:.5rem;"><i class="bi bi-trophy"></i> Knockout Stage</span>
+            <h2 style="font-family:'Outfit',sans-serif;font-size:1.6rem;font-weight:700;color:#1a1a1a;margin:0;">Elimination Rounds</h2>
+            <p style="color:#888;font-size:.88rem;margin-top:.3rem;">Win or go home — knockout matches updated live</p>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;">
+            {% for fx in knockout_fixtures %}
+            <div class="reveal" style="--delay:{{ forloop.counter0 }}0ms;background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.08);overflow:hidden;min-width:280px;max-width:320px;flex:1;">
+                <div style="background:linear-gradient(135deg,#4A148C,#7B1FA2);padding:.5rem 1rem;display:flex;justify-content:space-between;align-items:center;">
+                    <span style="color:#fff;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">{{ fx.get_knockout_round_display }}</span>
+                    {% if fx.status == 'live' %}
+                    <span style="display:flex;align-items:center;gap:.25rem;font-size:.7rem;font-weight:700;color:#FF5252;">
+                        <span style="width:6px;height:6px;border-radius:50%;background:#FF5252;animation:livePulse 1.5s infinite;"></span> LIVE
+                    </span>
+                    {% elif fx.status == 'completed' %}
+                    <span style="font-size:.7rem;font-weight:600;color:rgba(255,255,255,.7);">FT{% if fx.home_penalties is not None and fx.away_penalties is not None %} · Pens{% elif fx.home_score_et is not None and fx.away_score_et is not None %} · AET{% endif %}</span>
+                    {% else %}
+                    <span style="font-size:.7rem;color:rgba(255,255,255,.6);">{{ fx.match_date|date:"d M" }}{% if fx.kickoff_time %} · {{ fx.kickoff_time|time:"H:i" }}{% endif %}</span>
+                    {% endif %}
+                </div>
+                <div style="padding:1rem;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;">
+                        <span style="font-weight:{% if fx.winner == fx.home_team %}800{% else %}600{% endif %};font-size:.88rem;color:{% if fx.winner == fx.home_team %}#1B5E20{% else %}#333{% endif %};">{{ fx.home_team.name|default:"TBA" }}</span>
+                        {% if fx.home_score is not None %}
+                        <span style="font-weight:800;font-size:1.1rem;color:{% if fx.winner == fx.home_team %}#1B5E20{% else %}#333{% endif %};">{{ fx.home_score }}</span>
+                        {% endif %}
+                    </div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;">
+                        <span style="font-weight:{% if fx.winner == fx.away_team %}800{% else %}600{% endif %};font-size:.88rem;color:{% if fx.winner == fx.away_team %}#1B5E20{% else %}#333{% endif %};">{{ fx.away_team.name|default:"TBA" }}</span>
+                        {% if fx.away_score is not None %}
+                        <span style="font-weight:800;font-size:1.1rem;color:{% if fx.winner == fx.away_team %}#1B5E20{% else %}#333{% endif %};">{{ fx.away_score }}</span>
+                        {% endif %}
+                    </div>
+                    {% if fx.home_penalties is not None and fx.away_penalties is not None %}
+                    <div style="text-align:center;font-size:.75rem;color:#6A1B9A;font-weight:600;margin-top:.5rem;padding-top:.5rem;border-top:1px dashed #E1BEE7;">
+                        Penalties: {{ fx.home_penalties }} – {{ fx.away_penalties }}
+                    </div>
+                    {% endif %}
+                    {% if fx.venue %}
+                    <div style="font-size:.72rem;color:#999;margin-top:.4rem;">
+                        <i class="bi bi-geo-alt" style="font-size:.65rem;"></i> {{ fx.venue.name }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
 <section class="sec media-highlights" id="news">
     <div class="container">
 
@@ -434,7 +492,7 @@
                 <div class="mc-live-cards">
                     {% for m in live_matches %}
                     <div class="mc-live-card" data-fixture-id="{{ m.id }}">
-                        <div class="mc-live-card__comp">{{ m.competition.name }}</div>
+                        <div class="mc-live-card__comp">{{ m.competition.name }}{% if m.is_knockout and m.knockout_round %} · {{ m.get_knockout_round_display }}{% endif %}</div>
                         <div class="mc-live-card__body">
                             <div class="mc-live-card__team">{{ m.home_team.name }}</div>
                             <div class="mc-live-card__score">
@@ -467,7 +525,7 @@
                     <div class="mc-cards">
                         {% for match in upcoming_fixtures %}
                         <div class="mc-card reveal" style="--delay:{{ forloop.counter0 }}0ms">
-                            <div class="mc-card__comp">{{ match.competition.name }}</div>
+                            <div class="mc-card__comp">{{ match.competition.name }}{% if match.is_knockout and match.knockout_round %} · {{ match.get_knockout_round_display }}{% endif %}</div>
                             <div class="mc-card__body">
                                 <span class="mc-card__team">{{ match.home_team.name }}</span>
                                 <div class="mc-card__vs">
@@ -502,7 +560,7 @@
                         {% for match in recent_results %}
                         <div class="mc-result reveal" style="--delay:{{ forloop.counter0 }}0ms">
                             <div class="mc-result__head">
-                                <span>{{ match.competition.name }}</span>
+                                <span>{{ match.competition.name }}{% if match.is_knockout and match.knockout_round %} · {{ match.get_knockout_round_display }}{% endif %}</span>
                                 <span>{{ match.match_date|date:"d M" }}</span>
                             </div>
                             <div class="mc-result__body">
@@ -514,7 +572,15 @@
                                 </div>
                                 <span>{{ match.away_team.name }}</span>
                             </div>
-                            <div class="mc-result__ft">FT</div>
+                            <div class="mc-result__ft">
+                                {% if match.home_penalties is not None and match.away_penalties is not None %}
+                                    FT · Pens {{ match.home_penalties }}-{{ match.away_penalties }}
+                                {% elif match.home_score_et is not None and match.away_score_et is not None %}
+                                    AET
+                                {% else %}
+                                    FT
+                                {% endif %}
+                            </div>
                         </div>
                         {% endfor %}
                     </div>
@@ -540,6 +606,7 @@
 (function(){
     /* ── Live Match Card — Cycle through live matches ─────────────── */
     var liveCard = document.getElementById('liveMatchCard');
+    if (liveCard) {
         var heroMatches = liveCard.querySelectorAll('.live-hero-match');
         if (heroMatches.length > 1) {
             var hmIdx = 0;
@@ -549,15 +616,16 @@
                 heroMatches[hmIdx].classList.add('live-hero-match--active');
             }, 5000);
         }
-        /* Show match center card immediately (no toss) */
+        /* Show match center card immediately */
         setTimeout(function(){
             var card = liveCard.querySelector('.cd-card');
             if (card) {
-                card.style.transition = 'opacity .6s ease';
+                card.classList.add('cd-card--show');
                 card.style.opacity = '1';
                 card.style.pointerEvents = 'auto';
+                card.style.transform = 'none';
             }
-        }, 1200);
+        }, 800);
     }
 
     /* ── Live Score Auto-Refresh ───────────────────────────────────── */
@@ -586,21 +654,6 @@
             });
         }, 30000);
     }
-
-    /* ── Preloader ──────────────────────────────────────────────────── */
-    var bar = document.getElementById('preloaderBar');
-    var preloader = document.getElementById('preloader');
-    var progress = 0;
-    var loadInt = setInterval(function(){
-        progress += Math.random() * 18 + 6;
-        if (progress >= 100) { progress = 100; clearInterval(loadInt); }
-        bar.style.width = progress + '%';
-        if (progress >= 100) {
-            setTimeout(function(){
-                preloader.classList.add('preloader--done');
-            }, 350);
-        }
-    }, 100);
 
     /* ── Hero phase switcher (A ↔ C only) ─────────────────────────── */
     var phaseA = document.getElementById('heroPhaseA');

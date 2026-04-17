@@ -237,6 +237,14 @@ def home_view(request):
         if comp_pools:
             standings_data.append({'competition': comp, 'pools': comp_pools})
 
+    # Knockout fixtures for active competitions
+    knockout_fixtures = Fixture.objects.filter(
+        is_knockout=True,
+        competition__status__in=['knockout_stage', 'knockout', 'active', 'group_stage'],
+    ).select_related(
+        'competition', 'home_team', 'away_team', 'venue', 'winner'
+    ).order_by('knockout_round', 'bracket_position', 'match_date')
+
     return render(request, 'public/home.html', {
         'active_page': 'home',
         'stats': stats,
@@ -248,6 +256,7 @@ def home_view(request):
         'latest_albums': latest_albums,
         'latest_videos': latest_videos,
         'standings_data': standings_data,
+        'knockout_fixtures': knockout_fixtures,
     })
 
 

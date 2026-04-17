@@ -173,12 +173,17 @@
 {% endif %}
 
 <!-- Knockout Fixtures -->
-{% if knockout_fixtures %}
 <div class="pool-section knockout-section">
     <div class="pool-header">
         <h3><i class="bi bi-trophy"></i> Knockout Stage</h3>
-        <span style="font-size:.8rem;opacity:.85;">{{ knockout_fixtures|length }} fixtures</span>
+        <div style="display:flex;align-items:center;gap:.75rem;">
+            <span style="font-size:.8rem;opacity:.85;">{{ knockout_fixtures|length }} fixture{{ knockout_fixtures|length|pluralize:"s" }}</span>
+            <a href="{% url 'admin_create_knockout_fixture' pk=competition.pk %}" class="btn btn-light btn-sm" style="font-size:.78rem;font-weight:600;">
+                <i class="bi bi-plus-circle"></i> Create Knockout Match
+            </a>
+        </div>
     </div>
+    {% if knockout_fixtures %}
     <div class="result-card" style="border-radius:0 0 12px 12px;">
         <div class="result-card-header">
             <i class="bi bi-pencil-square"></i> Update Results — Knockout
@@ -196,12 +201,39 @@
                     <button type="submit" class="save-btn"><i class="bi bi-check-lg"></i> Save</button>
                 </div>
                 <span class="team-name team-away">{{ fx.away_team.name|default:"TBA" }}</span>
+                <div style="display:flex;gap:.35rem;align-items:center;flex-shrink:0;">
+                    <a href="{% url 'admin_edit_fixture' pk=competition.pk fixture_pk=fx.pk %}" class="btn btn-outline-secondary btn-sm" style="font-size:.72rem;padding:.2rem .5rem;" title="Edit"><i class="bi bi-pencil"></i></a>
+                    {% if fx.home_score is None %}
+                    <a href="{% url 'admin_delete_knockout_fixture' pk=competition.pk fixture_pk=fx.pk %}" class="btn btn-outline-danger btn-sm" style="font-size:.72rem;padding:.2rem .5rem;" title="Delete"><i class="bi bi-trash"></i></a>
+                    {% endif %}
+                </div>
             </div>
         </form>
         {% endfor %}
+        {% if knockout_fixtures %}
+        {% for fx in knockout_fixtures %}
+        {% if fx.winner %}
+        <div style="padding:.3rem 1rem;font-size:.78rem;color:#6A1B9A;background:#F3E5F5;border-top:1px solid #E1BEE7;display:flex;align-items:center;gap:.35rem;">
+            <i class="bi bi-trophy-fill" style="font-size:.7rem;"></i>
+            <strong>{{ fx.get_knockout_round_display }} Winner:</strong> {{ fx.winner.name }}
+            {% if fx.home_penalties is not None and fx.away_penalties is not None %}
+                (Pens: {{ fx.home_penalties }}-{{ fx.away_penalties }})
+            {% endif %}
+        </div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
     </div>
+    {% else %}
+    <div style="text-align:center;padding:2rem;color:#999;background:#fff;border-radius:0 0 12px 12px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+        <i class="bi bi-trophy" style="font-size:2rem;opacity:.3;"></i>
+        <p style="margin-top:.5rem;">No knockout fixtures yet</p>
+        <a href="{% url 'admin_create_knockout_fixture' pk=competition.pk %}" class="btn btn-sm" style="background:#6A1B9A;color:#fff;margin-top:.5rem;">
+            <i class="bi bi-plus-circle"></i> Create First Knockout Match
+        </a>
+    </div>
+    {% endif %}
 </div>
-{% endif %}
 
 <!-- Unassigned Fixtures -->
 {% if unassigned_fixtures %}

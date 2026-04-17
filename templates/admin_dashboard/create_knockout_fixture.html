@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block title %}Create Knockout Fixture &mdash; {{ competition.name }} &mdash; KYISA CMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .edit-hero {
+        background: linear-gradient(135deg, #4A148C 0%, #6A1B9A 50%, #8E24AA 100%);
+        border-radius: 16px; padding: 1.5rem 2rem; color: #fff; margin-bottom: 1.5rem;
+        display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+    }
+    .edit-hero h1 { font-size: 1.2rem; font-weight: 700; margin-bottom: .15rem; }
+    .edit-hero .sub { font-size: .85rem; opacity: .85; }
+    .form-card {
+        background: #fff; border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06); overflow: hidden; margin-bottom: 1.5rem;
+    }
+    .form-card .card-header {
+        padding: .75rem 1.25rem; border-bottom: 1px solid #eee;
+        font-weight: 600; font-size: .9rem;
+        display: flex; align-items: center; gap: .5rem;
+    }
+    .form-card .card-body { padding: 1.25rem; }
+    .ko-round-grid {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: .5rem;
+    }
+    .ko-round-option {
+        position: relative; cursor: pointer;
+    }
+    .ko-round-option input { position: absolute; opacity: 0; }
+    .ko-round-option .ko-round-label {
+        display: block; text-align: center; padding: .75rem .5rem;
+        border: 2px solid #e0e0e0; border-radius: 10px;
+        font-weight: 600; font-size: .85rem; color: #555;
+        transition: all .2s;
+    }
+    .ko-round-option input:checked + .ko-round-label {
+        border-color: #6A1B9A; background: #F3E5F5; color: #6A1B9A;
+    }
+    .ko-round-option .ko-round-label:hover {
+        border-color: #CE93D8; background: #FAFAFA;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<div class="edit-hero">
+    <div>
+        <h1><i class="bi bi-trophy"></i> Create Knockout Fixture</h1>
+        <div class="sub">{{ competition.name }}</div>
+    </div>
+    <a href="{% url 'admin_competition_fixtures' pk=competition.pk %}" class="btn btn-light btn-sm">&larr; Back to Fixtures</a>
+</div>
+
+{% if messages %}
+<div style="margin-bottom:1rem;">
+    {% for msg in messages %}
+    <div class="alert alert-{{ msg.tags }}" style="border-radius:10px;font-size:.88rem;">{{ msg }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+
+    <!-- Knockout Round -->
+    <div class="form-card">
+        <div class="card-header" style="background:#F3E5F5;color:#6A1B9A;">
+            <i class="bi bi-trophy"></i> Knockout Round
+        </div>
+        <div class="card-body">
+            <div class="ko-round-grid">
+                {% for val, lbl in knockout_rounds %}
+                <label class="ko-round-option">
+                    <input type="radio" name="knockout_round" value="{{ val }}" required>
+                    <span class="ko-round-label">{{ lbl }}</span>
+                </label>
+                {% endfor %}
+            </div>
+            <div class="row g-3 mt-3">
+                <div class="col-md-4">
+                    <label class="form-label">Bracket Position</label>
+                    <input type="number" name="bracket_position" class="form-control" min="1" placeholder="e.g. 1, 2, 3...">
+                    <small class="form-text text-muted">Match order within this round (1 = first match)</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teams -->
+    <div class="form-card">
+        <div class="card-header">
+            <i class="bi bi-people"></i> Teams
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Home Team</label>
+                    <select name="home_team_id" class="form-select" required>
+                        <option value="">— Select Home Team —</option>
+                        {% for t in teams %}
+                        <option value="{{ t.pk }}">{{ t.name }} ({{ t.county }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Away Team</label>
+                    <select name="away_team_id" class="form-select" required>
+                        <option value="">— Select Away Team —</option>
+                        {% for t in teams %}
+                        <option value="{{ t.pk }}">{{ t.name }} ({{ t.county }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <p class="form-text text-muted mt-2">Teams can be reassigned later (e.g. when winners from group stage are determined).</p>
+        </div>
+    </div>
+
+    <!-- Fixture Details -->
+    <div class="form-card">
+        <div class="card-header">
+            <i class="bi bi-calendar-event"></i> Match Details
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Match Date <span class="text-danger">*</span></label>
+                    <input type="date" name="match_date" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Kickoff Time <span class="text-danger">*</span></label>
+                    <input type="time" name="kickoff_time" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select">
+                        {% for val, lbl in status_choices %}
+                        <option value="{{ val }}" {% if val == "pending" %}selected{% endif %}>{{ lbl }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row g-3 mt-1">
+                <div class="col-md-6">
+                    <label class="form-label">Venue</label>
+                    <select name="venue_id" class="form-select">
+                        <option value="">— TBA —</option>
+                        {% for v in venues %}
+                        <option value="{{ v.pk }}">{{ v.name }} ({{ v.county }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:flex;gap:.75rem;justify-content:flex-end;">
+        <a href="{% url 'admin_competition_fixtures' pk=competition.pk %}" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary" style="background:#6A1B9A;border-color:#6A1B9A;">
+            <i class="bi bi-plus-circle"></i> Create Knockout Fixture
+        </button>
+    </div>
+</form>
+{% endblock %}

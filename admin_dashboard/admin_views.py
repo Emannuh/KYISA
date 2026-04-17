@@ -215,6 +215,20 @@ def admin_edit_fixture_view(request, pk, fixture_pk):
                 except Team.DoesNotExist:
                     pass
 
+            # Extra time & penalties
+            home_score_et = request.POST.get('home_score_et', '')
+            away_score_et = request.POST.get('away_score_et', '')
+            home_penalties = request.POST.get('home_penalties', '')
+            away_penalties = request.POST.get('away_penalties', '')
+            if home_score_et != '':
+                fixture.home_score_et = int(home_score_et)
+            if away_score_et != '':
+                fixture.away_score_et = int(away_score_et)
+            if home_penalties != '':
+                fixture.home_penalties = int(home_penalties)
+            if away_penalties != '':
+                fixture.away_penalties = int(away_penalties)
+
         score_changed = (
             fixture.home_score != original_home_score or
             fixture.away_score != original_away_score
@@ -341,3 +355,142 @@ def admin_quick_result_view(request, pk, fixture_pk):
         f'{fixture.away_score} {fixture.away_team}'
     )
     return redirect('admin_competition_fixtures', pk=pk)
+
+
+@admin_or_cm_required
+def admin_create_knockout_fixture_view(request, pk):
+    """Admin: create a new knockout fixture for a competition."""
+    from teams.models import Team
+    from competitions.models import KnockoutRound
+
+    competition = get_object_or_404(Competition, pk=pk)
+    venues = Venue.objects.filter(is_active=True).order_by('county', 'name')
+    teams = Team.objects.filter(
+        status='registered', payment_confirmed=True
+    ).order_by('name')
+
+    if request.method == 'POST':
+        knockout_round = request.POST.get('knockout_round', '')
+        bracket_position = request.POST.get('bracket_position', '')
+        home_team_id = request.POST.get('home_team_id', '')
+        away_team_id = request.POST.get('away_team_id', '')
+        venue_id = request.POST.get('venue_id', '')
+        match_date = request.POST.get('match_date', '')
+        kickoff_time = request.POST.get('kickoff_time', '')
+        status = request.POST.get('status', 'pending')
+
+        if not match_date or not kickoff_time or not knockout_round:
+            messages.error(request, 'Knockout round, match date, and kickoff time are required.')
+            return redirect('admin_create_knockout_fixture', pk=pk)
+
+        fixture_data = {
+            'competition': competition,
+            'is_knockout': True,
+            'knockout_round': knockout_round,
+            'match_date': match_date,
+            'status': status,
+            'created_by': request.user,
+        }
+
+        from datetime import datetime
+        try:
+            fixture_data['kickoff_time'] = datetime.strptime(kickoff_time, '%H:%M').time()
+        except ValueError:
+            messages.error(request, 'Invalid kickoff time format.')
+            return redirect('admin_create_knockout_fixture', pk=pk)
+
+        if bracket_position:
+            fixture_data['bracket_position'] = int(bracket_position)
+
+        if home_team_id:
+            try:
+                fixture_data['home_team'] = Team.objects.get(pk=home_team_id)
+            except Team.DoesNotExist:
+                pass
+
+        if away_team_id:
+            try:
+                fixture_data['away_team'] = Team.objects.get(pk=away_team_id)
+            except Team.DoesNotExist:
+                pass
+
+        if venue_id:
+            try:
+                fixture_data['venue'] = Venue.objects.get(pk=venue_id)
+            except Venue.DoesNotExist:
+                pass
+
+        # Require at least placeholder teams
+        if 'home_team' not in fixture_data or 'away_team' not in fixture_data:
+            messages.error(request, 'Both home and away teams are required.')
+            return redirect('admin_create_knockout_fixture', pk=pk)
+
+        # Check for duplicate knockout fixture (same round + position)
+        if bracket_position:
+            existing = Fixture.objects.filter(
+                competition=competition,
+                is_knockout=True,
+                knockout_round=knockout_round,
+                bracket_position=int(bracket_position),
+            ).exists()
+            if existing:
+                messages.warning(request, f'A fixture already exists for {knockout_round} position {bracket_position}.')
+
+        fixture = Fixture.objects.create(**fixture_data)
+
+        # Log activity
+        from admin_dashboard.models import ActivityLog
+        ActivityLog.objects.create(
+            user=request.user,
+            action='FIXTURE_CREATE',
+            description=(
+                f'{request.user.get_full_name()} created knockout fixture: '
+                f'{fixture} ({fixture.get_knockout_round_display()})'
+            ),
+            object_repr=str(fixture),
+            ip_address=request.META.get('REMOTE_ADDR', ''),
+            extra_data={'knockout': True, 'round': knockout_round},
+        )
+
+        messages.success(request, f'Knockout fixture created: {fixture}')
+        return redirect('admin_competition_fixtures', pk=pk)
+
+    return render(request, 'admin_dashboard/create_knockout_fixture.html', {
+        'competition': competition,
+        'venues': venues,
+        'teams': teams,
+        'knockout_rounds': KnockoutRound.choices,
+        'status_choices': FixtureStatus.choices,
+    })
+
+
+@admin_or_cm_required
+def admin_delete_knockout_fixture_view(request, pk, fixture_pk):
+    """Admin: delete a knockout fixture (only if no result entered)."""
+    competition = get_object_or_404(Competition, pk=pk)
+    fixture = get_object_or_404(
+        Fixture, pk=fixture_pk, competition=competition, is_knockout=True
+    )
+
+    if fixture.home_score is not None or fixture.status == 'completed':
+        messages.error(request, 'Cannot delete a fixture that already has results.')
+        return redirect('admin_competition_fixtures', pk=pk)
+
+    if request.method == 'POST':
+        label = str(fixture)
+        from admin_dashboard.models import ActivityLog
+        ActivityLog.objects.create(
+            user=request.user,
+            action='FIXTURE_DELETE',
+            description=f'{request.user.get_full_name()} deleted knockout fixture: {label}',
+            object_repr=label,
+            ip_address=request.META.get('REMOTE_ADDR', ''),
+        )
+        fixture.delete()
+        messages.success(request, f'Knockout fixture deleted: {label}')
+        return redirect('admin_competition_fixtures', pk=pk)
+
+    return render(request, 'admin_dashboard/delete_knockout_fixture.html', {
+        'competition': competition,
+        'fixture': fixture,
+    })
