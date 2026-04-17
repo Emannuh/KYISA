@@ -393,9 +393,16 @@ urlpatterns = [
     path("api/redoc/",  staff_member_required(SpectacularRedocView.as_view(url_name="schema")),     name="redoc"),
 ]
 
-# ── SERVE MEDIA IN DEVELOPMENT ────────────────────────────────────────────────
+# ── SERVE MEDIA FILES ─────────────────────────────────────────────────────────
+# Always serve media when using local file storage (no S3/Azure/GCS).
+# In cloud-storage mode, the storage backend generates direct URLs.
+if not settings.STORAGE_BACKEND:
+    from django.views.static import serve
+    import re
+    urlpatterns += [
+        path("media/<path:path>", serve, {"document_root": settings.MEDIA_ROOT}),
+    ]
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # ── ADMIN CUSTOMISATION ───────────────────────────────────────────────────────
