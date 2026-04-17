@@ -474,7 +474,7 @@ def admin_delete_knockout_fixture_view(request, pk, fixture_pk):
 
     if fixture.home_score is not None or fixture.status == 'completed':
         messages.error(request, 'Cannot delete a fixture that already has results.')
-        return redirect('admin_competition_fixtures', pk=pk)
+        return redirect('admin_knockout_hub')
 
     if request.method == 'POST':
         label = str(fixture)
@@ -488,7 +488,7 @@ def admin_delete_knockout_fixture_view(request, pk, fixture_pk):
         )
         fixture.delete()
         messages.success(request, f'Knockout fixture deleted: {label}')
-        return redirect('admin_competition_fixtures', pk=pk)
+        return redirect('admin_knockout_hub')
 
     return render(request, 'admin_dashboard/delete_knockout_fixture.html', {
         'competition': competition,
@@ -522,3 +522,35 @@ def admin_knockout_hub_view(request):
         'competition_data': competition_data,
         'knockout_rounds': KnockoutRound.choices,
     })
+
+
+@admin_or_cm_required
+def admin_bulk_delete_knockout_view(request, pk):
+    """Admin: delete ALL knockout fixtures (without results) for a competition."""
+    competition = get_object_or_404(Competition, pk=pk)
+
+    if request.method == 'POST':
+        knockouts = Fixture.objects.filter(
+            competition=competition,
+            is_knockout=True,
+            home_score__isnull=True,
+        ).exclude(status='completed')
+        count = knockouts.count()
+
+        # Log activity
+        from admin_dashboard.models import ActivityLog
+        ActivityLog.objects.create(
+            user=request.user,
+            action='FIXTURE_DELETE',
+            description=(
+                f'{request.user.get_full_name()} bulk-deleted {count} knockout '
+                f'fixture(s) from {competition.name}'
+            ),
+            object_repr=f'{competition.name} knockouts',
+            ip_address=request.META.get('REMOTE_ADDR', ''),
+        )
+
+        knockouts.delete()
+        messages.success(request, f'Deleted {count} knockout fixture(s) from {competition.name}.')
+
+    return redirect('admin_knockout_hub')

@@ -31,6 +31,7 @@ urlpatterns = [
     path('fixtures/<int:pk>/<int:fixture_pk>/result/', admin_views.admin_quick_result_view, name='admin_quick_result'),
     path('fixtures/<int:pk>/knockout/create/', admin_views.admin_create_knockout_fixture_view, name='admin_create_knockout_fixture'),
     path('fixtures/<int:pk>/<int:fixture_pk>/delete/', admin_views.admin_delete_knockout_fixture_view, name='admin_delete_knockout_fixture'),
+    path('fixtures/<int:pk>/knockout/delete-all/', admin_views.admin_bulk_delete_knockout_view, name='admin_bulk_delete_knockouts'),
     
     # Activity Logs
     path('activity-logs/', activity_views.activity_logs, name='activity_logs'),

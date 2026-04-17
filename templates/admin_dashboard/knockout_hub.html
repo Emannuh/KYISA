@@ -38,6 +38,13 @@
         font-size: .8rem; font-weight: 600; text-decoration: none; transition: opacity .2s;
     }
     .btn-create:hover { opacity: .85; color: #fff; }
+    .btn-delete-all {
+        display: inline-flex; align-items: center; gap: .35rem;
+        background: linear-gradient(135deg, #C62828, #E53935); color: #fff;
+        border: none; padding: .45rem 1rem; border-radius: 8px;
+        font-size: .8rem; font-weight: 600; cursor: pointer; transition: opacity .2s;
+    }
+    .btn-delete-all:hover { opacity: .85; }
 
     .ko-table { width: 100%; border-collapse: collapse; font-size: .85rem; }
     .ko-table th { padding: .6rem .75rem; text-align: left; font-weight: 600; color: #666; background: #fafafa; border-bottom: 2px solid #eee; }
@@ -129,6 +136,15 @@
         <a href="{% url 'admin_create_knockout_fixture' pk=item.competition.pk %}" class="btn-create">
             <i class="bi bi-plus-circle"></i> Create Knockout Match
         </a>
+        {% if item.count %}
+        <form method="post" action="{% url 'admin_bulk_delete_knockouts' pk=item.competition.pk %}" style="display:inline;"
+              onsubmit="return confirm('Delete ALL {{ item.count }} knockout fixture(s) for {{ item.competition.name }}?');">
+            {% csrf_token %}
+            <button type="submit" class="btn-delete-all">
+                <i class="bi bi-trash3"></i> Delete All ({{ item.count }})
+            </button>
+        </form>
+        {% endif %}
     </div>
 
     {% if item.knockout_fixtures %}
@@ -176,11 +192,9 @@
                         <a href="{% url 'admin_edit_fixture' pk=item.competition.pk fixture_pk=fx.pk %}">
                             <i class="bi bi-pencil"></i> Edit
                         </a>
-                        {% if fx.home_score is None and fx.status != 'completed' %}
                         <a href="{% url 'admin_delete_knockout_fixture' pk=item.competition.pk fixture_pk=fx.pk %}" class="del">
                             <i class="bi bi-trash"></i> Delete
                         </a>
-                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
