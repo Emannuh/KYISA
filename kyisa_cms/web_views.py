@@ -415,7 +415,7 @@ def leadership_view(request):
 def public_competitions_view(request):
     """Public competitions listing — grouped by sport, with exhibition marker."""
     all_comps = Competition.objects.all()
-    active    = all_comps.filter(status='active')
+    active    = all_comps.filter(status__in=['active', 'group_stage', 'knockout'])
     upcoming  = all_comps.filter(status__in=['upcoming', 'registration'])
     completed = all_comps.filter(status='completed')
 
