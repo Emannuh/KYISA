@@ -3843,50 +3843,55 @@ textarea.form-control { resize: vertical; min-height: 90px; }
 
 /* Match Center — Live strip */
 .mc-live-strip {
-    background: linear-gradient(135deg, rgba(229,57,53,.12), rgba(229,57,53,.04));
-    border: 1px solid rgba(229,57,53,.3);
-    border-radius: 16px;
-    padding: 1.25rem;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    border: 1px solid rgba(229,57,53,.35);
+    border-radius: 20px;
+    padding: 1.5rem;
     margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,.15), 0 0 0 1px rgba(229,57,53,.1);
 }
 .mc-live-strip__header {
     display: flex;
     align-items: center;
     gap: .75rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: .75rem;
+    border-bottom: 1px solid rgba(255,255,255,.08);
 }
 .mc-live-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1rem;
 }
 .mc-live-card {
-    background: rgba(0,0,0,.4);
-    border: 1px solid rgba(229,57,53,.3);
-    border-radius: 12px;
-    padding: 1rem;
-    transition: transform .25s, border-color .25s;
+    background: linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 14px;
+    padding: 1.1rem 1.25rem;
+    transition: transform .25s, border-color .25s, box-shadow .25s;
+    backdrop-filter: blur(10px);
 }
 .mc-live-card:hover {
     transform: translateY(-3px);
-    border-color: #E53935;
+    border-color: rgba(229,57,53,.5);
+    box-shadow: 0 8px 24px rgba(229,57,53,.15);
 }
 .mc-live-card__comp {
-    font-size: .68rem;
-    color: rgba(255,255,255,.45);
+    font-size: .7rem;
+    color: rgba(255,255,255,.5);
     text-transform: uppercase;
-    letter-spacing: .5px;
-    margin-bottom: .5rem;
+    letter-spacing: .8px;
+    margin-bottom: .65rem;
 }
 .mc-live-card__body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: .5rem;
+    gap: .75rem;
 }
 .mc-live-card__team {
-    font-size: .82rem;
-    font-weight: 600;
+    font-size: .9rem;
+    font-weight: 700;
     color: #fff;
     flex: 1;
     text-align: center;
@@ -3894,31 +3899,39 @@ textarea.form-control { resize: vertical; min-height: 90px; }
 .mc-live-card__score {
     display: flex;
     align-items: center;
-    gap: .3rem;
-    background: rgba(229,57,53,.2);
-    border-radius: 8px;
-    padding: .3rem .65rem;
+    gap: .4rem;
+    background: linear-gradient(135deg, rgba(229,57,53,.3), rgba(229,57,53,.15));
+    border: 1px solid rgba(229,57,53,.35);
+    border-radius: 12px;
+    padding: .4rem .85rem;
+    min-width: 80px;
+    justify-content: center;
 }
 .mc-live-card__num {
-    font-size: 1.4rem;
-    font-weight: 800;
+    font-size: 1.6rem;
+    font-weight: 900;
     color: #fff;
 }
 .mc-live-card__sep {
-    font-size: 1rem;
-    color: rgba(255,255,255,.4);
-    margin: 0 .15rem;
+    font-size: 1.1rem;
+    color: rgba(255,255,255,.45);
+    margin: 0 .1rem;
 }
 .mc-live-card__meta {
     display: flex;
     justify-content: space-between;
-    font-size: .65rem;
+    align-items: center;
+    font-size: .68rem;
     color: rgba(255,255,255,.4);
-    margin-top: .5rem;
+    margin-top: .65rem;
+    padding-top: .5rem;
+    border-top: 1px solid rgba(255,255,255,.06);
 }
 .mc-live-card__half {
     color: #E53935;
     font-weight: 700;
+    font-size: .72rem;
+    text-transform: uppercase;
 }
 
 @media (max-width: 768px) {
