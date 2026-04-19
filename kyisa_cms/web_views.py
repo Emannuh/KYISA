@@ -217,19 +217,32 @@ def home_view(request):
         'competition', 'home_team', 'away_team', 'venue'
     ).order_by('-match_date')[:12]
 
-    # Recent completed finals/knockout matches for the hero card fallback
+    # Latest completed match per competition — ensures each sport (handball
+    # men, handball women, football, etc.) is represented in the hero card.
+    from django.db.models import Max, Subquery, OuterRef
+    latest_per_comp = (
+        Fixture.objects.filter(
+            status='completed',
+            home_team__isnull=False,
+            away_team__isnull=False,
+            competition=OuterRef('competition'),
+        )
+        .order_by('-match_date', '-kickoff_time')
+        .values('id')[:1]
+    )
     recent_finals = Fixture.objects.filter(
-        status='completed',
-        is_knockout=True,
-        home_team__isnull=False,
-        away_team__isnull=False,
-    ).exclude(
-        home_team__name__icontains='TBD'
-    ).exclude(
-        away_team__name__icontains='TBD'
+        id__in=Subquery(
+            Fixture.objects.filter(
+                status='completed',
+                home_team__isnull=False,
+                away_team__isnull=False,
+            ).values('competition').annotate(
+                latest_id=Max('id'),
+            ).values('latest_id')
+        )
     ).select_related(
         'competition', 'home_team', 'away_team', 'winner'
-    ).order_by('-match_date', '-knockout_round')[:3]
+    ).order_by('-match_date')[:6]
 
     # Media highlights for homepage
     latest_articles = NewsArticle.objects.filter(
