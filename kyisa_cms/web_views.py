@@ -215,7 +215,21 @@ def home_view(request):
         away_team__name__icontains='TBD'
     ).select_related(
         'competition', 'home_team', 'away_team', 'venue'
-    ).order_by('-match_date')[:6]
+    ).order_by('-match_date')[:12]
+
+    # Recent completed finals/knockout matches for the hero card fallback
+    recent_finals = Fixture.objects.filter(
+        status='completed',
+        is_knockout=True,
+        home_team__isnull=False,
+        away_team__isnull=False,
+    ).exclude(
+        home_team__name__icontains='TBD'
+    ).exclude(
+        away_team__name__icontains='TBD'
+    ).select_related(
+        'competition', 'home_team', 'away_team', 'winner'
+    ).order_by('-match_date', '-knockout_round')[:3]
 
     # Media highlights for homepage
     latest_articles = NewsArticle.objects.filter(
@@ -234,10 +248,10 @@ def home_view(request):
         is_published=True
     ).order_by('-created_at')[:4]
 
-    # Pool standings for active competitions (group_stage)
+    # Pool standings for active/completed competitions (show even when finished)
     from competitions.models import Pool, PoolTeam
     active_competitions = Competition.objects.filter(
-        status__in=['group_stage', 'knockout_stage']
+        status__in=['group_stage', 'knockout_stage', 'completed']
     ).order_by('name')
 
     standings_data = []
@@ -255,12 +269,12 @@ def home_view(request):
         if comp_pools:
             standings_data.append({'competition': comp, 'pools': comp_pools})
 
-    # Knockout fixtures for active competitions (only with real teams assigned)
+    # Knockout fixtures — include completed competitions so finals remain visible
     knockout_fixtures = Fixture.objects.filter(
         is_knockout=True,
         home_team__isnull=False,
         away_team__isnull=False,
-        competition__status__in=['knockout_stage', 'knockout', 'active', 'group_stage'],
+        competition__status__in=['knockout_stage', 'knockout', 'active', 'group_stage', 'completed'],
     ).exclude(
         home_team__name__icontains='TBD'
     ).exclude(
@@ -275,6 +289,7 @@ def home_view(request):
         'live_matches': live_matches,
         'upcoming_fixtures': upcoming_fixtures,
         'recent_results': recent_results,
+        'recent_finals': recent_finals,
         'latest_articles': latest_articles,
         'featured_articles': featured_articles,
         'latest_albums': latest_albums,

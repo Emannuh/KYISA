@@ -150,6 +150,30 @@
                             </div>
                             {% endfor %}
                         </div>
+                        {% elif recent_results %}
+                        <!-- No live/upcoming — show recent results -->
+                        <div style="display:flex;align-items:center;gap:.45rem;margin-bottom:.75rem;">
+                            <i class="bi bi-flag-fill" style="font-size:.75rem;color:#4CAF50;"></i>
+                            <span style="font-size:.72rem;font-weight:700;color:#4CAF50;text-transform:uppercase;letter-spacing:1.5px;">Final Results</span>
+                        </div>
+
+                        <div style="margin-top:.3rem;">
+                            {% for match in recent_results|slice:":3" %}
+                            <div style="padding:.55rem 0;{% if not forloop.last %}border-bottom:1px solid rgba(255,255,255,.06);{% endif %}">
+                                <div style="font-size:.58rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.6px;margin-bottom:.3rem;">{{ match.competition.name }}{% if match.is_knockout and match.knockout_round %} · {{ match.get_knockout_round_display }}{% endif %}</div>
+                                <div style="display:flex;align-items:center;gap:.5rem;">
+                                    <span style="font-size:.82rem;font-weight:{% if match.home_score > match.away_score %}700{% else %}500{% endif %};color:{% if match.home_score > match.away_score %}#fff{% else %}rgba(255,255,255,.6){% endif %};flex:1;text-align:left;">{{ match.home_team.name|truncatewords:2 }}</span>
+                                    <div style="background:rgba(76,175,80,.12);border:1px solid rgba(76,175,80,.25);border-radius:8px;padding:.2rem .55rem;text-align:center;min-width:52px;">
+                                        <span style="font-size:.82rem;font-weight:800;color:#fff;letter-spacing:1px;">{{ match.home_score|default:"0" }} – {{ match.away_score|default:"0" }}</span>
+                                    </div>
+                                    <span style="font-size:.82rem;font-weight:{% if match.away_score > match.home_score %}700{% else %}500{% endif %};color:{% if match.away_score > match.home_score %}#fff{% else %}rgba(255,255,255,.6){% endif %};flex:1;text-align:right;">{{ match.away_team.name|truncatewords:2 }}</span>
+                                </div>
+                                <div style="text-align:center;font-size:.58rem;color:rgba(255,255,255,.3);margin-top:.25rem;">
+                                    FT · {{ match.match_date|date:"d M" }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
                         {% else %}
                         <div style="text-align:center;padding:1.5rem 0;color:rgba(255,255,255,.4);font-size:.82rem;">
                             <i class="bi bi-calendar3" style="font-size:1.8rem;display:block;margin-bottom:.5rem;opacity:.35;"></i>
@@ -162,6 +186,8 @@
                                 {% if live_matches %}
                                 <span style="width:6px;height:6px;border-radius:50%;background:#E53935;animation:livePulse 1.5s infinite;"></span>
                                 View All Live →
+                                {% elif recent_results and not upcoming_fixtures %}
+                                View All Results →
                                 {% else %}
                                 View Fixtures →
                                 {% endif %}
