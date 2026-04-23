@@ -7521,6 +7521,114 @@ def sys_admin_dashboard_view(request):
         for r in role_counts
     ]
 
+    role_count_map = {item['role']: item['count'] for item in role_distribution}
+
+    def role_total(*roles):
+        return sum(role_count_map.get(role, 0) for role in roles)
+
+    dashboard_hubs = [
+        {
+            'title': 'Coordinator Desk',
+            'icon': 'bi bi-person-gear',
+            'theme': 'teal',
+            'description': 'Competition control for coordinators across fixtures, appointments, reports, and venues.',
+            'count_label': 'active users',
+            'count': role_total(
+                UserRole.COORDINATOR,
+                UserRole.SOCCER_COORDINATOR,
+                UserRole.HANDBALL_COORDINATOR,
+                UserRole.BASKETBALL_COORDINATOR,
+                UserRole.VOLLEYBALL_COORDINATOR,
+            ),
+            'primary_url': 'coordinator_competitions',
+            'primary_label': 'Open coordinator tools',
+            'actions': [
+                {'label': 'Competitions', 'url': 'coordinator_competitions'},
+                {'label': 'Appointments', 'url': 'coordinator_appointments'},
+                {'label': 'Reports', 'url': 'coordinator_match_reports'},
+                {'label': 'Venues', 'url': 'coordinator_venues'},
+            ],
+        },
+        {
+            'title': 'Finance Desk',
+            'icon': 'bi bi-cash-stack',
+            'theme': 'amber',
+            'description': 'Payments, registrations, transfers, suspensions, and platform-wide statistics in one place.',
+            'count_label': 'treasurer users',
+            'count': role_total(UserRole.TREASURER),
+            'primary_url': 'treasurer_county_payments',
+            'primary_label': 'Open finance tools',
+            'actions': [
+                {'label': 'County Payments', 'url': 'treasurer_county_payments'},
+                {'label': 'Registrations', 'url': 'treasurer_county_registrations'},
+                {'label': 'Transfers', 'url': 'manage_transfers'},
+                {'label': 'Statistics', 'url': 'statistics_dashboard'},
+            ],
+        },
+        {
+            'title': 'Secretary General Desk',
+            'icon': 'bi bi-shield-lock',
+            'theme': 'indigo',
+            'description': 'Executive oversight for verifications, appeals, treasurer actions, user actions, and overrides.',
+            'count_label': 'secretary general users',
+            'count': role_total(UserRole.SECRETARY_GENERAL),
+            'primary_url': 'sg_verifications',
+            'primary_label': 'Open SG oversight',
+            'actions': [
+                {'label': 'Verifications', 'url': 'sg_verifications'},
+                {'label': 'Appeals', 'url': 'sg_appeals'},
+                {'label': 'User Actions', 'url': 'sg_user_actions'},
+                {'label': 'Overrides', 'url': 'sg_exceptional_overrides'},
+            ],
+        },
+        {
+            'title': 'Jury Desk',
+            'icon': 'bi bi-balance-scale',
+            'theme': 'slate',
+            'description': 'Appeals review, data exports, match reports, and disciplinary records for jury workflows.',
+            'count_label': 'jury chair users',
+            'count': role_total(UserRole.JURY_CHAIR),
+            'primary_url': 'jury_dashboard',
+            'primary_label': 'Open jury dashboard',
+            'actions': [
+                {'label': 'Jury Dashboard', 'url': 'jury_dashboard'},
+                {'label': 'Teams Data', 'url': 'jury_teams'},
+                {'label': 'Players Data', 'url': 'jury_players'},
+                {'label': 'Disciplinary', 'url': 'jury_disciplinary'},
+            ],
+        },
+        {
+            'title': 'Scouting Desk',
+            'icon': 'bi bi-binoculars',
+            'theme': 'blue',
+            'description': 'Scout verified players quickly and maintain the shortlist without leaving the admin hub.',
+            'count_label': 'scout users',
+            'count': role_total(UserRole.SCOUT),
+            'primary_url': 'scout_players',
+            'primary_label': 'Open scouting tools',
+            'actions': [
+                {'label': 'Browse Players', 'url': 'scout_players'},
+                {'label': 'Shortlist', 'url': 'scout_shortlist'},
+            ],
+        },
+        {
+            'title': 'Media Desk',
+            'icon': 'bi bi-camera-reels',
+            'theme': 'purple',
+            'description': 'Manage media publishing flow across the dashboard, articles, galleries, and videos.',
+            'count_label': 'media users',
+            'count': role_total(UserRole.MEDIA_MANAGER),
+            'primary_url': 'media_dashboard',
+            'primary_label': 'Open media tools',
+            'actions': [
+                {'label': 'Dashboard', 'url': 'media_dashboard'},
+                {'label': 'Articles', 'url': 'media_article_list'},
+                {'label': 'Albums', 'url': 'media_album_list'},
+                {'label': 'Videos', 'url': 'media_video_list'},
+            ],
+        },
+    ]
+
     return render(request, 'portal/admin/dashboard.html', {
         'total_users': total_users,
         'total_competitions': total_competitions,
@@ -7537,4 +7645,5 @@ def sys_admin_dashboard_view(request):
         'recent_users': recent_users,
         'recent_fixtures': recent_fixtures,
         'role_distribution': role_distribution,
+        'dashboard_hubs': dashboard_hubs,
     })

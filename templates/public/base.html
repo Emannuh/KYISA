@@ -107,6 +107,14 @@
         </button>
 
         <ul class="fkf-nav-links" id="navLinks">
+            <!-- Login link visible only in mobile hamburger menu -->
+            <li class="nav-mobile-login">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}"><i class="bi bi-box-arrow-in-right"></i> Portal</a>
+                {% else %}
+                    <a href="{% url 'web_login' %}"><i class="bi bi-box-arrow-in-right"></i> Portal Login</a>
+                {% endif %}
+            </li>
             <li><a href="{% url 'home' %}" class="{% if active_page == 'home' %}active{% endif %}">Home</a></li>
             <li><a href="{% url 'about' %}" class="{% if active_page == 'about' %}active{% endif %}">About</a></li>
             <li><a href="{% url 'leadership' %}" class="{% if active_page == 'leadership' %}active{% endif %}">Leadership</a></li>
@@ -126,14 +134,6 @@
                 <ul class="dropdown-menu">
                     <li><a href="{% url 'county_admin_register' %}">🏛️ County Registration</a></li>
                 </ul>
-            </li>
-            <!-- Login link visible only in mobile hamburger menu -->
-            <li class="nav-mobile-login">
-                {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard' %}"><i class="bi bi-box-arrow-in-right"></i> Portal</a>
-                {% else %}
-                    <a href="{% url 'web_login' %}"><i class="bi bi-box-arrow-in-right"></i> Staff Login</a>
-                {% endif %}
             </li>
         </ul>
 
