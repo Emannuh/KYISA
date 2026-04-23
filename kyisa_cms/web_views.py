@@ -219,7 +219,7 @@ def home_view(request):
 
     # Latest completed match per competition — ensures each sport (handball
     # men, handball women, football, etc.) is represented in the hero card.
-    from django.db.models import Max, Subquery, OuterRef
+    from django.db.models import Subquery, OuterRef
     latest_per_comp = (
         Fixture.objects.filter(
             status='completed',
@@ -231,15 +231,11 @@ def home_view(request):
         .values('id')[:1]
     )
     recent_finals = Fixture.objects.filter(
-        id__in=Subquery(
-            Fixture.objects.filter(
-                status='completed',
-                home_team__isnull=False,
-                away_team__isnull=False,
-            ).values('competition').annotate(
-                latest_id=Max('id'),
-            ).values('latest_id')
-        )
+        status='completed',
+        home_team__isnull=False,
+        away_team__isnull=False,
+    ).filter(
+        id=Subquery(latest_per_comp)
     ).select_related(
         'competition', 'home_team', 'away_team', 'winner'
     ).order_by('-match_date')[:6]
@@ -261,11 +257,11 @@ def home_view(request):
         is_published=True
     ).order_by('-created_at')[:4]
 
-    # Pool standings for active/completed competitions (show even when finished)
+    # Pool standings from real pool data (independent of competition status)
     from competitions.models import Pool, PoolTeam
     active_competitions = Competition.objects.filter(
-        status__in=['group_stage', 'knockout_stage', 'completed']
-    ).order_by('name')
+        pools__pool_teams__isnull=False
+    ).distinct().order_by('name')
 
     standings_data = []
     for comp in active_competitions:
@@ -282,12 +278,11 @@ def home_view(request):
         if comp_pools:
             standings_data.append({'competition': comp, 'pools': comp_pools})
 
-    # Knockout fixtures — include completed competitions so finals remain visible
+    # Knockout fixtures with assigned teams; do not depend on competition status.
     knockout_fixtures = Fixture.objects.filter(
         is_knockout=True,
         home_team__isnull=False,
         away_team__isnull=False,
-        competition__status__in=['knockout_stage', 'knockout', 'active', 'group_stage', 'completed'],
     ).exclude(
         home_team__name__icontains='TBD'
     ).exclude(

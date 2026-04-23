@@ -25,22 +25,28 @@ def seed_handball_with_finals(apps, schema_editor):
     def get_county(name):
         return County.objects.get(name=name)
 
-    def ensure_team(county, sport_type, comp):
-        name = county.name
+    def ensure_team(county, sport_type, comp, suffix):
+        # Historical databases may still enforce unique Team.name globally.
+        # Use gendered names to avoid collisions across men's/women's teams.
+        name = f"{county.name} {suffix}"
         team, _ = Team.objects.get_or_create(
             name=name,
-            sport_type=sport_type,
             defaults={
                 "county": county,
+                "sport_type": sport_type,
                 "competition": comp,
                 "status": "registered",
                 "payment_confirmed": True,
                 "contact_phone": "+254700000000",
             },
         )
+        if team.sport_type != sport_type:
+            team.sport_type = sport_type
+        if team.county_id != county.pk:
+            team.county = county
         if team.competition_id != comp.pk:
             team.competition = comp
-            team.save(update_fields=["competition"])
+        team.save(update_fields=["sport_type", "county", "competition"])
         return team
 
     def make_fixture(comp, pool, home, away, h_score, a_score, date, time_str,
@@ -93,9 +99,9 @@ def seed_handball_with_finals(apps, schema_editor):
     men_comp.qualify_from_group = 2
     men_comp.save()
 
-    mak_m = ensure_team(makueni_c, "handball_men", men_comp)
-    lai_m = ensure_team(laikipia_c, "handball_men", men_comp)
-    sia_m = ensure_team(siaya_c, "handball_men", men_comp)
+    mak_m = ensure_team(makueni_c, "handball_men", men_comp, "HB Men")
+    lai_m = ensure_team(laikipia_c, "handball_men", men_comp, "HB Men")
+    sia_m = ensure_team(siaya_c, "handball_men", men_comp, "HB Men")
 
     # Pool
     men_pool, _ = Pool.objects.get_or_create(
@@ -159,9 +165,9 @@ def seed_handball_with_finals(apps, schema_editor):
     women_comp.qualify_from_group = 2
     women_comp.save()
 
-    mak_w = ensure_team(makueni_c, "handball_women", women_comp)
-    lai_w = ensure_team(laikipia_c, "handball_women", women_comp)
-    sia_w = ensure_team(siaya_c, "handball_women", women_comp)
+    mak_w = ensure_team(makueni_c, "handball_women", women_comp, "HB Women")
+    lai_w = ensure_team(laikipia_c, "handball_women", women_comp, "HB Women")
+    sia_w = ensure_team(siaya_c, "handball_women", women_comp, "HB Women")
 
     women_pool, _ = Pool.objects.get_or_create(
         competition=women_comp, name="Group A",
