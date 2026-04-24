@@ -181,6 +181,7 @@ class SquadStatus(models.TextChoices):
     SUBMITTED = "submitted", "Submitted"
     APPROVED  = "approved",  "Approved by Coordinator"
     REJECTED  = "rejected",  "Rejected — Needs Changes"
+        LOCKED    = "locked",    "Locked by Secretary General"
 
 
 class SquadSubmission(models.Model):

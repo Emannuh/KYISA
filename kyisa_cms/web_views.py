@@ -27,6 +27,7 @@ from teams.models import (
     CountyRegistration, CountyRegStatus, CountyDiscipline, CountyPlayer, SQUAD_LIMITS,
     TechnicalBenchMember, TechnicalBenchRole, PlayerStatus,
     CountyDelegationMember, CountyDelegationRole,
+    County,
 )
 from teams.forms import (
     PlayerRegistrationForm,
