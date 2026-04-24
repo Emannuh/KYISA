@@ -6418,6 +6418,10 @@ def team_manager_match_squad_view(request, fixture_pk):
     # Get existing submission
     existing = SquadSubmission.objects.filter(fixture=fixture, team=team).first()
 
+    if existing and existing.status == SquadStatus.LOCKED:
+        messages.error(request, 'This team list has been locked by the Secretary General and cannot be edited.')
+        return redirect('team_manager_dashboard')
+
     # If squad already approved by referee, warn that changes need re-approval
     needs_re_approval = existing and existing.status == SquadStatus.APPROVED
 
@@ -6904,6 +6908,119 @@ def sg_dashboard_view(request):
         'recent_activity': recent_activity,
         'sport_breakdown': sport_breakdown,
         'total_counties': CountyRegistration.objects.count(),
+    })
+
+
+@role_required('secretary_general')
+def sg_team_lists_view(request):
+    """SG: review uploaded team lists by county and discipline, then approve/lock."""
+    county_id = request.GET.get('county', '').strip()
+    discipline = request.GET.get('discipline', '').strip()
+    status = request.GET.get('status', '').strip()
+
+    squads = SquadSubmission.objects.select_related(
+        'team', 'team__county', 'fixture', 'reviewed_by', 'fixture__competition'
+    ).order_by('-submitted_at', '-id')
+
+    if county_id:
+        squads = squads.filter(team__county_id=county_id)
+    if discipline:
+        squads = squads.filter(team__sport_type=discipline)
+    if status:
+        squads = squads.filter(status=status)
+    else:
+        squads = squads.filter(status__in=[SquadStatus.SUBMITTED, SquadStatus.APPROVED, SquadStatus.LOCKED])
+
+    counties = County.objects.filter(is_active=True).order_by('name')
+
+    discipline_base = Team.objects.all()
+    if county_id:
+        discipline_base = discipline_base.filter(county_id=county_id)
+
+    discipline_values = list(
+        discipline_base.exclude(sport_type='').values_list('sport_type', flat=True).distinct().order_by('sport_type')
+    )
+    discipline_choices = [(value, dict(SportType.choices).get(value, value)) for value in discipline_values]
+
+    stats_base = SquadSubmission.objects.all()
+    if county_id:
+        stats_base = stats_base.filter(team__county_id=county_id)
+    if discipline:
+        stats_base = stats_base.filter(team__sport_type=discipline)
+
+    stats = {
+        'submitted': stats_base.filter(status=SquadStatus.SUBMITTED).count(),
+        'approved': stats_base.filter(status=SquadStatus.APPROVED).count(),
+        'locked': stats_base.filter(status=SquadStatus.LOCKED).count(),
+        'rejected': stats_base.filter(status=SquadStatus.REJECTED).count(),
+    }
+
+    return render(request, 'portal/secretary_general/team_lists.html', {
+        'squads': squads,
+        'counties': counties,
+        'discipline_choices': discipline_choices,
+        'selected_county': county_id,
+        'selected_discipline': discipline,
+        'selected_status': status,
+        'stats': stats,
+        'status_choices': SquadStatus.choices,
+    })
+
+
+@role_required('secretary_general')
+@require_POST
+def sg_approve_squad(request, squad_id):
+    """SG approval action: submitted squad -> approved."""
+    squad = get_object_or_404(
+        SquadSubmission.objects.select_related('team', 'fixture'),
+        pk=squad_id,
+    )
+
+    if squad.status != SquadStatus.SUBMITTED:
+        return JsonResponse({
+            'ok': False,
+            'message': f'Only submitted team lists can be approved. Current status: {squad.get_status_display()}.'
+        }, status=400)
+
+    squad.status = SquadStatus.APPROVED
+    squad.reviewed_by = request.user
+    squad.reviewed_at = timezone.now()
+    squad.rejection_reason = ''
+    squad.save(update_fields=['status', 'reviewed_by', 'reviewed_at', 'rejection_reason'])
+
+    return JsonResponse({
+        'ok': True,
+        'status': squad.status,
+        'status_label': squad.get_status_display(),
+        'message': f'Approved: {squad.team.name} ({squad.fixture})',
+    })
+
+
+@role_required('secretary_general')
+@require_POST
+def sg_lock_squad(request, squad_id):
+    """SG lock action: approved squad -> locked."""
+    squad = get_object_or_404(
+        SquadSubmission.objects.select_related('team', 'fixture'),
+        pk=squad_id,
+    )
+
+    if squad.status != SquadStatus.APPROVED:
+        return JsonResponse({
+            'ok': False,
+            'message': f'Only approved team lists can be locked. Current status: {squad.get_status_display()}.'
+        }, status=400)
+
+    squad.status = SquadStatus.LOCKED
+    squad.reviewed_by = request.user
+    squad.reviewed_at = timezone.now()
+    squad.save(update_fields=['status', 'reviewed_by', 'reviewed_at'])
+
+    return JsonResponse({
+        'ok': True,
+        'status': squad.status,
+        'status_label': squad.get_status_display(),
+        'message': f'Locked: {squad.team.name} ({squad.fixture})',
     })
 
 

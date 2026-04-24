@@ -306,6 +306,9 @@
             <a href="{% url 'sg_verified_players' %}" class="sidebar-link {% if request.resolver_match.url_name == 'sg_verified_players' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-patch-check-fill"></i></span> Verified Players
             </a>
+            <a href="{% url 'sg_team_lists' %}" class="sidebar-link {% if request.resolver_match.url_name == 'sg_team_lists' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-list-check"></i></span> Team Lists Oversight
+            </a>
             <a href="{% url 'cec_sports_portal' %}" class="sidebar-link {% if request.resolver_match.url_name == 'cec_sports_portal' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-people-fill"></i></span> CEC Sports (View Only)
             </a>

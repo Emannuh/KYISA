@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Team Lists Oversight - Secretary General{% endblock %}
+
+{% block content %}
+<div class="dash-hero dash-hero--green">
+    <span class="hero-badge"><span class="pulse-dot" style="background:#4CAF50"></span> Secretary General</span>
+    <h1><i class="bi bi-list-check"></i> Team Lists Oversight</h1>
+    <p>Select county and discipline, then approve or lock uploaded team lists.</p>
+</div>
+
+<div class="dash-section-title"><i class="bi bi-funnel-fill"></i> Filters</div>
+<div class="dash-panel" style="margin-bottom:1rem;">
+    <div class="dash-panel-body">
+        <form method="get" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.75rem;align-items:end;">
+            <div>
+                <label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:.35rem;">County</label>
+                <select name="county" class="form-control">
+                    <option value="">All counties</option>
+                    {% for county in counties %}
+                    <option value="{{ county.id }}" {% if selected_county == county.id|stringformat:'s' %}selected{% endif %}>{{ county.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:.35rem;">Discipline</label>
+                <select name="discipline" class="form-control">
+                    <option value="">All disciplines</option>
+                    {% for value, label in discipline_choices %}
+                    <option value="{{ value }}" {% if selected_discipline == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:.35rem;">Status</label>
+                <select name="status" class="form-control">
+                    <option value="">Submitted + Approved + Locked</option>
+                    {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div style="display:flex;gap:.5rem;">
+                <button class="btn btn-success" type="submit"><i class="bi bi-search"></i> Apply</button>
+                <a class="btn btn-outline-secondary" href="{% url 'sg_team_lists' %}">Reset</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="dash-stats" style="margin-bottom:1rem;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));">
+    <div class="dash-stat dash-stat--amber"><div class="stat-num">{{ stats.submitted }}</div><div class="stat-lbl">Submitted</div></div>
+    <div class="dash-stat dash-stat--blue"><div class="stat-num">{{ stats.approved }}</div><div class="stat-lbl">Approved</div></div>
+    <div class="dash-stat dash-stat--green"><div class="stat-num">{{ stats.locked }}</div><div class="stat-lbl">Locked</div></div>
+    <div class="dash-stat dash-stat--red"><div class="stat-num">{{ stats.rejected }}</div><div class="stat-lbl">Rejected</div></div>
+</div>
+
+<div class="dash-panel">
+    <div class="dash-panel-head"><i class="bi bi-table"></i> Uploaded Team Lists</div>
+    <div class="dash-panel-body" style="overflow-x:auto;">
+        <table class="table table-sm align-middle">
+            <thead>
+                <tr>
+                    <th>County</th>
+                    <th>Team</th>
+                    <th>Discipline</th>
+                    <th>Fixture</th>
+                    <th>Status</th>
+                    <th>Submitted</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for squad in squads %}
+                <tr id="squad-row-{{ squad.id }}">
+                    <td>{{ squad.team.county.name }}</td>
+                    <td>{{ squad.team.name }}</td>
+                    <td>{{ squad.team.get_sport_type_display }}</td>
+                    <td>{{ squad.fixture }}</td>
+                    <td><span class="badge text-bg-secondary" id="status-badge-{{ squad.id }}">{{ squad.get_status_display }}</span></td>
+                    <td>{% if squad.submitted_at %}{{ squad.submitted_at|date:'d M Y H:i' }}{% else %}-{% endif %}</td>
+                    <td id="actions-{{ squad.id }}">
+                        {% if squad.status == 'submitted' %}
+                        <button type="button" class="btn btn-sm btn-success" onclick="sgAction({{ squad.id }}, '{% url 'sg_approve_squad' squad.id %}', 'approve')">
+                            <i class="bi bi-check2-circle"></i> Approve
+                        </button>
+                        {% elif squad.status == 'approved' %}
+                        <button type="button" class="btn btn-sm btn-dark" onclick="sgAction({{ squad.id }}, '{% url 'sg_lock_squad' squad.id %}', 'lock')">
+                            <i class="bi bi-lock-fill"></i> Lock
+                        </button>
+                        {% elif squad.status == 'locked' %}
+                        <span class="text-success fw-semibold"><i class="bi bi-lock-fill"></i> Locked</span>
+                        {% else %}
+                        <span class="text-muted">No action</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">No team lists found for the selected filters.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return '';
+}
+
+async function sgAction(squadId, url, action) {
+    const buttonCell = document.getElementById(`actions-${squadId}`);
+    const badge = document.getElementById(`status-badge-${squadId}`);
+    const oldContent = buttonCell.innerHTML;
+    buttonCell.innerHTML = '<span class="text-muted">Processing...</span>';
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        });
+
+        const data = await response.json();
+        if (!response.ok || !data.ok) {
+            throw new Error(data.message || 'Action failed');
+        }
+
+        badge.textContent = data.status_label;
+        if (action === 'approve') {
+            buttonCell.innerHTML = `<button type="button" class="btn btn-sm btn-dark" onclick="sgAction(${squadId}, '/api/sg/squads/${squadId}/lock/', 'lock')"><i class="bi bi-lock-fill"></i> Lock</button>`;
+        } else {
+            buttonCell.innerHTML = '<span class="text-success fw-semibold"><i class="bi bi-lock-fill"></i> Locked</span>';
+        }
+    } catch (error) {
+        buttonCell.innerHTML = oldContent;
+        alert(error.message || 'Unable to complete action.');
+    }
+}
+</script>
+{% endblock %}
