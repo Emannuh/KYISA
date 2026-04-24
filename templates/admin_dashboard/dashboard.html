@@ -1,150 +1,41 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}System Admin Dashboard - KYISA CMS{% endblock %}
+{% block title %}Admin Dashboard - KYISA CMS{% endblock %}
 
 {% block extra_css %}
 <style>
-    .dash-hero {
-        background: linear-gradient(135deg, #0D3B0F 0%, #1B5E20 50%, #2E7D32 100%);
-        border-radius: 16px;
-        padding: 2rem 2.5rem;
-        color: #fff;
-        margin-bottom: 2rem;
-        position: relative;
-        overflow: hidden;
-    }
-    .dash-hero::before {
-        content: "";
-        position: absolute;
-        top: -50%;
-        right: -10%;
-        width: 300px;
-        height: 300px;
-        background: radial-gradient(circle, rgba(255,255,255,.08) 0%, transparent 70%);
-        border-radius: 50%;
-    }
-    .dash-hero h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: .25rem; position: relative; }
-    .dash-hero p { opacity: .85; font-size: .95rem; position: relative; }
-    .dash-hero .hero-badge {
-        display: inline-block;
-        background: rgba(255,255,255,.15);
-        border: 1px solid rgba(255,255,255,.25);
-        padding: .2rem .8rem;
-        border-radius: 20px;
-        font-size: .75rem;
-        letter-spacing: .5px;
-        text-transform: uppercase;
-        margin-bottom: .5rem;
-    }
-    .stat-row {
+    .admin-grid-2 {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 2rem;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
     }
-    .dash-stat {
-        background: #fff;
-        border-radius: 12px;
-        padding: 1.25rem 1.5rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,.06);
-        border-left: 4px solid transparent;
-        transition: all .25s ease;
-        position: relative;
-    }
-    .dash-stat:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,.1); }
-    .dash-stat .stat-num {
-        font-size: 1.8rem;
-        font-weight: 800;
-        line-height: 1.1;
-        margin-bottom: .15rem;
-    }
-    .dash-stat .stat-label {
-        font-size: .82rem;
-        color: #757575;
-        font-weight: 500;
-    }
-    .dash-stat .stat-sub {
-        font-size: .75rem;
-        color: #999;
-        margin-top: .25rem;
-    }
-    .dash-stat .stat-icon {
-        position: absolute;
-        top: 1rem;
-        right: 1.25rem;
-        font-size: 1.8rem;
-        opacity: .15;
-    }
-    .dash-stat.green  { border-left-color: #1B5E20; }
-    .dash-stat.green .stat-num { color: #1B5E20; }
-    .dash-stat.blue   { border-left-color: #1565C0; }
-    .dash-stat.blue .stat-num { color: #1565C0; }
-    .dash-stat.amber  { border-left-color: #E65100; }
-    .dash-stat.amber .stat-num { color: #E65100; }
-    .dash-stat.red    { border-left-color: #C62828; }
-    .dash-stat.red .stat-num { color: #C62828; }
-    .dash-stat.purple { border-left-color: #6A1B9A; }
-    .dash-stat.purple .stat-num { color: #6A1B9A; }
-
-    .actions-grid {
+    .feature-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
         gap: 1rem;
         margin-bottom: 2rem;
     }
-    .action-tile {
+    .feature-card {
         background: #fff;
+        border: 1px solid #e7ece7;
         border-radius: 12px;
-        padding: 1.25rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,.06);
-        text-decoration: none;
-        color: #212121;
-        transition: all .25s ease;
-        display: flex;
-        align-items: flex-start;
-        gap: 1rem;
-        border: 1px solid transparent;
+        padding: 1rem 1.1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
     }
-    .action-tile:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 20px rgba(0,0,0,.1);
-        border-color: #1B5E20;
-        color: #1B5E20;
-    }
-    .action-tile .tile-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 10px;
+    .feature-card h4 {
+        margin: 0 0 .35rem;
+        font-size: .9rem;
         display: flex;
         align-items: center;
-        justify-content: center;
-        font-size: 1.3rem;
-        flex-shrink: 0;
+        gap: .5rem;
     }
-    .action-tile .tile-text h4 {
-        font-size: .9rem;
-        font-weight: 600;
-        margin-bottom: .15rem;
-    }
-    .action-tile .tile-text p {
-        font-size: .78rem;
-        color: #757575;
+    .feature-card p {
         margin: 0;
-        line-height: 1.35;
+        font-size: .78rem;
+        color: #5f6b66;
+        line-height: 1.4;
     }
-    .action-tile .tile-badge {
-        background: #C62828;
-        color: #fff;
-        font-size: .7rem;
-        font-weight: 700;
-        padding: .1rem .45rem;
-        border-radius: 10px;
-        margin-left: .4rem;
-    }
-
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-
     .recent-item {
         display: flex;
         justify-content: space-between;
@@ -170,211 +61,136 @@
     .empty-state-sm .icon { font-size: 2rem; margin-bottom: .5rem; opacity: .4; }
 
     @media (max-width: 768px) {
-        .two-col { grid-template-columns: 1fr; }
-        .stat-row { grid-template-columns: repeat(2, 1fr); }
-        .actions-grid { grid-template-columns: 1fr 1fr; }
-        .dash-hero { padding: 1.5rem; }
-    }
-    @media (max-width: 480px) {
-        .stat-row { grid-template-columns: 1fr; }
-        .actions-grid { grid-template-columns: 1fr; }
+        .admin-grid-2 { grid-template-columns: 1fr; }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- Hero Banner -->
-<div class="dash-hero">
-    <span class="hero-badge">System Administrator</span>
-    <h1>Welcome back, {{ request.user.first_name|default:"Admin" }}</h1>
-    <p>KYISA Content Management System &mdash; Full administrative access</p>
+<div class="dash-hero dash-hero--green">
+    <div class="hero-decor"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <span class="hero-badge"><span class="pulse-dot"></span> Administrator</span>
+    <h1><i class="bi bi-shield-lock"></i> KYISA Admin Control Centre</h1>
+    <p>Core registration, competition, and compliance operations</p>
+    <div class="hero-meta">
+        <span><i class="bi bi-people-fill"></i> {{ total_teams }} Teams</span>
+        <span><i class="bi bi-person-vcard"></i> {{ total_players }} Players</span>
+        <span><i class="bi bi-whistle"></i> {{ total_referees }} Referees</span>
+    </div>
 </div>
 
-<!-- Stats Row -->
-<div class="stat-row">
-    <div class="dash-stat green">
+<div class="dash-section-title"><i class="bi bi-graph-up"></i> Overview</div>
+<div class="dash-stats">
+    <div class="dash-stat dash-stat--green">
+        <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
         <div class="stat-num">{{ total_teams }}</div>
-        <div class="stat-label">Total Teams</div>
-        <div class="stat-sub">{{ registered_teams }} approved &middot; {{ pending_teams }} pending</div>
+        <div class="stat-lbl">Total Teams</div>
+        <div class="stat-trend">{{ registered_teams }} approved · {{ pending_teams }} pending</div>
     </div>
-    <div class="dash-stat blue">
+    <div class="dash-stat dash-stat--blue">
+        <div class="stat-icon"><i class="bi bi-person-vcard"></i></div>
         <div class="stat-num">{{ total_players }}</div>
-        <div class="stat-label">Registered Players</div>
-        <div class="stat-sub">Across all teams</div>
+        <div class="stat-lbl">Registered Players</div>
+        <div class="stat-trend">Across all teams</div>
     </div>
-    <div class="dash-stat purple">
+    <div class="dash-stat dash-stat--purple">
+        <div class="stat-icon"><i class="bi bi-whistle"></i></div>
         <div class="stat-num">{{ total_referees }}</div>
-        <div class="stat-label">Referees</div>
-        <div class="stat-sub">{{ approved_referees }} approved &middot; {{ pending_referees }} pending</div>
+        <div class="stat-lbl">Referees</div>
+        <div class="stat-trend">{{ approved_referees }} approved · {{ pending_referees }} pending</div>
     </div>
-    <div class="dash-stat amber">
+    <div class="dash-stat dash-stat--amber">
+        <div class="stat-icon"><i class="bi bi-trophy"></i></div>
         <div class="stat-num">{{ total_competitions }}</div>
-        <div class="stat-label">Competitions</div>
-        <div class="stat-sub">{{ total_fixtures }} fixtures scheduled</div>
+        <div class="stat-lbl">Competitions</div>
+        <div class="stat-trend">{{ total_fixtures }} fixtures scheduled</div>
     </div>
 </div>
 
-<!-- Quick Actions -->
-<div class="card" style="margin-bottom:2rem;">
-    <div class="card-header" style="background:linear-gradient(135deg,#1B5E20,#2E7D32);color:#fff;">
-        <h3 style="color:#fff;">Quick Actions</h3>
+<div class="dash-section-title"><i class="bi bi-grid-1x2"></i> Functional Areas</div>
+<div class="feature-grid">
+    <div class="feature-card">
+        <h4><i class="bi bi-check-circle"></i> Registration</h4>
+        <p>Approve county/team registrations and validate readiness to compete.</p>
     </div>
-    <div class="card-body">
-        <div class="actions-grid">
-            <a href="{% url 'manage_users' %}" class="action-tile" style="background:#FFEBEE;border:1px solid #FFCDD2;">
-                <div class="tile-icon" style="background:#C62828;color:#fff;"><i class="bi bi-people-fill"></i></div>
-                <div class="tile-text">
-                    <h4>User Management</h4>
-                    <p>Create users, assign roles, manage access</p>
-                </div>
-            </a>
-
-            <a href="{% url 'approve_registrations' %}" class="action-tile">
-                <div class="tile-icon" style="background:#E8F5E9;color:#1B5E20;"><i class="bi bi-check-circle"></i></div>
-                <div class="tile-text">
-                    <h4>Approve Registrations{% if pending_teams > 0 %}<span class="tile-badge">{{ pending_teams }}</span>{% endif %}</h4>
-                    <p>Review and approve pending teams</p>
-                </div>
-            </a>
-
-            <a href="{% url 'assign_zones' %}" class="action-tile">
-                <div class="tile-icon" style="background:#E3F2FD;color:#1565C0;"><i class="bi bi-geo-alt"></i></div>
-                <div class="tile-text">
-                    <h4>Assign Zones</h4>
-                    <p>Set team zones and divisions</p>
-                </div>
-            </a>
-
-            <a href="{% url 'view_suspensions' %}" class="action-tile">
-                <div class="tile-icon" style="background:#FFF3E0;color:#E65100;"><i class="bi bi-exclamation-triangle"></i></div>
-                <div class="tile-text">
-                    <h4>Manage Suspensions</h4>
-                    <p>Player and team disciplinary actions</p>
-                </div>
-            </a>
-
-            <a href="/portal/teams/" class="action-tile">
-                <div class="tile-icon" style="background:#F3E5F5;color:#6A1B9A;"><i class="bi bi-people"></i></div>
-                <div class="tile-text">
-                    <h4>League Management</h4>
-                    <p>Teams, standings, and league settings</p>
-                </div>
-            </a>
-
-            {% if request.user.is_staff %}
-            <a href="{% url 'generate_fixtures_admin' %}" class="action-tile">
-                <div class="tile-icon" style="background:#E0F7FA;color:#00695C;"><i class="bi bi-calendar-plus"></i></div>
-                <div class="tile-text">
-                    <h4>Generate Fixtures</h4>
-                    <p>Auto-generate match schedules</p>
-                </div>
-            </a>
-
-            <a href="{% url 'reschedule_fixtures_admin' %}" class="action-tile">
-                <div class="tile-icon" style="background:#FFF8E1;color:#F57F17;"><i class="bi bi-arrow-repeat"></i></div>
-                <div class="tile-text">
-                    <h4>Reschedule Fixtures</h4>
-                    <p>Move or postpone scheduled matches</p>
-                </div>
-            </a>
-
-            <a href="{% url 'matches:manage_matches' %}" class="action-tile">
-                <div class="tile-icon" style="background:#E8F5E9;color:#1B5E20;"><i class="bi bi-clipboard-data"></i></div>
-                <div class="tile-text">
-                    <h4>Manage Matches</h4>
-                    <p>Edit results, update live scores</p>
-                </div>
-            </a>
-
-            <a href="{% url 'admin_manage_fixtures' %}" class="action-tile">
-                <div class="tile-icon" style="background:#E8F5E9;color:#1B5E20;"><i class="bi bi-journal-check"></i></div>
-                <div class="tile-text">
-                    <h4>Fixtures &amp; Results</h4>
-                    <p>View pools, edit fixtures, enter results</p>
-                </div>
-            </a>
-
-            <a href="{% url 'teams:all_teams' %}" class="action-tile">
-                <div class="tile-icon" style="background:#FCE4EC;color:#AD1457;"><i class="bi bi-person-vcard"></i></div>
-                <div class="tile-text">
-                    <h4>Manage Players</h4>
-                    <p>Player rosters and registrations</p>
-                </div>
-            </a>
-
-            <a href="{% url 'activity_logs' %}" class="action-tile">
-                <div class="tile-icon" style="background:#ECEFF1;color:#455A64;"><i class="bi bi-journal-text"></i></div>
-                <div class="tile-text">
-                    <h4>Activity Logs</h4>
-                    <p>System audit trail and history</p>
-                </div>
-            </a>
-            {% endif %}
-        </div>
+    <div class="feature-card">
+        <h4><i class="bi bi-calendar2-check"></i> Fixtures</h4>
+        <p>Generate schedules, reschedule fixtures, and maintain competition flow.</p>
+    </div>
+    <div class="feature-card">
+        <h4><i class="bi bi-shield-exclamation"></i> Discipline</h4>
+        <p>Manage suspensions and enforce compliance for teams and players.</p>
+    </div>
+    <div class="feature-card">
+        <h4><i class="bi bi-person-gear"></i> Access & Audit</h4>
+        <p>Create users, assign roles, and monitor activity logs.</p>
     </div>
 </div>
 
-<!-- Recent Activity - Two Columns -->
-<div class="two-col">
+<div class="dash-section-title"><i class="bi bi-lightning-charge"></i> Quick Actions</div>
+<div class="dash-actions">
+    <a href="{% url 'manage_users' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#FFEBEE,#FFCDD2);color:#C62828;"><i class="bi bi-people-fill"></i></div>
+        <div class="tile-text"><h4>User Management</h4><p>Create users, assign roles, manage access</p></div>
+    </a>
+    <a href="{% url 'approve_registrations' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);color:#1B5E20;"><i class="bi bi-check-circle"></i></div>
+        <div class="tile-text"><h4>Approve Registrations{% if pending_teams > 0 %}<span class="tile-badge" style="background:#C62828;color:#fff;">{{ pending_teams }}</span>{% endif %}</h4><p>Review and approve pending teams</p></div>
+    </a>
+    <a href="{% url 'assign_zones' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);color:#1565C0;"><i class="bi bi-geo-alt"></i></div>
+        <div class="tile-text"><h4>Assign Zones</h4><p>Set team zones and divisions</p></div>
+    </a>
+    <a href="{% url 'view_suspensions' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);color:#E65100;"><i class="bi bi-exclamation-triangle"></i></div>
+        <div class="tile-text"><h4>Manage Suspensions</h4><p>Player and team disciplinary actions</p></div>
+    </a>
+    <a href="{% url 'admin_manage_fixtures' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);color:#2E7D32;"><i class="bi bi-journal-check"></i></div>
+        <div class="tile-text"><h4>Fixtures &amp; Results</h4><p>View pools, edit fixtures, enter results</p></div>
+    </a>
+    <a href="{% url 'activity_logs' %}" class="dash-tile">
+        <div class="tile-icon" style="background:linear-gradient(135deg,#ECEFF1,#CFD8DC);color:#455A64;"><i class="bi bi-journal-text"></i></div>
+        <div class="tile-text"><h4>Activity Logs</h4><p>System audit trail and history</p></div>
+    </a>
+</div>
+
+<div class="dash-section-title"><i class="bi bi-clock-history"></i> Recent Activity</div>
+<div class="admin-grid-2">
     <div class="card">
-        <div class="card-header">
-            <h3>Recently Registered Teams</h3>
-        </div>
+        <div class="card-header"><h3>Recently Registered Teams</h3></div>
         <div class="card-body">
             {% if recent_teams %}
                 {% for team in recent_teams %}
                 <div class="recent-item">
                     <div>
                         <div class="ri-main">{{ team.name }}</div>
-                        <div class="ri-sub">{{ team.county|default:"No county" }} &middot; {{ team.registered_at|date:"d M Y" }}</div>
+                        <div class="ri-sub">{{ team.county|default:"No county" }} · {{ team.registered_at|date:"d M Y" }}</div>
                     </div>
-                    <span class="ri-badge" style="
-                        {% if team.status == 'registered' %}background:#E8F5E9;color:#1B5E20;
-                        {% elif team.status == 'pending' %}background:#FFF8E1;color:#F57F17;
-                        {% else %}background:#f5f5f5;color:#666;{% endif %}">
-                        {{ team.status|title }}
-                    </span>
+                    <span class="ri-badge" style="{% if team.status == 'registered' %}background:#E8F5E9;color:#1B5E20;{% elif team.status == 'pending' %}background:#FFF8E1;color:#F57F17;{% else %}background:#f5f5f5;color:#666;{% endif %}">{{ team.status|title }}</span>
                 </div>
                 {% endfor %}
             {% else %}
-                <div class="empty-state-sm">
-                    <div class="icon"><i class="bi bi-people"></i></div>
-                    <p>No teams registered yet</p>
-                </div>
+                <div class="empty-state-sm"><div class="icon"><i class="bi bi-people"></i></div><p>No teams registered yet</p></div>
             {% endif %}
         </div>
     </div>
 
     <div class="card">
-        <div class="card-header">
-            <h3>Recent Fixtures</h3>
-        </div>
+        <div class="card-header"><h3>Recent Fixtures</h3></div>
         <div class="card-body">
             {% if recent_fixtures %}
                 {% for fixture in recent_fixtures %}
                 <div class="recent-item">
                     <div>
                         <div class="ri-main">{{ fixture.home_team }} vs {{ fixture.away_team }}</div>
-                        <div class="ri-sub">
-                            {{ fixture.competition.name|truncatechars:25 }} &middot; {{ fixture.match_date|date:"d M Y" }}
-                        </div>
+                        <div class="ri-sub">{{ fixture.competition.name|truncatechars:25 }} · {{ fixture.match_date|date:"d M Y" }}</div>
                     </div>
-                    <span class="ri-badge" style="
-                        {% if fixture.status == 'completed' %}background:#E8F5E9;color:#1B5E20;
-                        {% elif fixture.status == 'live' %}background:#FFEBEE;color:#C62828;
-                        {% elif fixture.status == 'scheduled' %}background:#E3F2FD;color:#1565C0;
-                        {% else %}background:#f5f5f5;color:#666;{% endif %}">
-                        {% if fixture.status == 'completed' %}{{ fixture.home_score }} - {{ fixture.away_score }}
-                        {% elif fixture.status == 'live' %}<i class="bi bi-record-circle" style="color:#C62828;"></i> LIVE
-                        {% else %}{{ fixture.status|title }}{% endif %}
-                    </span>
+                    <span class="ri-badge" style="{% if fixture.status == 'completed' %}background:#E8F5E9;color:#1B5E20;{% elif fixture.status == 'live' %}background:#FFEBEE;color:#C62828;{% elif fixture.status == 'scheduled' %}background:#E3F2FD;color:#1565C0;{% else %}background:#f5f5f5;color:#666;{% endif %}">{% if fixture.status == 'completed' %}{{ fixture.home_score }} - {{ fixture.away_score }}{% elif fixture.status == 'live' %}<i class="bi bi-record-circle" style="color:#C62828;"></i> LIVE{% else %}{{ fixture.status|title }}{% endif %}</span>
                 </div>
                 {% endfor %}
             {% else %}
-                <div class="empty-state-sm">
-                    <div class="icon"><i class="bi bi-calendar-event"></i></div>
-                    <p>No fixtures scheduled yet</p>
-                </div>
+                <div class="empty-state-sm"><div class="icon"><i class="bi bi-calendar-event"></i></div><p>No fixtures scheduled yet</p></div>
             {% endif %}
         </div>
     </div>

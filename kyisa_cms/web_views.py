@@ -7638,7 +7638,6 @@ def sys_admin_dashboard_view(request):
         {'role': r['role'], 'role_display': role_display_map.get(r['role'], r['role']), 'count': r['count']}
         for r in role_counts
     ]
-
     role_count_map = {item['role']: item['count'] for item in role_distribution}
 
     def role_total(*roles):
@@ -7743,6 +7742,76 @@ def sys_admin_dashboard_view(request):
                 {'label': 'Articles', 'url': 'media_article_list'},
                 {'label': 'Albums', 'url': 'media_album_list'},
                 {'label': 'Videos', 'url': 'media_video_list'},
+            ],
+        },
+        {
+            'title': 'County Operations Desk',
+            'icon': 'bi bi-building',
+            'theme': 'green',
+            'description': 'County registration operations across disciplines, delegations, and verification readiness.',
+            'count_label': 'county admin users',
+            'count': role_total(UserRole.COUNTY_SPORTS_DIRECTOR),
+            'primary_url': 'county_admin_dashboard',
+            'primary_label': 'Open county workflows',
+            'actions': [
+                {'label': 'County Dashboard', 'url': 'county_admin_dashboard'},
+                {'label': 'Verification', 'url': 'county_admin_verification'},
+            ],
+        },
+        {
+            'title': 'Team Manager Desk',
+            'icon': 'bi bi-people',
+            'theme': 'blue',
+            'description': 'Matchday operations for squad submissions, sanctions tracking, and appeals filing.',
+            'count_label': 'team manager users',
+            'count': role_total(UserRole.TEAM_MANAGER),
+            'primary_url': 'team_manager_dashboard',
+            'primary_label': 'Open team manager tools',
+            'actions': [
+                {'label': 'Manager Dashboard', 'url': 'team_manager_dashboard'},
+                {'label': 'Sanctions', 'url': 'team_manager_sanctions'},
+                {'label': 'File Appeal', 'url': 'team_manager_file_appeal'},
+            ],
+        },
+        {
+            'title': 'Referee Desk',
+            'icon': 'bi bi-whistle',
+            'theme': 'amber',
+            'description': 'Referee profile and appointment workflows for match officiating and reporting.',
+            'count_label': 'referee users',
+            'count': role_total(UserRole.REFEREE),
+            'primary_url': 'referee_portal',
+            'primary_label': 'Open referee portal',
+            'actions': [
+                {'label': 'Referee Dashboard', 'url': 'referee_portal'},
+                {'label': 'Edit Profile', 'url': 'referee_edit_profile'},
+            ],
+        },
+        {
+            'title': 'Verification Desk',
+            'icon': 'bi bi-patch-check',
+            'theme': 'teal',
+            'description': 'County-level player and delegation verification before tournament participation.',
+            'count_label': 'verification officers',
+            'count': role_total(UserRole.VERIFICATION_OFFICER),
+            'primary_url': 'vo_registered_counties',
+            'primary_label': 'Open verification queues',
+            'actions': [
+                {'label': 'Registered Counties', 'url': 'vo_registered_counties'},
+                {'label': 'CM Verification', 'url': 'county_player_verification_list'},
+            ],
+        },
+        {
+            'title': 'CEC Sports Desk',
+            'icon': 'bi bi-eye',
+            'theme': 'slate',
+            'description': 'Read-only executive visibility for county sports leadership and oversight reporting.',
+            'count_label': 'cec sports users',
+            'count': role_total(UserRole.CEC_SPORTS_MEMBER),
+            'primary_url': 'cec_sports_portal',
+            'primary_label': 'Open CEC portal',
+            'actions': [
+                {'label': 'CEC Dashboard', 'url': 'cec_sports_portal'},
             ],
         },
     ]

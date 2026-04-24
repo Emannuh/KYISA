@@ -116,8 +116,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_verification_officer(self): return self.role == UserRole.VERIFICATION_OFFICER
     @property
-    def is_referee_manager(self): return self.is_coordinator  # backwards compat
-    @property
     def is_referee(self): return self.role == UserRole.REFEREE
     @property
     def is_team_manager(self): return self.role == UserRole.TEAM_MANAGER
