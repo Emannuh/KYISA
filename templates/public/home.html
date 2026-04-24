@@ -440,7 +440,7 @@
                         <div class="mh-featured-card__meta">
                             <span><i class="bi bi-calendar3"></i> {{ article.published_at|date:"M d, Y" }}</span>
                             {% if article.author %}
-                            <span><i class="bi bi-person"></i> {{ article.author.get_full_name|default:article.author.username }}</span>
+                            <span><i class="bi bi-person"></i> {{ article.author.get_full_name|default:article.author.email|default:"Author" }}</span>
                             {% endif %}
                         </div>
                     </div>
