@@ -196,7 +196,7 @@
     <div class="step-card">
         <div class="step-num">3</div>
         <h5>Upload File</h5>
-        <p>Excel (.xlsx) or CSV</p>
+        <p>Excel (.xlsx), CSV, or Word (.docx)</p>
     </div>
     <div class="step-card">
         <div class="step-num">4</div>
@@ -225,11 +225,20 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="discipline"><i class="bi bi-trophy"></i> Discipline (Sport &amp; Gender)</label>
-                    <select name="discipline" id="discipline" required disabled>
+                    <label for="sport_family"><i class="bi bi-trophy"></i> Discipline</label>
+                    <select name="sport_family" id="sport_family" required disabled>
                         <option value="">— Select County First —</option>
                     </select>
                 </div>
+
+                <div class="form-group">
+                    <label for="gender"><i class="bi bi-gender-ambiguous"></i> Gender</label>
+                    <select name="gender" id="gender" required disabled>
+                        <option value="">— Select County First —</option>
+                    </select>
+                </div>
+
+                <input type="hidden" name="discipline" id="discipline" value="">
 
                 <div class="form-group">
                     <label><i class="bi bi-file-earmark-spreadsheet"></i> Player File</label>
@@ -237,7 +246,7 @@
                         <i class="bi bi-cloud-arrow-up-fill"></i>
                         <p>Drag &amp; drop your file here, or <strong>click to browse</strong></p>
                         <p class="file-name" id="fileName" style="display:none;"></p>
-                        <input type="file" name="player_file" id="playerFile" accept=".csv,.xlsx,.xls" style="display:none;" required>
+                        <input type="file" name="player_file" id="playerFile" accept=".csv,.xlsx,.xls,.docx" style="display:none;" required>
                     </div>
                 </div>
 
@@ -274,6 +283,11 @@
                 <p>Use <code>YYYY-MM-DD</code> or <code>DD/MM/YYYY</code></p>
             </div>
 
+            <div class="template-info" style="background:#FFFDE7;border-color:#F9A825;">
+                <h4 style="color:#F9A825;">Supported Files</h4>
+                <p><code>.csv</code>, <code>.xlsx</code>, <code>.xls</code>, <code>.docx</code></p>
+            </div>
+
             <div style="margin-top:1.2rem;padding:1rem;background:#f5f5f5;border-radius:8px;">
                 <h4 style="font-size:.85rem;font-weight:600;margin-bottom:.5rem;">What happens after upload?</h4>
                 <ul style="font-size:.82rem;color:#666;padding-left:1.2rem;margin:0;">
@@ -291,47 +305,121 @@
 {% block extra_js %}
 <script>
 (function() {
-    // Discipline data keyed by county registration PK
-    const disciplineData = {
-        {% for disc in disciplines %}
-        "{{ disc.registration_id }}": (disciplineData["{{ disc.registration_id }}"] || []).concat([
-            { pk: {{ disc.pk }}, label: "{{ disc.get_sport_type_display }}" }
-        ]),
-        {% endfor %}
-    };
-
-    // Rebuild properly
     const discMap = {};
     {% for disc in disciplines %}
     if (!discMap["{{ disc.registration_id }}"]) discMap["{{ disc.registration_id }}"] = [];
-    discMap["{{ disc.registration_id }}"].push({ pk: {{ disc.pk }}, label: "{{ disc.get_sport_type_display }}" });
+    discMap["{{ disc.registration_id }}"].push({
+        pk: {{ disc.pk }},
+        label: "{{ disc.get_sport_type_display }}",
+        sportType: "{{ disc.sport_type }}"
+    });
     {% endfor %}
 
+    const familyLabels = {
+        football: 'Soccer',
+        volleyball: 'Volleyball',
+        handball: 'Handball',
+        basketball: 'Basketball 5x5',
+        basketball_3x3: 'Basketball 3x3'
+    };
+
     const countySelect = document.getElementById('county_registration');
-    const discSelect   = document.getElementById('discipline');
+    const familySelect = document.getElementById('sport_family');
+    const genderSelect = document.getElementById('gender');
+    const disciplineId = document.getElementById('discipline');
     const dropZone     = document.getElementById('dropZone');
     const fileInput    = document.getElementById('playerFile');
     const fileName     = document.getElementById('fileName');
     const submitBtn    = document.getElementById('submitBtn');
 
-    // County change → populate disciplines
+    function splitSportType(sportType) {
+        if (sportType.endsWith('_men')) {
+            return { family: sportType.slice(0, -4), gender: 'men' };
+        }
+        if (sportType.endsWith('_women')) {
+            return { family: sportType.slice(0, -6), gender: 'women' };
+        }
+        return { family: sportType, gender: '' };
+    }
+
+    function familyLabel(family) {
+        return familyLabels[family] || family.replace(/_/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase());
+    }
+
+    function resetGenderSelect(message) {
+        genderSelect.innerHTML = '<option value="">' + message + '</option>';
+        genderSelect.disabled = true;
+    }
+
+    // County change → populate discipline families
     countySelect.addEventListener('change', function() {
         const regId = this.value;
-        discSelect.innerHTML = '<option value="">— Select Discipline —</option>';
-        discSelect.disabled = !regId;
+        familySelect.innerHTML = '<option value="">— Select Discipline —</option>';
+        familySelect.disabled = !regId;
+        resetGenderSelect('— Select Discipline First —');
+        disciplineId.value = '';
 
         if (regId && discMap[regId]) {
+            const families = new Set();
             discMap[regId].forEach(d => {
+                const parsed = splitSportType(d.sportType);
+                if (parsed.gender) {
+                    families.add(parsed.family);
+                }
+            });
+
+            Array.from(families).sort().forEach(family => {
                 const opt = document.createElement('option');
-                opt.value = d.pk;
-                opt.textContent = d.label;
-                discSelect.appendChild(opt);
+                opt.value = family;
+                opt.textContent = familyLabel(family);
+                familySelect.appendChild(opt);
             });
         }
         checkReady();
     });
 
-    discSelect.addEventListener('change', checkReady);
+    familySelect.addEventListener('change', function() {
+        const regId = countySelect.value;
+        const family = this.value;
+        genderSelect.innerHTML = '<option value="">— Select Gender —</option>';
+        genderSelect.disabled = !(regId && family);
+        disciplineId.value = '';
+
+        if (regId && family && discMap[regId]) {
+            const genders = new Set();
+            discMap[regId].forEach(d => {
+                const parsed = splitSportType(d.sportType);
+                if (parsed.family === family && parsed.gender) {
+                    genders.add(parsed.gender);
+                }
+            });
+
+            Array.from(genders).sort().forEach(gender => {
+                const opt = document.createElement('option');
+                opt.value = gender;
+                opt.textContent = gender === 'men' ? 'Men' : 'Women';
+                genderSelect.appendChild(opt);
+            });
+        }
+
+        checkReady();
+    });
+
+    genderSelect.addEventListener('change', function() {
+        const regId = countySelect.value;
+        const family = familySelect.value;
+        const gender = this.value;
+        disciplineId.value = '';
+
+        if (regId && family && gender && discMap[regId]) {
+            const match = discMap[regId].find(d => d.sportType === (family + '_' + gender));
+            if (match) {
+                disciplineId.value = String(match.pk);
+            }
+        }
+
+        checkReady();
+    });
 
     // Drop zone
     dropZone.addEventListener('click', () => fileInput.click());
@@ -356,7 +444,7 @@
     }
 
     function checkReady() {
-        submitBtn.disabled = !(countySelect.value && discSelect.value && fileInput.files.length);
+        submitBtn.disabled = !(countySelect.value && familySelect.value && genderSelect.value && disciplineId.value && fileInput.files.length);
     }
 })();
 </script>

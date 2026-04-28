@@ -4892,19 +4892,47 @@ def cm_upload_verified_players_view(request):
 
     if request.method == 'POST':
         county_reg_id = request.POST.get('county_registration')
+        sport_family = request.POST.get('sport_family', '').strip().lower()
+        gender = request.POST.get('gender', '').strip().lower()
         discipline_id = request.POST.get('discipline')
         uploaded_file = request.FILES.get('player_file')
 
-        if not county_reg_id or not discipline_id or not uploaded_file:
-            messages.error(request, 'Please select county, discipline and upload a file.')
+        if not county_reg_id or not uploaded_file:
+            messages.error(request, 'Please select county, discipline, gender and upload a file.')
             return redirect('cm_upload_players')
 
         county_reg = get_object_or_404(CountyRegistration, pk=county_reg_id, status='approved')
-        discipline = get_object_or_404(CountyDiscipline, pk=discipline_id, registration=county_reg)
+
+        discipline = None
+        if discipline_id:
+            discipline = get_object_or_404(CountyDiscipline, pk=discipline_id, registration=county_reg)
+        else:
+            if not sport_family or not gender:
+                messages.error(request, 'Please select a discipline and gender for the selected county.')
+                return redirect('cm_upload_players')
+
+            family_aliases = {
+                'soccer': 'football',
+                'football': 'football',
+                'volleyball': 'volleyball',
+                'handball': 'handball',
+                'basketball': 'basketball',
+                'basketball_3x3': 'basketball_3x3',
+            }
+            normalized_family = family_aliases.get(sport_family, sport_family)
+            requested_sport_type = f'{normalized_family}_{gender}'
+            discipline = get_object_or_404(
+                CountyDiscipline,
+                registration=county_reg,
+                sport_type=requested_sport_type,
+            )
 
         filename = uploaded_file.name.lower()
-        if not filename.endswith(('.csv', '.xlsx', '.xls')):
-            messages.error(request, 'Unsupported file format. Please upload .csv or .xlsx files.')
+        if filename.endswith('.doc'):
+            messages.error(request, 'Legacy .doc is not supported. Please use .docx, .csv, or .xlsx.')
+            return redirect('cm_upload_players')
+        if not filename.endswith(('.csv', '.xlsx', '.xls', '.docx')):
+            messages.error(request, 'Unsupported file format. Please upload .csv, .xlsx, or .docx files.')
             return redirect('cm_upload_players')
 
         # Parse file
@@ -4989,14 +5017,17 @@ def cm_upload_verified_players_view(request):
 
 
 def _parse_player_upload(uploaded_file, filename):
-    """Parse CSV or Excel file for verified player upload. Returns (rows, errors)."""
+    """Parse CSV, Excel, or Word file for verified player upload. Returns (rows, errors)."""
     REQUIRED = ['first_name', 'last_name', 'date_of_birth', 'national_id_number']
-    OPTIONAL = ['phone', 'position', 'jersey_number', 'shirt_number', 'huduma_number']
 
     if filename.endswith('.csv'):
         return _parse_player_csv(uploaded_file, REQUIRED)
-    else:
+    if filename.endswith(('.xlsx', '.xls')):
         return _parse_player_excel(uploaded_file, REQUIRED)
+    if filename.endswith('.docx'):
+        return _parse_player_word(uploaded_file, REQUIRED)
+
+    return [], [{'row': 0, 'error': 'Unsupported file format.'}]
 
 
 def _parse_player_csv(file_obj, required_cols):
@@ -5093,6 +5124,105 @@ def _parse_player_excel(file_obj, required_cols):
         rows.append(raw)
 
     wb.close()
+    return rows, errors
+
+
+def _parse_player_word(file_obj, required_cols):
+    """Parse Word (.docx) file for player upload."""
+    import io
+    try:
+        from docx import Document
+    except ImportError:
+        return [], [{'row': 0, 'error': 'python-docx is required for Word uploads (.docx).'}]
+
+    def _norm_header(value):
+        text = str(value or '').strip().lower().replace(' ', '_')
+        text = re.sub(r'[^a-z0-9_]', '', text)
+        return text
+
+    def _parse_date(text):
+        from datetime import datetime as dt
+
+        for fmt in ('%Y-%m-%d', '%d/%m/%Y', '%d-%m-%Y', '%m/%d/%Y'):
+            try:
+                return dt.strptime(text, fmt).date()
+            except ValueError:
+                continue
+        return None
+
+    try:
+        document = Document(file_obj)
+    except Exception as e:
+        return [], [{'row': 0, 'error': f'Cannot read Word document: {e}'}]
+
+    rows = []
+    errors = []
+
+    # Preferred structure: first table with column headers.
+    if document.tables:
+        table = document.tables[0]
+        if len(table.rows) < 2:
+            return [], [{'row': 0, 'error': 'Word table has no data rows.'}]
+
+        headers = [_norm_header(cell.text) for cell in table.rows[0].cells]
+        missing = [c for c in required_cols if c not in headers]
+        if missing:
+            return [], [{'row': 0, 'error': f'Missing columns: {", ".join(missing)}'}]
+
+        for i, tr in enumerate(table.rows[1:], start=2):
+            values = [cell.text.strip() for cell in tr.cells]
+            row = {
+                headers[idx]: (values[idx] if idx < len(values) else '')
+                for idx in range(len(headers))
+            }
+            row_errors = []
+            for col in required_cols:
+                if not row.get(col):
+                    row_errors.append(f"Missing '{col}'")
+
+            dob = row.get('date_of_birth', '')
+            parsed_dob = _parse_date(dob) if dob else None
+            if dob and not parsed_dob:
+                row_errors.append(f"Invalid date '{dob}'")
+            row['_parsed_dob'] = parsed_dob
+
+            if row_errors:
+                errors.append({'row': i, 'errors': row_errors})
+            rows.append(row)
+
+        return rows, errors
+
+    # Fallback structure: comma-separated text lines in paragraphs.
+    lines = [p.text.strip() for p in document.paragraphs if p.text and p.text.strip()]
+    if not lines:
+        return [], [{'row': 0, 'error': 'Word document is empty.'}]
+
+    header_parts = [_norm_header(p) for p in lines[0].split(',')]
+    missing = [c for c in required_cols if c not in header_parts]
+    if missing:
+        return [], [{'row': 0, 'error': f'Missing columns: {", ".join(missing)}'}]
+
+    for i, line in enumerate(lines[1:], start=2):
+        parts = [p.strip() for p in line.split(',')]
+        row = {
+            header_parts[idx]: (parts[idx] if idx < len(parts) else '')
+            for idx in range(len(header_parts))
+        }
+        row_errors = []
+        for col in required_cols:
+            if not row.get(col):
+                row_errors.append(f"Missing '{col}'")
+
+        dob = row.get('date_of_birth', '')
+        parsed_dob = _parse_date(dob) if dob else None
+        if dob and not parsed_dob:
+            row_errors.append(f"Invalid date '{dob}'")
+        row['_parsed_dob'] = parsed_dob
+
+        if row_errors:
+            errors.append({'row': i, 'errors': row_errors})
+        rows.append(row)
+
     return rows, errors
 
 
