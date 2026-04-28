@@ -51,3 +51,22 @@ class VideoForm(forms.ModelForm):
             "video_url": forms.URLInput(attrs={"placeholder": "https://www.youtube.com/watch?v=..."}),
             "duration": forms.TextInput(attrs={"placeholder": "e.g. 3:45"}),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        source = cleaned_data.get('source')
+        video_file = cleaned_data.get('video_file')
+        video_url = cleaned_data.get('video_url')
+
+        if source == 'upload':
+            if not video_file:
+                raise forms.ValidationError(
+                    "Video file is required when 'Direct Upload' is selected."
+                )
+        elif source in ['youtube', 'external']:
+            if not video_url:
+                raise forms.ValidationError(
+                    f"Video URL is required when '{source.title()}' is selected."
+                )
+
+        return cleaned_data

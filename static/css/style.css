@@ -324,7 +324,9 @@ img { max-width: 100%; }
 }
 .hero-bg-slide {
     position: absolute; inset: 0;
-    background-size: cover; background-position: center top;
+    background-size: cover;
+    background-position: 50% 50%;
+    transform-origin: center center;
     opacity: 0;
     transition: opacity 1.5s ease-in-out;
     will-change: opacity;

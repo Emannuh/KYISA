@@ -7655,6 +7655,118 @@ def sys_admin_dashboard_view(request):
     def role_total(*roles):
         return sum(role_count_map.get(role, 0) for role in roles)
 
+    role_workspaces = [
+        {
+            'title': 'System Admin',
+            'icon': 'bi bi-shield-lock',
+            'count': role_total(UserRole.ADMIN),
+            'count_label': 'system admins',
+            'description': 'Full-platform governance, security oversight, and configuration control.',
+            'functions': [
+                {'label': 'User Management', 'summary': 'Create users, change roles, suspend access, and review accounts.', 'icon': 'bi bi-people-fill', 'url': 'manage_users'},
+                {'label': 'Activity Logs', 'summary': 'Track user actions and investigate system activity trails.', 'icon': 'bi bi-journal-text', 'url': 'activity_logs'},
+                {'label': 'Audit Reports', 'summary': 'Review compliance, export audit records, and inspect high-risk actions.', 'icon': 'bi bi-shield-check', 'url': 'audit_report'},
+                {'label': 'Email Centre', 'summary': 'Monitor outgoing mail, resend failures, and compose broadcasts.', 'icon': 'bi bi-envelope-paper', 'url': 'email_logs'},
+            ],
+        },
+        {
+            'title': 'Organising Secretary',
+            'icon': 'bi bi-diagram-3',
+            'count': role_total(UserRole.COMPETITION_MANAGER),
+            'count_label': 'organising secretaries',
+            'description': 'Competition-wide administration across registrations, venues, fixtures, and verified players.',
+            'functions': [
+                {'label': 'Competitions', 'summary': 'Create competitions and manage tournament structure.', 'icon': 'bi bi-trophy', 'url': 'competitions_list'},
+                {'label': 'Match Management', 'summary': 'Review fixtures, results, and cross-competition schedules.', 'icon': 'bi bi-clipboard-data', 'url': 'matches_list'},
+                {'label': 'County Registrations', 'summary': 'Review county entries and registration status.', 'icon': 'bi bi-building-check', 'url': 'pending_teams'},
+                {'label': 'Player Verification', 'summary': 'Inspect verification queues and county player records.', 'icon': 'bi bi-person-vcard', 'url': 'county_player_verification_list'},
+            ],
+        },
+        {
+            'title': 'Sport Coordinators',
+            'icon': 'bi bi-person-gear',
+            'count': role_total(
+                UserRole.COORDINATOR,
+                UserRole.SOCCER_COORDINATOR,
+                UserRole.HANDBALL_COORDINATOR,
+                UserRole.BASKETBALL_COORDINATOR,
+                UserRole.VOLLEYBALL_COORDINATOR,
+            ),
+            'count_label': 'coordinators',
+            'description': 'Discipline operations for fixtures, appointments, reports, squads, and venues.',
+            'functions': [
+                {'label': 'Competition Desk', 'summary': 'Open discipline competition hubs and manage tournament flow.', 'icon': 'bi bi-grid-1x2', 'url': 'coordinator_competitions'},
+                {'label': 'Appointments', 'summary': 'Assign referees and monitor appointment status.', 'icon': 'bi bi-calendar-event', 'url': 'coordinator_appointments'},
+                {'label': 'Match Reports', 'summary': 'Review submitted reports and follow approval queues.', 'icon': 'bi bi-file-earmark-text', 'url': 'coordinator_match_reports'},
+                {'label': 'Venues', 'summary': 'Maintain venue allocation and match locations.', 'icon': 'bi bi-geo-alt', 'url': 'coordinator_venues'},
+            ],
+        },
+        {
+            'title': 'Media Managers',
+            'icon': 'bi bi-camera-reels',
+            'count': role_total(UserRole.MEDIA_MANAGER),
+            'count_label': 'media managers',
+            'description': 'Content publishing and media operations across articles, photos, and videos.',
+            'functions': [
+                {'label': 'Media Dashboard', 'summary': 'Monitor publishing activity and recent content.', 'icon': 'bi bi-speedometer2', 'url': 'media_dashboard'},
+                {'label': 'Articles', 'summary': 'Create, edit, and publish news stories.', 'icon': 'bi bi-newspaper', 'url': 'media_article_list'},
+                {'label': 'Photo Albums', 'summary': 'Upload galleries and manage event photography.', 'icon': 'bi bi-images', 'url': 'media_album_list'},
+                {'label': 'Videos', 'summary': 'Upload, edit, and publish video content.', 'icon': 'bi bi-play-circle', 'url': 'media_video_list'},
+            ],
+        },
+        {
+            'title': 'Referees',
+            'icon': 'bi bi-whistle',
+            'count': role_total(UserRole.REFEREE),
+            'count_label': 'referees',
+            'description': 'Personal officiating workspace for appointments, reports, and profile upkeep.',
+            'functions': [
+                {'label': 'Referee Dashboard', 'summary': 'Open the referee portal and current assignments.', 'icon': 'bi bi-speedometer2', 'url': 'referee_portal'},
+                {'label': 'Profile', 'summary': 'Update referee profile details and readiness.', 'icon': 'bi bi-person-badge', 'url': 'referee_edit_profile'},
+                {'label': 'Match Reports', 'summary': 'Review officiating workload via the main matches view.', 'icon': 'bi bi-clipboard2-check', 'url': 'matches_list'},
+            ],
+        },
+        {
+            'title': 'Team Managers',
+            'icon': 'bi bi-people',
+            'count': role_total(UserRole.TEAM_MANAGER),
+            'count_label': 'team managers',
+            'description': 'Team operations covering squad readiness, sanctions, appeals, and fixtures.',
+            'functions': [
+                {'label': 'Team Dashboard', 'summary': 'Open the manager landing page for team operations.', 'icon': 'bi bi-speedometer2', 'url': 'team_manager_dashboard'},
+                {'label': 'Fixtures & Squads', 'summary': 'Review matches and prepare match-day squads.', 'icon': 'bi bi-diagram-2', 'url': 'matches_list'},
+                {'label': 'Sanctions', 'summary': 'Track disciplinary sanctions affecting the team.', 'icon': 'bi bi-exclamation-triangle', 'url': 'team_manager_sanctions'},
+                {'label': 'Appeals', 'summary': 'File and monitor appeals from the team portal.', 'icon': 'bi bi-briefcase', 'url': 'team_manager_file_appeal'},
+            ],
+        },
+        {
+            'title': 'County Sports Directors',
+            'icon': 'bi bi-building',
+            'count': role_total(UserRole.COUNTY_SPORTS_DIRECTOR),
+            'count_label': 'county directors',
+            'description': 'County onboarding, discipline registration, payment visibility, and delegation setup.',
+            'functions': [
+                {'label': 'County Dashboard', 'summary': 'Open the county portal home and progress overview.', 'icon': 'bi bi-speedometer2', 'url': 'county_admin_dashboard'},
+                {'label': 'Payments', 'summary': 'Check county registration payment progress.', 'icon': 'bi bi-credit-card', 'url': 'county_admin_payment'},
+                {'label': 'Disciplines', 'summary': 'Register county disciplines and participating sports.', 'icon': 'bi bi-trophy', 'url': 'county_admin_add_discipline'},
+                {'label': 'Verification Status', 'summary': 'Track player and delegation verification readiness.', 'icon': 'bi bi-patch-check', 'url': 'county_admin_verification'},
+            ],
+        },
+        {
+            'title': 'Verification & Oversight',
+            'icon': 'bi bi-search-heart',
+            'count': role_total(UserRole.VERIFICATION_OFFICER, UserRole.SECRETARY_GENERAL, UserRole.JURY_CHAIR, UserRole.SCOUT, UserRole.CEC_SPORTS_MEMBER),
+            'count_label': 'oversight users',
+            'description': 'Cross-check queues for verification officers, SG, jury, scouts, and executive view-only roles.',
+            'functions': [
+                {'label': 'Verification Queue', 'summary': 'Inspect registered counties and verification workload.', 'icon': 'bi bi-patch-check', 'url': 'vo_registered_counties'},
+                {'label': 'SG User Actions', 'summary': 'Review system activity from executive oversight.', 'icon': 'bi bi-journal-richtext', 'url': 'sg_user_actions'},
+                {'label': 'Jury Dashboard', 'summary': 'Open appeals and disciplinary workflows.', 'icon': 'bi bi-balance-scale', 'url': 'jury_dashboard'},
+                {'label': 'Scouting Desk', 'summary': 'Browse verified players and shortlist prospects.', 'icon': 'bi bi-binoculars', 'url': 'scout_players'},
+            ],
+        },
+    ]
+
     dashboard_hubs = [
         {
             'title': 'Coordinator Desk',
@@ -7844,5 +7956,6 @@ def sys_admin_dashboard_view(request):
         'recent_users': recent_users,
         'recent_fixtures': recent_fixtures,
         'role_distribution': role_distribution,
+        'role_workspaces': role_workspaces,
         'dashboard_hubs': dashboard_hubs,
     })

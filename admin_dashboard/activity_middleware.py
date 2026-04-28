@@ -16,9 +16,6 @@ class ActivityLoggingMiddleware(MiddlewareMixin):
     LOGGED_PATHS = {
         # Team Management
         '/portal/teams/': 'TEAM_UPDATE',
-        '/add-player/': 'PLAYER_CREATE',
-        '/edit/': 'PLAYER_UPDATE',
-        '/delete/': 'PLAYER_DELETE',
 
         # Approval workflows
         '/portal/teams/pending/': 'TEAM_APPROVE',
@@ -44,6 +41,7 @@ class ActivityLoggingMiddleware(MiddlewareMixin):
         '/portal/admin-dashboard/suspensions/': 'SUSPENSION_CREATE',
         '/portal/admin-dashboard/assign-zones/': 'ZONE_ASSIGN',
         '/portal/admin-dashboard/users/create/': 'USER_CREATE',
+        '/portal/admin-dashboard/users/': 'USER_UPDATE',
         '/portal/admin-dashboard/users/toggle/': 'USER_UPDATE',
         '/portal/admin-dashboard/users/reset-password/': 'PASSWORD_CHANGE',
         '/portal/admin-dashboard/users/edit-roles/': 'USER_ROLE_CHANGE',
@@ -55,6 +53,16 @@ class ActivityLoggingMiddleware(MiddlewareMixin):
         # Profile & password
         '/portal/profile/change-password/': 'PASSWORD_CHANGE',
         '/portal/force-change-password/': 'PASSWORD_CHANGE',
+
+        # News & media
+        '/portal/media/articles/create/': 'MEDIA_CREATE',
+        '/portal/media/articles/': 'MEDIA_UPDATE',
+        '/portal/media/categories/': 'MEDIA_CREATE',
+        '/portal/media/albums/create/': 'MEDIA_CREATE',
+        '/portal/media/albums/': 'MEDIA_UPDATE',
+        '/portal/media/photos/': 'MEDIA_DELETE',
+        '/portal/media/videos/create/': 'MEDIA_CREATE',
+        '/portal/media/videos/': 'MEDIA_UPDATE',
 
         # Public registration
         '/register/team/': 'TEAM_CREATE',
@@ -119,6 +127,14 @@ class ActivityLoggingMiddleware(MiddlewareMixin):
     
     def _get_action_type(self, path):
         """Determine action type from request path (most-specific match wins)."""
+        media_action = self._get_media_action_type(path)
+        if media_action:
+            return media_action
+
+        player_action = self._get_player_action_type(path)
+        if player_action:
+            return player_action
+
         best_match = None
         best_len = 0
         for pattern, action in self.LOGGED_PATHS.items():
@@ -127,11 +143,44 @@ class ActivityLoggingMiddleware(MiddlewareMixin):
                 best_len = len(pattern)
         return best_match
 
+    def _get_player_action_type(self, path):
+        """Match only player-specific routes; avoid generic /edit/ and /delete/ collisions."""
+        player_routes = [
+            ('/portal/teams/', '/add-player/', 'PLAYER_CREATE'),
+            ('/portal/players/', '/edit/', 'PLAYER_UPDATE'),
+            ('/portal/players/', '/delete/', 'PLAYER_DELETE'),
+            ('/portal/county-admin/discipline/', '/add-player/', 'PLAYER_CREATE'),
+            ('/portal/county-admin/player/', '/delete/', 'PLAYER_DELETE'),
+        ]
+
+        for base_path, action_path, action in player_routes:
+            if base_path in path and action_path in path:
+                return action
+        return None
+
+    def _get_media_action_type(self, path):
+        """Match only media-specific routes so uploads are not mislabeled as player actions."""
+        if '/portal/media/' not in path:
+            return None
+
+        if '/delete/' in path:
+            return 'MEDIA_DELETE'
+        if '/create/' in path:
+            return 'MEDIA_CREATE'
+        if '/categories/' in path:
+            return 'MEDIA_CREATE'
+        if '/edit/' in path:
+            return 'MEDIA_UPDATE'
+        return None
+
     def _generate_description(self, request, action):
         """Generate human-readable description of the action"""
         user = request.user
         name = user.get_full_name() or user.email
         path = request.path
+
+        if action.startswith('MEDIA_'):
+            return self._generate_media_description(request, action, name)
 
         descriptions = {
             'FIXTURE_GENERATE': f'{name} generated fixtures',
@@ -151,6 +200,9 @@ class ActivityLoggingMiddleware(MiddlewareMixin):
             'REFEREE_REGISTER': f'{name} registered as referee',
             'REFEREE_APPROVE': f'{name} approved/rejected a referee',
             'REFEREE_ACTION': f'{name} performed referee action',
+            'MEDIA_CREATE': f'{name} created media content',
+            'MEDIA_UPDATE': f'{name} updated media content',
+            'MEDIA_DELETE': f'{name} deleted media content',
             'PAYMENT_ACTION': f'{name} processed payment/treasurer action',
             'ZONE_ASSIGN': f'{name} assigned team to competition/zone',
             'SQUAD_APPROVE': f'{name} reviewed a squad submission',
@@ -164,6 +216,37 @@ class ActivityLoggingMiddleware(MiddlewareMixin):
         }
 
         return descriptions.get(action, f'{name} performed {action} at {path}')
+
+    def _generate_media_description(self, request, action, name):
+        """Generate resource-specific descriptions for media portal actions."""
+        path = request.path
+        if '/portal/media/articles/' in path:
+            resource = 'article'
+        elif '/portal/media/albums/' in path:
+            resource = 'photo album'
+        elif '/portal/media/photos/' in path:
+            resource = 'photo'
+        elif '/portal/media/videos/' in path:
+            resource = 'video'
+        elif '/portal/media/categories/' in path:
+            resource = 'media category'
+        else:
+            resource = 'media content'
+
+        if action == 'MEDIA_CREATE':
+            if resource == 'photo album' and request.FILES.getlist('photos'):
+                return f'{name} created a photo album and uploaded {len(request.FILES.getlist("photos"))} photo(s)'
+            return f'{name} created a {resource}'
+
+        if action == 'MEDIA_UPDATE':
+            if resource == 'photo album' and request.FILES.getlist('photos'):
+                return f'{name} uploaded {len(request.FILES.getlist("photos"))} photo(s) to a media album'
+            return f'{name} updated a {resource}'
+
+        if action == 'MEDIA_DELETE':
+            return f'{name} deleted a {resource}'
+
+        return f'{name} updated media content'
     
     def _get_client_ip(self, request):
         """Get client IP address"""

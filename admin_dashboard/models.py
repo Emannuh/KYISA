@@ -66,6 +66,11 @@ class ActivityLog(models.Model):
         ('REFEREE_REGISTER', 'Referee Registered'),
         ('REFEREE_APPROVE', 'Referee Approved'),
         ('REFEREE_ACTION', 'Referee Action'),
+
+        # News & Media
+        ('MEDIA_CREATE', 'Media Created'),
+        ('MEDIA_UPDATE', 'Media Updated'),
+        ('MEDIA_DELETE', 'Media Deleted'),
         
         # User Management
         ('USER_CREATE', 'User Created'),

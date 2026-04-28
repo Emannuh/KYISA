@@ -17,7 +17,6 @@
     <!-- Background image slideshow -->
     <div class="hero-bg-slideshow" id="heroBgSlideshow">
         <div class="hero-bg-slide hero-bg-slide--active hero-bg-slide--zoom" style="background-image:url('{% static 'img/photo_410.png' %}')"></div>
-        <div class="hero-bg-slide" style="background-image:url('{% static 'img/photo_430.png' %}')"></div>
         <div class="hero-bg-slide" style="background-image:url('{% static 'img/photo_432.png' %}')"></div>
         <div class="hero-bg-slide" style="background-image:url('{% static 'img/photo_438.png' %}')"></div>
         <div class="hero-bg-slide" style="background-image:url('{% static 'img/photo_448.png' %}')"></div>
@@ -689,6 +688,8 @@
             html = '<video controls autoplay style="position:absolute;top:0;left:0;width:100%;height:100%;"><source src="' + fileUrl + '" type="video/mp4"></video>';
         } else if (embedUrl) {
             html = '<iframe src="' + embedUrl + '" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"></iframe>';
+        } else {
+            html = '<div style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.7);"><div style="text-align:center;color:#fff;"><i class="bi bi-exclamation-circle" style="font-size:3rem;margin-bottom:1rem;"></i><p>Video source not available</p></div></div>';
         }
         if (!html) return;
         mhEmbed.innerHTML = html;

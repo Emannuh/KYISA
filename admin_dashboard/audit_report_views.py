@@ -47,6 +47,9 @@ ACTION_CATEGORIES = OrderedDict([
     ("Referee Management", [
         "REFEREE_REGISTER", "REFEREE_APPROVE", "REFEREE_ACTION",
     ]),
+    ("News & Media", [
+        "MEDIA_CREATE", "MEDIA_UPDATE", "MEDIA_DELETE",
+    ]),
     ("Competition / Zones", [
         "ZONE_ASSIGN", "ZONE_UPDATE",
     ]),
