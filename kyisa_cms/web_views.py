@@ -77,6 +77,18 @@ def role_required(*roles):
     return decorator
 
 
+def super_admin_required(view):
+    """Allow access only to authenticated super admin users."""
+    @wraps(view)
+    @login_required(login_url='web_login')
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_superuser:
+            messages.error(request, 'Only super admins can access this page.')
+            return redirect('dashboard')
+        return view(request, *args, **kwargs)
+    return wrapper
+
+
 def send_credentials_email(user, temporary_password, role_label):
     """Send login credentials to the registrant's email address."""
     subject = f'KYISA Portal Access - {role_label}'
@@ -829,8 +841,8 @@ def dashboard_view(request):
         'players': Player.objects.count(),
     }
 
-    # For team managers, show only their team's data
-    if user.role == 'admin':
+    # System admin dashboard is reserved for super admins.
+    if user.role == 'admin' and user.is_superuser:
         return redirect('sys_admin_dashboard')
 
     if user.role == 'treasurer':
@@ -7577,7 +7589,7 @@ def scout_remove_from_shortlist_view(request, pk):
 #   SYSTEM ADMIN PORTAL
 # ══════════════════════════════════════════════════════════════════════════════
 
-@role_required('admin')
+@super_admin_required
 def sys_admin_dashboard_view(request):
     """System Admin dashboard — full system oversight with rich stats."""
     from admin_dashboard.models import ActivityLog, EmailLog

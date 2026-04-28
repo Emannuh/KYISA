@@ -383,7 +383,7 @@ urlpatterns = [
     # ── APPEALS & JURY ────────────────────────────────────────────────────────
     path("portal/appeals/", include("appeals.urls")),
 
-    # ── DJANGO ADMIN (staff-only, behind portal login) ─────────────────────
+    # ── DJANGO ADMIN (super-admin only) ─────────────────────────────────────
     path("admin/", admin.site.urls),
 
     # ── API v1 ────────────────────────────────────────────────────────────────
@@ -412,6 +412,11 @@ if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # ── ADMIN CUSTOMISATION ───────────────────────────────────────────────────────
+def _super_admin_only(request):
+    return request.user.is_active and request.user.is_superuser
+
+
+admin.site.has_permission = _super_admin_only
 admin.site.site_header = "KYISA Competition Management System"
 admin.site.site_title  = "KYISA Admin"
 admin.site.index_title = "Administration Dashboard"
