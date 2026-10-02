@@ -16,7 +16,20 @@ def process_approved_report(report):
     """
     Master function: called when a MatchReport is approved.
     Updates pool standings + player statistics in one atomic transaction.
+
+    Guard: if ``report.stats_processed`` is already True the function returns
+    immediately without touching any counters, preventing double-counting when
+    a report is corrected and re-approved.  To force a reprocess (e.g. after a
+    result override) call ``recalculate_pool_standings`` / ``recalculate_player_stats``
+    directly, then reset ``stats_processed`` to False before calling this again.
     """
+    if report.stats_processed:
+        logger.warning(
+            "process_approved_report called on already-processed report %s — skipping.",
+            report.pk,
+        )
+        return
+
     fixture = report.fixture
     with transaction.atomic():
         update_pool_standings(fixture, report)
@@ -25,6 +38,9 @@ def process_approved_report(report):
         if fixture.is_knockout:
             fixture.determine_winner()
             fixture.save(update_fields=["winner"])
+        # Mark as processed so re-approval does not double-count
+        report.stats_processed = True
+        report.save(update_fields=["stats_processed"])
 
 
 def update_pool_standings(fixture, report=None):

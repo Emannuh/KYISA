@@ -14,18 +14,34 @@ env = environ.Env(DEBUG=(bool, False))
 environ.Env.read_env(BASE_DIR / ".env")
 
 # ── SECURITY ───────────────────────────────────────────────────────────────────
-SECRET_KEY = env("SECRET_KEY", default="django-insecure-change-me-in-production")
-DEBUG      = env("DEBUG", default=True)
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
+SECRET_KEY = env("SECRET_KEY")          # Required — no insecure default
+DEBUG      = env.bool("DEBUG", default=False)
 
-# Keep explicit local hosts available for Docker/local access even when
-# ALLOWED_HOSTS is provided via environment variables.
-for _host in ("localhost", "127.0.0.1", "[::1]"):
-    if _host not in ALLOWED_HOSTS:
-        ALLOWED_HOSTS.append(_host)
+# Required — must be set explicitly in .env; empty list = deny all in production
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
+
+# In local development it's convenient to reach the server via localhost.
+# These are appended only when DEBUG is on so production is never permissive.
+if DEBUG:
+    for _host in ("localhost", "127.0.0.1", "[::1]"):
+        if _host not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(_host)
 
 # Trust the X-Forwarded-Proto header from Nginx reverse proxy
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# ── PRODUCTION HTTPS / COOKIE SECURITY ────────────────────────────────────────
+# These are harmless on DEBUG=True (Django ignores most in dev) but essential
+# when deployed behind Nginx with TLS.
+if not DEBUG:
+    SECURE_SSL_REDIRECT          = True   # redirect plain HTTP → HTTPS
+    SECURE_HSTS_SECONDS          = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD          = True
+    SESSION_COOKIE_SECURE        = True   # session cookie only over HTTPS
+    CSRF_COOKIE_SECURE           = True   # CSRF cookie only over HTTPS
+    SECURE_CONTENT_TYPE_NOSNIFF  = True
+    SECURE_BROWSER_XSS_FILTER    = True
 
 # ── APPS ───────────────────────────────────────────────────────────────────────
 INSTALLED_APPS = [
@@ -46,6 +62,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "crispy_forms",
     "crispy_bootstrap5",
+    "django_ratelimit",
 
     # KYISA Apps
     "accounts",
@@ -131,6 +148,16 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 20,
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    # Rate limiting — login endpoint uses the "login" scope (10/5min per IP)
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "200/day",
+        "user": "2000/day",
+        "login": "10/5min",
+    },
 }
 
 # ── JWT ────────────────────────────────────────────────────────────────────────
@@ -271,11 +298,17 @@ if REDIS_URL:
         }
     }
 else:
+    # LocMemCache is process-local — fine for development, but rate-limit
+    # counters will NOT be shared between gunicorn workers in production.
+    # Set REDIS_URL in production to get accurate cross-worker throttling.
     CACHES = {
         "default": {
             "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
         }
     }
+
+# django-ratelimit uses the default cache backend
+RATELIMIT_USE_CACHE = "default"
 
 # ── CELERY ─────────────────────────────────────────────────────────────────────
 CELERY_BROKER_URL        = env("REDIS_URL", default="redis://127.0.0.1:6379/0")

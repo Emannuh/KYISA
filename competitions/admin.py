@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Competition, Venue, Pool, PoolTeam, Fixture, CountyPayment, CountyRegistration
+from .models import Competition, Venue, Pool, PoolTeam, Fixture, CountyPayment, CountyCompetitionEntry
 
 
 @admin.register(Competition)
@@ -56,8 +56,8 @@ class CountyPaymentAdmin(admin.ModelAdmin):
     search_fields = ["county", "payment_reference"]
 
 
-@admin.register(CountyRegistration)
-class CountyRegistrationAdmin(admin.ModelAdmin):
+@admin.register(CountyCompetitionEntry)
+class CountyCompetitionEntryAdmin(admin.ModelAdmin):
     list_display  = ["county", "competition", "county_payment", "registered_at"]
     list_filter   = ["competition"]
     search_fields = ["county"]

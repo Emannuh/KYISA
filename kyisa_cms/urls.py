@@ -165,14 +165,18 @@ from .web_views import (
     sys_admin_dashboard_view,
     # M-Pesa STK push endpoint
     mpesa_stk_push_view,
+    mpesa_callback_view,
 )
 
-from .web_views import robots_txt, sitemap_xml
+from .web_views import robots_txt, sitemap_xml, healthz
 
 urlpatterns = [
     # ── SEO ───────────────────────────────────────────────────────────────────
     path("robots.txt",                    robots_txt,                     name="robots_txt"),
     path("sitemap.xml",                   sitemap_xml,                    name="sitemap_xml"),
+
+    # ── HEALTH CHECK (load-balancer probe) ────────────────────────────────────
+    path("healthz/",                      healthz,                        name="healthz"),
 
     # ── PUBLIC WEBSITE ────────────────────────────────────────────────────────
     path("",                              home_view,                      name="home"),
@@ -195,6 +199,7 @@ urlpatterns = [
     path("register/county-admin/",           county_admin_register_view,         name="county_admin_register"),
     path("register/county-admin/success/",   county_admin_register_success_view, name="county_admin_register_success"),
     path("api/mpesa/stk-push/",              mpesa_stk_push_view,               name="mpesa_stk_push"),
+    path("api/mpesa/callback/",              mpesa_callback_view,               name="mpesa_callback"),
 
     # ── CMS PORTAL (Authenticated) ───────────────────────────────────────────
     path("portal/login/",                   web_login_view,         name="web_login"),

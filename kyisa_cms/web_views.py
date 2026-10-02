@@ -10,6 +10,7 @@ from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings as django_settings
@@ -115,6 +116,38 @@ def send_credentials_email(user, temporary_password, role_label):
 # ══════════════════════════════════════════════════════════════════════════════
 #   SEO — robots.txt & sitemap.xml
 # ══════════════════════════════════════════════════════════════════════════════
+#   HEALTH CHECK
+# ══════════════════════════════════════════════════════════════════════════════
+
+def healthz(request):
+    """
+    Lightweight liveness + readiness probe for load-balancers and CI deploys.
+
+    Returns HTTP 200 with JSON {"status": "ok", "db": "ok"} when the app and
+    database are reachable.  Returns HTTP 503 if the DB ping fails.
+
+    This endpoint intentionally:
+      - requires no authentication
+      - performs a minimal DB query (SELECT 1) to confirm connectivity
+      - is not logged by ActivityLoggingMiddleware (GET, not POST)
+      - does not render a template (fast, no static-file dependency)
+    """
+    from django.db import connection, OperationalError
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+        db_status = "ok"
+        http_status = 200
+    except OperationalError:
+        db_status = "error"
+        http_status = 503
+
+    return JsonResponse(
+        {"status": "ok" if http_status == 200 else "degraded", "db": db_status},
+        status=http_status,
+    )
+
 
 def robots_txt(request):
     lines = [
@@ -764,6 +797,9 @@ def contact_view(request):
 
 # ── AUTH VIEWS ────────────────────────────────────────────────────────────────
 
+from django_ratelimit.decorators import ratelimit as _ratelimit
+
+@_ratelimit(key="ip", rate="10/5m", method="POST", block=True)
 def web_login_view(request):
     """Login page — redirects to dashboard if already authenticated."""
     if request.user.is_authenticated:
@@ -5685,8 +5721,45 @@ def mpesa_stk_push_view(request):
             return JsonResponse({'success': True, 'checkout_id': checkout_id})
         else:
             return JsonResponse({'success': False, 'error': str(result.get('data', 'STK push failed.'))})
-    except Exception as e:
+    except Exception:
         return JsonResponse({'success': False, 'error': 'Payment service unavailable. Please pay manually.'})
+
+
+@csrf_exempt   # Safaricom posts from their servers — no browser session/cookie
+@require_POST
+def mpesa_callback_view(request):
+    """
+    Safaricom Daraja STK push result callback.
+
+    Security layers applied:
+      1. IP allowlist — only Safaricom production IPs accepted (bypassed in sandbox).
+      2. CheckoutRequestID validation — must match a CountyRegistration we initiated.
+      3. CSRF exempt — callback is server-to-server, no browser session involved.
+    """
+    from teams.mpesa_service import validate_callback_ip, validate_checkout_id, process_stk_callback
+
+    # Layer 1 — source IP check
+    if not validate_callback_ip(request):
+        return JsonResponse({'ResultCode': 1, 'ResultDesc': 'Forbidden'}, status=403)
+
+    try:
+        body = json.loads(request.body)
+    except (json.JSONDecodeError, ValueError):
+        return JsonResponse({'ResultCode': 1, 'ResultDesc': 'Invalid JSON'}, status=400)
+
+    # Layer 2 — CheckoutRequestID must match an initiated push
+    checkout_id = (
+        body.get('Body', {})
+            .get('stkCallback', {})
+            .get('CheckoutRequestID', '')
+    )
+    if not validate_checkout_id(checkout_id):
+        # Return 200 so Safaricom does not retry, but take no action
+        return JsonResponse({'ResultCode': 0, 'ResultDesc': 'Accepted'})
+
+    # Layer 3 — parse and persist the result
+    process_stk_callback(body)
+    return JsonResponse({'ResultCode': 0, 'ResultDesc': 'Accepted'})
 
 
 # ══════════════════════════════════════════════════════════════════════════════

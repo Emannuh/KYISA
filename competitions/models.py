@@ -43,6 +43,8 @@ class CompetitionFormat(models.TextChoices):
 
 
 class KnockoutRound(models.TextChoices):
+    ROUND_OF_32  = "round_of_32",   "Round of 32"
+    ROUND_OF_16  = "round_of_16",   "Round of 16"
     QUARTERFINAL = "quarterfinal",  "Quarter-final"
     SEMIFINAL    = "semifinal",     "Semi-final"
     THIRD_PLACE  = "third_place",   "3rd Place Play-off"
@@ -359,11 +361,11 @@ class Fixture(models.Model):
     def squad_deadline(self):
         """Squad must be submitted SQUAD_SUBMISSION_HOURS_BEFORE_KICKOFF hours before KO."""
         from django.conf import settings as conf
+        from datetime import timedelta, timezone as dt_timezone
+        from zoneinfo import ZoneInfo
         hours = getattr(conf, "SQUAD_SUBMISSION_HOURS_BEFORE_KICKOFF", 4)
-        from datetime import timedelta
-        import pytz
-        nairobi = pytz.timezone("Africa/Nairobi")
-        ko = nairobi.localize(self.kickoff_datetime)
+        nairobi = ZoneInfo("Africa/Nairobi")
+        ko = self.kickoff_datetime.replace(tzinfo=nairobi)
         return ko - timedelta(hours=hours)
 
 
@@ -433,11 +435,14 @@ class CountyPayment(models.Model):
         return self.payment_status in (PaymentStatus.PAID, PaymentStatus.WAIVED)
 
 
-class CountyRegistration(models.Model):
+class CountyCompetitionEntry(models.Model):
     """
     Tracks a county's registration for a specific competition.
     Links to CountyPayment — a county can only enter competitions
     once their county-level payment is confirmed.
+
+    Renamed from CountyRegistration (which collides with teams.CountyRegistration,
+    the county sports admin onboarding model).
     """
     competition     = models.ForeignKey(
         Competition, on_delete=models.CASCADE, related_name="county_registrations"
@@ -458,8 +463,8 @@ class CountyRegistration(models.Model):
     class Meta:
         unique_together = ["competition", "county"]
         ordering = ["competition", "county"]
-        verbose_name = "County Registration"
-        verbose_name_plural = "County Registrations"
+        verbose_name = "County Competition Entry"
+        verbose_name_plural = "County Competition Entries"
 
     def clean(self):
         # Ensure county has paid for this season before registering for competitions
@@ -489,3 +494,7 @@ class CountyRegistration(models.Model):
     @property
     def is_paid(self):
         return self.county_payment and self.county_payment.is_paid
+
+
+# Backwards-compatibility alias — remove after all call sites are updated
+CountyRegistration = CountyCompetitionEntry

@@ -4,6 +4,7 @@ KYISA Accounts — Views & Permissions
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.throttling import AnonRateThrottle
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenBlacklistView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
@@ -23,10 +24,17 @@ User = get_user_model()
 
 # ── AUTH VIEWS ────────────────────────────────────────────────────────────────
 
+class LoginRateThrottle(AnonRateThrottle):
+    """10 login attempts per 5 minutes per IP for the API login endpoint."""
+    scope = "login"
+    THROTTLE_RATES = {"login": "10/5min"}
+
+
 class LoginView(TokenObtainPairView):
     """POST /api/v1/auth/login/ — returns access+refresh tokens + user profile"""
     serializer_class = KYISATokenObtainSerializer
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [LoginRateThrottle]
 
     @extend_schema(tags=["auth"], summary="Login — returns JWT tokens + user profile")
     def post(self, request, *args, **kwargs):

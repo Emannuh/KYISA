@@ -327,6 +327,15 @@ class MatchReport(models.Model):
     created_at    = models.DateTimeField(auto_now_add=True)
     updated_at    = models.DateTimeField(auto_now=True)
 
+    # Guard against double-counting if a report is re-approved after correction.
+    # process_approved_report() checks and sets this flag atomically.
+    stats_processed = models.BooleanField(
+        default=False,
+        help_text="Set to True after pool standings and player statistics have been "
+                  "updated for this report. Re-processing is blocked unless explicitly "
+                  "reset (e.g. after a result override).",
+    )
+
     class Meta:
         verbose_name = "Match Report"
         ordering     = ["-submitted_at"]
