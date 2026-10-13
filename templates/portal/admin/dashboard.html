@@ -18,10 +18,7 @@
     }
 
     .sys-admin-wrap {
-        background:
-            radial-gradient(900px 300px at 0% -10%, #dbeafe 0%, transparent 60%),
-            radial-gradient(700px 260px at 100% -20%, #dcfce7 0%, transparent 60%),
-            var(--sys-bg);
+        background: var(--sys-bg);
         padding: 1.1rem;
         border-radius: 20px;
     }
@@ -106,7 +103,21 @@
         background: var(--sys-surface);
         border-radius: 14px;
         padding: .75rem .8rem;
+        border-left: 4px solid var(--sys-line);
+        position: relative;
+        transition: transform .18s ease, box-shadow .18s ease;
     }
+    .sys-stat:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(15,23,42,.07);
+    }
+    .sys-stat--green  { border-left-color: #2E7D32; }
+    .sys-stat--blue   { border-left-color: #1565C0; }
+    .sys-stat--amber  { border-left-color: #E65100; }
+    .sys-stat--red    { border-left-color: #C62828; }
+    .sys-stat--purple { border-left-color: #6A1B9A; }
+    .sys-stat--teal   { border-left-color: #00695C; }
+    .sys-stat--grey   { border-left-color: #455A64; }
 
     .sys-stat strong {
         display: block;
@@ -132,6 +143,17 @@
         font-size: .98rem;
         font-weight: 800;
         color: #1f2937;
+        padding-left: .75rem;
+        position: relative;
+    }
+    .sys-section-title::before {
+        content: "";
+        position: absolute;
+        left: 0; top: 50%;
+        transform: translateY(-50%);
+        width: 3px; height: 18px;
+        border-radius: 3px;
+        background: linear-gradient(180deg, #0b5d4b, #0f766e);
     }
 
     .sys-action-grid {
@@ -593,17 +615,17 @@
     </section>
 
     <div class="sys-grid-stats">
-        <div class="sys-stat"><strong>{{ total_users|intcomma }}</strong><span>Total Users</span></div>
-        <div class="sys-stat"><strong>{{ total_teams|intcomma }}</strong><span>Teams</span></div>
-        <div class="sys-stat"><strong>{{ total_players|intcomma }}</strong><span>Players</span></div>
-        <div class="sys-stat"><strong>{{ total_referees|intcomma }}</strong><span>Referees</span></div>
-        <div class="sys-stat"><strong>{{ pending_registrations|intcomma }}</strong><span>Pending Registrations</span></div>
-        <div class="sys-stat"><strong>{{ pending_verifications|intcomma }}</strong><span>Pending Verifications</span></div>
-        <div class="sys-stat"><strong>{{ pending_appeals|intcomma }}</strong><span>Pending Appeals</span></div>
-        <div class="sys-stat"><strong>{{ pending_reports|intcomma }}</strong><span>Pending Reports</span></div>
+        <div class="sys-stat sys-stat--blue"><strong>{{ total_users|intcomma }}</strong><span>Total Users</span></div>
+        <div class="sys-stat sys-stat--teal"><strong>{{ total_teams|intcomma }}</strong><span>Teams</span></div>
+        <div class="sys-stat sys-stat--green"><strong>{{ total_players|intcomma }}</strong><span>Players</span></div>
+        <div class="sys-stat sys-stat--grey"><strong>{{ total_referees|intcomma }}</strong><span>Referees</span></div>
+        <div class="sys-stat sys-stat--amber"><strong>{{ pending_registrations|intcomma }}</strong><span>Pending Registrations</span></div>
+        <div class="sys-stat sys-stat--amber"><strong>{{ pending_verifications|intcomma }}</strong><span>Pending Verifications</span></div>
+        <div class="sys-stat sys-stat--red"><strong>{{ pending_appeals|intcomma }}</strong><span>Pending Appeals</span></div>
+        <div class="sys-stat sys-stat--red"><strong>{{ pending_reports|intcomma }}</strong><span>Pending Reports</span></div>
     </div>
 
-    <h2 class="sys-section-title"><i class="bi bi-tools"></i> System Controls</h2>
+    <h2 class="sys-section-title"><i class="bi bi-sliders"></i> System Controls</h2>
     <div class="sys-action-grid">
         <a href="{% url 'manage_users' %}" class="sys-action-card">
             <span class="sys-action-icon"><i class="bi bi-people-fill"></i></span>
@@ -623,7 +645,7 @@
         </a>
     </div>
 
-    <h2 class="sys-section-title"><i class="bi bi-grid-1x2-fill"></i> Role Workspaces</h2>
+    <h2 class="sys-section-title"><i class="bi bi-layout-wtf"></i> Role Workspaces</h2>
     <div class="sys-workspace-grid">
         {% for workspace in role_workspaces %}
         <article class="sys-workspace">

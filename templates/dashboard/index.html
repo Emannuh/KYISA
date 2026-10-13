@@ -2,193 +2,318 @@
 {% block title %}Dashboard — KYISA CMS{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1>Welcome, {{ user.first_name }}!</h1>
-    <p>{{ user.get_role_display }} Dashboard</p>
+
+<!-- ══════════════════════════════════════════════════════════════
+     HERO BANNER
+══════════════════════════════════════════════════════════════ -->
+<div class="dash-hero dash-hero--green">
+    <div class="hero-decor">
+        {% for i in "12345678" %}<span></span>{% endfor %}
+    </div>
+    <div class="hero-badge">
+        <span class="pulse-dot"></span>
+        KYISA Portal
+    </div>
+    <h1>
+        <i class="bi bi-house-door"></i>
+        Welcome back, {{ user.first_name }}
+    </h1>
+    <p>{{ user.get_role_display }} &mdash; KYISA Competition Management System</p>
+    <div class="hero-meta">
+        <span><i class="bi bi-calendar3"></i> Season 2026</span>
+        <span><i class="bi bi-shield-check"></i> Secure Session</span>
+        {% if user.county %}<span><i class="bi bi-geo-alt"></i> {{ user.county }}</span>{% endif %}
+    </div>
 </div>
 
-<!-- Stats -->
-<div class="stats-grid">
-    {% if user.role == 'admin' or user.role == 'competition_manager' %}
-    <div class="stat-card green">
-        <div class="stat-icon green"><i class="bi bi-trophy"></i></div>
-        <div class="stat-info">
-            <h3>{{ stats.competitions }}</h3>
-            <p>Competitions</p>
-        </div>
-    </div>
-    {% endif %}
-
-    <div class="stat-card blue">
-        <div class="stat-icon blue"><i class="bi bi-people"></i></div>
-        <div class="stat-info">
-            <h3>{{ stats.teams }}</h3>
-            <p>Teams</p>
-        </div>
-    </div>
-
-    {% if user.role == 'admin' or user.role == 'coordinator' or user.role == 'referee' %}
-    <div class="stat-card yellow">
-        <div class="stat-icon yellow"><i class="bi bi-flag"></i></div>
-        <div class="stat-info">
-            <h3>{{ stats.referees }}</h3>
-            <p>Referees</p>
-        </div>
-    </div>
-    {% endif %}
-
-    <div class="stat-card red">
-        <div class="stat-icon red"><i class="bi bi-clipboard-data"></i></div>
-        <div class="stat-info">
-            <h3>{{ stats.fixtures }}</h3>
-            <p>Fixtures</p>
-        </div>
-    </div>
+<!-- ══════════════════════════════════════════════════════════════
+     STATS
+══════════════════════════════════════════════════════════════ -->
+<p class="dash-section-title"><i class="bi bi-bar-chart-line"></i> System Overview</p>
+<div class="dash-stats">
 
     {% if user.role == 'admin' or user.role == 'competition_manager' %}
-    <div class="stat-card blue">
-        <div class="stat-icon blue"><i class="bi bi-person-vcard"></i></div>
-        <div class="stat-info">
-            <h3>{{ stats.players }}</h3>
-            <p>Players</p>
-        </div>
+    <div class="dash-stat dash-stat--green">
+        <div class="stat-icon"><i class="bi bi-trophy-fill"></i></div>
+        <div class="stat-num">{{ stats.competitions }}</div>
+        <div class="stat-lbl">Competitions</div>
     </div>
     {% endif %}
-</div>
 
-<!-- Quick Actions -->
-<div class="card mb-1">
-    <div class="card-header"><h3>Quick Actions</h3></div>
-    <div class="card-body">
-        <div class="quick-actions">
-            {% if user.role == 'admin' or user.role == 'competition_manager' %}
-            <a href="{% url 'competitions_list' %}" class="action-card">
-                <div class="action-icon"><i class="bi bi-trophy"></i></div>
-                <h4>Manage Competitions</h4>
-                <p>View and manage competitions</p>
-            </a>
-            <a href="{% url 'teams_list' %}" class="action-card">
-                <div class="action-icon"><i class="bi bi-people"></i></div>
-                <h4>Manage Teams</h4>
-                <p>View registered teams</p>
-            </a>
-            <a href="{% url 'matches_list' %}" class="action-card">
-                <div class="action-icon"><i class="bi bi-calendar-event"></i></div>
-                <h4>View Fixtures</h4>
-                <p>Scheduled matches</p>
-            </a>
-            {% endif %}
-
-            {% if user.role == 'competition_manager' or user.role == 'admin' %}
-            <a href="{% url 'competitions_list' %}" class="action-card accent-purple">
-                <div class="action-icon"><i class="bi bi-bar-chart-line"></i></div>
-                <h4>Standings &amp; Stats</h4>
-                <p>View standings via competition</p>
-            </a>
-            {% endif %}
-
-                        {% if user.role == 'coordinator' or user.role == 'soccer_coordinator' or user.role == 'handball_coordinator' or user.role == 'basketball_coordinator' or user.role == 'volleyball_coordinator' %}
-                        <a href="{% url 'coordinator_dashboard' %}" class="action-card">
-                                <div class="action-icon"><i class="bi bi-clipboard2-pulse"></i></div>
-                                <h4>
-                                    {% if user.discipline %}
-                                        {{ user.discipline.name }} Coordinator
-                                    {% else %}
-                                        {{ user.get_role_display|default:'Coordinator Portal' }}
-                                    {% endif %}
-                                </h4>
-                                <p>Manage your {% if user.discipline %}{{ user.discipline.name|lower }}{% else %}discipline{% endif %}</p>
-                        </a>
-                        {% endif %}
-
-            {% if user.role == 'referee' %}
-            <a href="{% url 'matches_list' %}" class="action-card">
-                <div class="action-icon"><i class="bi bi-calendar-event"></i></div>
-                <h4>My Appointments</h4>
-                <p>View assigned fixtures</p>
-            </a>
-            <a href="{% url 'web_profile' %}" class="action-card">
-                <div class="action-icon"><i class="bi bi-person-circle"></i></div>
-                <h4>My Profile</h4>
-                <p>Update availability</p>
-            </a>
-            {% endif %}
-
-            {% if user.role == 'team_manager' %}
-            <a href="{% url 'teams_list' %}" class="action-card">
-                <div class="action-icon"><i class="bi bi-people"></i></div>
-                <h4>My Team</h4>
-                <p>Manage players & squads</p>
-            </a>
-            <a href="{% url 'matches_list' %}" class="action-card">
-                <div class="action-icon"><i class="bi bi-calendar-event"></i></div>
-                <h4>Upcoming Fixtures</h4>
-                <p>View scheduled matches</p>
-            </a>
-            {% endif %}
-
-            <a href="{% url 'web_profile' %}" class="action-card">
-                <div class="action-icon"><i class="bi bi-person-circle"></i></div>
-                <h4>My Profile</h4>
-                <p>View account details</p>
-            </a>
-        </div>
+    <div class="dash-stat dash-stat--blue">
+        <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+        <div class="stat-num">{{ stats.teams }}</div>
+        <div class="stat-lbl">Registered Teams</div>
     </div>
+
+    {% if user.role == 'admin' or user.role == 'competition_manager' or user.role == 'coordinator' or user.role == 'soccer_coordinator' or user.role == 'handball_coordinator' or user.role == 'basketball_coordinator' or user.role == 'volleyball_coordinator' %}
+    <div class="dash-stat dash-stat--amber">
+        <div class="stat-icon"><i class="bi bi-flag-fill"></i></div>
+        <div class="stat-num">{{ stats.referees }}</div>
+        <div class="stat-lbl">Active Referees</div>
+    </div>
+    {% endif %}
+
+    <div class="dash-stat dash-stat--teal">
+        <div class="stat-icon"><i class="bi bi-calendar-event-fill"></i></div>
+        <div class="stat-num">{{ stats.fixtures }}</div>
+        <div class="stat-lbl">Fixtures</div>
+    </div>
+
+    {% if user.role == 'admin' or user.role == 'competition_manager' %}
+    <div class="dash-stat dash-stat--purple">
+        <div class="stat-icon"><i class="bi bi-person-vcard-fill"></i></div>
+        <div class="stat-num">{{ stats.players }}</div>
+        <div class="stat-lbl">Players</div>
+    </div>
+    {% endif %}
+
 </div>
 
-<!-- Recent Fixtures -->
+<!-- ══════════════════════════════════════════════════════════════
+     QUICK ACTIONS
+══════════════════════════════════════════════════════════════ -->
+<p class="dash-section-title"><i class="bi bi-grid"></i> Quick Actions</p>
+<div class="dash-actions">
+
+    {% if user.role == 'admin' or user.role == 'competition_manager' %}
+    <a href="{% url 'competitions_list' %}" class="dash-tile">
+        <div class="tile-icon tile-icon--green"><i class="bi bi-trophy-fill"></i></div>
+        <div class="tile-body">
+            <div class="tile-title">Competitions</div>
+            <div class="tile-desc">View and manage all competitions</div>
+        </div>
+        <i class="bi bi-chevron-right tile-arrow"></i>
+    </a>
+    <a href="{% url 'teams_list' %}" class="dash-tile">
+        <div class="tile-icon tile-icon--blue"><i class="bi bi-people-fill"></i></div>
+        <div class="tile-body">
+            <div class="tile-title">Teams</div>
+            <div class="tile-desc">View and manage registered teams</div>
+        </div>
+        <i class="bi bi-chevron-right tile-arrow"></i>
+    </a>
+    <a href="{% url 'matches_list' %}" class="dash-tile">
+        <div class="tile-icon tile-icon--teal"><i class="bi bi-calendar-event-fill"></i></div>
+        <div class="tile-body">
+            <div class="tile-title">Fixtures</div>
+            <div class="tile-desc">View all scheduled matches</div>
+        </div>
+        <i class="bi bi-chevron-right tile-arrow"></i>
+    </a>
+    <a href="{% url 'competitions_list' %}" class="dash-tile">
+        <div class="tile-icon tile-icon--purple"><i class="bi bi-bar-chart-line-fill"></i></div>
+        <div class="tile-body">
+            <div class="tile-title">Standings &amp; Stats</div>
+            <div class="tile-desc">View standings via competition</div>
+        </div>
+        <i class="bi bi-chevron-right tile-arrow"></i>
+    </a>
+    {% endif %}
+
+    {% if user.role == 'coordinator' or user.role == 'soccer_coordinator' or user.role == 'handball_coordinator' or user.role == 'basketball_coordinator' or user.role == 'volleyball_coordinator' %}
+    <a href="{% url 'coordinator_dashboard' %}" class="dash-tile">
+        <div class="tile-icon tile-icon--green"><i class="bi bi-clipboard2-pulse-fill"></i></div>
+        <div class="tile-body">
+            <div class="tile-title">{{ user.get_role_display }}</div>
+            <div class="tile-desc">Go to your coordinator portal</div>
+        </div>
+        <i class="bi bi-chevron-right tile-arrow"></i>
+    </a>
+    {% endif %}
+
+    {% if user.role == 'referee' %}
+    <a href="{% url 'matches_list' %}" class="dash-tile">
+        <div class="tile-icon tile-icon--amber"><i class="bi bi-calendar-event-fill"></i></div>
+        <div class="tile-body">
+            <div class="tile-title">My Appointments</div>
+            <div class="tile-desc">View your assigned fixtures</div>
+        </div>
+        <i class="bi bi-chevron-right tile-arrow"></i>
+    </a>
+    {% endif %}
+
+    {% if user.role == 'team_manager' %}
+    <a href="{% url 'teams_list' %}" class="dash-tile">
+        <div class="tile-icon tile-icon--blue"><i class="bi bi-people-fill"></i></div>
+        <div class="tile-body">
+            <div class="tile-title">My Team</div>
+            <div class="tile-desc">Manage players and squads</div>
+        </div>
+        <i class="bi bi-chevron-right tile-arrow"></i>
+    </a>
+    <a href="{% url 'matches_list' %}" class="dash-tile">
+        <div class="tile-icon tile-icon--teal"><i class="bi bi-calendar-event-fill"></i></div>
+        <div class="tile-body">
+            <div class="tile-title">Upcoming Fixtures</div>
+            <div class="tile-desc">View your scheduled matches</div>
+        </div>
+        <i class="bi bi-chevron-right tile-arrow"></i>
+    </a>
+    {% endif %}
+
+    <a href="{% url 'web_profile' %}" class="dash-tile">
+        <div class="tile-icon tile-icon--grey"><i class="bi bi-person-circle"></i></div>
+        <div class="tile-body">
+            <div class="tile-title">My Profile</div>
+            <div class="tile-desc">View and update account details</div>
+        </div>
+        <i class="bi bi-chevron-right tile-arrow"></i>
+    </a>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     RECENT FIXTURES
+══════════════════════════════════════════════════════════════ -->
 {% if recent_fixtures %}
-<div class="card">
-    <div class="card-header">
-        <h3>Recent / Upcoming Fixtures</h3>
-        <a href="{% url 'matches_list' %}" class="btn btn-outline btn-sm">View All</a>
+<p class="dash-section-title"><i class="bi bi-clock-history"></i> Recent &amp; Upcoming Fixtures</p>
+<div class="dash-card">
+    <div class="dash-card-header">
+        <span>Latest Matches</span>
+        <a href="{% url 'matches_list' %}" class="dash-card-action">
+            View All <i class="bi bi-arrow-right"></i>
+        </a>
     </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Competition</th>
-                        <th>Home</th>
-                        <th>Away</th>
-                        <th>Status</th>
-                        <th>Score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for f in recent_fixtures %}
-                    <tr>
-                        <td>{{ f.match_date|date:"d M Y" }}</td>
-                        <td>{{ f.competition.name }}</td>
-                        <td><strong>{{ f.home_team.name }}</strong></td>
-                        <td><strong>{{ f.away_team.name }}</strong></td>
-                        <td>
-                            {% if f.status == 'completed' %}
-                            <span class="badge badge-success">Completed</span>
-                            {% elif f.status == 'live' %}
-                            <span class="badge badge-danger">Live</span>
-                            {% elif f.status == 'confirmed' %}
-                            <span class="badge badge-info">Confirmed</span>
-                            {% elif f.status == 'postponed' %}
-                            <span class="badge badge-warning">Postponed</span>
-                            {% else %}
-                            <span class="badge badge-gray">{{ f.get_status_display }}</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if f.home_score is not None %}
-                            <strong>{{ f.home_score }} - {{ f.away_score }}</strong>
-                            {% else %}
-                            —
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    <div class="table-responsive">
+        <table class="dash-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Competition</th>
+                    <th>Home</th>
+                    <th>Away</th>
+                    <th>Status</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for f in recent_fixtures %}
+                <tr>
+                    <td>
+                        <span style="font-size:.8rem;color:#555;font-weight:500;">
+                            {{ f.match_date|date:"d M Y" }}
+                        </span>
+                    </td>
+                    <td>
+                        <span style="font-size:.78rem;color:#777;">{{ f.competition.name }}</span>
+                    </td>
+                    <td><strong style="font-size:.85rem;">{{ f.home_team.name }}</strong></td>
+                    <td><strong style="font-size:.85rem;">{{ f.away_team.name }}</strong></td>
+                    <td>
+                        {% if f.status == 'completed' %}
+                            <span class="status-badge status-badge--green">Completed</span>
+                        {% elif f.status == 'live' %}
+                            <span class="status-badge status-badge--red">
+                                <span class="pulse-dot" style="width:5px;height:5px;"></span> Live
+                            </span>
+                        {% elif f.status == 'confirmed' %}
+                            <span class="status-badge status-badge--blue">Confirmed</span>
+                        {% elif f.status == 'postponed' %}
+                            <span class="status-badge status-badge--amber">Postponed</span>
+                        {% else %}
+                            <span class="status-badge status-badge--grey">{{ f.get_status_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if f.home_score is not None %}
+                            <span style="font-family:'Outfit',sans-serif;font-weight:800;font-size:.95rem;color:#1B5E20;">
+                                {{ f.home_score }} &ndash; {{ f.away_score }}
+                            </span>
+                        {% else %}
+                            <span style="color:#bbb;">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endif %}
+
+<!-- Inline styles for components used only on this page -->
+<style>
+/* tile icon variants */
+.dash-tile .tile-icon {
+    width: 46px; height: 46px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; flex-shrink: 0; position: relative; z-index: 1;
+}
+.dash-tile .tile-body { flex: 1; position: relative; z-index: 1; }
+.dash-tile .tile-title { font-size: .88rem; font-weight: 700; margin-bottom: .15rem; }
+.dash-tile .tile-desc  { font-size: .73rem; color: #999; line-height: 1.4; }
+.dash-tile .tile-arrow {
+    font-size: .8rem; color: #ccc;
+    position: relative; z-index: 1;
+    align-self: center; transition: transform .2s, color .2s;
+}
+.dash-tile:hover .tile-arrow { transform: translateX(3px); color: #1B5E20; }
+
+.tile-icon--green  { background: linear-gradient(135deg,#E8F5E9,#C8E6C9); color: #1B5E20; }
+.tile-icon--blue   { background: linear-gradient(135deg,#E3F2FD,#BBDEFB); color: #1565C0; }
+.tile-icon--teal   { background: linear-gradient(135deg,#E0F2F1,#B2DFDB); color: #00695C; }
+.tile-icon--amber  { background: linear-gradient(135deg,#FFF3E0,#FFE0B2); color: #E65100; }
+.tile-icon--purple { background: linear-gradient(135deg,#F3E5F5,#E1BEE7); color: #6A1B9A; }
+.tile-icon--red    { background: linear-gradient(135deg,#FFEBEE,#FFCDD2); color: #C62828; }
+.tile-icon--grey   { background: linear-gradient(135deg,#ECEFF1,#CFD8DC); color: #455A64; }
+
+/* dash-card */
+.dash-card {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid rgba(0,0,0,.05);
+    box-shadow: 0 1px 3px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.04);
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+.dash-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 1.35rem;
+    font-size: .82rem; font-weight: 700; color: #333;
+    border-bottom: 1px solid rgba(0,0,0,.06);
+}
+.dash-card-action {
+    font-size: .75rem; font-weight: 600;
+    color: #1B5E20; text-decoration: none;
+    display: flex; align-items: center; gap: .3rem;
+    transition: gap .2s;
+}
+.dash-card-action:hover { gap: .5rem; }
+
+/* dash-table */
+.dash-table {
+    width: 100%; border-collapse: collapse;
+    font-size: .82rem;
+}
+.dash-table thead th {
+    padding: .7rem 1.35rem;
+    font-size: .68rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .5px;
+    color: #9E9E9E; background: #FAFAFA;
+    border-bottom: 1px solid rgba(0,0,0,.05);
+    white-space: nowrap;
+}
+.dash-table tbody tr {
+    border-bottom: 1px solid rgba(0,0,0,.04);
+    transition: background .15s;
+}
+.dash-table tbody tr:last-child { border-bottom: none; }
+.dash-table tbody tr:hover { background: #F9FBF9; }
+.dash-table tbody td { padding: .7rem 1.35rem; vertical-align: middle; }
+
+/* status badges */
+.status-badge {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .22rem .6rem; border-radius: 6px;
+    font-size: .68rem; font-weight: 700; letter-spacing: .3px;
+    text-transform: uppercase; white-space: nowrap;
+}
+.status-badge--green  { background: #E8F5E9; color: #1B5E20; }
+.status-badge--red    { background: #FFEBEE; color: #C62828; }
+.status-badge--blue   { background: #E3F2FD; color: #1565C0; }
+.status-badge--amber  { background: #FFF3E0; color: #E65100; }
+.status-badge--grey   { background: #ECEFF1; color: #455A64; }
+</style>
+
 {% endblock %}

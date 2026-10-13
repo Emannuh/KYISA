@@ -702,3 +702,292 @@ def player_verification_logs(request, player_pk):
         'player': player,
         'logs': logs,
     })
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   DIDIT.ME VERIFICATION STATION
+#   Verification officers open this page on the station PC.
+#   They create a session for a player → a QR code appears.
+#   The player scans it on their phone and completes KYC.
+#   The station polls every 3 s and shows the live result.
+# ══════════════════════════════════════════════════════════════════════════════
+
+from django.views.decorators.csrf import csrf_exempt
+from teams.didit_service import DiditService
+
+
+@clearance_role_required
+def didit_station_view(request):
+    """
+    Verification station dashboard.
+    Lists players awaiting Didit KYC and allows creating sessions.
+    """
+    from teams.models import CountyPlayer
+
+    search = request.GET.get('q', '').strip()
+    county = request.GET.get('county', '').strip()
+
+    players = CountyPlayer.objects.select_related(
+        'discipline__registration'
+    ).filter(huduma_status='not_checked')
+
+    if search:
+        players = players.filter(
+            Q(first_name__icontains=search) |
+            Q(last_name__icontains=search) |
+            Q(national_id_number__icontains=search)
+        )
+
+    if county:
+        players = players.filter(discipline__registration__county=county)
+
+    # Stats for the station header
+    from teams.models import CountyPlayer as CP
+    stats = {
+        'pending':  CP.objects.filter(huduma_status='not_checked').count(),
+        'verified': CP.objects.filter(huduma_status='verified').count(),
+        'failed':   CP.objects.filter(huduma_status='failed').count(),
+    }
+
+    from accounts.models import KenyaCounty
+    counties = [(k, v) for k, v in KenyaCounty.choices]
+
+    return render(request, 'portal/didit/station.html', {
+        'players': players[:50],  # cap per page — use search to narrow
+        'stats': stats,
+        'search': search,
+        'county': county,
+        'counties': counties,
+    })
+
+
+@clearance_role_required
+@require_POST
+def didit_create_session_view(request, player_pk):
+    """
+    Create a Didit KYC session for a CountyPlayer.
+    Returns JSON with session_id and session_url (rendered as QR on the station).
+    """
+    from teams.models import CountyPlayer
+
+    player = get_object_or_404(CountyPlayer, pk=player_pk)
+
+    svc = DiditService()
+    # Build callback URL so Didit redirects back to the station after completion
+    callback = request.build_absolute_uri(
+        f'/portal/verification/didit/callback/?player={player_pk}'
+    )
+    result = svc.create_verification_session(player, callback_url=callback)
+
+    if not result.success:
+        return JsonResponse({
+            'success': False,
+            'error': result.error_message,
+        }, status=400)
+
+    # Store session_id in huduma_reference for now
+    # (add a dedicated didit_session_id field via migration when ready)
+    player.huduma_reference = result.session_id
+    player.huduma_status = 'not_checked'  # stays pending until webhook fires
+    player.save(update_fields=['huduma_reference', 'huduma_status'])
+
+    return JsonResponse({
+        'success': True,
+        'session_id':  result.session_id,
+        'session_url': result.session_url,
+        'session_number': result.reference_number,
+        'is_simulation': result.is_simulation,
+        'player_name': f'{player.first_name} {player.last_name}',
+        'player_id': player.national_id_number,
+    })
+
+
+@clearance_role_required
+def didit_poll_session_view(request, session_id):
+    """
+    AJAX polling endpoint — the station browser calls this every 3 s
+    to check whether the player has completed their Didit verification.
+    Returns the current session status and result if available.
+    """
+    from teams.models import CountyPlayer
+
+    svc = DiditService()
+    result = svc.get_session_decision(session_id)
+
+    # Try to find the player by session_id stored in huduma_reference
+    player = CountyPlayer.objects.filter(huduma_reference=session_id).first()
+    player_pk = player.pk if player else None
+
+    response_data = result.to_dict()
+    response_data['player_pk'] = player_pk
+
+    # If approved and we have the player, record it immediately
+    if (result.session_status == 'Approved'
+            and result.person_found
+            and player
+            and player.huduma_status != 'verified'):
+
+        _apply_didit_result_to_county_player(player, result, performed_by=None)
+
+    return JsonResponse(response_data)
+
+
+@clearance_role_required
+@require_POST
+def didit_manual_apply_view(request, player_pk):
+    """
+    Manually apply a completed Didit session result to a CountyPlayer
+    when the automatic webhook didn't fire (e.g. offline scenario).
+    """
+    from teams.models import CountyPlayer
+
+    player = get_object_or_404(CountyPlayer, pk=player_pk)
+    session_id = player.huduma_reference
+
+    if not session_id:
+        messages.error(request, 'No Didit session found for this player.')
+        return redirect('didit_station')
+
+    svc = DiditService()
+    result = svc.get_session_decision(session_id)
+
+    if not result.success:
+        messages.error(request, f'Could not fetch result: {result.error_message}')
+        return redirect('didit_station')
+
+    _apply_didit_result_to_county_player(player, result, performed_by=request.user)
+    _status_msg(request, player, result)
+    return redirect('didit_station')
+
+
+# ── Didit Webhook ─────────────────────────────────────────────────────────────
+
+@csrf_exempt
+def didit_webhook_view(request):
+    """
+    Didit POST webhook — fires when a KYC session status changes.
+    Endpoint: POST /api/v1/didit/webhook/
+    Register this URL in Didit Console → Settings → API & Webhooks.
+
+    Security: verifies X-Signature-V2 HMAC-SHA256 before processing.
+    """
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+    raw_body   = request.body
+    signature  = request.headers.get('X-Signature-V2', '')
+
+    svc = DiditService()
+    if not svc.verify_webhook_signature(raw_body, signature):
+        logger.warning("Didit webhook: invalid signature from %s",
+                        request.META.get('REMOTE_ADDR'))
+        return JsonResponse({'error': 'Invalid signature'}, status=401)
+
+    try:
+        payload = json.loads(raw_body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+    event   = payload.get('event', '')
+    status  = payload.get('status', '')
+    session_id = payload.get('session_id', '')
+
+    logger.info("Didit webhook: event=%s status=%s session_id=%s",
+                event, status, session_id)
+
+    # Only process completed sessions
+    if status not in ('Approved', 'Declined', 'In Review'):
+        return JsonResponse({'received': True})
+
+    # Parse the decision from the webhook payload
+    result = svc.parse_webhook_payload(payload)
+
+    # Find the CountyPlayer with this session_id stored in huduma_reference
+    from teams.models import CountyPlayer
+    player = CountyPlayer.objects.filter(huduma_reference=session_id).first()
+    if not player:
+        # Try vendor_data field — format: "kyisa-player-{pk}"
+        vendor_data = payload.get('vendor_data', '')
+        if vendor_data and vendor_data.startswith('kyisa-player-'):
+            try:
+                pk = int(vendor_data.split('-')[-1])
+                player = CountyPlayer.objects.filter(pk=pk).first()
+            except (ValueError, TypeError):
+                pass
+
+    if not player:
+        logger.warning(
+            "Didit webhook: no CountyPlayer found for session_id=%s vendor_data=%s",
+            session_id, payload.get('vendor_data', ''),
+        )
+        return JsonResponse({'received': True, 'warning': 'player not found'})
+
+    _apply_didit_result_to_county_player(player, result, performed_by=None)
+
+    logger.info(
+        "Didit webhook: player %s (%s) → huduma_status=%s",
+        player.pk, player.get_full_name, player.huduma_status,
+    )
+
+    return JsonResponse({'received': True, 'player_pk': player.pk})
+
+
+# ── Shared helper ─────────────────────────────────────────────────────────────
+
+def _apply_didit_result_to_county_player(player, result, performed_by=None):
+    """
+    Write a DiditVerificationResult onto a CountyPlayer's huduma fields
+    and create an audit log entry.
+    Uses the existing huduma_status field to avoid requiring a new migration.
+    """
+    from teams.models import CountyPlayer
+
+    if result.session_status == 'Approved' and result.person_found and result.age_eligible:
+        player.huduma_status = 'verified'
+        player.huduma_notes = (
+            f"Didit KYC Approved. "
+            f"Name: {result.verified_name}, "
+            f"DOB: {result.verified_dob}, "
+            f"Age: {result.verified_age}, "
+            f"NRB: {result.nrb_match_type or 'n/a'}"
+        )
+    elif result.session_status == 'Approved' and not result.age_eligible:
+        player.huduma_status = 'failed'
+        player.huduma_notes = (
+            f"Didit KYC Approved but age ineligible. "
+            f"DOB: {result.verified_dob}, Age: {result.verified_age} "
+            f"(must be {18}–{23})."
+        )
+    elif result.session_status == 'Declined':
+        player.huduma_status = 'failed'
+        player.huduma_notes = (
+            f"Didit KYC Declined. "
+            f"Session: {result.session_id}. "
+            f"NRB match: {result.nrb_match_type or 'not checked'}."
+        )
+    else:
+        # In Review or other — stay not_checked, let officer decide
+        player.huduma_status = 'not_checked'
+        player.huduma_notes = f"Didit status: {result.session_status}. Manual review required."
+
+    player.huduma_verified_at = timezone.now()
+    player.save(update_fields=['huduma_status', 'huduma_notes', 'huduma_verified_at'])
+
+    # Save IPRS photo if returned
+    if result.photo:
+        from teams.utils import save_base64_photo
+        save_base64_photo(player, result.photo)
+        player.save(update_fields=['iprs_photo'])
+
+
+def _status_msg(request, player, result):
+    """Flash an appropriate Django message based on the Didit result."""
+    name = f"{player.first_name} {player.last_name}"
+    if result.session_status == 'Approved' and result.age_eligible:
+        messages.success(request, f'✅ {name} — Didit KYC Approved. Age {result.verified_age} confirmed.')
+    elif result.session_status == 'Approved' and not result.age_eligible:
+        messages.warning(request, f'⚠️ {name} — KYC approved but age {result.verified_age} is outside the 18–23 bracket.')
+    elif result.session_status == 'Declined':
+        messages.error(request, f'❌ {name} — Didit KYC Declined.')
+    else:
+        messages.info(request, f'ℹ️ {name} — Didit status: {result.session_status}. Check manually.')

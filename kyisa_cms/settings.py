@@ -297,9 +297,18 @@ if REDIS_URL:
             "LOCATION": REDIS_URL,
         }
     }
+elif DEBUG:
+    # DummyCache in local dev — django-ratelimit requires a shared cache
+    # and raises E003 on LocMemCache. DummyCache silences the check and
+    # is perfectly fine for local development (rate limits simply don't fire).
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+        }
+    }
 else:
-    # LocMemCache is process-local — fine for development, but rate-limit
-    # counters will NOT be shared between gunicorn workers in production.
+    # LocMemCache as a last resort for production without Redis.
+    # Rate-limit counters will NOT be shared between gunicorn workers.
     # Set REDIS_URL in production to get accurate cross-worker throttling.
     CACHES = {
         "default": {
@@ -309,6 +318,11 @@ else:
 
 # django-ratelimit uses the default cache backend
 RATELIMIT_USE_CACHE = "default"
+
+# Silence django-ratelimit cache warnings in local dev (no Redis locally).
+# Rate limiting is still enforced in production where REDIS_URL is set.
+if DEBUG:
+    SILENCED_SYSTEM_CHECKS = ["django_ratelimit.E003", "django_ratelimit.W001"]
 
 # ── CELERY ─────────────────────────────────────────────────────────────────────
 CELERY_BROKER_URL        = env("REDIS_URL", default="redis://127.0.0.1:6379/0")
@@ -417,6 +431,18 @@ FIFA_CONNECT_API_KEY = env("FIFA_CONNECT_API_KEY", default="")
 FIFA_CONNECT_ENABLED = env.bool("FIFA_CONNECT_ENABLED", default=True)
 FIFA_CONNECT_TIMEOUT = env.int("FIFA_CONNECT_TIMEOUT", default=30)
 
+# ── DIDIT.ME — Identity Verification (NRB IPRS) ───────────────────────────────
+# Sign up at business.didit.me → Settings → API & Webhooks
+# Create a KYC workflow with Database Validation (kenya: ken_national_id) enabled
+# Free tier: 500 verifications/month. After that: $0.15/ID check + $3.15/NRB lookup
+DIDIT_API_KEY          = env("DIDIT_API_KEY", default="")
+DIDIT_WORKFLOW_ID      = env("DIDIT_WORKFLOW_ID", default="")       # UUID from Console → Workflows
+DIDIT_WEBHOOK_SECRET   = env("DIDIT_WEBHOOK_SECRET", default="")    # From Console → API & Webhooks
+DIDIT_ENVIRONMENT      = env("DIDIT_ENVIRONMENT", default="sandbox") # 'sandbox' or 'live'
+DIDIT_TIMEOUT          = env.int("DIDIT_TIMEOUT", default=30)
+DIDIT_ENABLED          = env.bool("DIDIT_ENABLED", default=True)
+
+# ── SMILE IDENTITY (Legacy — kept for backwards compat, prefer Didit) ──────────
 # Smile Identity — IPRS / Enhanced KYC Verification
 # Sign up at smileidentity.com → Dashboard → API Keys
 # Use sandbox for testing (SMILE_ENVIRONMENT=sandbox)

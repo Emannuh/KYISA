@@ -45,7 +45,7 @@ def on_login_failed(sender, credentials, request, **kwargs):
     email = credentials.get("username", credentials.get("email", "unknown"))
     ActivityLog.objects.create(
         user=None,
-        action="LOGIN",
+        action="LOGIN_FAILED",
         description=f"Failed login attempt for {email}",
         ip_address=_get_ip(request),
         user_agent=request.META.get("HTTP_USER_AGENT", "")[:500] if request else "",

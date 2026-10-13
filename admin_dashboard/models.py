@@ -12,6 +12,7 @@ class ActivityLog(models.Model):
     ACTION_CHOICES = [
         # Authentication
         ('LOGIN', 'Login'),
+        ('LOGIN_FAILED', 'Login Failed'),
         ('LOGOUT', 'Logout'),
         ('PASSWORD_CHANGE', 'Password Change'),
         

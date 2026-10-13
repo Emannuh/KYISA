@@ -14,9 +14,9 @@ jobs:
       - name: Upload code to server
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
           source: "accounts,admin_dashboard,appeals,competitions,kyisa_cms,matches,news_media,referees,teams,templates,static,Dockerfile,manage.py,Procfile,requirements.txt"
           target: /opt/kyisa/
           overwrite: true
@@ -24,9 +24,9 @@ jobs:
       - name: Build and deploy
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
           command_timeout: 10m
           script: |
             cd /opt/kyisa
@@ -38,24 +38,44 @@ jobs:
             docker stop kyisa-cms || true
             docker rm kyisa-cms || true
 
-            echo "=== Running migrations & collectstatic (one-off container) ==="
+            echo "=== Stopping old Postgres container ==="
+            docker stop kyisa-db || true
+            docker rm kyisa-db || true
+
+            echo "=== Starting Postgres ==="
+            docker run -d \
+              --name kyisa-db \
+              --restart unless-stopped \
+              --network kyisa-net \
+              -v /opt/kyisa/pgdata:/var/lib/postgresql/data \
+              -e POSTGRES_DB=kyisa_db \
+              -e POSTGRES_USER=kyisa_user \
+              -e POSTGRES_PASSWORD=$(grep DB_PASSWORD /opt/kyisa/.env | cut -d '=' -f2) \
+              postgres:16-alpine
+
+            echo "=== Waiting for Postgres to be ready ==="
+            sleep 8
+
+            echo "=== Running migrations & collectstatic ==="
             docker run --rm \
+              --network kyisa-net \
               --env-file .env \
               -v /opt/kyisa/media:/app/media \
               -v /opt/kyisa/staticfiles:/app/staticfiles \
-              kyisa-cms-new sh -c "python manage.py migrate --noinput && python manage.py seed_competitions --season 2026 && python manage.py seed_football_tournament && python manage.py collectstatic --noinput"
+              kyisa-cms-new sh -c "python manage.py migrate --noinput && python manage.py collectstatic --noinput"
 
             echo "=== Starting app container ==="
             docker run -d \
               --name kyisa-cms \
               --restart unless-stopped \
+              --network kyisa-net \
               --env-file .env \
               -p 8080:8080 \
               -v /opt/kyisa/media:/app/media \
               -v /opt/kyisa/staticfiles:/app/staticfiles \
               kyisa-cms-new
 
-            sleep 3
+            sleep 5
 
             echo "=== Tagging image ==="
             docker tag kyisa-cms-new kyisa-cms
