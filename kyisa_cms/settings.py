@@ -34,7 +34,11 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # These are harmless on DEBUG=True (Django ignores most in dev) but essential
 # when deployed behind Nginx with TLS.
 if not DEBUG:
-    SECURE_SSL_REDIRECT          = True   # redirect plain HTTP → HTTPS
+    # Railway (and most reverse proxies) terminate TLS at the edge and forward
+    # plain HTTP internally. Setting SECURE_SSL_REDIRECT=True would cause an
+    # infinite redirect loop because Django never sees HTTPS directly.
+    # We rely on SECURE_PROXY_SSL_HEADER (set above) to detect the real scheme.
+    SECURE_SSL_REDIRECT          = False
     SECURE_HSTS_SECONDS          = 31536000  # 1 year
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD          = True
