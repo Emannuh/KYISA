@@ -217,6 +217,10 @@ STATIC_URL  = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
+# WhiteNoise — also serve from the source static dir so files are always available
+# even if collectstatic hasn't run yet (Railway ephemeral filesystem)
+WHITENOISE_ROOT = BASE_DIR / "static"
+
 # ── CLOUD MEDIA STORAGE (production) ──────────────────────────────────────────
 # Set STORAGE_BACKEND to "s3", "azure", or "gcs" to enable cloud storage.
 # Leave empty or unset for local file storage (development).
