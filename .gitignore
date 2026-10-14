@@ -37,7 +37,7 @@ Thumbs.db
 nul
 
 # Compiled/build
-staticfiles/
+# staticfiles/ — committed to git so Railway has it at deploy time
 
 # DigitalOcean (not used)
 .do/
