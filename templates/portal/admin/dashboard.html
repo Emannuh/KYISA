@@ -1,777 +1,633 @@
 {% extends 'base.html' %}
 {% load humanize %}
 
-{% block title %}System Admin Control Center - KYISA CMS{% endblock %}
+{% block title %}System Admin — KYISA Control Centre{% endblock %}
 
 {% block extra_css %}
 <style>
-    :root {
-        --sys-bg: #f5f7fb;
-        --sys-surface: #ffffff;
-        --sys-ink: #0f172a;
-        --sys-muted: #5b677a;
-        --sys-line: #dde5f1;
-        --sys-brand: #0b5d4b;
-        --sys-brand-2: #0f766e;
-        --sys-sky: #0a66c2;
-        --sys-warn: #c2410c;
-    }
-
-    .sys-admin-wrap {
-        background: var(--sys-bg);
-        padding: 1.1rem;
-        border-radius: 20px;
-    }
-
-    .sys-hero {
-        position: relative;
-        overflow: hidden;
-        border-radius: 22px;
-        background: linear-gradient(135deg, #0f172a, #1e293b 55%, #0f766e);
-        color: #f8fafc;
-        padding: 1.35rem;
-        box-shadow: 0 24px 38px rgba(15, 23, 42, 0.22);
-        margin-bottom: 1rem;
-    }
-
-    .sys-hero::after {
-        content: "";
-        position: absolute;
-        width: 260px;
-        height: 260px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.08);
-        right: -60px;
-        top: -80px;
-    }
-
-    .sys-kicker {
-        display: inline-flex;
-        align-items: center;
-        gap: .45rem;
-        padding: .35rem .75rem;
-        border-radius: 999px;
-        font-size: .72rem;
-        letter-spacing: .08em;
-        text-transform: uppercase;
-        font-weight: 700;
-        background: rgba(248, 250, 252, 0.16);
-        margin-bottom: .9rem;
-    }
-
-    .sys-title {
-        font-size: clamp(1.4rem, 2vw, 2rem);
-        font-weight: 800;
-        margin: 0;
-        line-height: 1.25;
-        color: #ffffff;
-    }
-
-    .sys-subtitle {
-        margin: .45rem 0 1rem;
-        color: #dbeafe;
-        max-width: 66ch;
-        font-size: .95rem;
-    }
-
-    .sys-hero-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: .55rem;
-    }
-
-    .sys-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: .4rem;
-        font-size: .78rem;
-        border-radius: 999px;
-        padding: .46rem .75rem;
-        background: rgba(248, 250, 252, 0.14);
-        border: 1px solid rgba(248, 250, 252, 0.18);
-    }
-
-    .sys-grid-stats {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
-        gap: .65rem;
-        margin-bottom: 1rem;
-    }
-
-    .sys-stat {
-        border: 1px solid var(--sys-line);
-        background: var(--sys-surface);
-        border-radius: 14px;
-        padding: .75rem .8rem;
-        border-left: 4px solid var(--sys-line);
-        position: relative;
-        transition: transform .18s ease, box-shadow .18s ease;
-    }
-    .sys-stat:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(15,23,42,.07);
-    }
-    .sys-stat--green  { border-left-color: #2E7D32; }
-    .sys-stat--blue   { border-left-color: #1565C0; }
-    .sys-stat--amber  { border-left-color: #E65100; }
-    .sys-stat--red    { border-left-color: #C62828; }
-    .sys-stat--purple { border-left-color: #6A1B9A; }
-    .sys-stat--teal   { border-left-color: #00695C; }
-    .sys-stat--grey   { border-left-color: #455A64; }
-
-    .sys-stat strong {
-        display: block;
-        font-size: 1.25rem;
-        line-height: 1;
-        color: var(--sys-ink);
-    }
-
-    .sys-stat span {
-        display: block;
-        margin-top: .3rem;
-        font-size: .72rem;
-        color: var(--sys-muted);
-        text-transform: uppercase;
-        letter-spacing: .04em;
-    }
-
-    .sys-section-title {
-        margin: .35rem 0 .72rem;
-        display: flex;
-        align-items: center;
-        gap: .45rem;
-        font-size: .98rem;
-        font-weight: 800;
-        color: #1f2937;
-        padding-left: .75rem;
-        position: relative;
-    }
-    .sys-section-title::before {
-        content: "";
-        position: absolute;
-        left: 0; top: 50%;
-        transform: translateY(-50%);
-        width: 3px; height: 18px;
-        border-radius: 3px;
-        background: linear-gradient(180deg, #0b5d4b, #0f766e);
-    }
-
-    .sys-action-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: .7rem;
-        margin-bottom: 1rem;
-    }
-
-    .sys-action-card {
-        background: var(--sys-surface);
-        border: 1px solid var(--sys-line);
-        border-radius: 14px;
-        padding: .85rem;
-        text-decoration: none;
-        color: inherit;
-        display: flex;
-        gap: .65rem;
-        align-items: flex-start;
-        transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-    }
-
-    .sys-action-card:hover {
-        transform: translateY(-2px);
-        border-color: #9fb5d7;
-        box-shadow: 0 10px 16px rgba(15, 23, 42, 0.08);
-    }
-
-    .sys-action-icon {
-        width: 38px;
-        height: 38px;
-        border-radius: 10px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        color: #0a66c2;
-        background: #e8f2ff;
-        flex-shrink: 0;
-    }
-
-    .sys-action-text h4 {
-        margin: 0;
-        font-size: .88rem;
-        color: var(--sys-ink);
-        font-weight: 700;
-    }
-
-    .sys-action-text p {
-        margin: .18rem 0 0;
-        font-size: .76rem;
-        color: var(--sys-muted);
-    }
-
-    .sys-portal-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(265px, 1fr));
-        gap: .75rem;
-        margin-bottom: 1rem;
-    }
-
-    .sys-portal {
-        background: var(--sys-surface);
-        border: 1px solid var(--sys-line);
-        border-radius: 16px;
-        padding: .95rem;
-        display: flex;
-        flex-direction: column;
-        gap: .72rem;
-    }
-
-    .sys-portal-head {
-        display: flex;
-        justify-content: space-between;
-        gap: .7rem;
-    }
-
-    .sys-portal-title {
-        margin: .12rem 0 .2rem;
-        font-size: .95rem;
-        color: var(--sys-ink);
-    }
-
-    .sys-portal-desc {
-        margin: 0;
-        color: var(--sys-muted);
-        font-size: .78rem;
-        line-height: 1.45;
-    }
-
-    .sys-portal-count {
-        border: 1px solid var(--sys-line);
-        border-radius: 10px;
-        min-width: 76px;
-        padding: .35rem .45rem;
-        text-align: right;
-        background: #f8fafc;
-    }
-
-    .sys-portal-count strong {
-        display: block;
-        font-size: 1rem;
-        color: var(--sys-ink);
-        line-height: 1;
-    }
-
-    .sys-portal-count span {
-        font-size: .65rem;
-        color: var(--sys-muted);
-        text-transform: uppercase;
-    }
-
-    .sys-pill-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: .35rem;
-    }
-
-    .sys-pill-list a {
-        font-size: .71rem;
-        border: 1px solid #d6e2f3;
-        color: #1d4e89;
-        background: #f3f7ff;
-        text-decoration: none;
-        border-radius: 999px;
-        padding: .3rem .55rem;
-    }
-
-    .sys-pill-list a:hover {
-        background: #e8f2ff;
-    }
-
-    .sys-primary-link {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: .4rem;
-        text-decoration: none;
-        border-radius: 10px;
-        background: linear-gradient(135deg, var(--sys-brand), var(--sys-brand-2));
-        color: #ffffff;
-        font-size: .76rem;
-        font-weight: 700;
-        padding: .55rem .72rem;
-    }
-
-    .sys-primary-link:hover {
-        color: #ffffff;
-    }
-
-    .sys-panels {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: .75rem;
-        margin-bottom: 1rem;
-    }
-
-    .sys-panel {
-        background: var(--sys-surface);
-        border: 1px solid var(--sys-line);
-        border-radius: 14px;
-        overflow: hidden;
-    }
-
-    .sys-panel-head {
-        padding: .7rem .85rem;
-        border-bottom: 1px solid var(--sys-line);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: .5rem;
-        background: #fbfdff;
-    }
-
-    .sys-panel-head h3 {
-        margin: 0;
-        font-size: .86rem;
-        color: var(--sys-ink);
-    }
-
-    .sys-panel-head a {
-        font-size: .72rem;
-        text-decoration: none;
-    }
-
-    .sys-panel-body {
-        padding: .72rem .85rem;
-        max-height: 300px;
-        overflow-y: auto;
-    }
-
-    .sys-list {
-        display: flex;
-        flex-direction: column;
-        gap: .6rem;
-    }
-
-    .sys-row {
-        border: 1px solid #e6edf8;
-        border-radius: 10px;
-        padding: .58rem .62rem;
-        background: #fbfdff;
-    }
-
-    .sys-row-main {
-        color: #0f172a;
-        font-size: .78rem;
-        line-height: 1.35;
-    }
-
-    .sys-row-meta {
-        margin-top: .16rem;
-        color: #64748b;
-        font-size: .69rem;
-    }
-
-    .sys-email-grid {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: .45rem;
-        margin-bottom: .62rem;
-    }
-
-    .sys-email-box {
-        border: 1px solid var(--sys-line);
-        border-radius: 10px;
-        padding: .48rem;
-        text-align: center;
-        background: #f8fafc;
-    }
-
-    .sys-email-box strong {
-        display: block;
-        font-size: .95rem;
-        color: var(--sys-ink);
-    }
-
-    .sys-email-box span {
-        font-size: .65rem;
-        text-transform: uppercase;
-        color: var(--sys-muted);
-        letter-spacing: .05em;
-    }
-
-    .sys-inline-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: .42rem;
-    }
-
-    .sys-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: .35rem;
-        border: 1px solid #cbdaee;
-        border-radius: 999px;
-        text-decoration: none;
-        color: #1e3a8a;
-        background: #f1f6ff;
-        font-size: .7rem;
-        padding: .34rem .58rem;
-        font-weight: 700;
-    }
-
-    .sys-btn.sys-btn-primary {
-        background: #0a66c2;
-        border-color: #0a66c2;
-        color: #ffffff;
-    }
-
-    .sys-roles {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: .52rem;
-    }
-
-    .sys-role {
-        border: 1px solid #dce6f5;
-        border-radius: 10px;
-        background: #f9fbfe;
-        padding: .55rem .62rem;
-    }
-
-    .sys-role h5 {
-        margin: 0;
-        font-size: .74rem;
-        color: var(--sys-ink);
-    }
-
-    .sys-role p {
-        margin: .14rem 0 0;
-        font-size: .7rem;
-        color: var(--sys-muted);
-    }
-
-    .sys-workspace-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
-        gap: .85rem;
-        margin-bottom: 1rem;
-    }
-
-    .sys-workspace {
-        background: var(--sys-surface);
-        border: 1px solid var(--sys-line);
-        border-radius: 18px;
-        padding: 1rem;
-        box-shadow: 0 10px 18px rgba(15, 23, 42, 0.04);
-    }
-
-    .sys-workspace-head {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: .8rem;
-        margin-bottom: .9rem;
-    }
-
-    .sys-workspace-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: .42rem;
-        padding: .34rem .62rem;
-        border-radius: 999px;
-        background: #eef6ff;
-        color: #1d4e89;
-        font-size: .72rem;
-        font-weight: 700;
-    }
-
-    .sys-workspace-title {
-        margin: .45rem 0 .2rem;
-        font-size: 1rem;
-        color: var(--sys-ink);
-    }
-
-    .sys-workspace-desc {
-        margin: 0;
-        color: var(--sys-muted);
-        font-size: .79rem;
-        line-height: 1.45;
-    }
-
-    .sys-workspace-count {
-        border: 1px solid var(--sys-line);
-        background: #f8fafc;
-        border-radius: 12px;
-        min-width: 88px;
-        padding: .45rem .55rem;
-        text-align: right;
-    }
-
-    .sys-workspace-count strong {
-        display: block;
-        font-size: 1.08rem;
-        line-height: 1;
-        color: var(--sys-ink);
-    }
-
-    .sys-workspace-count span {
-        font-size: .66rem;
-        text-transform: uppercase;
-        color: var(--sys-muted);
-    }
-
-    .sys-function-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: .6rem;
-    }
-
-    .sys-function-card {
-        display: flex;
-        gap: .62rem;
-        align-items: flex-start;
-        text-decoration: none;
-        color: inherit;
-        border: 1px solid #e6edf8;
-        background: #fbfdff;
-        border-radius: 14px;
-        padding: .75rem;
-        transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-    }
-
-    .sys-function-card:hover {
-        transform: translateY(-2px);
-        border-color: #bed0e9;
-        box-shadow: 0 10px 18px rgba(15, 23, 42, 0.08);
-    }
-
-    .sys-function-icon {
-        width: 38px;
-        height: 38px;
-        flex-shrink: 0;
-        border-radius: 11px;
-        background: linear-gradient(135deg, #e8f2ff, #edf8f4);
-        color: #0f766e;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .sys-function-text h4 {
-        margin: 0;
-        font-size: .82rem;
-        color: var(--sys-ink);
-        font-weight: 800;
-    }
-
-    .sys-function-text p {
-        margin: .2rem 0 0;
-        font-size: .72rem;
-        line-height: 1.4;
-        color: var(--sys-muted);
-    }
-
-    @media (max-width: 960px) {
-        .sys-panels {
-            grid-template-columns: 1fr;
-        }
-
-        .sys-function-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    @media (max-width: 640px) {
-        .sys-admin-wrap {
-            padding: .8rem;
-            border-radius: 14px;
-        }
-
-        .sys-hero {
-            border-radius: 14px;
-            padding: 1rem;
-        }
-
-        .sys-email-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-    }
+  /* ── TOKENS ─────────────────────────────────────────────────────────────── */
+  :root {
+    --hub-bg:       #f0f2f7;
+    --hub-surface:  #ffffff;
+    --hub-ink:      #0d1117;
+    --hub-muted:    #6b7280;
+    --hub-border:   #e5e9f0;
+    --hub-brand:    #0b5d4b;
+    --hub-brand2:   #0f766e;
+    --hub-accent:   #0a66c2;
+    --hub-radius:   16px;
+    --hub-radius-sm:10px;
+    --hub-shadow:   0 4px 24px rgba(13,17,23,.07);
+    --hub-shadow-md:0 8px 32px rgba(13,17,23,.11);
+  }
+
+  /* ── LAYOUT ─────────────────────────────────────────────────────────────── */
+  .hub {
+    background: var(--hub-bg);
+    min-height: 100vh;
+    padding: 1.5rem 1.25rem 3rem;
+  }
+
+  /* ── HERO ───────────────────────────────────────────────────────────────── */
+  .hub-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+    background: linear-gradient(130deg, #0d1117 0%, #1a2744 45%, #0b5d4b 100%);
+    padding: 2rem 2.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 20px 60px rgba(11,93,75,.28);
+  }
+  .hub-hero::before {
+    content: "";
+    position: absolute;
+    width: 420px; height: 420px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(15,118,110,.35), transparent 70%);
+    right: -80px; top: -120px;
+    pointer-events: none;
+  }
+  .hub-hero::after {
+    content: "";
+    position: absolute;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(10,102,194,.18), transparent 70%);
+    left: 40%; bottom: -80px;
+    pointer-events: none;
+  }
+  .hub-hero-inner { position: relative; z-index: 1; }
+  .hub-badge {
+    display: inline-flex; align-items: center; gap: .45rem;
+    padding: .38rem .85rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.18);
+    font-size: .72rem; font-weight: 700;
+    letter-spacing: .09em; text-transform: uppercase;
+    color: #d1fae5;
+    margin-bottom: 1rem;
+  }
+  .hub-hero-title {
+    font-size: clamp(1.6rem,2.5vw,2.25rem);
+    font-weight: 800; color: #fff;
+    line-height: 1.2; margin: 0 0 .6rem;
+  }
+  .hub-hero-sub {
+    color: #94d5c7; font-size: .92rem; margin: 0 0 1.4rem;
+    max-width: 58ch; line-height: 1.6;
+  }
+  .hub-chips { display: flex; flex-wrap: wrap; gap: .55rem; }
+  .hub-chip {
+    display: inline-flex; align-items: center; gap: .4rem;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.15);
+    color: #e2e8f0; font-size: .78rem;
+    border-radius: 999px; padding: .42rem .75rem;
+  }
+  .hub-chip i { opacity: .75; }
+
+  /* ── STATS ROW ──────────────────────────────────────────────────────────── */
+  .hub-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(130px,1fr));
+    gap: .75rem;
+    margin-bottom: 1.75rem;
+  }
+  .hub-stat {
+    background: var(--hub-surface);
+    border: 1px solid var(--hub-border);
+    border-radius: var(--hub-radius);
+    padding: 1rem 1.1rem .9rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform .18s, box-shadow .18s;
+  }
+  .hub-stat:hover { transform: translateY(-3px); box-shadow: var(--hub-shadow-md); }
+  .hub-stat::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    border-radius: var(--hub-radius) var(--hub-radius) 0 0;
+  }
+  .hub-stat--blue::before   { background: #3b82f6; }
+  .hub-stat--teal::before   { background: #14b8a6; }
+  .hub-stat--green::before  { background: #22c55e; }
+  .hub-stat--slate::before  { background: #64748b; }
+  .hub-stat--amber::before  { background: #f59e0b; }
+  .hub-stat--orange::before { background: #f97316; }
+  .hub-stat--red::before    { background: #ef4444; }
+  .hub-stat--rose::before   { background: #f43f5e; }
+
+  .hub-stat-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .95rem;
+    margin-bottom: .65rem;
+  }
+  .hub-stat--blue   .hub-stat-icon { background: #eff6ff; color: #3b82f6; }
+  .hub-stat--teal   .hub-stat-icon { background: #f0fdfa; color: #14b8a6; }
+  .hub-stat--green  .hub-stat-icon { background: #f0fdf4; color: #22c55e; }
+  .hub-stat--slate  .hub-stat-icon { background: #f8fafc; color: #64748b; }
+  .hub-stat--amber  .hub-stat-icon { background: #fffbeb; color: #f59e0b; }
+  .hub-stat--orange .hub-stat-icon { background: #fff7ed; color: #f97316; }
+  .hub-stat--red    .hub-stat-icon { background: #fef2f2; color: #ef4444; }
+  .hub-stat--rose   .hub-stat-icon { background: #fff1f2; color: #f43f5e; }
+
+  .hub-stat-val {
+    font-size: 1.5rem; font-weight: 800;
+    color: var(--hub-ink); line-height: 1;
+    margin-bottom: .22rem;
+  }
+  .hub-stat-label {
+    font-size: .7rem; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--hub-muted);
+  }
+
+  /* ── SECTION HEADING ────────────────────────────────────────────────────── */
+  .hub-section-head {
+    display: flex; align-items: center; gap: .5rem;
+    margin: 0 0 1rem;
+  }
+  .hub-section-head h2 {
+    font-size: 1rem; font-weight: 800;
+    color: var(--hub-ink); margin: 0;
+  }
+  .hub-section-head .hub-sep {
+    flex: 1; height: 1px; background: var(--hub-border);
+  }
+
+  /* ── QUICK ACTIONS ──────────────────────────────────────────────────────── */
+  .hub-quick {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(210px,1fr));
+    gap: .75rem;
+    margin-bottom: 1.75rem;
+  }
+  .hub-qa {
+    display: flex; gap: .75rem; align-items: center;
+    background: var(--hub-surface);
+    border: 1px solid var(--hub-border);
+    border-radius: var(--hub-radius);
+    padding: 1rem 1.1rem;
+    text-decoration: none; color: inherit;
+    transition: transform .18s, box-shadow .18s, border-color .18s;
+  }
+  .hub-qa:hover {
+    transform: translateY(-3px);
+    border-color: #b6c8e4;
+    box-shadow: var(--hub-shadow-md);
+    color: inherit;
+  }
+  .hub-qa-icon {
+    width: 44px; height: 44px; flex-shrink: 0;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    background: #eff6ff; color: var(--hub-accent);
+  }
+  .hub-qa-icon.green  { background: #ecfdf5; color: #059669; }
+  .hub-qa-icon.amber  { background: #fffbeb; color: #d97706; }
+  .hub-qa-icon.purple { background: #f5f3ff; color: #7c3aed; }
+  .hub-qa h4 { margin: 0; font-size: .88rem; font-weight: 700; color: var(--hub-ink); }
+  .hub-qa p  { margin: .15rem 0 0; font-size: .74rem; color: var(--hub-muted); }
+
+  /* ── WORKSPACE CARDS ────────────────────────────────────────────────────── */
+  .hub-workspaces {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(320px,1fr));
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+  }
+  .hub-ws {
+    background: var(--hub-surface);
+    border: 1px solid var(--hub-border);
+    border-radius: 20px;
+    padding: 1.25rem;
+    display: flex; flex-direction: column; gap: 1rem;
+    transition: box-shadow .2s;
+  }
+  .hub-ws:hover { box-shadow: var(--hub-shadow-md); }
+
+  .hub-ws-top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .hub-ws-left { flex: 1; }
+  .hub-ws-pill {
+    display: inline-flex; align-items: center; gap: .42rem;
+    padding: .32rem .7rem;
+    border-radius: 999px;
+    font-size: .7rem; font-weight: 700;
+    background: #f0fdf9; color: #065f46;
+    border: 1px solid #a7f3d0;
+    margin-bottom: .55rem;
+  }
+  .hub-ws-title {
+    font-size: .98rem; font-weight: 800;
+    color: var(--hub-ink); margin: 0 0 .3rem;
+  }
+  .hub-ws-desc {
+    font-size: .76rem; color: var(--hub-muted);
+    line-height: 1.55; margin: 0;
+  }
+  .hub-ws-count {
+    text-align: right; flex-shrink: 0;
+    background: #f8fafc;
+    border: 1px solid var(--hub-border);
+    border-radius: 12px;
+    padding: .5rem .75rem;
+    min-width: 80px;
+  }
+  .hub-ws-count strong {
+    display: block; font-size: 1.2rem; font-weight: 800;
+    color: var(--hub-ink); line-height: 1;
+  }
+  .hub-ws-count span {
+    font-size: .62rem; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--hub-muted);
+  }
+
+  .hub-fns {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: .55rem;
+  }
+  .hub-fn {
+    display: flex; gap: .6rem; align-items: flex-start;
+    text-decoration: none; color: inherit;
+    border: 1px solid var(--hub-border);
+    border-radius: var(--hub-radius-sm);
+    background: #fafbfc;
+    padding: .72rem .8rem;
+    transition: transform .16s, border-color .16s, box-shadow .16s;
+  }
+  .hub-fn:hover {
+    transform: translateY(-2px);
+    border-color: #bfcfe9;
+    box-shadow: 0 6px 18px rgba(13,17,23,.08);
+    color: inherit;
+  }
+  .hub-fn-icon {
+    width: 34px; height: 34px; flex-shrink: 0;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg,#ecfdf5,#d1fae5);
+    color: #065f46; font-size: .88rem;
+  }
+  .hub-fn-body h5 { margin: 0; font-size: .8rem; font-weight: 700; color: var(--hub-ink); }
+  .hub-fn-body p  { margin: .14rem 0 0; font-size: .7rem; color: var(--hub-muted); line-height: 1.4; }
+
+  /* ── BOTTOM PANELS ──────────────────────────────────────────────────────── */
+  .hub-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .hub-panel {
+    background: var(--hub-surface);
+    border: 1px solid var(--hub-border);
+    border-radius: var(--hub-radius);
+    overflow: hidden;
+  }
+  .hub-panel-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .85rem 1.1rem;
+    border-bottom: 1px solid var(--hub-border);
+    background: #fafbfc;
+  }
+  .hub-panel-head h3 {
+    margin: 0; font-size: .88rem; font-weight: 700;
+    color: var(--hub-ink); display: flex; align-items: center; gap: .45rem;
+  }
+  .hub-panel-head a {
+    font-size: .74rem; color: var(--hub-accent);
+    text-decoration: none; font-weight: 600;
+  }
+  .hub-panel-head a:hover { text-decoration: underline; }
+  .hub-panel-body {
+    padding: .9rem 1.1rem;
+    max-height: 320px; overflow-y: auto;
+  }
+
+  /* Email stats */
+  .hub-email-stats {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    gap: .55rem; margin-bottom: .85rem;
+  }
+  .hub-email-stat {
+    text-align: center;
+    background: #f8fafc;
+    border: 1px solid var(--hub-border);
+    border-radius: 10px;
+    padding: .6rem .4rem;
+  }
+  .hub-email-stat strong {
+    display: block; font-size: 1rem; font-weight: 800;
+    color: var(--hub-ink);
+  }
+  .hub-email-stat span {
+    font-size: .64rem; text-transform: uppercase;
+    letter-spacing: .05em; color: var(--hub-muted);
+  }
+  .hub-email-actions { display: flex; flex-wrap: wrap; gap: .45rem; }
+  .hub-ebtn {
+    display: inline-flex; align-items: center; gap: .35rem;
+    font-size: .73rem; font-weight: 700;
+    padding: .42rem .75rem; border-radius: 999px;
+    text-decoration: none;
+    border: 1px solid #c7d8f0;
+    color: #1d4e89; background: #f0f6ff;
+    transition: background .15s;
+  }
+  .hub-ebtn:hover { background: #e1effe; color: #1d4e89; }
+  .hub-ebtn.primary { background: var(--hub-accent); border-color: var(--hub-accent); color: #fff; }
+  .hub-ebtn.primary:hover { background: #0959ab; color: #fff; }
+
+  /* Activity / user / fixture rows */
+  .hub-feed { display: flex; flex-direction: column; gap: .5rem; }
+  .hub-feed-row {
+    display: flex; gap: .7rem; align-items: flex-start;
+    padding: .62rem .72rem;
+    border: 1px solid #edf2fb;
+    border-radius: 10px;
+    background: #fafbfe;
+    transition: background .15s;
+  }
+  .hub-feed-row:hover { background: #f3f7ff; }
+  .hub-feed-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #14b8a6; flex-shrink: 0; margin-top: .35rem;
+  }
+  .hub-feed-main { font-size: .78rem; color: var(--hub-ink); line-height: 1.4; }
+  .hub-feed-meta { font-size: .68rem; color: var(--hub-muted); margin-top: .1rem; }
+
+  /* Users by role */
+  .hub-roles {
+    display: grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr));
+    gap: .5rem;
+  }
+  .hub-role {
+    background: #f8fafc; border: 1px solid var(--hub-border);
+    border-radius: 10px; padding: .6rem .75rem;
+  }
+  .hub-role h5 { margin: 0; font-size: .76rem; font-weight: 700; color: var(--hub-ink); }
+  .hub-role p  { margin: .15rem 0 0; font-size: .7rem; color: var(--hub-muted); }
+
+  /* ── RESPONSIVE ─────────────────────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .hub-panels { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .hub { padding: 1rem .85rem 2rem; }
+    .hub-hero { padding: 1.4rem 1.25rem; border-radius: 18px; }
+    .hub-fns  { grid-template-columns: 1fr; }
+    .hub-email-stats { grid-template-columns: repeat(2,1fr); }
+    .hub-workspaces { grid-template-columns: 1fr; }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="sys-admin-wrap">
-    <section class="sys-hero">
-        <div class="sys-kicker"><i class="bi bi-shield-lock"></i> Super Admin Control</div>
-        <h1 class="sys-title">System Admin Portal Hub</h1>
-        <p class="sys-subtitle">
-            Unified control center for testing and cross-checking every KYISA portal from one place.
-            Access to this dashboard is restricted to super admins only.
-        </p>
-        <div class="sys-hero-meta">
-            <span class="sys-chip"><i class="bi bi-people-fill"></i> {{ total_users|intcomma }} users</span>
-            <span class="sys-chip"><i class="bi bi-trophy-fill"></i> {{ total_competitions|intcomma }} competitions</span>
-            <span class="sys-chip"><i class="bi bi-calendar3"></i> {{ total_fixtures|intcomma }} fixtures</span>
-            <span class="sys-chip"><i class="bi bi-envelope-fill"></i> {{ email_stats.total|intcomma }} emails</span>
+<div class="hub">
+
+  {# ── HERO ──────────────────────────────────────────────────────────────── #}
+  <div class="hub-hero">
+    <div class="hub-hero-inner">
+      <div class="hub-badge"><i class="bi bi-shield-lock-fill"></i> Super Admin Control</div>
+      <h1 class="hub-hero-title">System Admin Portal Hub</h1>
+      <p class="hub-hero-sub">
+        Unified control centre for testing and cross-checking every KYISA portal from one place.
+        Access is restricted to super admins only.
+      </p>
+      <div class="hub-chips">
+        <span class="hub-chip"><i class="bi bi-people-fill"></i> {{ total_users|intcomma }} users</span>
+        <span class="hub-chip"><i class="bi bi-trophy-fill"></i> {{ total_competitions|intcomma }} competitions</span>
+        <span class="hub-chip"><i class="bi bi-calendar3"></i> {{ total_fixtures|intcomma }} fixtures</span>
+        <span class="hub-chip"><i class="bi bi-envelope-fill"></i> {{ email_stats.total|intcomma }} emails</span>
+      </div>
+    </div>
+  </div>
+
+  {# ── STATS ─────────────────────────────────────────────────────────────── #}
+  <div class="hub-stats">
+    <div class="hub-stat hub-stat--blue">
+      <div class="hub-stat-icon"><i class="bi bi-people-fill"></i></div>
+      <div class="hub-stat-val">{{ total_users|intcomma }}</div>
+      <div class="hub-stat-label">Total Users</div>
+    </div>
+    <div class="hub-stat hub-stat--teal">
+      <div class="hub-stat-icon"><i class="bi bi-shield-fill"></i></div>
+      <div class="hub-stat-val">{{ total_teams|intcomma }}</div>
+      <div class="hub-stat-label">Teams</div>
+    </div>
+    <div class="hub-stat hub-stat--green">
+      <div class="hub-stat-icon"><i class="bi bi-person-badge-fill"></i></div>
+      <div class="hub-stat-val">{{ total_players|intcomma }}</div>
+      <div class="hub-stat-label">Players</div>
+    </div>
+    <div class="hub-stat hub-stat--slate">
+      <div class="hub-stat-icon"><i class="bi bi-whistle-fill"></i></div>
+      <div class="hub-stat-val">{{ total_referees|intcomma }}</div>
+      <div class="hub-stat-label">Referees</div>
+    </div>
+    <div class="hub-stat hub-stat--amber">
+      <div class="hub-stat-icon"><i class="bi bi-building-check"></i></div>
+      <div class="hub-stat-val">{{ pending_registrations|intcomma }}</div>
+      <div class="hub-stat-label">Pending Registrations</div>
+    </div>
+    <div class="hub-stat hub-stat--orange">
+      <div class="hub-stat-icon"><i class="bi bi-patch-check"></i></div>
+      <div class="hub-stat-val">{{ pending_verifications|intcomma }}</div>
+      <div class="hub-stat-label">Pending Verifications</div>
+    </div>
+    <div class="hub-stat hub-stat--red">
+      <div class="hub-stat-icon"><i class="bi bi-briefcase-fill"></i></div>
+      <div class="hub-stat-val">{{ pending_appeals|intcomma }}</div>
+      <div class="hub-stat-label">Pending Appeals</div>
+    </div>
+    <div class="hub-stat hub-stat--rose">
+      <div class="hub-stat-icon"><i class="bi bi-file-earmark-text-fill"></i></div>
+      <div class="hub-stat-val">{{ pending_reports|intcomma }}</div>
+      <div class="hub-stat-label">Pending Reports</div>
+    </div>
+  </div>
+
+  {# ── QUICK ACTIONS ─────────────────────────────────────────────────────── #}
+  <div class="hub-section-head">
+    <h2><i class="bi bi-sliders me-1"></i>System Controls</h2>
+    <div class="hub-sep"></div>
+  </div>
+  <div class="hub-quick">
+    <a href="{% url 'manage_users' %}" class="hub-qa">
+      <div class="hub-qa-icon"><i class="bi bi-people-fill"></i></div>
+      <div><h4>User Management</h4><p>Create, edit, suspend, and review users.</p></div>
+    </a>
+    <a href="{% url 'activity_logs' %}" class="hub-qa">
+      <div class="hub-qa-icon green"><i class="bi bi-journal-text"></i></div>
+      <div><h4>Activity Logs</h4><p>Trace user actions and system operations.</p></div>
+    </a>
+    <a href="{% url 'audit_report' %}" class="hub-qa">
+      <div class="hub-qa-icon amber"><i class="bi bi-shield-check"></i></div>
+      <div><h4>Audit Reports</h4><p>Export and review security and compliance reports.</p></div>
+    </a>
+    <a href="{% url 'admin:index' %}" class="hub-qa">
+      <div class="hub-qa-icon purple"><i class="bi bi-gear-wide-connected"></i></div>
+      <div><h4>Django Admin</h4><p>Super-admin-only access to native admin site.</p></div>
+    </a>
+  </div>
+
+  {# ── ROLE WORKSPACES ───────────────────────────────────────────────────── #}
+  <div class="hub-section-head">
+    <h2><i class="bi bi-layout-wtf me-1"></i>Role Workspaces</h2>
+    <div class="hub-sep"></div>
+  </div>
+  <div class="hub-workspaces">
+    {% for workspace in role_workspaces %}
+    <article class="hub-ws">
+      <div class="hub-ws-top">
+        <div class="hub-ws-left">
+          <div class="hub-ws-pill"><i class="{{ workspace.icon }}"></i> {{ workspace.title }}</div>
+          <h3 class="hub-ws-title">{{ workspace.title }}</h3>
+          <p class="hub-ws-desc">{{ workspace.description }}</p>
         </div>
-    </section>
-
-    <div class="sys-grid-stats">
-        <div class="sys-stat sys-stat--blue"><strong>{{ total_users|intcomma }}</strong><span>Total Users</span></div>
-        <div class="sys-stat sys-stat--teal"><strong>{{ total_teams|intcomma }}</strong><span>Teams</span></div>
-        <div class="sys-stat sys-stat--green"><strong>{{ total_players|intcomma }}</strong><span>Players</span></div>
-        <div class="sys-stat sys-stat--grey"><strong>{{ total_referees|intcomma }}</strong><span>Referees</span></div>
-        <div class="sys-stat sys-stat--amber"><strong>{{ pending_registrations|intcomma }}</strong><span>Pending Registrations</span></div>
-        <div class="sys-stat sys-stat--amber"><strong>{{ pending_verifications|intcomma }}</strong><span>Pending Verifications</span></div>
-        <div class="sys-stat sys-stat--red"><strong>{{ pending_appeals|intcomma }}</strong><span>Pending Appeals</span></div>
-        <div class="sys-stat sys-stat--red"><strong>{{ pending_reports|intcomma }}</strong><span>Pending Reports</span></div>
-    </div>
-
-    <h2 class="sys-section-title"><i class="bi bi-sliders"></i> System Controls</h2>
-    <div class="sys-action-grid">
-        <a href="{% url 'manage_users' %}" class="sys-action-card">
-            <span class="sys-action-icon"><i class="bi bi-people-fill"></i></span>
-            <span class="sys-action-text"><h4>User Management</h4><p>Create, edit, suspend, and review users.</p></span>
+        <div class="hub-ws-count">
+          <strong>{{ workspace.count|intcomma }}</strong>
+          <span>{{ workspace.count_label }}</span>
+        </div>
+      </div>
+      <div class="hub-fns">
+        {% for function in workspace.functions %}
+        <a href="{% url function.url %}" class="hub-fn">
+          <div class="hub-fn-icon"><i class="{{ function.icon }}"></i></div>
+          <div class="hub-fn-body">
+            <h5>{{ function.label }}</h5>
+            <p>{{ function.summary }}</p>
+          </div>
         </a>
-        <a href="{% url 'activity_logs' %}" class="sys-action-card">
-            <span class="sys-action-icon"><i class="bi bi-journal-text"></i></span>
-            <span class="sys-action-text"><h4>Activity Logs</h4><p>Trace user actions and system operations.</p></span>
-        </a>
-        <a href="{% url 'audit_report' %}" class="sys-action-card">
-            <span class="sys-action-icon"><i class="bi bi-shield-check"></i></span>
-            <span class="sys-action-text"><h4>Audit Reports</h4><p>Export and review security and compliance reports.</p></span>
-        </a>
-        <a href="{% url 'admin:index' %}" class="sys-action-card">
-            <span class="sys-action-icon"><i class="bi bi-gear-wide-connected"></i></span>
-            <span class="sys-action-text"><h4>Django Admin</h4><p>Super-admin-only access to native admin site.</p></span>
-        </a>
-    </div>
-
-    <h2 class="sys-section-title"><i class="bi bi-layout-wtf"></i> Role Workspaces</h2>
-    <div class="sys-workspace-grid">
-        {% for workspace in role_workspaces %}
-        <article class="sys-workspace">
-            <div class="sys-workspace-head">
-                <div>
-                    <div class="sys-workspace-badge"><i class="{{ workspace.icon }}"></i> {{ workspace.title }}</div>
-                    <h3 class="sys-workspace-title">{{ workspace.title }}</h3>
-                    <p class="sys-workspace-desc">{{ workspace.description }}</p>
-                </div>
-                <div class="sys-workspace-count">
-                    <strong>{{ workspace.count|intcomma }}</strong>
-                    <span>{{ workspace.count_label }}</span>
-                </div>
-            </div>
-
-            <div class="sys-function-grid">
-                {% for function in workspace.functions %}
-                <a href="{% url function.url %}" class="sys-function-card">
-                    <span class="sys-function-icon"><i class="{{ function.icon }}"></i></span>
-                    <span class="sys-function-text">
-                        <h4>{{ function.label }}</h4>
-                        <p>{{ function.summary }}</p>
-                    </span>
-                </a>
-                {% endfor %}
-            </div>
-        </article>
         {% endfor %}
-    </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
 
-    <div class="sys-panels">
-        <section class="sys-panel">
-            <div class="sys-panel-head">
-                <h3><i class="bi bi-envelope-paper"></i> Email Center</h3>
-                <a href="{% url 'email_logs' %}">View logs</a>
-            </div>
-            <div class="sys-panel-body">
-                <div class="sys-email-grid">
-                    <div class="sys-email-box"><strong>{{ email_stats.total|intcomma }}</strong><span>Total</span></div>
-                    <div class="sys-email-box"><strong>{{ email_stats.sent|intcomma }}</strong><span>Sent</span></div>
-                    <div class="sys-email-box"><strong>{{ email_stats.failed|intcomma }}</strong><span>Failed</span></div>
-                    <div class="sys-email-box"><strong>{{ email_stats.today|intcomma }}</strong><span>Today</span></div>
-                </div>
-                <div class="sys-inline-actions">
-                    <a href="{% url 'email_compose' %}" class="sys-btn sys-btn-primary"><i class="bi bi-pencil-square"></i> Compose</a>
-                    <a href="{% url 'email_compose' %}?preset=all_managers" class="sys-btn"><i class="bi bi-people"></i> Managers</a>
-                    <a href="{% url 'email_compose' %}?preset=all_referees" class="sys-btn"><i class="bi bi-flag"></i> Referees</a>
-                </div>
-            </div>
-        </section>
-
-        <section class="sys-panel">
-            <div class="sys-panel-head">
-                <h3><i class="bi bi-clock-history"></i> Recent Activity</h3>
-                <a href="{% url 'activity_logs' %}">Full timeline</a>
-            </div>
-            <div class="sys-panel-body">
-                <div class="sys-list">
-                    {% for log in recent_activity %}
-                    <div class="sys-row">
-                        <div class="sys-row-main">{{ log.description|truncatechars:90 }}</div>
-                        <div class="sys-row-meta">{{ log.user.get_full_name|default:"System" }} | {{ log.timestamp|timesince }} ago</div>
-                    </div>
-                    {% empty %}
-                    <div class="sys-row"><div class="sys-row-main">No recent activity available.</div></div>
-                    {% endfor %}
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <div class="sys-panels">
-        <section class="sys-panel">
-            <div class="sys-panel-head">
-                <h3><i class="bi bi-person-plus"></i> Recently Created Users</h3>
-                <a href="{% url 'manage_users' %}">Manage users</a>
-            </div>
-            <div class="sys-panel-body">
-                <div class="sys-list">
-                    {% for u in recent_users %}
-                    <div class="sys-row">
-                        <div class="sys-row-main">{{ u.get_full_name|default:u.email }} ({{ u.get_role_display }})</div>
-                        <div class="sys-row-meta">{{ u.email }} | {{ u.date_joined|timesince }} ago</div>
-                    </div>
-                    {% empty %}
-                    <div class="sys-row"><div class="sys-row-main">No users created recently.</div></div>
-                    {% endfor %}
-                </div>
-            </div>
-        </section>
-
-        <section class="sys-panel">
-            <div class="sys-panel-head">
-                <h3><i class="bi bi-calendar-event"></i> Recent Fixtures</h3>
-                <a href="{% url 'matches_list' %}">View fixtures</a>
-            </div>
-            <div class="sys-panel-body">
-                <div class="sys-list">
-                    {% for f in recent_fixtures %}
-                    <div class="sys-row">
-                        <div class="sys-row-main">{{ f.home_team.name }} vs {{ f.away_team.name }}</div>
-                        <div class="sys-row-meta">{{ f.competition.name }} | {{ f.match_date|date:"d M Y" }} | {{ f.get_status_display }}</div>
-                    </div>
-                    {% empty %}
-                    <div class="sys-row"><div class="sys-row-main">No fixtures available.</div></div>
-                    {% endfor %}
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <section class="sys-panel" style="margin-bottom: .2rem;">
-        <div class="sys-panel-head">
-            <h3><i class="bi bi-pie-chart"></i> Users By Role</h3>
-            <a href="{% url 'manage_users' %}">Open user manager</a>
+  {# ── EMAIL + ACTIVITY ──────────────────────────────────────────────────── #}
+  <div class="hub-section-head">
+    <h2><i class="bi bi-activity me-1"></i>Live Monitoring</h2>
+    <div class="hub-sep"></div>
+  </div>
+  <div class="hub-panels" style="margin-bottom:1.75rem;">
+    <section class="hub-panel">
+      <div class="hub-panel-head">
+        <h3><i class="bi bi-envelope-paper-fill"></i> Email Centre</h3>
+        <a href="{% url 'email_logs' %}">View all logs →</a>
+      </div>
+      <div class="hub-panel-body">
+        <div class="hub-email-stats">
+          <div class="hub-email-stat"><strong>{{ email_stats.total|intcomma }}</strong><span>Total</span></div>
+          <div class="hub-email-stat"><strong>{{ email_stats.sent|intcomma }}</strong><span>Sent</span></div>
+          <div class="hub-email-stat"><strong>{{ email_stats.failed|intcomma }}</strong><span>Failed</span></div>
+          <div class="hub-email-stat"><strong>{{ email_stats.today|intcomma }}</strong><span>Today</span></div>
         </div>
-        <div class="sys-panel-body">
-            <div class="sys-roles">
-                {% for role in role_distribution %}
-                <div class="sys-role">
-                    <h5>{{ role.role_display }}</h5>
-                    <p>{{ role.count|intcomma }} user{{ role.count|pluralize }}</p>
-                </div>
-                {% endfor %}
-            </div>
+        <div class="hub-email-actions">
+          <a href="{% url 'email_compose' %}" class="hub-ebtn primary"><i class="bi bi-pencil-square"></i> Compose</a>
+          <a href="{% url 'email_compose' %}?preset=all_managers" class="hub-ebtn"><i class="bi bi-people"></i> Managers</a>
+          <a href="{% url 'email_compose' %}?preset=all_referees" class="hub-ebtn"><i class="bi bi-flag"></i> Referees</a>
         </div>
+      </div>
     </section>
+
+    <section class="hub-panel">
+      <div class="hub-panel-head">
+        <h3><i class="bi bi-clock-history"></i> Recent Activity</h3>
+        <a href="{% url 'activity_logs' %}">Full timeline →</a>
+      </div>
+      <div class="hub-panel-body">
+        <div class="hub-feed">
+          {% for log in recent_activity %}
+          <div class="hub-feed-row">
+            <div class="hub-feed-dot"></div>
+            <div>
+              <div class="hub-feed-main">{{ log.description|truncatechars:88 }}</div>
+              <div class="hub-feed-meta">{{ log.user.get_full_name|default:"System" }} &middot; {{ log.timestamp|timesince }} ago</div>
+            </div>
+          </div>
+          {% empty %}
+          <div class="hub-feed-row"><div class="hub-feed-main">No recent activity.</div></div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  </div>
+
+  {# ── USERS + FIXTURES ──────────────────────────────────────────────────── #}
+  <div class="hub-panels" style="margin-bottom:1.75rem;">
+    <section class="hub-panel">
+      <div class="hub-panel-head">
+        <h3><i class="bi bi-person-plus-fill"></i> Recently Created Users</h3>
+        <a href="{% url 'manage_users' %}">Manage users →</a>
+      </div>
+      <div class="hub-panel-body">
+        <div class="hub-feed">
+          {% for u in recent_users %}
+          <div class="hub-feed-row">
+            <div class="hub-feed-dot" style="background:#3b82f6;"></div>
+            <div>
+              <div class="hub-feed-main">{{ u.get_full_name|default:u.email }} <span style="color:var(--hub-muted);font-size:.72rem;">({{ u.get_role_display }})</span></div>
+              <div class="hub-feed-meta">{{ u.email }} &middot; {{ u.date_joined|timesince }} ago</div>
+            </div>
+          </div>
+          {% empty %}
+          <div class="hub-feed-row"><div class="hub-feed-main">No users created recently.</div></div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <section class="hub-panel">
+      <div class="hub-panel-head">
+        <h3><i class="bi bi-calendar-event-fill"></i> Recent Fixtures</h3>
+        <a href="{% url 'matches_list' %}">View fixtures →</a>
+      </div>
+      <div class="hub-panel-body">
+        <div class="hub-feed">
+          {% for f in recent_fixtures %}
+          <div class="hub-feed-row">
+            <div class="hub-feed-dot" style="background:#f59e0b;"></div>
+            <div>
+              <div class="hub-feed-main">{{ f.home_team.name }} <span style="color:var(--hub-muted);">vs</span> {{ f.away_team.name }}</div>
+              <div class="hub-feed-meta">{{ f.competition.name }} &middot; {{ f.match_date|date:"d M Y" }} &middot; {{ f.get_status_display }}</div>
+            </div>
+          </div>
+          {% empty %}
+          <div class="hub-feed-row"><div class="hub-feed-main">No fixtures available.</div></div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  </div>
+
+  {# ── USERS BY ROLE ─────────────────────────────────────────────────────── #}
+  <div class="hub-section-head">
+    <h2><i class="bi bi-pie-chart-fill me-1"></i>Users By Role</h2>
+    <div class="hub-sep"></div>
+  </div>
+  <div class="hub-panel" style="margin-bottom:.5rem;">
+    <div class="hub-panel-head">
+      <h3><i class="bi bi-bar-chart-fill"></i> Role Distribution</h3>
+      <a href="{% url 'manage_users' %}">Open user manager →</a>
+    </div>
+    <div class="hub-panel-body">
+      <div class="hub-roles">
+        {% for role in role_distribution %}
+        <div class="hub-role">
+          <h5>{{ role.role_display }}</h5>
+          <p>{{ role.count|intcomma }} user{{ role.count|pluralize }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
 </div>
 {% endblock %}
