@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
 
     # Third-party
+    "anymail",
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
@@ -341,7 +342,7 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE          = "Africa/Nairobi"
 
 # ── EMAIL ──────────────────────────────────────────────────────────────────────
-# Dev: console backend. Production: set EMAIL_BACKEND to django_ses.
+# Dev: console backend. Production: Brevo API via django-anymail
 EMAIL_BACKEND    = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
 EMAIL_HOST       = env("EMAIL_HOST", default="localhost")
 EMAIL_PORT       = env.int("EMAIL_PORT", default=587)
@@ -351,6 +352,13 @@ EMAIL_TIMEOUT    = 10  # seconds — fail fast instead of hanging workers
 EMAIL_HOST_USER  = env("EMAIL_HOST_USER",     default="")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="KYISA Administration <admin@kyisa.org>")
+
+# ── ANYMAIL / BREVO ────────────────────────────────────────────────────────────
+# Uses Brevo's HTTPS API — bypasses Railway's SMTP port block entirely.
+# Set BREVO_API_KEY (or ANYMAIL_BREVO_API_KEY) in Railway environment variables.
+ANYMAIL = {
+    "BREVO_API_KEY": env("BREVO_API_KEY", default=env("ANYMAIL_BREVO_API_KEY", default="")),
+}
 
 # ── AWS SES (used when EMAIL_BACKEND = django_ses.SESBackend) ─────────────────
 AWS_SES_REGION_NAME      = env("AWS_SES_REGION_NAME", default="eu-west-1")

@@ -42,3 +42,6 @@ django-storages[azure,google]>=1.14
 
 # ── Production server ─────────────────────────────────────────────────────────
 gunicorn>=22.0
+
+# ── Transactional email via Brevo API (bypasses Railway SMTP port block) ──────
+django-anymail[brevo]>=10.0
