@@ -91,25 +91,158 @@ def super_admin_required(view):
 
 
 def send_credentials_email(user, temporary_password, role_label):
-    """Send login credentials to the registrant's email address."""
-    subject = f'KYISA Portal Access - {role_label}'
+    """
+    Send a branded HTML credentials email with both OTP and a magic login link.
+    The magic link logs the user in directly — useful for those who struggle with OTPs.
+    """
+    import secrets
+    from django.utils import timezone
+    from datetime import timedelta
+    from accounts.models import LoginToken
+
+    # Generate a single-use magic login token (valid 72 hours)
+    raw_token = secrets.token_urlsafe(48)
+    LoginToken.objects.create(
+        user=user,
+        token=raw_token,
+        expires_at=timezone.now() + timedelta(hours=72),
+    )
+
+    site_url = "https://kyisa.org"
+    magic_url = f"{site_url}/portal/magic/{raw_token}/"
+    login_url = f"{site_url}/portal/login/"
+
+    subject = f'KYISA Portal Access — {role_label}'
+
+    # ── Plain text fallback ────────────────────────────────────────────────
     text_content = (
         f'Dear {user.first_name} {user.last_name},\n\n'
         f'Your KYISA portal account is ready.\n\n'
-        f'Login Email: {user.email}\n'
+        f'Login Email:        {user.email}\n'
         f'Temporary Password: {temporary_password}\n'
-        f'Role: {role_label}\n\n'
-        f'Login URL: /portal/login/\n\n'
+        f'Role:               {role_label}\n\n'
+        f'Login URL: {login_url}\n\n'
+        f'OR — click this magic link to log in directly (no password needed):\n'
+        f'{magic_url}\n\n'
+        f'The magic link expires in 72 hours and can only be used once.\n'
         f'Please change your password immediately after first login.\n\n'
-        f'KYISA Administration'
+        f'KYISA IT Team\n'
+        f'it@kyisa.org'
     )
+
+    # ── HTML email ─────────────────────────────────────────────────────────
+    html_content = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KYISA Portal Access</title>
+</head>
+<body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.10);">
+
+        <!-- HEADER -->
+        <tr>
+          <td style="background:linear-gradient(135deg,#0d1117 0%,#1a2744 50%,#0b5d4b 100%);padding:36px 40px 28px;text-align:center;">
+            <div style="display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:6px 18px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#d1fae5;margin-bottom:16px;">
+              🔐 Portal Access
+            </div>
+            <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;line-height:1.2;">
+              Welcome to KYISA Portal
+            </h1>
+            <p style="margin:10px 0 0;color:#94d5c7;font-size:14px;">Kenya Youth Intercounty Sports Association</p>
+          </td>
+        </tr>
+
+        <!-- BODY -->
+        <tr>
+          <td style="padding:36px 40px 28px;">
+            <p style="margin:0 0 20px;font-size:15px;color:#374151;">
+              Dear <strong>{user.first_name} {user.last_name}</strong>,
+            </p>
+            <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.6;">
+              Your <strong>{role_label}</strong> account on the KYISA Competition Management System is ready.
+              Use either option below to access your portal.
+            </p>
+
+            <!-- CREDENTIALS BOX -->
+            <div style="background:#f8fafc;border:1px solid #e5e9f0;border-radius:12px;padding:20px 24px;margin-bottom:28px;">
+              <p style="margin:0 0 6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#6b7280;">Option 1 — Login with credentials</p>
+              <table cellpadding="0" cellspacing="0" style="width:100%;margin-top:12px;">
+                <tr>
+                  <td style="padding:6px 0;font-size:13px;color:#6b7280;width:140px;">Login Email</td>
+                  <td style="padding:6px 0;font-size:13px;color:#0d1117;font-weight:700;">{user.email}</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 0;font-size:13px;color:#6b7280;">Temporary Password</td>
+                  <td style="padding:6px 0;">
+                    <span style="background:#1e293b;color:#86efac;font-family:monospace;font-size:15px;font-weight:700;padding:4px 12px;border-radius:6px;letter-spacing:.08em;">{temporary_password}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 0;font-size:13px;color:#6b7280;">Role</td>
+                  <td style="padding:6px 0;font-size:13px;color:#0d1117;font-weight:600;">{role_label}</td>
+                </tr>
+              </table>
+              <div style="margin-top:16px;">
+                <a href="{login_url}" style="display:inline-block;background:#0b5d4b;color:#ffffff;text-decoration:none;font-size:13px;font-weight:700;padding:10px 22px;border-radius:8px;">
+                  Go to Login Page →
+                </a>
+              </div>
+            </div>
+
+            <!-- MAGIC LINK BOX -->
+            <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:20px 24px;margin-bottom:28px;">
+              <p style="margin:0 0 8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#3b82f6;">Option 2 — Magic login link (no password needed)</p>
+              <p style="margin:0 0 16px;font-size:13px;color:#374151;line-height:1.55;">
+                Click the button below to log in directly — no password required. Works great on mobile.
+                <br><strong>Valid for 72 hours · One use only.</strong>
+              </p>
+              <a href="{magic_url}" style="display:inline-block;background:#0a66c2;color:#ffffff;text-decoration:none;font-size:14px;font-weight:700;padding:12px 28px;border-radius:8px;">
+                ✨ Click to Log In Instantly
+              </a>
+              <p style="margin:12px 0 0;font-size:11px;color:#6b7280;word-break:break-all;">
+                Or copy: {magic_url}
+              </p>
+            </div>
+
+            <!-- NOTE -->
+            <div style="background:#fff7ed;border-left:4px solid #f59e0b;border-radius:0 8px 8px 0;padding:14px 18px;margin-bottom:24px;">
+              <p style="margin:0;font-size:13px;color:#92400e;line-height:1.55;">
+                ⚠️ <strong>Important:</strong> You will be asked to set a new password on first login.
+                Keep your credentials secure and do not share them.
+              </p>
+            </div>
+
+          </td>
+        </tr>
+
+        <!-- FOOTER -->
+        <tr>
+          <td style="background:#f8fafc;border-top:1px solid #e5e9f0;padding:20px 40px;text-align:center;">
+            <p style="margin:0;font-size:12px;color:#9ca3af;line-height:1.6;">
+              <strong style="color:#374151;">KYISA IT Team</strong> · it@kyisa.org<br>
+              Kenya Youth Intercounty Sports Association · kyisa.org<br>
+              This is an automated message — please do not reply directly to this email.
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>"""
 
     email = EmailMultiAlternatives(
         subject,
         text_content,
-        getattr(django_settings, 'DEFAULT_FROM_EMAIL', 'noreply@kyisa.org'),
+        getattr(django_settings, 'DEFAULT_FROM_EMAIL', 'KYISA IT Team <it@kyisa.org>'),
         [user.email],
     )
+    email.attach_alternative(html_content, "text/html")
     email.send(fail_silently=False)
 
 
@@ -860,6 +993,47 @@ def web_logout_view(request):
     logout(request)
     messages.info(request, 'You have been logged out.')
     return redirect('home')
+
+
+def magic_login_view(request, token):
+    """
+    Single-use magic login link — logs the user in without a password.
+    The token is generated alongside the credentials email and expires in 72 hours.
+    """
+    from accounts.models import LoginToken
+    from django.utils import timezone
+
+    try:
+        login_token = LoginToken.objects.select_related('user').get(token=token)
+    except LoginToken.DoesNotExist:
+        messages.error(request, 'This login link is invalid or has already been used.')
+        return redirect('web_login')
+
+    if not login_token.is_valid():
+        login_token.delete()
+        messages.error(request, 'This login link has expired. Please contact your administrator for a new one.')
+        return redirect('web_login')
+
+    user = login_token.user
+
+    if getattr(user, 'is_suspended', False):
+        messages.error(request, 'Your account has been suspended. Please contact the administrator.')
+        return redirect('web_login')
+
+    # Mark token as used and delete it (single use)
+    login_token.delete()
+
+    # Log the user in
+    user.backend = 'django.contrib.auth.backends.ModelBackend'
+    login(request, user)
+
+    messages.success(request, f'Welcome, {user.first_name}! You have been logged in via your magic link.')
+
+    if getattr(user, 'must_change_password', False):
+        messages.warning(request, 'Please set a new password to continue.')
+        return redirect('force_change_password')
+
+    return redirect('dashboard')
 
 
 # ── DASHBOARD ─────────────────────────────────────────────────────────────────

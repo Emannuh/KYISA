@@ -137,6 +137,29 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_admin(self): return self.role == UserRole.ADMIN or self.is_superuser
 
 
+class LoginToken(models.Model):
+    """
+    Single-use magic login link token for new users who cannot use OTP.
+    Expires after 72 hours and is deleted on use.
+    """
+    user       = models.ForeignKey(User, on_delete=models.CASCADE, related_name='login_tokens')
+    token      = models.CharField(max_length=64, unique=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    used       = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = "Login Token"
+        verbose_name_plural = "Login Tokens"
+
+    def __str__(self):
+        return f"LoginToken for {self.user.email} (expires {self.expires_at:%Y-%m-%d %H:%M})"
+
+    def is_valid(self):
+        from django.utils import timezone
+        return not self.used and self.expires_at > timezone.now()
+
+
 class KenyaCounty(models.TextChoices):
     MOMBASA      = "Mombasa",       "Mombasa"
     KWALE        = "Kwale",         "Kwale"
