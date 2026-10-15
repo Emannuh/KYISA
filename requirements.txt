@@ -30,6 +30,9 @@ crispy-bootstrap5>=2024.2
 django-ses>=4.0
 django-ratelimit>=4.1
 
+# ── Redis (cache + rate limiting + Celery broker) ─────────────────────────────
+redis>=5.0
+
 # ── PostgreSQL ─────────────────────────────────────────────────────────────────
 psycopg[binary]>=3.1
 
