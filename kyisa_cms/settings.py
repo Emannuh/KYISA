@@ -345,7 +345,9 @@ CELERY_TIMEZONE          = "Africa/Nairobi"
 EMAIL_BACKEND    = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
 EMAIL_HOST       = env("EMAIL_HOST", default="localhost")
 EMAIL_PORT       = env.int("EMAIL_PORT", default=587)
-EMAIL_USE_TLS    = True
+EMAIL_USE_TLS    = env.bool("EMAIL_USE_TLS", default=True)
+EMAIL_USE_SSL    = env.bool("EMAIL_USE_SSL", default=False)
+EMAIL_TIMEOUT    = 10  # seconds — fail fast instead of hanging workers
 EMAIL_HOST_USER  = env("EMAIL_HOST_USER",     default="")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="KYISA Administration <admin@kyisa.org>")
@@ -390,7 +392,7 @@ LOGGING = {
     },
     "loggers": {
         "django": {
-            "handlers": ["console", "mail_admins"],
+            "handlers": ["console"],
             "level": "INFO",
             "propagate": True,
         },
@@ -400,12 +402,12 @@ LOGGING = {
             "propagate": False,
         },
         "django.request": {
-            "handlers": ["mail_admins"],
+            "handlers": ["console"],
             "level": "ERROR",
             "propagate": False,
         },
         "kyisa_cms": {
-            "handlers": ["console", "mail_admins"],
+            "handlers": ["console"],
             "level": "WARNING",
             "propagate": False,
         },

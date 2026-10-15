@@ -94,53 +94,20 @@ def email_compose(request):
             })
 
         # Build branded HTML
-        from kyisa_cms.email_utils import _base_html
+        from kyisa_cms.email_utils import _base_html, _send
         html_body = _base_html(subject, f"<p>{body}</p>")
 
-        try:
-            msg = EmailMultiAlternatives(
-                subject=subject,
-                body=body,
-                from_email=django_settings.DEFAULT_FROM_EMAIL,
-                to=to_list,
-                cc=cc_list if cc_list else None,
-            )
-            msg.attach_alternative(html_body, "text/html")
-            msg.send(fail_silently=False)
-
-            # Log it
-            EmailLog.objects.create(
-                direction='OUT',
-                status='sent',
-                from_email=django_settings.DEFAULT_FROM_EMAIL,
-                to_emails=', '.join(to_list),
-                cc_emails=', '.join(cc_list),
-                subject=subject,
-                body_text=body,
-                body_html=html_body,
-                sent_by=request.user,
-            )
-            messages.success(request, f'Email sent to {", ".join(to_list)}.')
-            return redirect('email_logs')
-
-        except Exception as e:
-            EmailLog.objects.create(
-                direction='OUT',
-                status='failed',
-                from_email=django_settings.DEFAULT_FROM_EMAIL,
-                to_emails=', '.join(to_list),
-                cc_emails=', '.join(cc_list),
-                subject=subject,
-                body_text=body,
-                body_html=html_body if 'html_body' in dir() else '',
-                sent_by=request.user,
-                error_message=str(e),
-            )
-            messages.error(request, f'Failed to send: {e}')
-            return render(request, 'dashboard/email_compose.html', {
-                'to_emails': to_raw, 'subject': subject, 'body': body,
-                'cc_emails': cc_raw,
-            })
+        # Use background-threaded send (won't crash the worker on timeout)
+        _send(
+            subject=subject,
+            html_body=html_body,
+            recipients=to_list,
+            cc=cc_list if cc_list else None,
+            sent_by=request.user,
+            fail_silently=False,
+        )
+        messages.success(request, f'Email queued for delivery to {", ".join(to_list)}.')
+        return redirect('email_logs')
 
     # GET — show compose form with optional recipient presets
     preset = request.GET.get('preset', '')
