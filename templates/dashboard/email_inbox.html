@@ -6,23 +6,29 @@
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
     <div>
       <h1><i class="bi bi-inbox-fill"></i> Email Inbox</h1>
-      <p>Incoming emails received at <strong>it@kyisa.org</strong></p>
+      <p>Incoming emails received at <strong>inbox@reply.kyisa.org</strong></p>
     </div>
     <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
-      <!-- Fetch Inbox Button -->
-      <form method="post" action="{% url 'fetch_inbox' %}" id="fetchForm">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-primary" id="fetchBtn">
-          <i class="bi bi-arrow-repeat" id="fetchIcon"></i> Fetch Inbox
-        </button>
-      </form>
-      <a href="{% url 'email_compose' %}" class="btn btn-outline">
+      <a href="{% url 'email_compose' %}" class="btn btn-primary">
         <i class="bi bi-pencil-square"></i> Compose
       </a>
       <a href="{% url 'email_logs' %}" class="btn btn-outline">
         <i class="bi bi-send"></i> Outbox
       </a>
     </div>
+  </div>
+</div>
+
+<!-- How it works notice -->
+<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;gap:.85rem;align-items:flex-start">
+  <i class="bi bi-info-circle-fill" style="color:#3b82f6;font-size:1.2rem;flex-shrink:0;margin-top:.1rem"></i>
+  <div>
+    <p style="margin:0 0 .3rem;font-weight:700;font-size:.88rem;color:#1e40af">How Inbox Works</p>
+    <p style="margin:0;font-size:.82rem;color:#374151;line-height:1.6">
+      Emails sent to <strong>inbox@reply.kyisa.org</strong> are automatically parsed by Brevo and delivered
+      to this inbox in real time — no manual fetch needed. To receive a reply here, set your outgoing
+      email reply-to as <code style="background:#dbeafe;padding:1px 6px;border-radius:4px">inbox@reply.kyisa.org</code>.
+    </p>
   </div>
 </div>
 
@@ -97,26 +103,31 @@
           <th>From</th>
           <th>Subject</th>
           <th>Received</th>
-          <th style="width:80px">Actions</th>
+          <th style="width:100px">Actions</th>
         </tr>
       </thead>
       <tbody>
         {% for email in page_obj %}
         <tr style="cursor:pointer" onclick="window.location='{% url 'email_detail' email.pk %}'">
-          <td style="font-size:.82rem;font-weight:600;color:var(--ink)">{{ email.from_email|truncatechars:35 }}</td>
+          <td style="font-size:.82rem;font-weight:600;color:var(--ink)">
+            {{ email.from_email|truncatechars:35 }}
+          </td>
           <td>
-            <a href="{% url 'email_detail' email.pk %}" style="font-weight:500;color:var(--ink)" onclick="event.stopPropagation()">
+            <a href="{% url 'email_detail' email.pk %}" style="font-weight:500;color:var(--ink)"
+               onclick="event.stopPropagation()">
               {{ email.subject|truncatechars:70 }}
             </a>
           </td>
-          <td style="font-size:.78rem;white-space:nowrap;color:var(--gray)">{{ email.sent_at|date:"d M Y H:i" }}</td>
-          <td>
+          <td style="font-size:.78rem;white-space:nowrap;color:var(--gray)">
+            {{ email.sent_at|date:"d M Y H:i" }}
+          </td>
+          <td onclick="event.stopPropagation()">
             <a href="{% url 'email_detail' email.pk %}" class="btn btn-outline"
-               style="padding:.2rem .5rem;font-size:.7rem" onclick="event.stopPropagation()">
+               style="padding:.2rem .5rem;font-size:.7rem">
               <i class="bi bi-eye"></i>
             </a>
             <a href="{% url 'email_compose' %}?reply_to={{ email.from_email }}&subject=Re: {{ email.subject|urlencode }}"
-               class="btn btn-primary" style="padding:.2rem .5rem;font-size:.7rem" onclick="event.stopPropagation()" title="Reply">
+               class="btn btn-primary" style="padding:.2rem .5rem;font-size:.7rem" title="Reply">
               <i class="bi bi-reply-fill"></i>
             </a>
           </td>
@@ -125,8 +136,10 @@
         <tr>
           <td colspan="4" style="text-align:center;padding:3rem;color:var(--gray)">
             <i class="bi bi-inbox" style="font-size:2.5rem;display:block;margin-bottom:.75rem;opacity:.4"></i>
-            <strong>No emails in inbox</strong><br>
-            <span style="font-size:.82rem">Click <strong>Fetch Inbox</strong> to pull new emails from it@kyisa.org</span>
+            <strong>Inbox is empty</strong><br>
+            <span style="font-size:.82rem">
+              Emails sent to <strong>inbox@reply.kyisa.org</strong> will appear here automatically.
+            </span>
           </td>
         </tr>
         {% endfor %}
@@ -150,19 +163,4 @@
   </div>
   {% endif %}
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-/* Spin the fetch icon while the form submits */
-document.getElementById('fetchForm').addEventListener('submit', function() {
-  var btn  = document.getElementById('fetchBtn');
-  var icon = document.getElementById('fetchIcon');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="bi bi-arrow-repeat" style="animation:spin .8s linear infinite"></i> Fetching…';
-});
-</script>
-<style>
-@keyframes spin { to { transform: rotate(360deg); } }
-</style>
 {% endblock %}

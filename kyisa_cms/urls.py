@@ -176,6 +176,7 @@ from .web_views import (
 )
 
 from .web_views import robots_txt, sitemap_xml, healthz
+from admin_dashboard.inbound_webhook import brevo_inbound_webhook
 
 urlpatterns = [
     # ── SEO ───────────────────────────────────────────────────────────────────
@@ -207,6 +208,11 @@ urlpatterns = [
     path("register/county-admin/success/",   county_admin_register_success_view, name="county_admin_register_success"),
     path("api/mpesa/stk-push/",              mpesa_stk_push_view,               name="mpesa_stk_push"),
     path("api/mpesa/callback/",              mpesa_callback_view,               name="mpesa_callback"),
+
+    # ── BREVO INBOUND EMAIL WEBHOOK ───────────────────────────────────────────
+    # Receives parsed inbound emails from Brevo for *@reply.kyisa.org
+    # Register this URL in Brevo → Inbound Parsing → Webhook URL
+    path("api/inbound-email/",               brevo_inbound_webhook,             name="brevo_inbound_webhook"),
 
     # ── CMS PORTAL (Authenticated) ───────────────────────────────────────────
     path("portal/login/",                   web_login_view,         name="web_login"),
