@@ -26,6 +26,7 @@ from teams.models import (
 )
 from teams.fifa_connect_service import FIFAConnectService
 from teams.huduma_service import HudumaKenyaService
+from teams.prembly_service import PremblyService
 from teams.utils import save_base64_photo
 
 
@@ -686,7 +687,7 @@ def api_iprs_lookup(request):
             'error_message': 'Invalid National ID format. Must be 7-8 digits.',
         }, status=400)
 
-    svc = HudumaKenyaService()
+    svc = PremblyService()
     result = svc.lookup_by_national_id(national_id)
 
     return JsonResponse(result.to_dict())

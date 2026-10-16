@@ -467,7 +467,14 @@ DIDIT_ENVIRONMENT      = env("DIDIT_ENVIRONMENT", default="sandbox") # 'sandbox'
 DIDIT_TIMEOUT          = env.int("DIDIT_TIMEOUT", default=30)
 DIDIT_ENABLED          = env.bool("DIDIT_ENABLED", default=True)
 
-# ── SMILE IDENTITY (Legacy — kept for backwards compat, prefer Didit) ──────────
+# ── PREMBLY (Kenya IPRS Identity Verification) ────────────────────────────────
+# Replaces Smile Identity for Kenya National ID lookups.
+# Sign up at app.prembly.com → API Keys → copy your live key.
+# Test ID in sandbox: 10101010
+PREMBLY_API_KEY     = env("PREMBLY_API_KEY",     default="")
+PREMBLY_ENVIRONMENT = env("PREMBLY_ENVIRONMENT", default="sandbox")  # 'sandbox' or 'production'
+
+# ── SMILE IDENTITY (Legacy — kept for backwards compat, prefer Prembly) ───────
 # Smile Identity — IPRS / Enhanced KYC Verification
 # Sign up at smileidentity.com → Dashboard → API Keys
 # Use sandbox for testing (SMILE_ENVIRONMENT=sandbox)
