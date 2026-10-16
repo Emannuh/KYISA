@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% block title %}Email Inbox — KYISA CMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
+    <div>
+      <h1><i class="bi bi-inbox-fill"></i> Email Inbox</h1>
+      <p>Incoming emails received at <strong>it@kyisa.org</strong></p>
+    </div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
+      <!-- Fetch Inbox Button -->
+      <form method="post" action="{% url 'fetch_inbox' %}" id="fetchForm">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary" id="fetchBtn">
+          <i class="bi bi-arrow-repeat" id="fetchIcon"></i> Fetch Inbox
+        </button>
+      </form>
+      <a href="{% url 'email_compose' %}" class="btn btn-outline">
+        <i class="bi bi-pencil-square"></i> Compose
+      </a>
+      <a href="{% url 'email_logs' %}" class="btn btn-outline">
+        <i class="bi bi-send"></i> Outbox
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid" style="margin-bottom:1.2rem">
+  <div class="stat-card blue">
+    <div class="stat-icon blue"><i class="bi bi-inbox-fill"></i></div>
+    <div class="stat-info"><h3>{{ stats.total }}</h3><p>Total Received</p></div>
+  </div>
+  <div class="stat-card green">
+    <div class="stat-icon green"><i class="bi bi-calendar-check"></i></div>
+    <div class="stat-info"><h3>{{ stats.today }}</h3><p>Received Today</p></div>
+  </div>
+  <div class="stat-card teal">
+    <div class="stat-icon teal"><i class="bi bi-send-fill"></i></div>
+    <div class="stat-info"><h3>{{ stats.outbox }}</h3><p>Sent Emails</p></div>
+  </div>
+  <div class="stat-card red">
+    <div class="stat-icon red"><i class="bi bi-x-circle-fill"></i></div>
+    <div class="stat-info"><h3>{{ stats.failed }}</h3><p>Failed Sends</p></div>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div style="display:flex;gap:.35rem;margin-bottom:1rem;border-bottom:2px solid var(--border);padding-bottom:0">
+  <a href="{% url 'email_inbox' %}"
+     style="padding:.55rem 1rem;font-size:.83rem;font-weight:700;border-radius:8px 8px 0 0;text-decoration:none;
+            background:var(--primary);color:#fff;border:1px solid var(--primary);margin-bottom:-2px;">
+    <i class="bi bi-inbox-fill"></i> Inbox
+  </a>
+  <a href="{% url 'email_logs' %}"
+     style="padding:.55rem 1rem;font-size:.83rem;font-weight:600;border-radius:8px 8px 0 0;text-decoration:none;
+            background:#fff;color:var(--gray);border:1px solid var(--border);margin-bottom:-2px;">
+    <i class="bi bi-send"></i> Outbox
+  </a>
+  <a href="{% url 'email_compose' %}"
+     style="padding:.55rem 1rem;font-size:.83rem;font-weight:600;border-radius:8px 8px 0 0;text-decoration:none;
+            background:#fff;color:var(--gray);border:1px solid var(--border);margin-bottom:-2px;">
+    <i class="bi bi-pencil-square"></i> Compose
+  </a>
+</div>
+
+<!-- Filters -->
+<div class="card" style="margin-bottom:1rem">
+  <form method="get" style="padding:.75rem;display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end">
+    <div style="flex:1;min-width:180px">
+      <label style="font-size:.72rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.2rem">Search</label>
+      <input type="text" name="q" value="{{ search_query }}" placeholder="Subject, sender..." class="form-input" style="width:100%">
+    </div>
+    <div style="min-width:140px">
+      <label style="font-size:.72rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.2rem">From Date</label>
+      <input type="date" name="from" value="{{ date_from }}" class="form-input">
+    </div>
+    <div style="min-width:140px">
+      <label style="font-size:.72rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.2rem">To Date</label>
+      <input type="date" name="to" value="{{ date_to }}" class="form-input">
+    </div>
+    <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Filter</button>
+    <a href="{% url 'email_inbox' %}" class="btn btn-outline">Clear</a>
+  </form>
+</div>
+
+<!-- Inbox Table -->
+<div class="card">
+  <div class="card-header">
+    <h3><i class="bi bi-list-ul"></i> Inbox ({{ page_obj.paginator.count }})</h3>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>From</th>
+          <th>Subject</th>
+          <th>Received</th>
+          <th style="width:80px">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for email in page_obj %}
+        <tr style="cursor:pointer" onclick="window.location='{% url 'email_detail' email.pk %}'">
+          <td style="font-size:.82rem;font-weight:600;color:var(--ink)">{{ email.from_email|truncatechars:35 }}</td>
+          <td>
+            <a href="{% url 'email_detail' email.pk %}" style="font-weight:500;color:var(--ink)" onclick="event.stopPropagation()">
+              {{ email.subject|truncatechars:70 }}
+            </a>
+          </td>
+          <td style="font-size:.78rem;white-space:nowrap;color:var(--gray)">{{ email.sent_at|date:"d M Y H:i" }}</td>
+          <td>
+            <a href="{% url 'email_detail' email.pk %}" class="btn btn-outline"
+               style="padding:.2rem .5rem;font-size:.7rem" onclick="event.stopPropagation()">
+              <i class="bi bi-eye"></i>
+            </a>
+            <a href="{% url 'email_compose' %}?reply_to={{ email.from_email }}&subject=Re: {{ email.subject|urlencode }}"
+               class="btn btn-primary" style="padding:.2rem .5rem;font-size:.7rem" onclick="event.stopPropagation()" title="Reply">
+              <i class="bi bi-reply-fill"></i>
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" style="text-align:center;padding:3rem;color:var(--gray)">
+            <i class="bi bi-inbox" style="font-size:2.5rem;display:block;margin-bottom:.75rem;opacity:.4"></i>
+            <strong>No emails in inbox</strong><br>
+            <span style="font-size:.82rem">Click <strong>Fetch Inbox</strong> to pull new emails from it@kyisa.org</span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if page_obj.has_other_pages %}
+  <div style="padding:.75rem;display:flex;justify-content:center;gap:.25rem">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&from={{ date_from }}&to={{ date_to }}"
+       class="btn btn-outline" style="padding:.3rem .6rem;font-size:.75rem">&laquo; Prev</a>
+    {% endif %}
+    <span style="padding:.3rem .6rem;font-size:.75rem;color:var(--gray)">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&from={{ date_from }}&to={{ date_to }}"
+       class="btn btn-outline" style="padding:.3rem .6rem;font-size:.75rem">Next &raquo;</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/* Spin the fetch icon while the form submits */
+document.getElementById('fetchForm').addEventListener('submit', function() {
+  var btn  = document.getElementById('fetchBtn');
+  var icon = document.getElementById('fetchIcon');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="bi bi-arrow-repeat" style="animation:spin .8s linear infinite"></i> Fetching…';
+});
+</script>
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+{% endblock %}

@@ -75,6 +75,8 @@ urlpatterns = [
     # Email Centre
     path('emails/', email_views.email_logs, name='email_logs'),
     path('emails/compose/', email_views.email_compose, name='email_compose'),
+    path('emails/fetch-inbox/', email_views.fetch_inbox, name='fetch_inbox'),
+    path('emails/inbox/', email_views.email_inbox, name='email_inbox'),
     path('emails/<int:email_id>/', email_views.email_detail, name='email_detail'),
     path('emails/<int:email_id>/resend/', email_views.email_resend, name='email_resend'),
     path('emails/test/', email_views.test_email, name='test_email'),

@@ -360,6 +360,13 @@ ANYMAIL = {
     "BREVO_API_KEY": env("BREVO_API_KEY", default=env("ANYMAIL_BREVO_API_KEY", default="")),
 }
 
+# ── IMAP INBOX FETCHING ────────────────────────────────────────────────────────
+# Used to fetch incoming emails from it@kyisa.org into the Email Centre inbox.
+IMAP_HOST     = env("IMAP_HOST",     default="mail.privateemail.com")
+IMAP_PORT     = env.int("IMAP_PORT", default=993)
+IMAP_USER     = env("IMAP_USER",     default="it@kyisa.org")
+IMAP_PASSWORD = env("IMAP_PASSWORD", default="")
+
 # ── AWS SES (used when EMAIL_BACKEND = django_ses.SESBackend) ─────────────────
 AWS_SES_REGION_NAME      = env("AWS_SES_REGION_NAME", default="eu-west-1")
 AWS_SES_REGION_ENDPOINT  = env("AWS_SES_REGION_ENDPOINT", default="email.eu-west-1.amazonaws.com")

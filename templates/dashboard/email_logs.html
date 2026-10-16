@@ -9,6 +9,7 @@
             <p>System email logs, compose &amp; diagnostics</p>
         </div>
         <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+            <a href="{% url 'email_inbox' %}" class="btn btn-outline"><i class="bi bi-inbox-fill"></i> Inbox</a>
             <a href="{% url 'email_compose' %}" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Compose</a>
             <form method="post" action="{% url 'test_email' %}" style="display:inline">
                 {% csrf_token %}
@@ -37,6 +38,25 @@
         <div class="stat-icon yellow"><i class="bi bi-clock-fill"></i></div>
         <div class="stat-info"><h3>{{ stats.today }}</h3><p>Today</p></div>
     </div>
+</div>
+
+<!-- Tabs -->
+<div style="display:flex;gap:.35rem;margin-bottom:1rem;border-bottom:2px solid var(--border);padding-bottom:0">
+  <a href="{% url 'email_inbox' %}"
+     style="padding:.55rem 1rem;font-size:.83rem;font-weight:600;border-radius:8px 8px 0 0;text-decoration:none;
+            background:#fff;color:var(--gray);border:1px solid var(--border);margin-bottom:-2px;">
+    <i class="bi bi-inbox-fill"></i> Inbox
+  </a>
+  <a href="{% url 'email_logs' %}"
+     style="padding:.55rem 1rem;font-size:.83rem;font-weight:700;border-radius:8px 8px 0 0;text-decoration:none;
+            background:var(--primary);color:#fff;border:1px solid var(--primary);margin-bottom:-2px;">
+    <i class="bi bi-send"></i> Outbox
+  </a>
+  <a href="{% url 'email_compose' %}"
+     style="padding:.55rem 1rem;font-size:.83rem;font-weight:600;border-radius:8px 8px 0 0;text-decoration:none;
+            background:#fff;color:var(--gray);border:1px solid var(--border);margin-bottom:-2px;">
+    <i class="bi bi-pencil-square"></i> Compose
+  </a>
 </div>
 
 <!-- Quick Send Presets -->

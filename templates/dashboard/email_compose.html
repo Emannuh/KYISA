@@ -18,7 +18,7 @@
             <!-- To -->
             <div>
                 <label style="font-size:.75rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.3rem">To <span style="color:var(--danger)">*</span></label>
-                <textarea name="to_emails" rows="2" class="form-input" style="width:100%;font-size:.82rem" placeholder="email@example.com, another@example.com" required>{{ to_emails }}</textarea>
+                <textarea name="to_emails" rows="2" class="form-input" style="width:100%;font-size:.82rem" placeholder="email@example.com, another@example.com" required>{{ reply_to|default:to_emails }}</textarea>
                 <small style="color:var(--gray-light);font-size:.68rem">Separate multiple addresses with commas</small>
             </div>
 

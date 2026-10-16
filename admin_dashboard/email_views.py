@@ -131,6 +131,8 @@ def email_compose(request):
 
     return render(request, 'dashboard/email_compose.html', {
         'to_emails': to_emails,
+        'subject': request.GET.get('subject', ''),
+        'reply_to': request.GET.get('reply_to', ''),
     })
 
 
@@ -214,3 +216,192 @@ def test_email(request):
         messages.error(request, f'Test email failed: {e}')
 
     return redirect('email_logs')
+
+
+@login_required
+@user_passes_test(_is_admin)
+def fetch_inbox(request):
+    """
+    Fetch unseen emails from it@kyisa.org via IMAP and store them
+    as EmailLog records with direction='IN'.
+    """
+    if request.method != 'POST':
+        return redirect('email_inbox')
+
+    import imaplib
+    import email as email_lib
+    import email.header
+    import email.utils
+    from django.conf import settings as django_settings
+
+    imap_host     = getattr(django_settings, 'IMAP_HOST',     'mail.privateemail.com')
+    imap_port     = int(getattr(django_settings, 'IMAP_PORT', 993))
+    imap_user     = getattr(django_settings, 'IMAP_USER',     'it@kyisa.org')
+    imap_password = getattr(django_settings, 'IMAP_PASSWORD', '')
+
+    if not imap_password:
+        messages.error(request, 'IMAP_PASSWORD is not configured. Add it to Railway variables.')
+        return redirect('email_inbox')
+
+    fetched = 0
+    skipped = 0
+    errors  = 0
+
+    try:
+        mail = imaplib.IMAP4_SSL(imap_host, imap_port)
+        mail.login(imap_user, imap_password)
+        mail.select('INBOX')
+
+        # Fetch all unseen messages
+        status, data = mail.search(None, 'UNSEEN')
+        if status != 'OK':
+            messages.error(request, 'Failed to search inbox.')
+            mail.logout()
+            return redirect('email_inbox')
+
+        uid_list = data[0].split()
+        for uid in uid_list:
+            try:
+                status, msg_data = mail.fetch(uid, '(RFC822)')
+                if status != 'OK':
+                    errors += 1
+                    continue
+
+                raw = msg_data[0][1]
+                msg = email_lib.message_from_bytes(raw)
+
+                # Decode subject
+                raw_subject = msg.get('Subject', '(No Subject)')
+                decoded_parts = email.header.decode_header(raw_subject)
+                subject = ''
+                for part, enc in decoded_parts:
+                    if isinstance(part, bytes):
+                        subject += part.decode(enc or 'utf-8', errors='replace')
+                    else:
+                        subject += part
+
+                # Parse sender and recipients
+                from_addr   = email.utils.parseaddr(msg.get('From', ''))[1]
+                to_addr     = msg.get('To', imap_user)
+                message_id  = msg.get('Message-ID', '').strip()
+                date_str    = msg.get('Date', '')
+
+                # Parse date
+                from email.utils import parsedate_to_datetime
+                try:
+                    received_at = parsedate_to_datetime(date_str)
+                    from django.utils import timezone as tz
+                    if received_at.tzinfo is None:
+                        received_at = tz.make_aware(received_at)
+                except Exception:
+                    from django.utils import timezone as tz
+                    received_at = tz.now()
+
+                # Skip if already stored (dedup by message_id)
+                if message_id and EmailLog.objects.filter(message_id=message_id, direction='IN').exists():
+                    skipped += 1
+                    continue
+
+                # Extract body
+                body_text = ''
+                body_html = ''
+                if msg.is_multipart():
+                    for part in msg.walk():
+                        ctype = part.get_content_type()
+                        disp  = str(part.get('Content-Disposition', ''))
+                        if 'attachment' in disp:
+                            continue
+                        payload = part.get_payload(decode=True)
+                        if payload is None:
+                            continue
+                        charset = part.get_content_charset() or 'utf-8'
+                        decoded = payload.decode(charset, errors='replace')
+                        if ctype == 'text/plain' and not body_text:
+                            body_text = decoded
+                        elif ctype == 'text/html' and not body_html:
+                            body_html = decoded
+                else:
+                    payload = msg.get_payload(decode=True)
+                    if payload:
+                        charset   = msg.get_content_charset() or 'utf-8'
+                        body_text = payload.decode(charset, errors='replace')
+
+                EmailLog.objects.create(
+                    direction   = 'IN',
+                    status      = 'sent',
+                    from_email  = from_addr,
+                    to_emails   = to_addr,
+                    subject     = subject[:500],
+                    body_text   = body_text[:5000],
+                    body_html   = body_html[:10000],
+                    sent_at     = received_at,
+                    message_id  = message_id[:255],
+                )
+                fetched += 1
+
+            except Exception as e:
+                errors += 1
+                continue
+
+        mail.logout()
+
+    except imaplib.IMAP4.error as e:
+        messages.error(request, f'IMAP connection failed: {e}')
+        return redirect('email_inbox')
+    except Exception as e:
+        messages.error(request, f'Unexpected error: {e}')
+        return redirect('email_inbox')
+
+    if fetched:
+        messages.success(request, f'Fetched {fetched} new email{"s" if fetched != 1 else ""} from it@kyisa.org.')
+    elif skipped:
+        messages.info(request, f'No new emails — {skipped} already imported.')
+    else:
+        messages.info(request, 'No new emails in inbox.')
+
+    if errors:
+        messages.warning(request, f'{errors} email{"s" if errors != 1 else ""} could not be imported.')
+
+    return redirect('email_inbox')
+
+
+@login_required
+@user_passes_test(_is_admin)
+def email_inbox(request):
+    """View incoming emails fetched from it@kyisa.org IMAP inbox."""
+    qs = EmailLog.objects.filter(direction='IN')
+
+    # Filters
+    search    = request.GET.get('q', '')
+    date_from = request.GET.get('from', '')
+    date_to   = request.GET.get('to', '')
+
+    if search:
+        from django.db.models import Q
+        qs = qs.filter(
+            Q(subject__icontains=search) |
+            Q(from_email__icontains=search) |
+            Q(body_text__icontains=search)
+        )
+    if date_from:
+        qs = qs.filter(sent_at__date__gte=date_from)
+    if date_to:
+        qs = qs.filter(sent_at__date__lte=date_to)
+
+    stats = {
+        'total':   EmailLog.objects.filter(direction='IN').count(),
+        'today':   EmailLog.objects.filter(direction='IN', sent_at__date=timezone.now().date()).count(),
+        'outbox':  EmailLog.objects.filter(direction='OUT', status='sent').count(),
+        'failed':  EmailLog.objects.filter(direction='OUT', status='failed').count(),
+    }
+
+    paginator = Paginator(qs, 25)
+    page = paginator.get_page(request.GET.get('page'))
+
+    return render(request, 'dashboard/email_inbox.html', {
+        'page_obj':    page,
+        'stats':       stats,
+        'search_query': search,
+        'date_from':   date_from,
+        'date_to':     date_to,
+    })
