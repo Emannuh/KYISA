@@ -224,6 +224,7 @@ def fetch_inbox(request):
     """
     Fetch unseen emails from it@kyisa.org via IMAP and store them
     as EmailLog records with direction='IN'.
+    Runs in a background thread to avoid blocking the web worker.
     """
     if request.method != 'POST':
         return redirect('email_inbox')
@@ -232,6 +233,7 @@ def fetch_inbox(request):
     import email as email_lib
     import email.header
     import email.utils
+    import threading
     from django.conf import settings as django_settings
 
     imap_host     = getattr(django_settings, 'IMAP_HOST',     'mail.privateemail.com')
@@ -243,124 +245,135 @@ def fetch_inbox(request):
         messages.error(request, 'IMAP_PASSWORD is not configured. Add it to Railway variables.')
         return redirect('email_inbox')
 
-    fetched = 0
-    skipped = 0
-    errors  = 0
-
+    # Check if Railway blocks IMAP (port 993) — test with a short timeout
+    import socket
     try:
-        mail = imaplib.IMAP4_SSL(imap_host, imap_port)
-        mail.login(imap_user, imap_password)
-        mail.select('INBOX')
+        sock = socket.create_connection((imap_host, imap_port), timeout=5)
+        sock.close()
+    except (socket.timeout, OSError):
+        messages.error(
+            request,
+            'IMAP port 993 is blocked by Railway on this plan. '
+            'Inbox fetching requires a Railway Pro plan or an alternative '
+            'approach such as Brevo inbound parsing. '
+            'Contact Railway support to enable outbound port 993.'
+        )
+        return redirect('email_inbox')
 
-        # Fetch all unseen messages
-        status, data = mail.search(None, 'UNSEEN')
-        if status != 'OK':
-            messages.error(request, 'Failed to search inbox.')
-            mail.logout()
-            return redirect('email_inbox')
+    # Port is reachable — fetch in background thread
+    result = {'fetched': 0, 'skipped': 0, 'errors': 0, 'error_msg': ''}
 
-        uid_list = data[0].split()
-        for uid in uid_list:
-            try:
-                status, msg_data = mail.fetch(uid, '(RFC822)')
-                if status != 'OK':
-                    errors += 1
-                    continue
+    def _fetch_worker():
+        try:
+            mail = imaplib.IMAP4_SSL(imap_host, imap_port)
+            mail.login(imap_user, imap_password)
+            mail.select('INBOX')
 
-                raw = msg_data[0][1]
-                msg = email_lib.message_from_bytes(raw)
+            status, data = mail.search(None, 'UNSEEN')
+            if status != 'OK':
+                result['error_msg'] = 'Failed to search inbox.'
+                mail.logout()
+                return
 
-                # Decode subject
-                raw_subject = msg.get('Subject', '(No Subject)')
-                decoded_parts = email.header.decode_header(raw_subject)
-                subject = ''
-                for part, enc in decoded_parts:
-                    if isinstance(part, bytes):
-                        subject += part.decode(enc or 'utf-8', errors='replace')
-                    else:
-                        subject += part
-
-                # Parse sender and recipients
-                from_addr   = email.utils.parseaddr(msg.get('From', ''))[1]
-                to_addr     = msg.get('To', imap_user)
-                message_id  = msg.get('Message-ID', '').strip()
-                date_str    = msg.get('Date', '')
-
-                # Parse date
-                from email.utils import parsedate_to_datetime
+            uid_list = data[0].split()
+            for uid in uid_list:
                 try:
-                    received_at = parsedate_to_datetime(date_str)
-                    from django.utils import timezone as tz
-                    if received_at.tzinfo is None:
-                        received_at = tz.make_aware(received_at)
-                except Exception:
-                    from django.utils import timezone as tz
-                    received_at = tz.now()
+                    status, msg_data = mail.fetch(uid, '(RFC822)')
+                    if status != 'OK':
+                        result['errors'] += 1
+                        continue
 
-                # Skip if already stored (dedup by message_id)
-                if message_id and EmailLog.objects.filter(message_id=message_id, direction='IN').exists():
-                    skipped += 1
+                    raw = msg_data[0][1]
+                    msg = email_lib.message_from_bytes(raw)
+
+                    # Decode subject
+                    raw_subject = msg.get('Subject', '(No Subject)')
+                    decoded_parts = email.header.decode_header(raw_subject)
+                    subject = ''
+                    for part, enc in decoded_parts:
+                        if isinstance(part, bytes):
+                            subject += part.decode(enc or 'utf-8', errors='replace')
+                        else:
+                            subject += part
+
+                    from_addr  = email.utils.parseaddr(msg.get('From', ''))[1]
+                    to_addr    = msg.get('To', imap_user)
+                    message_id = msg.get('Message-ID', '').strip()
+                    date_str   = msg.get('Date', '')
+
+                    from email.utils import parsedate_to_datetime
+                    from django.utils import timezone as tz
+                    try:
+                        received_at = parsedate_to_datetime(date_str)
+                        if received_at.tzinfo is None:
+                            received_at = tz.make_aware(received_at)
+                    except Exception:
+                        received_at = tz.now()
+
+                    if message_id and EmailLog.objects.filter(message_id=message_id, direction='IN').exists():
+                        result['skipped'] += 1
+                        continue
+
+                    body_text = ''
+                    body_html = ''
+                    if msg.is_multipart():
+                        for part in msg.walk():
+                            ctype = part.get_content_type()
+                            disp  = str(part.get('Content-Disposition', ''))
+                            if 'attachment' in disp:
+                                continue
+                            payload = part.get_payload(decode=True)
+                            if payload is None:
+                                continue
+                            charset = part.get_content_charset() or 'utf-8'
+                            decoded = payload.decode(charset, errors='replace')
+                            if ctype == 'text/plain' and not body_text:
+                                body_text = decoded
+                            elif ctype == 'text/html' and not body_html:
+                                body_html = decoded
+                    else:
+                        payload = msg.get_payload(decode=True)
+                        if payload:
+                            charset   = msg.get_content_charset() or 'utf-8'
+                            body_text = payload.decode(charset, errors='replace')
+
+                    EmailLog.objects.create(
+                        direction  = 'IN',
+                        status     = 'sent',
+                        from_email = from_addr,
+                        to_emails  = to_addr,
+                        subject    = subject[:500],
+                        body_text  = body_text[:5000],
+                        body_html  = body_html[:10000],
+                        sent_at    = received_at,
+                        message_id = message_id[:255],
+                    )
+                    result['fetched'] += 1
+
+                except Exception:
+                    result['errors'] += 1
                     continue
 
-                # Extract body
-                body_text = ''
-                body_html = ''
-                if msg.is_multipart():
-                    for part in msg.walk():
-                        ctype = part.get_content_type()
-                        disp  = str(part.get('Content-Disposition', ''))
-                        if 'attachment' in disp:
-                            continue
-                        payload = part.get_payload(decode=True)
-                        if payload is None:
-                            continue
-                        charset = part.get_content_charset() or 'utf-8'
-                        decoded = payload.decode(charset, errors='replace')
-                        if ctype == 'text/plain' and not body_text:
-                            body_text = decoded
-                        elif ctype == 'text/html' and not body_html:
-                            body_html = decoded
-                else:
-                    payload = msg.get_payload(decode=True)
-                    if payload:
-                        charset   = msg.get_content_charset() or 'utf-8'
-                        body_text = payload.decode(charset, errors='replace')
+            mail.logout()
 
-                EmailLog.objects.create(
-                    direction   = 'IN',
-                    status      = 'sent',
-                    from_email  = from_addr,
-                    to_emails   = to_addr,
-                    subject     = subject[:500],
-                    body_text   = body_text[:5000],
-                    body_html   = body_html[:10000],
-                    sent_at     = received_at,
-                    message_id  = message_id[:255],
-                )
-                fetched += 1
+        except Exception as e:
+            result['error_msg'] = str(e)
 
-            except Exception as e:
-                errors += 1
-                continue
+    thread = threading.Thread(target=_fetch_worker, daemon=True)
+    thread.start()
+    thread.join(timeout=25)  # Wait up to 25 seconds
 
-        mail.logout()
-
-    except imaplib.IMAP4.error as e:
-        messages.error(request, f'IMAP connection failed: {e}')
-        return redirect('email_inbox')
-    except Exception as e:
-        messages.error(request, f'Unexpected error: {e}')
-        return redirect('email_inbox')
-
-    if fetched:
-        messages.success(request, f'Fetched {fetched} new email{"s" if fetched != 1 else ""} from it@kyisa.org.')
-    elif skipped:
-        messages.info(request, f'No new emails — {skipped} already imported.')
+    if result['error_msg']:
+        messages.error(request, f'Fetch failed: {result["error_msg"]}')
+    elif result['fetched']:
+        messages.success(request, f'Fetched {result["fetched"]} new email{"s" if result["fetched"] != 1 else ""} from it@kyisa.org.')
+    elif result['skipped']:
+        messages.info(request, f'No new emails — {result["skipped"]} already imported.')
     else:
-        messages.info(request, 'No new emails in inbox.')
+        messages.info(request, 'No new unseen emails in inbox.')
 
-    if errors:
-        messages.warning(request, f'{errors} email{"s" if errors != 1 else ""} could not be imported.')
+    if result['errors']:
+        messages.warning(request, f'{result["errors"]} email{"s" if result["errors"] != 1 else ""} could not be imported.')
 
     return redirect('email_inbox')
 
