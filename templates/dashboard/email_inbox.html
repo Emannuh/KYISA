@@ -6,7 +6,7 @@
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
     <div>
       <h1><i class="bi bi-inbox-fill"></i> Email Inbox</h1>
-      <p>Incoming emails received at <strong>inbox@reply.kyisa.org</strong></p>
+      <p>Incoming emails received at <strong>it@kyisa.org</strong></p>
     </div>
     <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
       <form method="post" action="{% url 'fetch_inbox' %}" style="display:inline">
@@ -31,10 +31,8 @@
   <div>
     <p style="margin:0 0 .3rem;font-weight:700;font-size:.88rem;color:#1e40af">Inbox — it@kyisa.org</p>
     <p style="margin:0;font-size:.82rem;color:#374151;line-height:1.6">
-      Click <strong>Fetch Inbox</strong> to pull new emails from <strong>it@kyisa.org</strong> via IMAP.
-      Emails are fetched and stored here for easy management, reply, and archiving.
-      For automatic background fetching every 2 minutes, a Railway Cron job runs
-      <code style="background:#dbeafe;padding:1px 6px;border-radius:4px">python manage.py fetch_inbox</code> automatically.
+      Click <strong>Fetch Inbox</strong> to pull new emails from <strong>it@kyisa.org</strong>.
+      Emails are stored here for easy management, reply, and archiving.
     </p>
   </div>
 </div>
