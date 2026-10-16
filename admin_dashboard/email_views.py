@@ -1,12 +1,17 @@
 # admin_dashboard/email_views.py — Email dashboard for system admins
 import json
+import os
+import sys
+import subprocess
+import threading
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings as django_settings
-from django.db.models import Q, Count
+from django.db.models import Q
 from django.utils import timezone
 from django.http import JsonResponse
 
@@ -22,13 +27,12 @@ def _is_admin(user):
 @user_passes_test(_is_admin)
 def email_logs(request):
     """View all sent/failed system emails with search & filters."""
-    qs = EmailLog.objects.all()
+    qs = EmailLog.objects.filter(direction='OUT')
 
-    # Filters
-    status = request.GET.get('status', '')
-    search = request.GET.get('q', '')
+    status    = request.GET.get('status', '')
+    search    = request.GET.get('q', '')
     date_from = request.GET.get('from', '')
-    date_to = request.GET.get('to', '')
+    date_to   = request.GET.get('to', '')
 
     if status:
         qs = qs.filter(status=status)
@@ -43,24 +47,23 @@ def email_logs(request):
     if date_to:
         qs = qs.filter(sent_at__date__lte=date_to)
 
-    # Stats
     stats = {
-        'total': EmailLog.objects.count(),
-        'sent': EmailLog.objects.filter(status='sent').count(),
-        'failed': EmailLog.objects.filter(status='failed').count(),
-        'today': EmailLog.objects.filter(sent_at__date=timezone.now().date()).count(),
+        'total': EmailLog.objects.filter(direction='OUT').count(),
+        'sent':  EmailLog.objects.filter(direction='OUT', status='sent').count(),
+        'failed': EmailLog.objects.filter(direction='OUT', status='failed').count(),
+        'today': EmailLog.objects.filter(direction='OUT', sent_at__date=timezone.now().date()).count(),
     }
 
     paginator = Paginator(qs, 25)
     page = paginator.get_page(request.GET.get('page'))
 
     return render(request, 'dashboard/email_logs.html', {
-        'page_obj': page,
-        'stats': stats,
+        'page_obj':     page,
+        'stats':        stats,
         'status_filter': status,
         'search_query': search,
-        'date_from': date_from,
-        'date_to': date_to,
+        'date_from':    date_from,
+        'date_to':      date_to,
     })
 
 
@@ -77,27 +80,23 @@ def email_detail(request, email_id):
 def email_compose(request):
     """Compose and send an email from the dashboard."""
     if request.method == 'POST':
-        to_raw = request.POST.get('to_emails', '')
+        to_raw  = request.POST.get('to_emails', '')
         subject = request.POST.get('subject', '').strip()
-        body = request.POST.get('body', '').strip()
-        cc_raw = request.POST.get('cc_emails', '')
+        body    = request.POST.get('body', '').strip()
+        cc_raw  = request.POST.get('cc_emails', '')
 
-        # Parse recipients
         to_list = [e.strip() for e in to_raw.replace(';', ',').split(',') if e.strip()]
         cc_list = [e.strip() for e in cc_raw.replace(';', ',').split(',') if e.strip()]
 
         if not to_list or not subject or not body:
             messages.error(request, 'Please fill in To, Subject, and Body.')
             return render(request, 'dashboard/email_compose.html', {
-                'to_emails': to_raw, 'subject': subject, 'body': body,
-                'cc_emails': cc_raw,
+                'to_emails': to_raw, 'subject': subject,
+                'body': body, 'cc_emails': cc_raw,
             })
 
-        # Build branded HTML
         from kyisa_cms.email_utils import _base_html, _send
         html_body = _base_html(subject, f"<p>{body}</p>")
-
-        # Use background-threaded send (won't crash the worker on timeout)
         _send(
             subject=subject,
             html_body=html_body,
@@ -109,18 +108,15 @@ def email_compose(request):
         messages.success(request, f'Email queued for delivery to {", ".join(to_list)}.')
         return redirect('email_logs')
 
-    # GET — show compose form with optional recipient presets
-    preset = request.GET.get('preset', '')
+    preset    = request.GET.get('preset', '')
     to_emails = ''
     if preset == 'all_managers':
         to_emails = ', '.join(
-            User.objects.filter(role='team_manager', is_active=True)
-            .values_list('email', flat=True)
+            User.objects.filter(role='team_manager', is_active=True).values_list('email', flat=True)
         )
     elif preset == 'all_referees':
         to_emails = ', '.join(
-            User.objects.filter(role='referee', is_active=True)
-            .values_list('email', flat=True)
+            User.objects.filter(role='referee', is_active=True).values_list('email', flat=True)
         )
     elif preset == 'all_admins':
         to_emails = ', '.join(
@@ -131,8 +127,8 @@ def email_compose(request):
 
     return render(request, 'dashboard/email_compose.html', {
         'to_emails': to_emails,
-        'subject': request.GET.get('subject', ''),
-        'reply_to': request.GET.get('reply_to', ''),
+        'subject':   request.GET.get('subject', ''),
+        'reply_to':  request.GET.get('reply_to', ''),
     })
 
 
@@ -144,8 +140,8 @@ def email_resend(request, email_id):
         return redirect('email_logs')
 
     original = get_object_or_404(EmailLog, pk=email_id)
-    to_list = [e.strip() for e in original.to_emails.split(',') if e.strip()]
-    cc_list = [e.strip() for e in original.cc_emails.split(',') if e.strip()] if original.cc_emails else []
+    to_list  = [e.strip() for e in original.to_emails.split(',') if e.strip()]
+    cc_list  = [e.strip() for e in original.cc_emails.split(',') if e.strip()] if original.cc_emails else []
 
     try:
         msg = EmailMultiAlternatives(
@@ -160,8 +156,7 @@ def email_resend(request, email_id):
         msg.send(fail_silently=False)
 
         EmailLog.objects.create(
-            direction='OUT',
-            status='sent',
+            direction='OUT', status='sent',
             from_email=original.from_email,
             to_emails=original.to_emails,
             cc_emails=original.cc_emails,
@@ -180,7 +175,7 @@ def email_resend(request, email_id):
 @login_required
 @user_passes_test(_is_admin)
 def test_email(request):
-    """Send a test email to verify SES/SMTP configuration."""
+    """Send a test email to verify email configuration."""
     if request.method != 'POST':
         return redirect('email_logs')
 
@@ -188,10 +183,10 @@ def test_email(request):
     try:
         from kyisa_cms.email_utils import _base_html
         html = _base_html(
+            "KYISA Email Test",
             "<p>This is a test email from the KYISA CMS.</p>"
             "<p>If you received this, your email configuration is working correctly.</p>"
             f"<p><small>Sent at {timezone.now().strftime('%Y-%m-%d %H:%M:%S')} EAT</small></p>",
-            "KYISA Email Test"
         )
         msg = EmailMultiAlternatives(
             subject='[KYISA] Email Configuration Test',
@@ -222,158 +217,64 @@ def test_email(request):
 @user_passes_test(_is_admin)
 def fetch_inbox(request):
     """
-    Fetch unseen emails from it@kyisa.org via IMAP and store them
-    as EmailLog records with direction='IN'.
-    Runs in a background thread to avoid blocking the web worker.
+    Trigger the fetch_inbox management command via subprocess.
+    The management command connects to IMAP outside the web worker thread,
+    so it cannot kill gunicorn on timeout.
     """
     if request.method != 'POST':
         return redirect('email_inbox')
 
-    import imaplib
-    import email as email_lib
-    import email.header
-    import email.utils
-    import threading
-    from django.conf import settings as django_settings
-
-    imap_host     = getattr(django_settings, 'IMAP_HOST',     'mail.privateemail.com')
-    imap_port     = int(getattr(django_settings, 'IMAP_PORT', 993))
-    imap_user     = getattr(django_settings, 'IMAP_USER',     'it@kyisa.org')
     imap_password = getattr(django_settings, 'IMAP_PASSWORD', '')
-
     if not imap_password:
         messages.error(request, 'IMAP_PASSWORD is not configured. Add it to Railway variables.')
         return redirect('email_inbox')
 
-    # Check if Railway blocks IMAP (port 993) — test with a short timeout
-    import socket
-    try:
-        sock = socket.create_connection((imap_host, imap_port), timeout=5)
-        sock.close()
-    except (socket.timeout, OSError):
-        messages.error(
-            request,
-            'IMAP port 993 is blocked by Railway on this plan. '
-            'Inbox fetching requires a Railway Pro plan or an alternative '
-            'approach such as Brevo inbound parsing. '
-            'Contact Railway support to enable outbound port 993.'
-        )
-        return redirect('email_inbox')
+    result = {'output': '', 'error': '', 'done': False}
 
-    # Port is reachable — fetch in background thread
-    result = {'fetched': 0, 'skipped': 0, 'errors': 0, 'error_msg': ''}
-
-    def _fetch_worker():
+    def _run():
         try:
-            mail = imaplib.IMAP4_SSL(imap_host, imap_port)
-            mail.login(imap_user, imap_password)
-            mail.select('INBOX')
+            # Find manage.py — it sits at the Django BASE_DIR
+            base_dir = str(django_settings.BASE_DIR)
+            manage_py = os.path.join(base_dir, 'manage.py')
+            proc = subprocess.run(
+                [sys.executable, manage_py, 'fetch_inbox', '--limit', '100'],
+                capture_output=True,
+                text=True,
+                timeout=55,
+            )
+            result['output'] = proc.stdout or ''
+            result['error']  = proc.stderr or ''
+            result['done']   = True
+        except subprocess.TimeoutExpired:
+            result['error'] = 'timeout'
+            result['done']  = True
+        except Exception as exc:
+            result['error'] = str(exc)
+            result['done']  = True
 
-            status, data = mail.search(None, 'UNSEEN')
-            if status != 'OK':
-                result['error_msg'] = 'Failed to search inbox.'
-                mail.logout()
-                return
-
-            uid_list = data[0].split()
-            for uid in uid_list:
-                try:
-                    status, msg_data = mail.fetch(uid, '(RFC822)')
-                    if status != 'OK':
-                        result['errors'] += 1
-                        continue
-
-                    raw = msg_data[0][1]
-                    msg = email_lib.message_from_bytes(raw)
-
-                    # Decode subject
-                    raw_subject = msg.get('Subject', '(No Subject)')
-                    decoded_parts = email.header.decode_header(raw_subject)
-                    subject = ''
-                    for part, enc in decoded_parts:
-                        if isinstance(part, bytes):
-                            subject += part.decode(enc or 'utf-8', errors='replace')
-                        else:
-                            subject += part
-
-                    from_addr  = email.utils.parseaddr(msg.get('From', ''))[1]
-                    to_addr    = msg.get('To', imap_user)
-                    message_id = msg.get('Message-ID', '').strip()
-                    date_str   = msg.get('Date', '')
-
-                    from email.utils import parsedate_to_datetime
-                    from django.utils import timezone as tz
-                    try:
-                        received_at = parsedate_to_datetime(date_str)
-                        if received_at.tzinfo is None:
-                            received_at = tz.make_aware(received_at)
-                    except Exception:
-                        received_at = tz.now()
-
-                    if message_id and EmailLog.objects.filter(message_id=message_id, direction='IN').exists():
-                        result['skipped'] += 1
-                        continue
-
-                    body_text = ''
-                    body_html = ''
-                    if msg.is_multipart():
-                        for part in msg.walk():
-                            ctype = part.get_content_type()
-                            disp  = str(part.get('Content-Disposition', ''))
-                            if 'attachment' in disp:
-                                continue
-                            payload = part.get_payload(decode=True)
-                            if payload is None:
-                                continue
-                            charset = part.get_content_charset() or 'utf-8'
-                            decoded = payload.decode(charset, errors='replace')
-                            if ctype == 'text/plain' and not body_text:
-                                body_text = decoded
-                            elif ctype == 'text/html' and not body_html:
-                                body_html = decoded
-                    else:
-                        payload = msg.get_payload(decode=True)
-                        if payload:
-                            charset   = msg.get_content_charset() or 'utf-8'
-                            body_text = payload.decode(charset, errors='replace')
-
-                    EmailLog.objects.create(
-                        direction  = 'IN',
-                        status     = 'sent',
-                        from_email = from_addr,
-                        to_emails  = to_addr,
-                        subject    = subject[:500],
-                        body_text  = body_text[:5000],
-                        body_html  = body_html[:10000],
-                        sent_at    = received_at,
-                        message_id = message_id[:255],
-                    )
-                    result['fetched'] += 1
-
-                except Exception:
-                    result['errors'] += 1
-                    continue
-
-            mail.logout()
-
-        except Exception as e:
-            result['error_msg'] = str(e)
-
-    thread = threading.Thread(target=_fetch_worker, daemon=True)
+    thread = threading.Thread(target=_run, daemon=True)
     thread.start()
-    thread.join(timeout=25)  # Wait up to 25 seconds
+    thread.join(timeout=58)
 
-    if result['error_msg']:
-        messages.error(request, f'Fetch failed: {result["error_msg"]}')
-    elif result['fetched']:
-        messages.success(request, f'Fetched {result["fetched"]} new email{"s" if result["fetched"] != 1 else ""} from it@kyisa.org.')
-    elif result['skipped']:
-        messages.info(request, f'No new emails — {result["skipped"]} already imported.')
+    if not result['done']:
+        messages.warning(request, 'Inbox fetch is still running in the background — check back in a moment.')
+    elif result['error'] == 'timeout':
+        messages.warning(request, 'Fetch timed out — inbox may still be processing.')
+    elif 'IMAP_PASSWORD' in result.get('error', ''):
+        messages.error(request, 'IMAP_PASSWORD is not set on the server.')
+    elif result['error'] and not result['output']:
+        messages.error(request, f'Fetch error: {result["error"][:300]}')
     else:
-        messages.info(request, 'No new unseen emails in inbox.')
-
-    if result['errors']:
-        messages.warning(request, f'{result["errors"]} email{"s" if result["errors"] != 1 else ""} could not be imported.')
+        # Parse the summary line from management command output
+        for line in result['output'].splitlines():
+            if line.strip().startswith('Done —'):
+                messages.success(request, f'✓ {line.strip()}')
+                break
+        else:
+            if result['output']:
+                messages.success(request, 'Inbox fetched successfully.')
+            else:
+                messages.info(request, 'No new emails found.')
 
     return redirect('email_inbox')
 
@@ -381,16 +282,14 @@ def fetch_inbox(request):
 @login_required
 @user_passes_test(_is_admin)
 def email_inbox(request):
-    """View incoming emails fetched from it@kyisa.org IMAP inbox."""
+    """View incoming emails from it@kyisa.org inbox."""
     qs = EmailLog.objects.filter(direction='IN')
 
-    # Filters
     search    = request.GET.get('q', '')
     date_from = request.GET.get('from', '')
     date_to   = request.GET.get('to', '')
 
     if search:
-        from django.db.models import Q
         qs = qs.filter(
             Q(subject__icontains=search) |
             Q(from_email__icontains=search) |
@@ -402,19 +301,19 @@ def email_inbox(request):
         qs = qs.filter(sent_at__date__lte=date_to)
 
     stats = {
-        'total':   EmailLog.objects.filter(direction='IN').count(),
-        'today':   EmailLog.objects.filter(direction='IN', sent_at__date=timezone.now().date()).count(),
-        'outbox':  EmailLog.objects.filter(direction='OUT', status='sent').count(),
-        'failed':  EmailLog.objects.filter(direction='OUT', status='failed').count(),
+        'total':  EmailLog.objects.filter(direction='IN').count(),
+        'today':  EmailLog.objects.filter(direction='IN', sent_at__date=timezone.now().date()).count(),
+        'outbox': EmailLog.objects.filter(direction='OUT', status='sent').count(),
+        'failed': EmailLog.objects.filter(direction='OUT', status='failed').count(),
     }
 
     paginator = Paginator(qs, 25)
     page = paginator.get_page(request.GET.get('page'))
 
     return render(request, 'dashboard/email_inbox.html', {
-        'page_obj':    page,
-        'stats':       stats,
+        'page_obj':     page,
+        'stats':        stats,
         'search_query': search,
-        'date_from':   date_from,
-        'date_to':     date_to,
+        'date_from':    date_from,
+        'date_to':      date_to,
     })

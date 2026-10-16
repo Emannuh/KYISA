@@ -9,7 +9,13 @@
       <p>Incoming emails received at <strong>inbox@reply.kyisa.org</strong></p>
     </div>
     <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
-      <a href="{% url 'email_compose' %}" class="btn btn-primary">
+      <form method="post" action="{% url 'fetch_inbox' %}" style="display:inline">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary" id="fetchBtn">
+          <i class="bi bi-arrow-repeat" id="fetchIcon"></i> Fetch Inbox
+        </button>
+      </form>
+      <a href="{% url 'email_compose' %}" class="btn btn-outline">
         <i class="bi bi-pencil-square"></i> Compose
       </a>
       <a href="{% url 'email_logs' %}" class="btn btn-outline">
@@ -23,11 +29,12 @@
 <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;gap:.85rem;align-items:flex-start">
   <i class="bi bi-info-circle-fill" style="color:#3b82f6;font-size:1.2rem;flex-shrink:0;margin-top:.1rem"></i>
   <div>
-    <p style="margin:0 0 .3rem;font-weight:700;font-size:.88rem;color:#1e40af">How Inbox Works</p>
+    <p style="margin:0 0 .3rem;font-weight:700;font-size:.88rem;color:#1e40af">Inbox — it@kyisa.org</p>
     <p style="margin:0;font-size:.82rem;color:#374151;line-height:1.6">
-      Emails sent to <strong>inbox@reply.kyisa.org</strong> are automatically parsed by Brevo and delivered
-      to this inbox in real time — no manual fetch needed. To receive a reply here, set your outgoing
-      email reply-to as <code style="background:#dbeafe;padding:1px 6px;border-radius:4px">inbox@reply.kyisa.org</code>.
+      Click <strong>Fetch Inbox</strong> to pull new emails from <strong>it@kyisa.org</strong> via IMAP.
+      Emails are fetched and stored here for easy management, reply, and archiving.
+      For automatic background fetching every 2 minutes, a Railway Cron job runs
+      <code style="background:#dbeafe;padding:1px 6px;border-radius:4px">python manage.py fetch_inbox</code> automatically.
     </p>
   </div>
 </div>
