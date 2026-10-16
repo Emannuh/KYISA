@@ -157,7 +157,21 @@ class Command(BaseCommand):
                         payload = msg.get_payload(decode=True)
                         if payload:
                             charset   = msg.get_content_charset() or 'utf-8'
-                            body_text = payload.decode(charset, errors='replace')
+                            decoded   = payload.decode(charset, errors='replace')
+                            ctype     = msg.get_content_type()
+                            if ctype == 'text/html':
+                                body_html = decoded
+                            else:
+                                body_text = decoded
+
+                    # If we only got HTML, generate a plain text version
+                    if body_html and not body_text:
+                        from django.utils.html import strip_tags
+                        body_text = strip_tags(body_html)
+
+                    # If we only got plain text, wrap it in simple HTML
+                    if body_text and not body_html:
+                        body_html = f'<pre style="white-space:pre-wrap;font-family:inherit">{body_text}</pre>'
 
                     # ── Store ─────────────────────────────────────────────────
                     EmailLog.objects.create(

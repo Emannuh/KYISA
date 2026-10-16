@@ -59,7 +59,7 @@
     <div style="padding:0">
         {% if email.body_html %}
         <div style="border:1px solid var(--border);border-radius:8px;margin:.85rem;overflow:hidden">
-            <iframe id="emailFrame" srcdoc="{{ email.body_html|escapejs }}" style="width:100%;border:none;min-height:300px" sandbox="allow-same-origin"></iframe>
+            <iframe id="emailFrame" srcdoc="{{ email.body_html }}" style="width:100%;border:none;min-height:300px" sandbox="allow-same-origin"></iframe>
         </div>
         {% else %}
         <pre style="padding:.85rem;margin:0;white-space:pre-wrap;font-size:.82rem">{{ email.body_text }}</pre>
@@ -69,13 +69,21 @@
 
 <!-- Actions -->
 <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+    {% if email.direction == 'IN' %}
+    <a href="{% url 'email_compose' %}?reply_to={{ email.from_email }}&subject=Re: {{ email.subject|urlencode }}"
+       class="btn btn-primary"><i class="bi bi-reply-fill"></i> Reply</a>
+    {% endif %}
     {% if email.status == 'failed' %}
     <form method="post" action="{% url 'email_resend' email.pk %}">
         {% csrf_token %}
         <button type="submit" class="btn btn-primary"><i class="bi bi-arrow-repeat"></i> Resend</button>
     </form>
     {% endif %}
+    {% if email.direction == 'IN' %}
+    <a href="{% url 'email_inbox' %}" class="btn btn-outline"><i class="bi bi-arrow-left"></i> Back to Inbox</a>
+    {% else %}
     <a href="{% url 'email_logs' %}" class="btn btn-outline"><i class="bi bi-arrow-left"></i> Back to Logs</a>
+    {% endif %}
 </div>
 
 {% endblock %}
