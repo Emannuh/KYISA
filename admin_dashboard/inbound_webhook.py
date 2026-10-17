@@ -17,14 +17,33 @@ import json
 import logging
 import hmac
 import hashlib
+import requests
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.conf import settings
 from django.utils import timezone
+from django.core.files.base import ContentFile
 
 logger = logging.getLogger(__name__)
+
+
+def _download_brevo_attachment(download_token: str) -> bytes | None:
+    """Download an attachment binary from Brevo using its DownloadToken."""
+    api_key = getattr(settings, 'BREVO_API_KEY', '')
+    if not api_key:
+        logger.warning('BREVO_API_KEY not set — cannot download attachments')
+        return None
+    try:
+        url = f"https://api.brevo.com/v3/inbound/attachments/{requests.utils.quote(download_token, safe='')}"
+        resp = requests.get(url, headers={'api-key': api_key}, timeout=30)
+        if resp.ok:
+            return resp.content
+        logger.warning('Brevo attachment download failed: %s %s', resp.status_code, download_token[:40])
+    except Exception as exc:
+        logger.error('Brevo attachment download error: %s', exc)
+    return None
 
 
 @csrf_exempt
@@ -105,7 +124,7 @@ def brevo_inbound_webhook(request):
             ).exists():
                 continue
 
-            EmailLog.objects.create(
+            log = EmailLog.objects.create(
                 direction  = 'IN',
                 status     = 'sent',
                 from_email = from_addr[:254],
@@ -116,6 +135,30 @@ def brevo_inbound_webhook(request):
                 sent_at    = received_at,
                 message_id = message_id[:255],
             )
+
+            # ── Download and save attachments ─────────────────────────────
+            from admin_dashboard.models import EmailAttachment
+            for att in item.get('Attachments', []):
+                try:
+                    name         = att.get('Name', 'attachment')[:255]
+                    content_type = att.get('ContentType', 'application/octet-stream')[:100]
+                    token        = att.get('DownloadToken', '')
+                    if not token:
+                        continue
+                    data = _download_brevo_attachment(token)
+                    if data is None:
+                        continue
+                    att_obj = EmailAttachment(
+                        email        = log,
+                        filename     = name,
+                        content_type = content_type,
+                        size         = len(data),
+                    )
+                    att_obj.file.save(name, ContentFile(data), save=True)
+                    logger.info('Attachment saved: %s (%d bytes)', name, len(data))
+                except Exception as att_exc:
+                    logger.error('Failed to save attachment %s: %s', att.get('Name'), att_exc)
+
             stored += 1
             logger.info('Inbound email stored: %s from %s', subject, from_addr)
 

@@ -247,3 +247,47 @@ class EmailLog(models.Model):
 
     def __str__(self):
         return f"[{self.status}] {self.subject} → {self.to_emails[:60]}"
+
+
+class EmailAttachment(models.Model):
+    """Stores file attachments for inbound (and optionally outbound) emails."""
+    email       = models.ForeignKey(EmailLog, on_delete=models.CASCADE, related_name='attachments')
+    filename    = models.CharField(max_length=255)
+    content_type = models.CharField(max_length=100, blank=True)
+    size        = models.PositiveIntegerField(default=0, help_text="File size in bytes")
+    file        = models.FileField(upload_to='email_attachments/%Y/%m/', blank=True)
+
+    class Meta:
+        ordering = ['filename']
+        verbose_name = 'Email Attachment'
+        verbose_name_plural = 'Email Attachments'
+
+    def __str__(self):
+        return f"{self.filename} ({self.email.subject[:40]})"
+
+    @property
+    def size_display(self):
+        """Human-readable file size."""
+        if self.size < 1024:
+            return f"{self.size} B"
+        elif self.size < 1024 * 1024:
+            return f"{self.size / 1024:.1f} KB"
+        else:
+            return f"{self.size / (1024 * 1024):.1f} MB"
+
+    @property
+    def icon(self):
+        """Bootstrap icon based on content type."""
+        ct = self.content_type.lower()
+        if 'pdf' in ct:
+            return 'bi-file-earmark-pdf'
+        elif 'image' in ct:
+            return 'bi-file-earmark-image'
+        elif 'word' in ct or 'document' in ct:
+            return 'bi-file-earmark-word'
+        elif 'excel' in ct or 'spreadsheet' in ct:
+            return 'bi-file-earmark-excel'
+        elif 'zip' in ct or 'compressed' in ct:
+            return 'bi-file-earmark-zip'
+        else:
+            return 'bi-file-earmark'
