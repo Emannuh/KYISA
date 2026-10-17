@@ -30,6 +30,9 @@ from teams.verification_views import (
     verifisha_poll_report as _verifisha_poll,
     verifisha_iprs_lookup as _verifisha_iprs_lookup,
     bulk_verifisha_check as _bulk_verifisha,
+    # ── Verifisha — County Player ──────────────────────────────────────────
+    verifisha_verify_county_player as _verifisha_verify_county,
+    verifisha_poll_county_player as _verifisha_poll_county,
 )
 from teams.verifisha_webhook import verifisha_webhook_view as _verifisha_webhook
 
@@ -273,12 +276,16 @@ urlpatterns = [
     # Full URL: https://kyisa.org/api/v1/didit/webhook/
     path("api/v1/didit/webhook/",                                 _didit_webhook,             name="didit_webhook"),
 
-    # ── VERIFISHA IDENTITY VERIFICATION ──────────────────────────────────────
+    # ── VERIFISHA IDENTITY VERIFICATION (club Player — legacy) ───────────────
     path("portal/players/<int:player_pk>/verifisha-verify/",      _verifisha_verify,          name="verifisha_verify_player"),
     path("portal/players/<int:player_pk>/verifisha-poll/",        _verifisha_poll,            name="verifisha_poll_report"),
     path("portal/players/bulk-verifisha-check/",                  _bulk_verifisha,            name="bulk_verifisha_check"),
     path("api/v1/verifisha/iprs-lookup/",                         _verifisha_iprs_lookup,     name="verifisha_iprs_lookup"),
-    # Webhook — register in Verifisha dashboard → API → Webhooks
+    # ── VERIFISHA — COUNTY PLAYER (active) ───────────────────────────────────
+    path("portal/cm/county-players/<int:player_pk>/verifisha-verify/", _verifisha_verify_county,  name="verifisha_verify_county_player"),
+    path("portal/cm/county-players/<int:player_pk>/verifisha-poll/",   _verifisha_poll_county,    name="verifisha_poll_county_player"),
+    # Webhook — single endpoint handles both Player and CountyPlayer
+    # Register in Verifisha dashboard → API → Webhooks
     # Full URL: https://kyisa.org/api/v1/verifisha/webhook/
     path("api/v1/verifisha/webhook/",                             _verifisha_webhook,         name="verifisha_webhook"),
 

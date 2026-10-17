@@ -1183,3 +1183,87 @@ def bulk_verifisha_check(request):
         f'✅ Verifisha bulk check: {submitted} reports submitted, {failed} failed.'
     )
     return redirect('player_clearance_dashboard')
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   VERIFISHA — COUNTY PLAYER (CountyPlayer model)
+# ══════════════════════════════════════════════════════════════════════════════
+
+@clearance_role_required
+def verifisha_verify_county_player(request, player_pk):
+    """Submit a Verifisha IPRS report for a CountyPlayer."""
+    from teams.models import CountyPlayer
+    from teams.verifisha_service import VerifishaService
+
+    player = get_object_or_404(CountyPlayer, pk=player_pk)
+
+    if request.method == 'POST':
+        action = request.POST.get('action', 'submit')
+
+        if action == 'submit':
+            svc    = VerifishaService()
+            result = svc.verify_player(player)
+
+            if result.success:
+                player.huduma_reference = result.report_id
+                player.huduma_status    = 'pending'
+                player.huduma_notes     = (
+                    f"Verifisha report submitted — ID: {result.report_id}. "
+                    f"{'[SANDBOX]' if result.is_simulation else '[LIVE]'} "
+                    f"Awaiting webhook result."
+                )
+                player.huduma_verified_at = timezone.now()
+                player.save(update_fields=[
+                    'huduma_reference', 'huduma_status',
+                    'huduma_notes', 'huduma_verified_at',
+                ])
+                messages.success(
+                    request,
+                    f'✅ Verifisha report submitted for {player.first_name} {player.last_name}. '
+                    f'Report ID: {result.report_id}.'
+                )
+            else:
+                messages.error(
+                    request,
+                    f'❌ Verifisha failed for {player.first_name} {player.last_name}: {result.error_message}'
+                )
+
+        elif action == 'reset':
+            player.huduma_status      = 'not_checked'
+            player.huduma_reference   = ''
+            player.huduma_notes       = ''
+            player.huduma_verified_at = None
+            player.save(update_fields=[
+                'huduma_status', 'huduma_reference',
+                'huduma_notes', 'huduma_verified_at',
+            ])
+            messages.info(request, f'🔄 Verifisha reset for {player.first_name} {player.last_name}.')
+
+    return redirect('verify_county_player', player_pk=player.pk)
+
+
+@clearance_role_required
+def verifisha_poll_county_player(request, player_pk):
+    """AJAX: poll Verifisha report status for a CountyPlayer."""
+    from teams.models import CountyPlayer
+    from teams.verifisha_service import VerifishaService
+    from teams.verifisha_webhook import _apply_verifisha_result_county
+
+    player    = get_object_or_404(CountyPlayer, pk=player_pk)
+    report_id = player.huduma_reference
+
+    if not report_id:
+        return JsonResponse({'success': False, 'error': 'No Verifisha report on record.'})
+
+    svc    = VerifishaService()
+    result = svc.get_report(report_id)
+
+    if result.is_complete and result.success:
+        _apply_verifisha_result_county(player, result, report_id)
+        player.refresh_from_db()
+
+    return JsonResponse({
+        **result.to_dict(),
+        'huduma_status': player.huduma_status,
+        'huduma_notes':  player.huduma_notes,
+    })

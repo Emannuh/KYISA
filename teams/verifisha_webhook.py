@@ -68,7 +68,17 @@ def verifisha_webhook_view(request):
     report_data = payload.get("report", {})
     report_id   = report_data.get("id", "")
 
-    # Player lookup — stored in metadata or huduma_reference
+    # Try CountyPlayer first (active system), then Player (legacy)
+    from teams.verifisha_webhook import _find_county_player_for_report
+    county_player = _find_county_player_for_report(payload, report_id)
+    if county_player:
+        from teams.verifisha_webhook import _apply_verifisha_result_county
+        result = svc.parse_webhook_payload(payload)
+        _apply_verifisha_result_county(county_player, result, report_id)
+        logger.info("Verifisha webhook: CountyPlayer %s → %s", county_player.pk, county_player.huduma_status)
+        return JsonResponse({"received": True, "county_player_pk": county_player.pk, "report_id": report_id})
+
+    # Fall back to legacy Player model
     player = _find_player_for_report(payload, report_id)
     if not player:
         logger.warning("Verifisha webhook: no player found for report_id=%s", report_id)
@@ -188,3 +198,65 @@ def _apply_verifisha_result(player, result, report_id: str):
         )
     except Exception as exc:
         logger.error("Verifisha webhook: failed to create audit log for player %s: %s", player.pk, exc)
+
+
+def _apply_verifisha_result_county(player, result, report_id: str):
+    """
+    Write a Verifisha result onto a CountyPlayer's huduma fields.
+    CountyPlayer uses simpler string choices ('not_checked','verified','failed','pending').
+    """
+    risk   = result.risk_level
+    status = result.status
+
+    if status == "COMPLETED" and result.person_found and risk in ("LOW", "MEDIUM"):
+        player.huduma_status    = "verified"
+        player.huduma_reference = report_id
+        player.huduma_notes     = (
+            f"Verifisha: {result.conclusion_title}. Risk: {risk}. "
+            f"Name: {result.verified_name or '—'}, "
+            f"DOB: {result.verified_dob or '—'}, "
+            f"Age: {result.verified_age or '—'}."
+        )
+    elif status == "PENDING_REVIEW":
+        player.huduma_status    = "pending"
+        player.huduma_reference = report_id
+        player.huduma_notes     = f"Verifisha: under review. Risk: {risk}."
+    elif status in ("FAILED",) or (status == "COMPLETED" and not result.person_found):
+        player.huduma_status    = "failed"
+        player.huduma_reference = report_id
+        identity = result.identity_check
+        flags    = identity.flags if identity else []
+        player.huduma_notes = (
+            f"Verifisha: {result.conclusion_title or 'Failed'}. "
+            + (f"Flags: {', '.join(flags)}." if flags else "Not found in IPRS.")
+        )
+    elif status == "COMPLETED" and risk in ("HIGH", "CRITICAL"):
+        player.huduma_status    = "failed"
+        player.huduma_reference = report_id
+        player.huduma_notes     = f"Verifisha HIGH risk ({risk}): {result.conclusion_title}."
+    else:
+        player.huduma_status    = "pending"
+        player.huduma_reference = report_id
+        player.huduma_notes     = f"Verifisha: {status}/{risk}. Manual review required."
+
+    player.huduma_verified_at = timezone.now()
+    player.save(update_fields=["huduma_status", "huduma_reference", "huduma_notes", "huduma_verified_at"])
+
+
+def _find_county_player_for_report(payload: dict, report_id: str):
+    """Find a CountyPlayer by report_id stored in huduma_reference."""
+    from teams.models import CountyPlayer
+
+    player = CountyPlayer.objects.filter(huduma_reference=report_id).first()
+    if player:
+        return player
+
+    # Try metadata
+    meta   = payload.get("report", {}).get("metadata", {})
+    pk_str = meta.get("kyisa_county_player_pk", "")
+    if pk_str:
+        try:
+            return CountyPlayer.objects.filter(pk=int(pk_str)).first()
+        except (ValueError, TypeError):
+            pass
+    return None

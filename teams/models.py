@@ -197,10 +197,19 @@ class CountyPlayer(models.Model):
             ("not_checked", "Not Checked"),
             ("verified", "Verified"),
             ("failed", "Failed"),
+            ("pending", "Pending"),
         ],
         default="not_checked",
     )
     huduma_verified_at = models.DateTimeField(null=True, blank=True)
+    huduma_reference   = models.CharField(
+        max_length=255, blank=True, default="",
+        help_text="Verifisha report ID or Huduma reference",
+    )
+    huduma_notes       = models.TextField(
+        blank=True, default="",
+        help_text="Notes from IPRS/Verifisha verification",
+    )
 
     # ── Higher League / National Team Check (non-football disciplines) ────
     higher_league_status = models.CharField(

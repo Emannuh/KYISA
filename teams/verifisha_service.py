@@ -227,6 +227,8 @@ class VerifishaService:
                 "metadata": {
                     "kyisa_player_pk": str(player.pk),
                     "kyisa_player_name": f"{player.first_name} {player.last_name}",
+                    # CountyPlayer support
+                    "kyisa_county_player_pk": str(player.pk) if hasattr(player, 'discipline') else "",
                 },
             }]
         }
