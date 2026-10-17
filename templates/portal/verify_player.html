@@ -233,4 +233,124 @@
     <a href="{% url 'player_verification_list' %}" style="color:#1B5E20;font-weight:600;text-decoration:none">← Back to Verification List</a>
     <a href="{% url 'player_clearance_detail' player_pk=player.pk %}" style="color:#1565C0;font-weight:600;text-decoration:none">🛡️ View Full Clearance (Huduma + FIFA Connect) →</a>
 </div>
+
+<!-- ── VERIFISHA IPRS SECTION ─────────────────────────────────────────── -->
+<div class="card" style="margin-top:1.5rem;border-left:4px solid #0D47A1">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+        <h3 style="margin:0">🔍 Verifisha IPRS Verification</h3>
+        <span style="font-size:.8rem;padding:.25rem .75rem;background:#e3f2fd;color:#0D47A1;border-radius:20px;font-weight:600">
+            {% if player.huduma_status == 'verified' %}✅ Verified
+            {% elif player.huduma_status == 'failed' %}❌ Failed
+            {% elif player.huduma_status == 'pending' %}⏳ Pending
+            {% else %}Not checked{% endif %}
+        </span>
+    </div>
+    <div class="card-body">
+
+        <!-- Quick IPRS Lookup -->
+        <div style="margin-bottom:1.25rem;padding:1rem;background:#f0f4ff;border:1px solid #c5cae9;border-radius:8px">
+            <p style="font-size:.85rem;font-weight:700;color:#1565C0;margin:0 0 .4rem">🔎 Quick IPRS Lookup</p>
+            <p style="font-size:.82rem;color:#555;margin:0 0 .75rem">Type an ID number to check IPRS records instantly.</p>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+                <input type="text" id="vp-iprs-input"
+                       value="{{ player.national_id_number|default:'' }}"
+                       placeholder="e.g. 12345678"
+                       style="flex:1;min-width:160px;padding:.4rem .75rem;border:1px solid #c5cae9;border-radius:6px;font-size:.85rem">
+                <button onclick="vpRunLookup()" style="padding:.4rem 1.1rem;background:#1565C0;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:.85rem;font-weight:600">
+                    Lookup
+                </button>
+            </div>
+            <div id="vp-iprs-result" style="display:none;margin-top:.85rem"></div>
+        </div>
+
+        <!-- Run Verifisha Check -->
+        {% if player.huduma_status != 'verified' %}
+        <form method="post" action="{% url 'verifisha_verify_player' player_pk=player.pk %}" style="display:inline">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="submit">
+            <button type="submit" style="padding:.5rem 1.25rem;background:#0D47A1;color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:.88rem;font-weight:700">
+                🔍 Run Verifisha IPRS Check
+            </button>
+        </form>
+        {% endif %}
+
+        {% if player.huduma_status == 'pending' and player.huduma_reference %}
+        <div style="margin-top:.75rem;padding:.5rem .85rem;background:#e3f2fd;border-radius:6px;display:inline-flex;align-items:center;gap:.75rem">
+            <span style="color:#1565C0;font-size:.85rem;font-weight:600">⏳ Report pending…</span>
+            <button onclick="vpPollVerifisha()" style="padding:.25rem .75rem;background:#1565C0;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:.8rem">Check Now</button>
+        </div>
+        {% endif %}
+
+        {% if player.huduma_status == 'verified' and player.huduma_notes %}
+        <div style="margin-top:.75rem;padding:.65rem 1rem;background:#e8f5e9;border-radius:8px;font-size:.85rem;color:#1B5E20">
+            <strong>✅ Verified:</strong> {{ player.huduma_notes }}
+        </div>
+        {% endif %}
+
+        {% if player.huduma_status == 'failed' and player.huduma_notes %}
+        <div style="margin-top:.75rem;padding:.65rem 1rem;background:#fce4ec;border-radius:8px;font-size:.85rem;color:#C62828">
+            <strong>❌ Failed:</strong> {{ player.huduma_notes }}
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function vpRunLookup() {
+    const id  = document.getElementById('vp-iprs-input').value.trim();
+    const box = document.getElementById('vp-iprs-result');
+    if (!id) return;
+    box.style.display = 'block';
+    box.innerHTML = '<p style="color:#1565C0;font-size:.85rem">⏳ Looking up…</p>';
+    fetch("{% url 'verifisha_iprs_lookup' %}?id_number=" + encodeURIComponent(id))
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success || !data.person_found) {
+                box.innerHTML = `<div style="padding:.65rem 1rem;background:#fce4ec;border-radius:6px;font-size:.85rem;color:#C62828">
+                    ❌ <strong>Not found</strong> — ${data.error_message || 'No IPRS record for this ID.'}
+                    ${data.is_simulation ? '<br><em style="color:#888">[Sandbox]</em>' : ''}
+                </div>`;
+                return;
+            }
+            const sim = data.is_simulation ? ' <span style="font-size:.75rem;color:#888">[Sandbox]</span>' : '';
+            box.innerHTML = `
+            <div style="padding:.75rem 1rem;background:#e8f5e9;border-radius:8px;border:1px solid #a5d6a7">
+                <p style="margin:0 0 .5rem;font-size:.85rem;font-weight:700;color:#1B5E20">✅ IPRS Record Found${sim}</p>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.4rem;font-size:.83rem">
+                    <div><span style="color:#666">Full Name</span><br><strong>${data.full_name||'—'}</strong></div>
+                    <div><span style="color:#666">Date of Birth</span><br><strong>${data.date_of_birth||'—'}</strong></div>
+                    <div><span style="color:#666">Age</span><br><strong>${data.age !== null ? data.age+' yrs' : '—'}</strong></div>
+                    <div><span style="color:#666">Gender</span><br><strong>${data.gender||'—'}</strong></div>
+                    <div><span style="color:#666">National ID</span><br><strong>${data.national_id||id}</strong></div>
+                </div>
+            </div>`;
+        })
+        .catch(err => { box.innerHTML = `<p style="color:#C62828;font-size:.85rem">❌ Error: ${err}</p>`; });
+}
+
+function vpPollVerifisha() {
+    const btn = event.target;
+    btn.textContent = 'Checking…';
+    btn.disabled = true;
+    fetch("{% url 'verifisha_poll_report' player_pk=player.pk %}")
+        .then(r => r.json())
+        .then(data => {
+            if (data.huduma_status === 'verified' || data.huduma_status === 'failed') {
+                location.reload();
+            } else {
+                btn.textContent = 'Still pending — try again';
+                btn.disabled = false;
+            }
+        })
+        .catch(() => { btn.textContent = 'Error'; btn.disabled = false; });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const inp = document.getElementById('vp-iprs-input');
+    if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') vpRunLookup(); });
+});
+</script>
 {% endblock %}
