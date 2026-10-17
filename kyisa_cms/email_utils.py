@@ -187,7 +187,7 @@ def _send(subject, html_body, recipients, fail_silently=True, sent_by=None, cc=N
                     bcc_emails=", ".join(bcc or []),
                     subject=subject,
                     body_text=plain_body[:5000],
-                    body_html=html_body[:10000],
+                    body_html=html_body[:100000],
                     sent_by=sent_by,
                     message_id=getattr(msg, "extra_headers", {}).get("Message-ID", ""),
                 )
@@ -214,7 +214,7 @@ def _send(subject, html_body, recipients, fail_silently=True, sent_by=None, cc=N
                 bcc_emails=", ".join(bcc or []),
                 subject=subject,
                 body_text=plain_body[:5000],
-                body_html=html_body[:10000],
+                body_html=html_body[:100000],
                 sent_by=sent_by,
                 error_message=last_error[:2000],
             )

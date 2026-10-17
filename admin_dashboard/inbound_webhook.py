@@ -112,7 +112,7 @@ def brevo_inbound_webhook(request):
                 to_emails  = to_addr[:500],
                 subject    = subject,
                 body_text  = str(body_text)[:5000],
-                body_html  = str(body_html)[:10000],
+                body_html  = str(body_html)[:100000],
                 sent_at    = received_at,
                 message_id = message_id[:255],
             )
