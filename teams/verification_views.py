@@ -992,3 +992,194 @@ def _status_msg(request, player, result):
         messages.error(request, f'❌ {name} — Didit KYC Declined.')
     else:
         messages.info(request, f'ℹ️ {name} — Didit status: {result.session_status}. Check manually.')
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   VERIFISHA IDENTITY VERIFICATION
+# ══════════════════════════════════════════════════════════════════════════════
+
+@clearance_role_required
+def verifisha_verify_player(request, player_pk):
+    """
+    Submit a Verifisha identity verification report for a player.
+    POST → triggers async report; result arrives via webhook.
+    GET  → redirects to clearance detail.
+    """
+    from teams.verifisha_service import VerifishaService
+
+    player = get_object_or_404(Player, pk=player_pk)
+
+    if request.method == 'POST':
+        action = request.POST.get('action', 'submit')
+
+        if action == 'submit':
+            svc    = VerifishaService()
+            result = svc.verify_player(player)
+
+            if result.success:
+                # Store report_id so the webhook can find this player later
+                player.huduma_reference = result.report_id
+                player.huduma_status    = HudumaVerificationStatus.PENDING
+                player.huduma_notes     = (
+                    f"Verifisha report submitted — ID: {result.report_id}. "
+                    f"{'[SANDBOX]' if result.is_simulation else '[LIVE]'} "
+                    f"Awaiting webhook result."
+                )
+                player.huduma_verified_at = timezone.now()
+                player.huduma_verified_by = request.user
+                player.save(update_fields=[
+                    'huduma_reference', 'huduma_status', 'huduma_notes',
+                    'huduma_verified_at', 'huduma_verified_by',
+                ])
+
+                PlayerVerificationLog.objects.create(
+                    player=player,
+                    step=VerificationStep.HUDUMA,
+                    action='verifisha_submit',
+                    result=HudumaVerificationStatus.PENDING,
+                    details={
+                        'report_id': result.report_id,
+                        'status': result.status,
+                        'is_simulation': result.is_simulation,
+                    },
+                    notes=player.huduma_notes,
+                    performed_by=request.user,
+                )
+                messages.success(
+                    request,
+                    f'✅ Verifisha report submitted for {player.get_full_name()}. '
+                    f'Report ID: {result.report_id}. '
+                    f'Result will arrive automatically via webhook.'
+                )
+            else:
+                messages.error(
+                    request,
+                    f'❌ Verifisha submission failed for {player.get_full_name()}: {result.error_message}'
+                )
+
+        elif action == 'manual_verify':
+            ref   = request.POST.get('reference', '')
+            notes = request.POST.get('notes', '')
+            player.huduma_status      = HudumaVerificationStatus.VERIFIED
+            player.huduma_reference   = ref
+            player.huduma_notes       = f"Manually verified via Verifisha by {request.user.get_full_name()}. {notes}"
+            player.huduma_verified_at = timezone.now()
+            player.huduma_verified_by = request.user
+            player.save()
+            PlayerVerificationLog.objects.create(
+                player=player,
+                step=VerificationStep.HUDUMA,
+                action='verifisha_manual_verify',
+                result='verified',
+                details={'reference': ref},
+                notes=notes,
+                performed_by=request.user,
+            )
+            messages.success(request, f'✅ Verifisha verification manually confirmed for {player.get_full_name()}.')
+
+        elif action == 'reset':
+            player.huduma_status      = HudumaVerificationStatus.NOT_CHECKED
+            player.huduma_reference   = ''
+            player.huduma_notes       = ''
+            player.huduma_verified_at = None
+            player.huduma_verified_by = None
+            player.save(update_fields=[
+                'huduma_status', 'huduma_reference', 'huduma_notes',
+                'huduma_verified_at', 'huduma_verified_by',
+            ])
+            PlayerVerificationLog.objects.create(
+                player=player,
+                step=VerificationStep.HUDUMA,
+                action='verifisha_reset',
+                result='not_checked',
+                notes='Reset by admin',
+                performed_by=request.user,
+            )
+            messages.info(request, f'🔄 Verifisha verification reset for {player.get_full_name()}.')
+
+    return redirect('player_clearance_detail', player_pk=player.pk)
+
+
+@clearance_role_required
+def verifisha_poll_report(request, player_pk):
+    """
+    AJAX: poll Verifisha for the current report status for a player.
+    Returns JSON — the frontend can call this while waiting for the webhook.
+    """
+    from teams.verifisha_service import VerifishaService
+
+    player    = get_object_or_404(Player, pk=player_pk)
+    report_id = player.huduma_reference
+
+    if not report_id or not report_id.startswith(('rep_', 'sim_', '0a')):
+        return JsonResponse({'success': False, 'error': 'No Verifisha report on record.'})
+
+    svc    = VerifishaService()
+    result = svc.get_report(report_id)
+
+    if result.is_complete and result.success:
+        from teams.verifisha_webhook import _apply_verifisha_result
+        _apply_verifisha_result(player, result, report_id)
+        player.refresh_from_db()
+
+    return JsonResponse({
+        **result.to_dict(),
+        'huduma_status': player.huduma_status,
+        'huduma_notes':  player.huduma_notes,
+    })
+
+
+@clearance_role_required
+def verifisha_iprs_lookup(request):
+    """
+    AJAX: quick IPRS lookup by national ID number using Verifisha.
+    Returns JSON compatible with the existing api_iprs_lookup endpoint shape.
+    """
+    from teams.verifisha_service import VerifishaService
+
+    national_id = request.GET.get('id_number', '').strip()
+    if not national_id:
+        return JsonResponse({'success': False, 'error': 'id_number is required.'}, status=400)
+
+    svc    = VerifishaService()
+    result = svc.lookup_by_national_id(national_id)
+    return JsonResponse(result.to_dict())
+
+
+@clearance_role_required
+def bulk_verifisha_check(request):
+    """
+    Bulk-submit Verifisha reports for all players with huduma_status=not_checked.
+    """
+    from teams.verifisha_service import VerifishaService
+    from teams.models import Player
+
+    if request.method != 'POST':
+        return redirect('player_clearance_dashboard')
+
+    players = Player.objects.filter(
+        huduma_status=HudumaVerificationStatus.NOT_CHECKED,
+    ).exclude(national_id_number='')[:50]   # cap at 50 per bulk run
+
+    svc = VerifishaService()
+    submitted, failed = 0, 0
+
+    for player in players:
+        result = svc.verify_player(player)
+        if result.success:
+            player.huduma_reference = result.report_id
+            player.huduma_status    = HudumaVerificationStatus.PENDING
+            player.huduma_notes     = f"Verifisha bulk submit — report {result.report_id}."
+            player.huduma_verified_at = timezone.now()
+            player.save(update_fields=[
+                'huduma_reference', 'huduma_status', 'huduma_notes', 'huduma_verified_at',
+            ])
+            submitted += 1
+        else:
+            failed += 1
+
+    messages.success(
+        request,
+        f'✅ Verifisha bulk check: {submitted} reports submitted, {failed} failed.'
+    )
+    return redirect('player_clearance_dashboard')

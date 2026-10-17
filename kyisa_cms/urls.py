@@ -25,7 +25,13 @@ from teams.verification_views import (
     didit_poll_session_view as _didit_poll,
     didit_manual_apply_view as _didit_manual_apply,
     didit_webhook_view as _didit_webhook,
+    # ── Verifisha ──────────────────────────────────────────────────────────
+    verifisha_verify_player as _verifisha_verify,
+    verifisha_poll_report as _verifisha_poll,
+    verifisha_iprs_lookup as _verifisha_iprs_lookup,
+    bulk_verifisha_check as _bulk_verifisha,
 )
+from teams.verifisha_webhook import verifisha_webhook_view as _verifisha_webhook
 
 from news_media.portal_views import (
     media_dashboard_view,
@@ -266,6 +272,15 @@ urlpatterns = [
     # Didit webhook — register this URL in Didit Console → API & Webhooks
     # Full URL: https://kyisa.org/api/v1/didit/webhook/
     path("api/v1/didit/webhook/",                                 _didit_webhook,             name="didit_webhook"),
+
+    # ── VERIFISHA IDENTITY VERIFICATION ──────────────────────────────────────
+    path("portal/players/<int:player_pk>/verifisha-verify/",      _verifisha_verify,          name="verifisha_verify_player"),
+    path("portal/players/<int:player_pk>/verifisha-poll/",        _verifisha_poll,            name="verifisha_poll_report"),
+    path("portal/players/bulk-verifisha-check/",                  _bulk_verifisha,            name="bulk_verifisha_check"),
+    path("api/v1/verifisha/iprs-lookup/",                         _verifisha_iprs_lookup,     name="verifisha_iprs_lookup"),
+    # Webhook — register in Verifisha dashboard → API → Webhooks
+    # Full URL: https://kyisa.org/api/v1/verifisha/webhook/
+    path("api/v1/verifisha/webhook/",                             _verifisha_webhook,         name="verifisha_webhook"),
 
     # ── PORTAL: SQUAD SELECTION & APPROVAL ────────────────────────────────
     path("portal/fixtures/<int:fixture_pk>/squad/",       squad_select_view,      name="squad_select"),
