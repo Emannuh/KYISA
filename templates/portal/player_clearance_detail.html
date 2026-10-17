@@ -94,6 +94,21 @@
         <div class="card-body">
             <p style="color:#666;font-size:.9rem;margin-bottom:1rem">Verify player's age through Huduma Kenya / IPRS using National ID or Birth Certificate number.</p>
 
+            <!-- ── IPRS Quick Lookup ───────────────────────────────────────── -->
+            <div style="margin-bottom:1.25rem;padding:1rem;background:#f0f4ff;border:1px solid #c5cae9;border-radius:8px">
+                <p style="font-size:.85rem;font-weight:700;color:#1565C0;margin:0 0 .6rem">🔎 Quick IPRS Lookup</p>
+                <p style="font-size:.82rem;color:#555;margin:0 0 .75rem">Type any National ID number to check IPRS records before running the full verification.</p>
+                <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+                    <input type="text" id="iprs-lookup-input" placeholder="e.g. 12345678"
+                           style="flex:1;min-width:180px;padding:.4rem .75rem;border:1px solid #c5cae9;border-radius:6px;font-size:.85rem">
+                    <button onclick="runIPRSLookup()"
+                            style="padding:.4rem 1.1rem;background:#1565C0;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:.85rem;font-weight:600">
+                        Lookup
+                    </button>
+                </div>
+                <div id="iprs-lookup-result" style="display:none;margin-top:.85rem"></div>
+            </div>
+
             <!-- IPRS Photo vs Uploaded Photo comparison -->
             {% if player.iprs_photo or player.photo %}
             <div style="display:flex;gap:1.5rem;margin-bottom:1rem;flex-wrap:wrap">
@@ -113,11 +128,41 @@
             {% endif %}
 
             {% if player.huduma_reference %}
-            <div style="margin-bottom:1rem;padding:.5rem 1rem;background:#f5f7f5;border-radius:6px;font-size:.85rem">
-                <strong>Reference:</strong> {{ player.huduma_reference }}
-                {% if player.huduma_notes %}<br><strong>Notes:</strong> {{ player.huduma_notes }}{% endif %}
+            <div style="margin-bottom:1rem;padding:.75rem 1rem;background:#f5f7f5;border-radius:6px;font-size:.85rem">
+                <strong>Reference / Report ID:</strong> <code style="font-size:.82rem">{{ player.huduma_reference }}</code>
 
-                {% if player.huduma_status == 'pending' and player.huduma_reference %}
+                {% if player.huduma_notes %}
+                {# ── Parse and display Verifisha result fields nicely ── #}
+                {% with notes=player.huduma_notes %}
+                {% if "Verifisha" in notes and player.huduma_status == 'verified' %}
+                <div style="margin-top:.65rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.5rem">
+                    {% if "Name:" in notes %}
+                    <div style="padding:.4rem .65rem;background:#e8f5e9;border-radius:6px">
+                        <span style="font-size:.75rem;color:#666;display:block">✅ Verified Name</span>
+                        <strong style="font-size:.85rem;color:#1B5E20">
+                            {{ notes|cut:"Verifisha: Clear. Risk: LOW. "|cut:"Verifisha: "|slice:"0:80" }}
+                        </strong>
+                    </div>
+                    {% endif %}
+                    {% if "DOB:" in notes %}
+                    <div style="padding:.4rem .65rem;background:#e8f5e9;border-radius:6px">
+                        <span style="font-size:.75rem;color:#666;display:block">📅 Date of Birth</span>
+                        <strong style="font-size:.85rem;color:#1B5E20" id="vrf-dob-display">—</strong>
+                    </div>
+                    {% endif %}
+                    {% if "Age:" in notes %}
+                    <div style="padding:.4rem .65rem;background:#e8f5e9;border-radius:6px">
+                        <span style="font-size:.75rem;color:#666;display:block">🎂 Age</span>
+                        <strong style="font-size:.85rem;color:#1B5E20" id="vrf-age-display">—</strong>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                <p style="margin:.5rem 0 0;color:#555"><strong>Notes:</strong> {{ notes }}</p>
+                {% endwith %}
+                {% endif %}
+
+                {% if player.huduma_status == 'pending' %}
                 <div id="verifisha-pending-notice" style="margin-top:.5rem;padding:.5rem .75rem;background:#e3f2fd;border-radius:6px;display:flex;align-items:center;gap:.75rem">
                     <span style="color:#1565C0;font-weight:600">⏳ Verifisha report pending webhook…</span>
                     <button onclick="pollVerifisha()" style="padding:.25rem .75rem;background:#1565C0;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:.8rem">Check Now</button>
@@ -417,6 +462,7 @@
 
 {% block extra_js %}
 <script>
+/* ── Verifisha webhook poll ── */
 function pollVerifisha() {
     const btn = event.target;
     btn.textContent = 'Checking…';
@@ -436,5 +482,58 @@ function pollVerifisha() {
             btn.disabled = false;
         });
 }
+
+/* ── IPRS Quick Lookup ── */
+function runIPRSLookup() {
+    const id = document.getElementById('iprs-lookup-input').value.trim();
+    const box = document.getElementById('iprs-lookup-result');
+    if (!id) { box.style.display='none'; return; }
+
+    box.style.display = 'block';
+    box.innerHTML = '<p style="color:#1565C0;font-size:.85rem">⏳ Looking up…</p>';
+
+    fetch("{% url 'verifisha_iprs_lookup' %}?id_number=" + encodeURIComponent(id))
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success || !data.person_found) {
+                box.innerHTML = `<div style="padding:.65rem 1rem;background:#fce4ec;border-radius:6px;font-size:.85rem;color:#C62828">
+                    ❌ <strong>Not found</strong> — ${data.error_message || 'No record in IPRS for this ID.'}
+                    ${data.is_simulation ? '<br><em style="color:#888">[Sandbox simulation]</em>' : ''}
+                </div>`;
+                return;
+            }
+            const sim = data.is_simulation ? ' <span style="font-size:.75rem;color:#888">[Sandbox]</span>' : '';
+            box.innerHTML = `
+            <div style="padding:.75rem 1rem;background:#e8f5e9;border-radius:8px;border:1px solid #a5d6a7">
+                <p style="margin:0 0 .5rem;font-size:.85rem;font-weight:700;color:#1B5E20">✅ IPRS Record Found${sim}</p>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.4rem;font-size:.83rem">
+                    <div><span style="color:#666">Full Name</span><br><strong>${data.full_name || '—'}</strong></div>
+                    <div><span style="color:#666">Date of Birth</span><br><strong>${data.date_of_birth || '—'}</strong></div>
+                    <div><span style="color:#666">Age</span><br><strong>${data.age !== null ? data.age + ' yrs' : '—'}</strong></div>
+                    <div><span style="color:#666">Gender</span><br><strong>${data.gender || '—'}</strong></div>
+                    <div><span style="color:#666">National ID</span><br><strong>${data.national_id || id}</strong></div>
+                    <div><span style="color:#666">Ref</span><br><strong style="font-size:.75rem">${(data.reference_number||'').slice(0,20) || '—'}</strong></div>
+                </div>
+            </div>`;
+        })
+        .catch(err => {
+            box.innerHTML = `<p style="color:#C62828;font-size:.85rem">❌ Lookup failed: ${err}</p>`;
+        });
+}
+
+/* Allow Enter key in lookup input */
+document.addEventListener('DOMContentLoaded', function() {
+    const inp = document.getElementById('iprs-lookup-input');
+    if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') runIPRSLookup(); });
+
+    /* Parse notes to extract DOB and Age for display badges */
+    const notes = `{{ player.huduma_notes|escapejs }}`;
+    const dobMatch = notes.match(/DOB:\s*([\d\-]+)/);
+    const ageMatch = notes.match(/Age:\s*(\d+)/);
+    const dobEl = document.getElementById('vrf-dob-display');
+    const ageEl = document.getElementById('vrf-age-display');
+    if (dobEl && dobMatch) dobEl.textContent = dobMatch[1];
+    if (ageEl && ageMatch) ageEl.textContent = ageMatch[1] + ' yrs';
+});
 </script>
 {% endblock %}
