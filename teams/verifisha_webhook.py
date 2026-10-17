@@ -131,7 +131,8 @@ def _apply_verifisha_result(player, result, report_id: str):
             f"Name: {result.verified_name or '—'}, "
             f"DOB: {result.verified_dob or '—'}, "
             f"Age: {result.verified_age or '—'}."
-        )    elif status == "PENDING_REVIEW":
+        )
+    elif status == "PENDING_REVIEW":
         player.huduma_status    = HudumaVerificationStatus.PENDING
         player.huduma_reference = report_id
         player.huduma_notes     = (
