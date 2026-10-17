@@ -116,6 +116,13 @@
             <div style="margin-bottom:1rem;padding:.5rem 1rem;background:#f5f7f5;border-radius:6px;font-size:.85rem">
                 <strong>Reference:</strong> {{ player.huduma_reference }}
                 {% if player.huduma_notes %}<br><strong>Notes:</strong> {{ player.huduma_notes }}{% endif %}
+
+                {% if player.huduma_status == 'pending' and player.huduma_reference %}
+                <div id="verifisha-pending-notice" style="margin-top:.5rem;padding:.5rem .75rem;background:#e3f2fd;border-radius:6px;display:flex;align-items:center;gap:.75rem">
+                    <span style="color:#1565C0;font-weight:600">⏳ Verifisha report pending webhook…</span>
+                    <button onclick="pollVerifisha()" style="padding:.25rem .75rem;background:#1565C0;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:.8rem">Check Now</button>
+                </div>
+                {% endif %}
             </div>
             {% endif %}
 
@@ -129,6 +136,15 @@
                     {% csrf_token %}
                     <input type="hidden" name="action" value="auto_check">
                     <button type="submit" style="padding:.4rem 1rem;background:#1565C0;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:.85rem;font-weight:600">🏛️ Run Huduma Check</button>
+                </form>
+
+                <!-- Verifisha IPRS Check -->
+                <form method="post" action="{% url 'verifisha_verify_player' player_pk=player.pk %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="submit">
+                    <button type="submit" style="padding:.4rem 1rem;background:#0D47A1;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:.85rem;font-weight:600">
+                        🔍 Run Verifisha Check
+                    </button>
                 </form>
 
                 <!-- Manual Verify -->
@@ -397,4 +413,28 @@
         {% endif %}
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function pollVerifisha() {
+    const btn = event.target;
+    btn.textContent = 'Checking…';
+    btn.disabled = true;
+    fetch("{% url 'verifisha_poll_report' player_pk=player.pk %}")
+        .then(r => r.json())
+        .then(data => {
+            if (data.huduma_status === 'verified' || data.huduma_status === 'failed') {
+                location.reload();
+            } else {
+                btn.textContent = 'Still pending — try again';
+                btn.disabled = false;
+            }
+        })
+        .catch(() => {
+            btn.textContent = 'Error — try again';
+            btn.disabled = false;
+        });
+}
+</script>
 {% endblock %}
