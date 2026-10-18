@@ -202,28 +202,6 @@ class CountyPlayer(models.Model):
     )
     huduma_verified_at = models.DateTimeField(null=True, blank=True)
 
-    # ── Verifisha IPRS Verification (automated API check) ─────────────────
-    verifisha_report_id = models.CharField(
-        max_length=255, blank=True, default="",
-        help_text="Verifisha report ID returned from API",
-    )
-    verifisha_status = models.CharField(
-        max_length=20,
-        choices=[
-            ("not_checked", "Not Checked"),
-            ("pending", "Pending — awaiting webhook"),
-            ("verified", "Verified"),
-            ("failed", "Failed"),
-        ],
-        default="not_checked",
-        help_text="Verifisha IPRS verification status",
-    )
-    verifisha_notes = models.TextField(
-        blank=True, default="",
-        help_text="Notes from Verifisha IPRS check",
-    )
-    verifisha_checked_at = models.DateTimeField(null=True, blank=True)
-
     # ── Higher League / National Team Check (non-football disciplines) ────
     higher_league_status = models.CharField(
         max_length=20,
