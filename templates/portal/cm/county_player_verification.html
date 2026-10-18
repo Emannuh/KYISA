@@ -2,276 +2,365 @@
 {% block title %}Player Verification — KYISA{% endblock %}
 
 {% block content %}
-<div style="margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:.75rem">
+
+<!-- ── Page Header ────────────────────────────────────────────────────────── -->
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;margin-bottom:1.75rem">
     <div>
-        <h1 style="margin:0;font-size:1.5rem">🛡️ Player Verification</h1>
-        <p style="margin:.25rem 0 0;color:#666;font-size:.88rem">Review documents, run IPRS checks, and clear players for competition.</p>
+        <h1 style="margin:0;font-size:1.45rem;font-weight:800;color:#1a1a1a;display:flex;align-items:center;gap:.5rem">
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:linear-gradient(135deg,#1B5E20,#43A047);border-radius:9px;font-size:1rem">🛡️</span>
+            Player Verification
+        </h1>
+        <p style="margin:.3rem 0 0 44px;color:#777;font-size:.86rem">Review documents · Run IPRS checks · Clear players for competition</p>
+    </div>
+    <div style="font-size:.8rem;color:#aaa">
+        {{ stats.pending|add:stats.verified|add:stats.rejected|add:stats.resubmit }} total players
     </div>
 </div>
 
-<!-- Stats -->
-<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem">
-    <div style="padding:1rem;background:#fff;border-radius:10px;border-left:4px solid #F57F17;box-shadow:0 1px 4px rgba(0,0,0,.07)">
-        <div style="font-size:1.6rem;font-weight:800;color:#F57F17">{{ stats.pending }}</div>
-        <div style="font-size:.82rem;color:#666;margin-top:.15rem">⏳ Pending Review</div>
+<!-- ── Stats Row ──────────────────────────────────────────────────────────── -->
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.85rem;margin-bottom:1.5rem">
+    <div style="background:#fff;border-radius:12px;padding:1rem 1.1rem;box-shadow:0 1px 3px rgba(0,0,0,.08);display:flex;align-items:center;gap:.85rem">
+        <div style="width:42px;height:42px;border-radius:10px;background:#fff8e1;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">⏳</div>
+        <div>
+            <div style="font-size:1.55rem;font-weight:800;color:#F57F17;line-height:1">{{ stats.pending }}</div>
+            <div style="font-size:.77rem;color:#888;margin-top:.1rem;font-weight:500">Pending Review</div>
+        </div>
     </div>
-    <div style="padding:1rem;background:#fff;border-radius:10px;border-left:4px solid #1B5E20;box-shadow:0 1px 4px rgba(0,0,0,.07)">
-        <div style="font-size:1.6rem;font-weight:800;color:#1B5E20">{{ stats.verified }}</div>
-        <div style="font-size:.82rem;color:#666;margin-top:.15rem">✅ Verified</div>
+    <div style="background:#fff;border-radius:12px;padding:1rem 1.1rem;box-shadow:0 1px 3px rgba(0,0,0,.08);display:flex;align-items:center;gap:.85rem">
+        <div style="width:42px;height:42px;border-radius:10px;background:#e8f5e9;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">✅</div>
+        <div>
+            <div style="font-size:1.55rem;font-weight:800;color:#1B5E20;line-height:1">{{ stats.verified }}</div>
+            <div style="font-size:.77rem;color:#888;margin-top:.1rem;font-weight:500">Verified</div>
+        </div>
     </div>
-    <div style="padding:1rem;background:#fff;border-radius:10px;border-left:4px solid #C62828;box-shadow:0 1px 4px rgba(0,0,0,.07)">
-        <div style="font-size:1.6rem;font-weight:800;color:#C62828">{{ stats.rejected }}</div>
-        <div style="font-size:.82rem;color:#666;margin-top:.15rem">❌ Rejected</div>
+    <div style="background:#fff;border-radius:12px;padding:1rem 1.1rem;box-shadow:0 1px 3px rgba(0,0,0,.08);display:flex;align-items:center;gap:.85rem">
+        <div style="width:42px;height:42px;border-radius:10px;background:#fce4ec;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">❌</div>
+        <div>
+            <div style="font-size:1.55rem;font-weight:800;color:#C62828;line-height:1">{{ stats.rejected }}</div>
+            <div style="font-size:.77rem;color:#888;margin-top:.1rem;font-weight:500">Rejected</div>
+        </div>
     </div>
-    <div style="padding:1rem;background:#fff;border-radius:10px;border-left:4px solid #E65100;box-shadow:0 1px 4px rgba(0,0,0,.07)">
-        <div style="font-size:1.6rem;font-weight:800;color:#E65100">{{ stats.resubmit }}</div>
-        <div style="font-size:.82rem;color:#666;margin-top:.15rem">🔄 Resubmission</div>
+    <div style="background:#fff;border-radius:12px;padding:1rem 1.1rem;box-shadow:0 1px 3px rgba(0,0,0,.08);display:flex;align-items:center;gap:.85rem">
+        <div style="width:42px;height:42px;border-radius:10px;background:#fff3e0;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">🔄</div>
+        <div>
+            <div style="font-size:1.55rem;font-weight:800;color:#E65100;line-height:1">{{ stats.resubmit }}</div>
+            <div style="font-size:.77rem;color:#888;margin-top:.1rem;font-weight:500">Resubmission</div>
+        </div>
     </div>
 </div>
 
-<!-- Search & Filters -->
-<div style="background:#fff;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,.06)">
-    <form method="get" style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-end">
+<!-- ── Filters ────────────────────────────────────────────────────────────── -->
+<div style="background:#fff;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,.07)">
+    <form method="get">
         <input type="hidden" name="tab" value="{{ tab }}">
-        <div style="flex:2;min-width:200px">
-            <label style="font-size:.78rem;font-weight:600;color:#555;display:block;margin-bottom:.3rem">Search</label>
-            <input type="text" name="q" value="{{ player_query }}" placeholder="Name or National ID…" style="width:100%;padding:.4rem .75rem;border:1px solid #ddd;border-radius:7px;font-size:.85rem">
-        </div>
-        <div style="flex:1;min-width:150px">
-            <label style="font-size:.78rem;font-weight:600;color:#555;display:block;margin-bottom:.3rem">Discipline</label>
-            <select name="discipline" style="width:100%;padding:.4rem .6rem;border:1px solid #ddd;border-radius:7px;font-size:.84rem" onchange="this.form.submit()">
-                <option value="">All</option>
-                {% for val, label in disciplines %}
-                <option value="{{ val }}" {% if discipline_filter == val %}selected{% endif %}>{{ label }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div style="flex:1;min-width:150px">
-            <label style="font-size:.78rem;font-weight:600;color:#555;display:block;margin-bottom:.3rem">County</label>
-            <select name="county" style="width:100%;padding:.4rem .6rem;border:1px solid #ddd;border-radius:7px;font-size:.84rem" onchange="this.form.submit()">
-                <option value="">All</option>
-                {% for val, label in counties %}
-                <option value="{{ val }}" {% if county_filter == val %}selected{% endif %}>{{ label }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div style="flex:1;min-width:130px">
-            <label style="font-size:.78rem;font-weight:600;color:#555;display:block;margin-bottom:.3rem">IPRS Status</label>
-            <select name="huduma" style="width:100%;padding:.4rem .6rem;border:1px solid #ddd;border-radius:7px;font-size:.84rem" onchange="this.form.submit()">
-                <option value="">All</option>
-                <option value="not_checked" {% if huduma_filter == 'not_checked' %}selected{% endif %}>Not Checked</option>
-                <option value="verified" {% if huduma_filter == 'verified' %}selected{% endif %}>Verified</option>
-                <option value="failed" {% if huduma_filter == 'failed' %}selected{% endif %}>Failed</option>
-            </select>
-        </div>
-        <div style="flex:1;min-width:130px">
-            <label style="font-size:.78rem;font-weight:600;color:#555;display:block;margin-bottom:.3rem">League Check</label>
-            <select name="clearance" style="width:100%;padding:.4rem .6rem;border:1px solid #ddd;border-radius:7px;font-size:.84rem" onchange="this.form.submit()">
-                <option value="">All</option>
-                <option value="not_checked" {% if clearance_filter == 'not_checked' %}selected{% endif %}>Not Checked</option>
-                <option value="clear" {% if clearance_filter == 'clear' %}selected{% endif %}>Clear</option>
-                <option value="flagged" {% if clearance_filter == 'flagged' %}selected{% endif %}>Flagged</option>
-            </select>
-        </div>
-        <div style="display:flex;gap:.4rem;align-items:flex-end">
-            <button type="submit" style="padding:.42rem .9rem;background:#1B5E20;color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:.84rem;font-weight:600">Search</button>
-            {% if discipline_filter or county_filter or huduma_filter or clearance_filter or player_query %}
-            <a href="?tab={{ tab }}" style="padding:.42rem .75rem;background:#f5f5f5;color:#C62828;border:1px solid #ddd;border-radius:7px;text-decoration:none;font-size:.84rem;font-weight:600">✕ Clear</a>
-            {% endif %}
+        <div style="display:flex;gap:.65rem;flex-wrap:wrap;align-items:flex-end">
+
+            <div style="flex:2;min-width:190px">
+                <label style="font-size:.75rem;font-weight:600;color:#666;display:block;margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.04em">Search</label>
+                <div style="position:relative">
+                    <span style="position:absolute;left:.65rem;top:50%;transform:translateY(-50%);color:#aaa;font-size:.85rem">🔍</span>
+                    <input type="text" name="q" value="{{ player_query }}" placeholder="Name or National ID…"
+                           style="width:100%;padding:.42rem .75rem .42rem 2rem;border:1px solid #e8e8e8;border-radius:8px;font-size:.84rem;box-sizing:border-box;background:#fafafa">
+                </div>
+            </div>
+
+            <div style="flex:1;min-width:140px">
+                <label style="font-size:.75rem;font-weight:600;color:#666;display:block;margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.04em">Discipline</label>
+                <select name="discipline" onchange="this.form.submit()"
+                        style="width:100%;padding:.42rem .6rem;border:1px solid #e8e8e8;border-radius:8px;font-size:.83rem;background:#fafafa;cursor:pointer">
+                    <option value="">All disciplines</option>
+                    {% for val, label in disciplines %}
+                    <option value="{{ val }}" {% if discipline_filter == val %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="flex:1;min-width:140px">
+                <label style="font-size:.75rem;font-weight:600;color:#666;display:block;margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.04em">County</label>
+                <select name="county" onchange="this.form.submit()"
+                        style="width:100%;padding:.42rem .6rem;border:1px solid #e8e8e8;border-radius:8px;font-size:.83rem;background:#fafafa;cursor:pointer">
+                    <option value="">All counties</option>
+                    {% for val, label in counties %}
+                    <option value="{{ val }}" {% if county_filter == val %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="flex:1;min-width:130px">
+                <label style="font-size:.75rem;font-weight:600;color:#666;display:block;margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.04em">IPRS</label>
+                <select name="huduma" onchange="this.form.submit()"
+                        style="width:100%;padding:.42rem .6rem;border:1px solid #e8e8e8;border-radius:8px;font-size:.83rem;background:#fafafa;cursor:pointer">
+                    <option value="">All statuses</option>
+                    <option value="not_checked" {% if huduma_filter == 'not_checked' %}selected{% endif %}>Not Checked</option>
+                    <option value="verified"    {% if huduma_filter == 'verified'    %}selected{% endif %}>Verified</option>
+                    <option value="failed"      {% if huduma_filter == 'failed'      %}selected{% endif %}>Failed</option>
+                </select>
+            </div>
+
+            <div style="flex:1;min-width:130px">
+                <label style="font-size:.75rem;font-weight:600;color:#666;display:block;margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.04em">League</label>
+                <select name="clearance" onchange="this.form.submit()"
+                        style="width:100%;padding:.42rem .6rem;border:1px solid #e8e8e8;border-radius:8px;font-size:.83rem;background:#fafafa;cursor:pointer">
+                    <option value="">All</option>
+                    <option value="not_checked" {% if clearance_filter == 'not_checked' %}selected{% endif %}>Not Checked</option>
+                    <option value="clear"       {% if clearance_filter == 'clear'       %}selected{% endif %}>Clear</option>
+                    <option value="flagged"     {% if clearance_filter == 'flagged'     %}selected{% endif %}>Flagged</option>
+                </select>
+            </div>
+
+            <div style="display:flex;gap:.4rem;align-items:flex-end;padding-bottom:1px">
+                <button type="submit"
+                        style="padding:.42rem 1rem;background:#1B5E20;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.83rem;font-weight:600;white-space:nowrap">
+                    Search
+                </button>
+                {% if discipline_filter or county_filter or huduma_filter or clearance_filter or player_query %}
+                <a href="?tab={{ tab }}"
+                   style="padding:.42rem .75rem;background:#fff;color:#C62828;border:1px solid #f5c6c6;border-radius:8px;text-decoration:none;font-size:.83rem;font-weight:600;white-space:nowrap">
+                    ✕ Clear
+                </a>
+                {% endif %}
+            </div>
+
         </div>
     </form>
 </div>
 
-<!-- Tabs -->
-<div style="display:flex;border-bottom:2px solid #e0e0e0;margin-bottom:0">
+<!-- ── Tabs ───────────────────────────────────────────────────────────────── -->
+<div style="display:flex;gap:0;border-bottom:2px solid #ececec;margin-bottom:0">
     {% for t_slug, t_label, t_count, t_color in tab_items %}
-    <a href="?tab={{ t_slug }}{% if discipline_filter %}&discipline={{ discipline_filter }}{% endif %}{% if county_filter %}&county={{ county_filter }}{% endif %}{% if huduma_filter %}&huduma={{ huduma_filter }}{% endif %}{% if clearance_filter %}&clearance={{ clearance_filter }}{% endif %}"
-       style="padding:.7rem 1.25rem;text-decoration:none;font-size:.88rem;font-weight:600;margin-bottom:-2px;
-              border-bottom:3px solid {% if tab == t_slug %}{{ t_color }}{% else %}transparent{% endif %};
-              color:{% if tab == t_slug %}{{ t_color }}{% else %}#888{% endif %}">
-        {{ t_label }} <span style="background:{% if tab == t_slug %}{{ t_color }}{% else %}#e0e0e0{% endif %};color:{% if tab == t_slug %}#fff{% else %}#666{% endif %};font-size:.75rem;padding:.1rem .45rem;border-radius:20px;margin-left:.25rem">{{ t_count }}</span>
+    <a href="?tab={{ t_slug }}{% if discipline_filter %}&discipline={{ discipline_filter }}{% endif %}{% if county_filter %}&county={{ county_filter }}{% endif %}{% if huduma_filter %}&huduma={{ huduma_filter }}{% endif %}{% if clearance_filter %}&clearance={{ clearance_filter }}{% endif %}{% if player_query %}&q={{ player_query }}{% endif %}"
+       style="display:inline-flex;align-items:center;gap:.4rem;padding:.7rem 1.2rem;text-decoration:none;font-size:.86rem;font-weight:{% if tab == t_slug %}700{% else %}500{% endif %};color:{% if tab == t_slug %}{{ t_color }}{% else %}#999{% endif %};border-bottom:2.5px solid {% if tab == t_slug %}{{ t_color }}{% else %}transparent{% endif %};margin-bottom:-2px;transition:color .15s">
+        {{ t_label }}
+        <span style="font-size:.72rem;padding:.1rem .45rem;border-radius:20px;font-weight:700;
+               background:{% if tab == t_slug %}{{ t_color }}{% else %}#eee{% endif %};
+               color:{% if tab == t_slug %}#fff{% else %}#888{% endif %}">{{ t_count }}</span>
     </a>
     {% endfor %}
 </div>
 
-<!-- Table -->
-<div style="background:#fff;border-radius:0 0 10px 10px;box-shadow:0 1px 4px rgba(0,0,0,.07);overflow:hidden">
+<!-- ── Table Container ────────────────────────────────────────────────────── -->
+<div style="background:#fff;border-radius:0 0 12px 12px;box-shadow:0 1px 3px rgba(0,0,0,.07);overflow:hidden">
 
-    {% if tab == 'pending' %}
+{% if tab == 'pending' %}
     {% if pending_players %}
     <div style="overflow-x:auto">
     <table style="width:100%;border-collapse:collapse;font-size:.84rem">
         <thead>
-            <tr style="background:#f8f9fa;border-bottom:2px solid #e8e8e8">
-                <th style="padding:.65rem .85rem;text-align:left;font-weight:600;color:#555">Player</th>
-                <th style="padding:.65rem .85rem;text-align:left;font-weight:600;color:#555">County / Discipline</th>
-                <th style="padding:.65rem .85rem;text-align:center;font-weight:600;color:#555">Age</th>
-                <th style="padding:.65rem .85rem;text-align:left;font-weight:600;color:#555">National ID</th>
-                <th style="padding:.65rem .85rem;text-align:center;font-weight:600;color:#555">Docs</th>
-                <th style="padding:.65rem .85rem;text-align:center;font-weight:600;color:#555">IPRS</th>
-                <th style="padding:.65rem .85rem;text-align:center;font-weight:600;color:#555">League</th>
-                <th style="padding:.65rem .85rem;text-align:left;font-weight:600;color:#555">Registered</th>
-                <th style="padding:.65rem .85rem;text-align:center;font-weight:600;color:#555">Action</th>
+            <tr style="background:#f8f9fb">
+                <th style="padding:.7rem .9rem;text-align:left;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">Player</th>
+                <th style="padding:.7rem .9rem;text-align:left;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">County · Discipline</th>
+                <th style="padding:.7rem .9rem;text-align:center;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">Age</th>
+                <th style="padding:.7rem .9rem;text-align:left;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">National ID</th>
+                <th style="padding:.7rem .9rem;text-align:center;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">Docs</th>
+                <th style="padding:.7rem .9rem;text-align:center;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">IPRS</th>
+                <th style="padding:.7rem .9rem;text-align:center;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">League</th>
+                <th style="padding:.7rem .9rem;text-align:left;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">Registered</th>
+                <th style="padding:.7rem .9rem;text-align:center;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">Action</th>
             </tr>
         </thead>
         <tbody>
-            {% for p in pending_players %}
-            <tr style="border-bottom:1px solid #f0f0f0;{% if p.age < 18 or p.age > 23 %}background:#fff5f5{% endif %}">
-                <td style="padding:.65rem .85rem">
-                    <strong>{{ p.first_name }} {{ p.last_name }}</strong>
-                    <div style="font-size:.78rem;color:#888">#{{ p.jersey_number|default:"—" }} · {{ p.position|default:"—" }}</div>
+        {% for p in pending_players %}
+            <tr style="border-bottom:1px solid #f4f4f4;transition:background .12s;{% if p.age < 18 or p.age > 23 %}background:#fff9f9{% endif %}"
+                onmouseover="this.style.background='#f9fbff'" onmouseout="this.style.background='{% if p.age < 18 or p.age > 23 %}#fff9f9{% else %}#fff{% endif %}'">
+
+                <td style="padding:.7rem .9rem">
+                    <div style="font-weight:600;color:#1a1a1a">{{ p.first_name }} {{ p.last_name }}</div>
+                    <div style="font-size:.76rem;color:#aaa;margin-top:.1rem">
+                        {% if p.jersey_number %}#{{ p.jersey_number }}{% endif %}
+                        {% if p.position %}· {{ p.position }}{% endif %}
+                    </div>
                 </td>
-                <td style="padding:.65rem .85rem">
-                    <div>{{ p.discipline.registration.get_county_display }}</div>
-                    <div style="font-size:.78rem;color:#888">{{ p.discipline.get_sport_type_display }}</div>
+
+                <td style="padding:.7rem .9rem">
+                    <div style="font-weight:500;color:#333">{{ p.discipline.registration.get_county_display }}</div>
+                    <div style="font-size:.76rem;color:#aaa;margin-top:.1rem">{{ p.discipline.get_sport_type_display }}</div>
                 </td>
-                <td style="padding:.65rem .85rem;text-align:center">
+
+                <td style="padding:.7rem .9rem;text-align:center">
                     {% if p.age >= 18 and p.age <= 23 %}
-                    <span style="color:#1B5E20;font-weight:600">{{ p.age }}</span>
+                    <span style="display:inline-block;padding:.2rem .55rem;border-radius:20px;background:#e8f5e9;color:#1B5E20;font-weight:700;font-size:.82rem">{{ p.age }}</span>
                     {% else %}
-                    <span style="color:#C62828;font-weight:700">{{ p.age }} ⛔</span>
+                    <span style="display:inline-block;padding:.2rem .55rem;border-radius:20px;background:#fce4ec;color:#C62828;font-weight:700;font-size:.82rem">{{ p.age }} ⛔</span>
                     {% endif %}
                 </td>
-                <td style="padding:.65rem .85rem;font-family:monospace;font-size:.82rem">{{ p.national_id_number|default:"—" }}</td>
-                <td style="padding:.65rem .85rem;text-align:center">
+
+                <td style="padding:.7rem .9rem;font-family:monospace;font-size:.81rem;color:#444">{{ p.national_id_number|default:"—" }}</td>
+
+                <td style="padding:.7rem .9rem;text-align:center">
                     {% if p.photo and p.id_document %}
-                    <span style="color:#1B5E20" title="Photo + ID uploaded">✅</span>
+                    <span title="Photo + ID uploaded" style="font-size:1rem">✅</span>
                     {% else %}
-                    <span style="color:#C62828" title="Documents missing">⚠️</span>
+                    <span title="Documents missing" style="font-size:1rem">⚠️</span>
                     {% endif %}
                 </td>
-                <td style="padding:.65rem .85rem;text-align:center">
+
+                <td style="padding:.7rem .9rem;text-align:center">
                     {% if p.verifisha_status == 'verified' or p.huduma_status == 'verified' %}
-                    <span style="background:#e8f5e9;color:#1B5E20;padding:.15rem .5rem;border-radius:20px;font-size:.78rem;font-weight:600">✅ Clear</span>
+                    <span style="display:inline-block;padding:.18rem .5rem;border-radius:20px;background:#e8f5e9;color:#1B5E20;font-size:.75rem;font-weight:700">✓ Clear</span>
                     {% elif p.verifisha_status == 'pending' %}
-                    <span style="background:#e3f2fd;color:#1565C0;padding:.15rem .5rem;border-radius:20px;font-size:.78rem;font-weight:600">⏳ Pending</span>
+                    <span style="display:inline-block;padding:.18rem .5rem;border-radius:20px;background:#e3f2fd;color:#1565C0;font-size:.75rem;font-weight:700">⏳</span>
                     {% elif p.verifisha_status == 'failed' or p.huduma_status == 'failed' %}
-                    <span style="background:#fce4ec;color:#C62828;padding:.15rem .5rem;border-radius:20px;font-size:.78rem;font-weight:600">❌ Failed</span>
+                    <span style="display:inline-block;padding:.18rem .5rem;border-radius:20px;background:#fce4ec;color:#C62828;font-size:.75rem;font-weight:700">✗ Failed</span>
                     {% else %}
-                    <span style="color:#aaa;font-size:.78rem">—</span>
+                    <span style="color:#ccc;font-size:.8rem">—</span>
                     {% endif %}
                 </td>
-                <td style="padding:.65rem .85rem;text-align:center">
+
+                <td style="padding:.7rem .9rem;text-align:center">
                     {% if p.higher_league_status == 'clear' %}
-                    <span style="background:#e8f5e9;color:#1B5E20;padding:.15rem .5rem;border-radius:20px;font-size:.78rem;font-weight:600">✅ Clear</span>
+                    <span style="display:inline-block;padding:.18rem .5rem;border-radius:20px;background:#e8f5e9;color:#1B5E20;font-size:.75rem;font-weight:700">✓ Clear</span>
                     {% elif p.higher_league_status == 'flagged' %}
-                    <span style="background:#fce4ec;color:#C62828;padding:.15rem .5rem;border-radius:20px;font-size:.78rem;font-weight:600">🚩 Flagged</span>
+                    <span style="display:inline-block;padding:.18rem .5rem;border-radius:20px;background:#fce4ec;color:#C62828;font-size:.75rem;font-weight:700">🚩 Flag</span>
                     {% else %}
-                    <span style="color:#aaa;font-size:.78rem">—</span>
+                    <span style="color:#ccc;font-size:.8rem">—</span>
                     {% endif %}
                 </td>
-                <td style="padding:.65rem .85rem;font-size:.78rem;color:#888">{{ p.registered_at|date:"d M Y" }}</td>
-                <td style="padding:.65rem .85rem;text-align:center">
-                    <a href="{% url 'verify_county_player' player_pk=p.pk %}" style="padding:.3rem .8rem;background:#1B5E20;color:#fff;border-radius:6px;text-decoration:none;font-size:.8rem;font-weight:600">Review →</a>
+
+                <td style="padding:.7rem .9rem;font-size:.77rem;color:#aaa;white-space:nowrap">{{ p.registered_at|date:"d M Y" }}</td>
+
+                <td style="padding:.7rem .9rem;text-align:center">
+                    <a href="{% url 'verify_county_player' player_pk=p.pk %}"
+                       style="display:inline-block;padding:.32rem .85rem;background:#1B5E20;color:#fff;border-radius:7px;text-decoration:none;font-size:.79rem;font-weight:700;white-space:nowrap">
+                       Review →
+                    </a>
                 </td>
             </tr>
-            {% endfor %}
+        {% endfor %}
         </tbody>
     </table>
     </div>
     {% else %}
-    <div style="padding:3rem;text-align:center;color:#888">
-        <div style="font-size:2.5rem;margin-bottom:.75rem">🎉</div>
-        <h3 style="margin:0 0 .35rem;color:#555">No pending players</h3>
-        <p style="margin:0;font-size:.88rem">All registrations have been reviewed.</p>
+    <div style="padding:3.5rem 2rem;text-align:center">
+        <div style="font-size:2.8rem;margin-bottom:.75rem">🎉</div>
+        <h3 style="margin:0 0 .4rem;color:#444;font-weight:700">All caught up!</h3>
+        <p style="margin:0;color:#aaa;font-size:.88rem">No players pending verification.</p>
     </div>
     {% endif %}
-    {% endif %}
+{% endif %}
 
-    {% if tab == 'verified' %}
+{% if tab == 'verified' %}
     {% if verified_players %}
     <div style="overflow-x:auto">
     <table style="width:100%;border-collapse:collapse;font-size:.84rem">
         <thead>
-            <tr style="background:#f8f9fa;border-bottom:2px solid #e8e8e8">
-                <th style="padding:.65rem .85rem;text-align:left;font-weight:600;color:#555">Player</th>
-                <th style="padding:.65rem .85rem;text-align:left;font-weight:600;color:#555">County / Discipline</th>
-                <th style="padding:.65rem .85rem;text-align:center;font-weight:600;color:#555">Age</th>
-                <th style="padding:.65rem .85rem;text-align:left;font-weight:600;color:#555">National ID</th>
-                <th style="padding:.65rem .85rem;text-align:left;font-weight:600;color:#555">Registered</th>
-                <th style="padding:.65rem .85rem;text-align:center;font-weight:600;color:#555">Action</th>
+            <tr style="background:#f8f9fb">
+                <th style="padding:.7rem .9rem;text-align:left;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">Player</th>
+                <th style="padding:.7rem .9rem;text-align:left;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">County · Discipline</th>
+                <th style="padding:.7rem .9rem;text-align:center;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">Age</th>
+                <th style="padding:.7rem .9rem;text-align:left;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">National ID</th>
+                <th style="padding:.7rem .9rem;text-align:left;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">Registered</th>
+                <th style="padding:.7rem .9rem;text-align:center;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">Action</th>
             </tr>
         </thead>
         <tbody>
-            {% for p in verified_players %}
-            <tr style="border-bottom:1px solid #f0f0f0">
-                <td style="padding:.65rem .85rem"><strong>{{ p.first_name }} {{ p.last_name }}</strong></td>
-                <td style="padding:.65rem .85rem">{{ p.discipline.registration.get_county_display }}<div style="font-size:.78rem;color:#888">{{ p.discipline.get_sport_type_display }}</div></td>
-                <td style="padding:.65rem .85rem;text-align:center;color:#1B5E20;font-weight:600">{{ p.age }}</td>
-                <td style="padding:.65rem .85rem;font-family:monospace;font-size:.82rem">{{ p.national_id_number|default:"—" }}</td>
-                <td style="padding:.65rem .85rem;font-size:.78rem;color:#888">{{ p.registered_at|date:"d M Y" }}</td>
-                <td style="padding:.65rem .85rem;text-align:center"><a href="{% url 'verify_county_player' player_pk=p.pk %}" style="padding:.3rem .75rem;border:1px solid #ddd;border-radius:6px;text-decoration:none;font-size:.8rem;color:#555">View</a></td>
+        {% for p in verified_players %}
+            <tr style="border-bottom:1px solid #f4f4f4" onmouseover="this.style.background='#f9fbff'" onmouseout="this.style.background='#fff'">
+                <td style="padding:.7rem .9rem;font-weight:600;color:#1a1a1a">{{ p.first_name }} {{ p.last_name }}</td>
+                <td style="padding:.7rem .9rem">
+                    <div style="font-weight:500;color:#333">{{ p.discipline.registration.get_county_display }}</div>
+                    <div style="font-size:.76rem;color:#aaa">{{ p.discipline.get_sport_type_display }}</div>
+                </td>
+                <td style="padding:.7rem .9rem;text-align:center">
+                    <span style="display:inline-block;padding:.2rem .55rem;border-radius:20px;background:#e8f5e9;color:#1B5E20;font-weight:700;font-size:.82rem">{{ p.age }}</span>
+                </td>
+                <td style="padding:.7rem .9rem;font-family:monospace;font-size:.81rem;color:#444">{{ p.national_id_number|default:"—" }}</td>
+                <td style="padding:.7rem .9rem;font-size:.77rem;color:#aaa">{{ p.registered_at|date:"d M Y" }}</td>
+                <td style="padding:.7rem .9rem;text-align:center">
+                    <a href="{% url 'verify_county_player' player_pk=p.pk %}"
+                       style="display:inline-block;padding:.3rem .8rem;border:1px solid #ddd;border-radius:7px;text-decoration:none;font-size:.79rem;color:#555;font-weight:500">View</a>
+                </td>
             </tr>
-            {% endfor %}
+        {% endfor %}
         </tbody>
     </table>
     </div>
     {% else %}
-    <div style="padding:3rem;text-align:center;color:#888"><div style="font-size:2.5rem;margin-bottom:.75rem">📋</div><h3 style="margin:0;color:#555">No verified players yet</h3></div>
+    <div style="padding:3.5rem 2rem;text-align:center">
+        <div style="font-size:2.8rem;margin-bottom:.75rem">📋</div>
+        <h3 style="margin:0;color:#444;font-weight:700">No verified players yet</h3>
+    </div>
     {% endif %}
-    {% endif %}
+{% endif %}
 
-    {% if tab == 'rejected' %}
+{% if tab == 'rejected' %}
     {% if rejected_players %}
     <div style="overflow-x:auto">
     <table style="width:100%;border-collapse:collapse;font-size:.84rem">
         <thead>
-            <tr style="background:#f8f9fa;border-bottom:2px solid #e8e8e8">
-                <th style="padding:.65rem .85rem;text-align:left;font-weight:600;color:#555">Player</th>
-                <th style="padding:.65rem .85rem;text-align:left;font-weight:600;color:#555">County / Discipline</th>
-                <th style="padding:.65rem .85rem;text-align:left;font-weight:600;color:#555">National ID</th>
-                <th style="padding:.65rem .85rem;text-align:left;font-weight:600;color:#555">Rejection Reason</th>
-                <th style="padding:.65rem .85rem;text-align:center;font-weight:600;color:#555">Action</th>
+            <tr style="background:#f8f9fb">
+                <th style="padding:.7rem .9rem;text-align:left;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">Player</th>
+                <th style="padding:.7rem .9rem;text-align:left;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">County · Discipline</th>
+                <th style="padding:.7rem .9rem;text-align:left;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">National ID</th>
+                <th style="padding:.7rem .9rem;text-align:left;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">Reason</th>
+                <th style="padding:.7rem .9rem;text-align:center;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">Action</th>
             </tr>
         </thead>
         <tbody>
-            {% for p in rejected_players %}
-            <tr style="border-bottom:1px solid #f0f0f0;background:#fff5f5">
-                <td style="padding:.65rem .85rem"><strong>{{ p.first_name }} {{ p.last_name }}</strong></td>
-                <td style="padding:.65rem .85rem">{{ p.discipline.registration.get_county_display }}<div style="font-size:.78rem;color:#888">{{ p.discipline.get_sport_type_display }}</div></td>
-                <td style="padding:.65rem .85rem;font-family:monospace;font-size:.82rem">{{ p.national_id_number|default:"—" }}</td>
-                <td style="padding:.65rem .85rem;font-size:.82rem;color:#C62828">{{ p.rejection_reason|truncatechars:60|default:"—" }}</td>
-                <td style="padding:.65rem .85rem;text-align:center"><a href="{% url 'verify_county_player' player_pk=p.pk %}" style="padding:.3rem .75rem;border:1px solid #ddd;border-radius:6px;text-decoration:none;font-size:.8rem;color:#555">View</a></td>
+        {% for p in rejected_players %}
+            <tr style="border-bottom:1px solid #f4f4f4;background:#fff9f9" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background='#fff9f9'">
+                <td style="padding:.7rem .9rem;font-weight:600;color:#1a1a1a">{{ p.first_name }} {{ p.last_name }}</td>
+                <td style="padding:.7rem .9rem">
+                    <div style="font-weight:500;color:#333">{{ p.discipline.registration.get_county_display }}</div>
+                    <div style="font-size:.76rem;color:#aaa">{{ p.discipline.get_sport_type_display }}</div>
+                </td>
+                <td style="padding:.7rem .9rem;font-family:monospace;font-size:.81rem;color:#444">{{ p.national_id_number|default:"—" }}</td>
+                <td style="padding:.7rem .9rem;font-size:.82rem;color:#C62828">{{ p.rejection_reason|truncatechars:60|default:"—" }}</td>
+                <td style="padding:.7rem .9rem;text-align:center">
+                    <a href="{% url 'verify_county_player' player_pk=p.pk %}"
+                       style="display:inline-block;padding:.3rem .8rem;border:1px solid #ddd;border-radius:7px;text-decoration:none;font-size:.79rem;color:#555;font-weight:500">View</a>
+                </td>
             </tr>
-            {% endfor %}
+        {% endfor %}
         </tbody>
     </table>
     </div>
     {% else %}
-    <div style="padding:3rem;text-align:center;color:#888"><div style="font-size:2.5rem;margin-bottom:.75rem">✨</div><h3 style="margin:0;color:#555">No rejected players</h3></div>
+    <div style="padding:3.5rem 2rem;text-align:center">
+        <div style="font-size:2.8rem;margin-bottom:.75rem">✨</div>
+        <h3 style="margin:0;color:#444;font-weight:700">No rejected players</h3>
+    </div>
     {% endif %}
-    {% endif %}
+{% endif %}
 
-    {% if tab == 'resubmit' %}
+{% if tab == 'resubmit' %}
     {% if resubmit_players %}
     <div style="overflow-x:auto">
     <table style="width:100%;border-collapse:collapse;font-size:.84rem">
         <thead>
-            <tr style="background:#f8f9fa;border-bottom:2px solid #e8e8e8">
-                <th style="padding:.65rem .85rem;text-align:left;font-weight:600;color:#555">Player</th>
-                <th style="padding:.65rem .85rem;text-align:left;font-weight:600;color:#555">County / Discipline</th>
-                <th style="padding:.65rem .85rem;text-align:left;font-weight:600;color:#555">National ID</th>
-                <th style="padding:.65rem .85rem;text-align:left;font-weight:600;color:#555">What needs fixing</th>
-                <th style="padding:.65rem .85rem;text-align:center;font-weight:600;color:#555">Action</th>
+            <tr style="background:#f8f9fb">
+                <th style="padding:.7rem .9rem;text-align:left;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">Player</th>
+                <th style="padding:.7rem .9rem;text-align:left;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">County · Discipline</th>
+                <th style="padding:.7rem .9rem;text-align:left;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">National ID</th>
+                <th style="padding:.7rem .9rem;text-align:left;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">What needs fixing</th>
+                <th style="padding:.7rem .9rem;text-align:center;font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee">Action</th>
             </tr>
         </thead>
         <tbody>
-            {% for p in resubmit_players %}
-            <tr style="border-bottom:1px solid #f0f0f0;background:#fffaf5">
-                <td style="padding:.65rem .85rem"><strong>{{ p.first_name }} {{ p.last_name }}</strong></td>
-                <td style="padding:.65rem .85rem">{{ p.discipline.registration.get_county_display }}<div style="font-size:.78rem;color:#888">{{ p.discipline.get_sport_type_display }}</div></td>
-                <td style="padding:.65rem .85rem;font-family:monospace;font-size:.82rem">{{ p.national_id_number|default:"—" }}</td>
-                <td style="padding:.65rem .85rem;font-size:.82rem;color:#E65100">{{ p.rejection_reason|truncatechars:60|default:"—" }}</td>
-                <td style="padding:.65rem .85rem;text-align:center"><a href="{% url 'verify_county_player' player_pk=p.pk %}" style="padding:.3rem .75rem;border:1px solid #ddd;border-radius:6px;text-decoration:none;font-size:.8rem;color:#555">View</a></td>
+        {% for p in resubmit_players %}
+            <tr style="border-bottom:1px solid #f4f4f4;background:#fffaf5" onmouseover="this.style.background='#fff8f0'" onmouseout="this.style.background='#fffaf5'">
+                <td style="padding:.7rem .9rem;font-weight:600;color:#1a1a1a">{{ p.first_name }} {{ p.last_name }}</td>
+                <td style="padding:.7rem .9rem">
+                    <div style="font-weight:500;color:#333">{{ p.discipline.registration.get_county_display }}</div>
+                    <div style="font-size:.76rem;color:#aaa">{{ p.discipline.get_sport_type_display }}</div>
+                </td>
+                <td style="padding:.7rem .9rem;font-family:monospace;font-size:.81rem;color:#444">{{ p.national_id_number|default:"—" }}</td>
+                <td style="padding:.7rem .9rem;font-size:.82rem;color:#E65100">{{ p.rejection_reason|truncatechars:60|default:"—" }}</td>
+                <td style="padding:.7rem .9rem;text-align:center">
+                    <a href="{% url 'verify_county_player' player_pk=p.pk %}"
+                       style="display:inline-block;padding:.3rem .8rem;border:1px solid #ddd;border-radius:7px;text-decoration:none;font-size:.79rem;color:#555;font-weight:500">View</a>
+                </td>
             </tr>
-            {% endfor %}
+        {% endfor %}
         </tbody>
     </table>
     </div>
     {% else %}
-    <div style="padding:3rem;text-align:center;color:#888"><div style="font-size:2.5rem;margin-bottom:.75rem">✨</div><h3 style="margin:0;color:#555">No players awaiting resubmission</h3></div>
+    <div style="padding:3.5rem 2rem;text-align:center">
+        <div style="font-size:2.8rem;margin-bottom:.75rem">✨</div>
+        <h3 style="margin:0;color:#444;font-weight:700">No players awaiting resubmission</h3>
+    </div>
     {% endif %}
-    {% endif %}
+{% endif %}
 
-</div>
+</div><!-- /table container -->
 {% endblock %}
