@@ -5687,6 +5687,12 @@ def county_player_verification_list_view(request):
             'rejected': rejected.count(),
             'resubmit': resubmit.count(),
         },
+        'tab_items': [
+            ('pending',  '⏳ Pending',      pending.count(),  '#F57F17'),
+            ('verified', '✅ Verified',     verified.count(), '#1B5E20'),
+            ('rejected', '❌ Rejected',     rejected.count(), '#C62828'),
+            ('resubmit', '🔄 Resubmission', resubmit.count(), '#E65100'),
+        ],
     })
 
 
@@ -5703,8 +5709,8 @@ def verify_county_player_view(request, player_pk):
     blocking_reasons = []
     if player.age < 18 or player.age > 23:
         blocking_reasons.append('Age must be between 18 and 23.')
-    if player.huduma_status != 'verified':
-        blocking_reasons.append('Huduma age verification must be marked as Verified.')
+    if player.verifisha_status != 'verified' and player.huduma_status != 'verified':
+        blocking_reasons.append('IPRS identity must be verified (via Verifisha auto-check or manual Huduma approval).')
     if player.higher_league_status != 'clear':
         blocking_reasons.append(f'{clearance_check_label} check must be marked as Clear.')
 
