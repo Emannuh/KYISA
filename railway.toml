@@ -1,5 +1,5 @@
 [deploy]
-startCommand = "python manage.py fix_migration_0022 && python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn kyisa_cms.wsgi --bind 0.0.0.0:$PORT --workers 2"
+startCommand = "python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn kyisa_cms.wsgi --bind 0.0.0.0:$PORT --workers 2"
 healthcheckPath = "/healthz/"
 healthcheckTimeout = 30
 restartPolicyType = "ON_FAILURE"
