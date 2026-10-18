@@ -140,13 +140,13 @@
             <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
                 <h3 style="margin:0">🔍 IPRS Verification</h3>
                 <span style="font-size:.78rem;padding:.2rem .65rem;border-radius:20px;font-weight:700;
-                    background:{% if player.huduma_status == 'verified' %}#e8f5e9;color:#1B5E20
-                    {% elif player.huduma_status == 'failed' %}#fce4ec;color:#C62828
-                    {% elif player.huduma_status == 'pending' %}#e3f2fd;color:#1565C0
+                    background:{% if player.verifisha_status == 'verified' %}#e8f5e9;color:#1B5E20
+                    {% elif player.verifisha_status == 'failed' %}#fce4ec;color:#C62828
+                    {% elif player.verifisha_status == 'pending' %}#e3f2fd;color:#1565C0
                     {% else %}#f5f5f5;color:#888{% endif %}">
-                    {% if player.huduma_status == 'verified' %}✅ Verified
-                    {% elif player.huduma_status == 'failed' %}❌ Failed
-                    {% elif player.huduma_status == 'pending' %}⏳ Pending
+                    {% if player.verifisha_status == 'verified' %}✅ Verified
+                    {% elif player.verifisha_status == 'failed' %}❌ Failed
+                    {% elif player.verifisha_status == 'pending' %}⏳ Pending
                     {% else %}Not checked{% endif %}
                 </span>
             </div>
@@ -173,24 +173,26 @@
                             🔍 Run Verifisha Check
                         </button>
                     </form>
+                    {% if player.verifisha_status != 'not_checked' %}
                     <form method="post" action="{% url 'verifisha_verify_county_player' player_pk=player.pk %}" style="display:inline">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="reset">
                         <button type="submit" style="padding:.42rem .85rem;background:#f5f5f5;color:#555;border:1px solid #ddd;border-radius:7px;cursor:pointer;font-size:.83rem">Reset</button>
                     </form>
+                    {% endif %}
                 </div>
 
-                {% if player.huduma_status == 'pending' and player.huduma_reference %}
+                {% if player.verifisha_status == 'pending' and player.verifisha_report_id %}
                 <div style="margin-top:.65rem;padding:.45rem .85rem;background:#e3f2fd;border-radius:6px;display:inline-flex;align-items:center;gap:.65rem">
                     <span style="color:#1565C0;font-size:.83rem;font-weight:600">⏳ Awaiting webhook…</span>
                     <button onclick="vcpPoll()" style="padding:.2rem .65rem;background:#1565C0;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:.78rem">Check Now</button>
                 </div>
                 {% endif %}
 
-                {% if player.huduma_notes %}
+                {% if player.verifisha_notes %}
                 <div style="margin-top:.65rem;padding:.55rem .85rem;border-radius:6px;font-size:.83rem;
-                    background:{% if player.huduma_status == 'verified' %}#e8f5e9;color:#1B5E20{% elif player.huduma_status == 'failed' %}#fce4ec;color:#C62828{% else %}#f5f5f5;color:#555{% endif %}">
-                    {{ player.huduma_notes }}
+                    background:{% if player.verifisha_status == 'verified' %}#e8f5e9;color:#1B5E20{% elif player.verifisha_status == 'failed' %}#fce4ec;color:#C62828{% else %}#f5f5f5;color:#555{% endif %}">
+                    {{ player.verifisha_notes }}
                 </div>
                 {% endif %}
             </div>
@@ -371,7 +373,7 @@ function vcpPoll() {
     fetch("{% url 'verifisha_poll_county_player' player_pk=player.pk %}")
         .then(r => r.json())
         .then(data => {
-            if (data.huduma_status === 'verified' || data.huduma_status === 'failed') location.reload();
+            if (data.verifisha_status === 'verified' || data.verifisha_status === 'failed') location.reload();
             else { btn.textContent = 'Still pending'; btn.disabled = false; }
         })
         .catch(() => { btn.textContent = 'Error'; btn.disabled = false; });

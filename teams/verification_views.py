@@ -1205,17 +1205,17 @@ def verifisha_verify_county_player(request, player_pk):
             result = svc.verify_player(player)
 
             if result.success:
-                player.huduma_reference = result.report_id
-                player.huduma_status    = 'pending'
-                player.huduma_notes     = (
-                    f"Verifisha report submitted — ID: {result.report_id}. "
+                player.verifisha_report_id  = result.report_id
+                player.verifisha_status     = 'pending'
+                player.verifisha_notes      = (
+                    f"Report submitted — ID: {result.report_id}. "
                     f"{'[SANDBOX]' if result.is_simulation else '[LIVE]'} "
                     f"Awaiting webhook result."
                 )
-                player.huduma_verified_at = timezone.now()
+                player.verifisha_checked_at = timezone.now()
                 player.save(update_fields=[
-                    'huduma_reference', 'huduma_status',
-                    'huduma_notes', 'huduma_verified_at',
+                    'verifisha_report_id', 'verifisha_status',
+                    'verifisha_notes', 'verifisha_checked_at',
                 ])
                 messages.success(
                     request,
@@ -1229,13 +1229,13 @@ def verifisha_verify_county_player(request, player_pk):
                 )
 
         elif action == 'reset':
-            player.huduma_status      = 'not_checked'
-            player.huduma_reference   = ''
-            player.huduma_notes       = ''
-            player.huduma_verified_at = None
+            player.verifisha_status      = 'not_checked'
+            player.verifisha_report_id   = ''
+            player.verifisha_notes       = ''
+            player.verifisha_checked_at  = None
             player.save(update_fields=[
-                'huduma_status', 'huduma_reference',
-                'huduma_notes', 'huduma_verified_at',
+                'verifisha_status', 'verifisha_report_id',
+                'verifisha_notes', 'verifisha_checked_at',
             ])
             messages.info(request, f'🔄 Verifisha reset for {player.first_name} {player.last_name}.')
 
@@ -1250,7 +1250,7 @@ def verifisha_poll_county_player(request, player_pk):
     from teams.verifisha_webhook import _apply_verifisha_result_county
 
     player    = get_object_or_404(CountyPlayer, pk=player_pk)
-    report_id = player.huduma_reference
+    report_id = player.verifisha_report_id
 
     if not report_id:
         return JsonResponse({'success': False, 'error': 'No Verifisha report on record.'})
@@ -1264,6 +1264,6 @@ def verifisha_poll_county_player(request, player_pk):
 
     return JsonResponse({
         **result.to_dict(),
-        'huduma_status': player.huduma_status,
-        'huduma_notes':  player.huduma_notes,
+        'verifisha_status': player.verifisha_status,
+        'verifisha_notes':  player.verifisha_notes,
     })

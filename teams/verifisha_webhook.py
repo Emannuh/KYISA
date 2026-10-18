@@ -202,45 +202,48 @@ def _apply_verifisha_result(player, result, report_id: str):
 
 def _apply_verifisha_result_county(player, result, report_id: str):
     """
-    Write a Verifisha result onto a CountyPlayer's huduma fields.
-    CountyPlayer uses simpler string choices ('not_checked','verified','failed','pending').
+    Write a Verifisha result onto a CountyPlayer's verifisha_* fields.
+    Huduma fields remain separate — they are for manual age verification.
     """
     risk   = result.risk_level
     status = result.status
 
     if status == "COMPLETED" and result.person_found and risk in ("LOW", "MEDIUM"):
-        player.huduma_status    = "verified"
-        player.huduma_reference = report_id
-        player.huduma_notes     = (
+        player.verifisha_status   = "verified"
+        player.verifisha_report_id = report_id
+        player.verifisha_notes    = (
             f"Verifisha: {result.conclusion_title}. Risk: {risk}. "
             f"Name: {result.verified_name or '—'}, "
             f"DOB: {result.verified_dob or '—'}, "
             f"Age: {result.verified_age or '—'}."
         )
     elif status == "PENDING_REVIEW":
-        player.huduma_status    = "pending"
-        player.huduma_reference = report_id
-        player.huduma_notes     = f"Verifisha: under review. Risk: {risk}."
+        player.verifisha_status   = "pending"
+        player.verifisha_report_id = report_id
+        player.verifisha_notes    = f"Verifisha: under review. Risk: {risk}."
     elif status in ("FAILED",) or (status == "COMPLETED" and not result.person_found):
-        player.huduma_status    = "failed"
-        player.huduma_reference = report_id
+        player.verifisha_status   = "failed"
+        player.verifisha_report_id = report_id
         identity = result.identity_check
         flags    = identity.flags if identity else []
-        player.huduma_notes = (
+        player.verifisha_notes = (
             f"Verifisha: {result.conclusion_title or 'Failed'}. "
             + (f"Flags: {', '.join(flags)}." if flags else "Not found in IPRS.")
         )
     elif status == "COMPLETED" and risk in ("HIGH", "CRITICAL"):
-        player.huduma_status    = "failed"
-        player.huduma_reference = report_id
-        player.huduma_notes     = f"Verifisha HIGH risk ({risk}): {result.conclusion_title}."
+        player.verifisha_status   = "failed"
+        player.verifisha_report_id = report_id
+        player.verifisha_notes    = f"Verifisha HIGH risk ({risk}): {result.conclusion_title}."
     else:
-        player.huduma_status    = "pending"
-        player.huduma_reference = report_id
-        player.huduma_notes     = f"Verifisha: {status}/{risk}. Manual review required."
+        player.verifisha_status   = "pending"
+        player.verifisha_report_id = report_id
+        player.verifisha_notes    = f"Verifisha: {status}/{risk}. Manual review required."
 
-    player.huduma_verified_at = timezone.now()
-    player.save(update_fields=["huduma_status", "huduma_reference", "huduma_notes", "huduma_verified_at"])
+    player.verifisha_checked_at = timezone.now()
+    player.save(update_fields=[
+        "verifisha_status", "verifisha_report_id",
+        "verifisha_notes", "verifisha_checked_at",
+    ])
 
 
 def _find_county_player_for_report(payload: dict, report_id: str):
