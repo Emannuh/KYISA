@@ -96,12 +96,7 @@
 
 <!-- Table -->
 <div style="background:#fff;border-radius:0 0 10px 10px;box-shadow:0 1px 4px rgba(0,0,0,.07);overflow:hidden">
-    {% if tab == 'pending' %}{% set players_list = pending_players %}
-    {% elif tab == 'verified' %}{% set players_list = verified_players %}
-    {% elif tab == 'rejected' %}{% set players_list = rejected_players %}
-    {% else %}{% set players_list = resubmit_players %}{% endif %}
 
-    {% with players_list=pending_players %}
     {% if tab == 'pending' %}
     {% if pending_players %}
     <div style="overflow-x:auto">
@@ -278,6 +273,5 @@
     {% endif %}
     {% endif %}
 
-    {% endwith %}
 </div>
 {% endblock %}
