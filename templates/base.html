@@ -156,19 +156,97 @@
         });
     });
 
-    /* ── Auto-logout after 15 minutes of inactivity ────────────────── */
+    /* ── Auto-logout after inactivity ──────────────────────────────── */
     (function(){
-        var TIMEOUT = 15 * 60 * 1000; // 15 minutes in ms
-        var timer;
-        function resetTimer(){
-            clearTimeout(timer);
-            timer = setTimeout(function(){
-                window.location.href = "{% url 'web_logout' %}";
-            }, TIMEOUT);
+        var IDLE_MS     = 14 * 60 * 1000;  // 14 min idle → show warning
+        var WARNING_SEC = 60;               // 60-second countdown before logout
+        var idleTimer, countdownTimer;
+        var warningActive = false;
+
+        /* Build warning dialog (injected once) */
+        var overlay = document.createElement('div');
+        overlay.id  = 'idle-overlay';
+        overlay.innerHTML = [
+            '<div style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;',
+                'display:flex;align-items:center;justify-content:center;font-family:inherit">',
+              '<div style="background:#fff;border-radius:16px;padding:2rem 2.25rem;max-width:380px;',
+                  'width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center">',
+                '<div style="font-size:2.5rem;margin-bottom:.75rem">🔒</div>',
+                '<h3 style="margin:0 0 .5rem;font-size:1.1rem;color:#111;font-weight:800">',
+                  'Session Expiring Soon</h3>',
+                '<p style="margin:0 0 1.25rem;color:#666;font-size:.9rem;line-height:1.5">',
+                  'You\'ve been inactive. You\'ll be logged out in</p>',
+                '<div id="idle-count" style="font-size:2.8rem;font-weight:900;color:#C62828;',
+                  'line-height:1;margin-bottom:1.25rem">60</div>',
+                '<div style="font-size:.8rem;color:#aaa;margin-bottom:1.5rem">seconds</div>',
+                '<div style="display:flex;gap:.75rem;justify-content:center">',
+                  '<button id="idle-stay" style="padding:.65rem 1.5rem;background:linear-gradient(135deg,#1B5E20,#2E7D32);',
+                    'color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:.92rem;font-weight:700">',
+                    '✅ Stay Logged In</button>',
+                  '<button id="idle-logout" style="padding:.65rem 1.25rem;background:#f5f5f5;color:#555;',
+                    'border:1px solid #e0e0e0;border-radius:9px;cursor:pointer;font-size:.9rem">',
+                    'Log Out Now</button>',
+                '</div>',
+              '</div>',
+            '</div>'
+        ].join('');
+        overlay.style.display = 'none';
+        document.body.appendChild(overlay);
+
+        function showWarning(){
+            warningActive = true;
+            var secs = WARNING_SEC;
+            overlay.style.display = 'block';
+            document.getElementById('idle-count').textContent = secs;
+            countdownTimer = setInterval(function(){
+                secs--;
+                var el = document.getElementById('idle-count');
+                if (el) el.textContent = secs;
+                if (secs <= 10 && el) el.style.color = '#B71C1C';
+                if (secs <= 0) doLogout();
+            }, 1000);
         }
+
+        function hideWarning(){
+            warningActive = false;
+            overlay.style.display = 'none';
+            clearInterval(countdownTimer);
+        }
+
+        function doLogout(){
+            clearInterval(countdownTimer);
+            /* POST to logout URL to properly invalidate the session */
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = "{% url 'web_logout' %}";
+            var csrf = document.createElement('input');
+            csrf.type  = 'hidden';
+            csrf.name  = 'csrfmiddlewaretoken';
+            csrf.value = (document.cookie.match(/csrftoken=([^;]+)/)||[])[1]||'';
+            form.appendChild(csrf);
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        function resetTimer(){
+            if (warningActive) return;  /* Don't reset while warning is showing */
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(showWarning, IDLE_MS);
+        }
+
+        document.getElementById('idle-stay').addEventListener('click', function(){
+            hideWarning();
+            resetTimer();
+            /* Ping the server to refresh the session */
+            fetch(window.location.href, {method:'HEAD',credentials:'same-origin'}).catch(function(){});
+        });
+
+        document.getElementById('idle-logout').addEventListener('click', doLogout);
+
         ['mousemove','mousedown','keypress','scroll','touchstart','click'].forEach(function(evt){
             document.addEventListener(evt, resetTimer, {passive:true});
         });
+
         resetTimer();
     })();
     </script>
