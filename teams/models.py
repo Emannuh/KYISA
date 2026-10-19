@@ -181,10 +181,11 @@ class CountyPlayer(models.Model):
     verification_status = models.CharField(
         max_length=20,
         choices=[
-            ("pending", "Pending Verification"),
-            ("verified", "Verified / Approved"),
-            ("rejected", "Rejected"),
-            ("resubmit", "Requires Resubmission"),
+            ("pending",    "Pending Verification"),
+            ("ineligible", "Age Ineligible — Pending Review"),
+            ("verified",   "Verified / Approved"),
+            ("rejected",   "Rejected"),
+            ("resubmit",   "Requires Resubmission"),
         ],
         default="pending",
     )
@@ -216,6 +217,30 @@ class CountyPlayer(models.Model):
     )
     verifisha_notes      = models.TextField(blank=True, default="")
     verifisha_checked_at = models.DateTimeField(null=True, blank=True)
+
+    # ── Prembly IPRS Verification ──────────────────────────────────────────
+    prembly_status = models.CharField(
+        max_length=20,
+        choices=[
+            ("not_checked", "Not Checked"),
+            ("verified",    "Verified"),
+            ("failed",      "Failed"),
+            ("mismatch",    "Name/DOB Mismatch"),
+        ],
+        default="not_checked",
+        help_text="Prembly Kenya IPRS verification result",
+    )
+    prembly_reference    = models.CharField(max_length=255, blank=True, default="",
+                                            help_text="Prembly verification reference ID")
+    prembly_verified_name = models.CharField(max_length=200, blank=True, default="",
+                                             help_text="Official name returned by Prembly IPRS")
+    prembly_checked_at   = models.DateTimeField(null=True, blank=True)
+
+    # ── Age Eligibility ───────────────────────────────────────────────────
+    is_age_eligible = models.BooleanField(
+        default=True,
+        help_text="False if player's age is outside 18-23 bracket at registration time",
+    )
 
     # ── Higher League / National Team Check (non-football disciplines) ────
     higher_league_status = models.CharField(

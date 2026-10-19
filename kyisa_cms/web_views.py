@@ -5649,12 +5649,11 @@ def county_player_verification_list_view(request):
             Q(national_id_number__icontains=player_query)
         )
 
-    pending = players.filter(verification_status='pending')
-    verified = players.filter(verification_status='verified')
-    rejected = players.filter(verification_status='rejected')
-    resubmit = players.filter(verification_status='resubmit')
-
-    # Build discipline filter choices
+    pending    = players.filter(verification_status='pending')
+    ineligible = players.filter(verification_status='ineligible')
+    verified   = players.filter(verification_status='verified')
+    rejected   = players.filter(verification_status='rejected')
+    resubmit   = players.filter(verification_status='resubmit')
     disciplines = (
         CountyDiscipline.objects.values_list('sport_type', flat=True)
         .distinct().order_by('sport_type')
@@ -5670,10 +5669,11 @@ def county_player_verification_list_view(request):
 
     return render(request, 'portal/cm/county_player_verification.html', {
         'tab': tab,
-        'pending_players': pending,
-        'verified_players': verified,
-        'rejected_players': rejected,
-        'resubmit_players': resubmit,
+        'pending_players':    pending,
+        'ineligible_players': ineligible,
+        'verified_players':   verified,
+        'rejected_players':   rejected,
+        'resubmit_players':   resubmit,
         'disciplines': discipline_choices,
         'counties': county_choices,
         'discipline_filter': discipline_filter,
@@ -5682,23 +5682,25 @@ def county_player_verification_list_view(request):
         'clearance_filter': clearance_filter,
         'player_query': player_query,
         'stats': {
-            'pending': pending.count(),
-            'verified': verified.count(),
-            'rejected': rejected.count(),
-            'resubmit': resubmit.count(),
+            'pending':    pending.count(),
+            'ineligible': ineligible.count(),
+            'verified':   verified.count(),
+            'rejected':   rejected.count(),
+            'resubmit':   resubmit.count(),
         },
         'tab_items': [
-            ('pending',  '⏳ Pending',      pending.count(),  '#F57F17'),
-            ('verified', '✅ Verified',     verified.count(), '#1B5E20'),
-            ('rejected', '❌ Rejected',     rejected.count(), '#C62828'),
-            ('resubmit', '🔄 Resubmission', resubmit.count(), '#E65100'),
+            ('pending',    '⏳ Pending',       pending.count(),    '#F57F17'),
+            ('ineligible', '⛔ Age Ineligible', ineligible.count(), '#7c3aed'),
+            ('verified',   '✅ Verified',       verified.count(),   '#1B5E20'),
+            ('rejected',   '❌ Rejected',       rejected.count(),   '#C62828'),
+            ('resubmit',   '🔄 Resubmission',   resubmit.count(),   '#E65100'),
         ],
     })
 
 
-@role_required('competition_manager', 'admin', 'verification_officer')
+@role_required('competition_manager', 'admin', 'verification_officer', 'secretary_general')
 def verify_county_player_view(request, player_pk):
-    """CM view: Inspect a county player's documents and verify/reject/resubmit."""
+    """CM/VO/SG view: Inspect a county player's documents and verify/reject/resubmit."""
     player = get_object_or_404(
         CountyPlayer.objects.select_related('discipline', 'discipline__registration'),
         pk=player_pk,
@@ -5706,19 +5708,79 @@ def verify_county_player_view(request, player_pk):
     is_football = player.discipline.sport_type in ('football_men', 'football_women')
     clearance_check_label = 'FIFA Connect' if is_football else 'Higher League'
 
+    # Only Organising Secretary (competition_manager) and Secretary General can do final verify
+    can_final_approve = (
+        request.user.role in ('competition_manager', 'secretary_general') or
+        request.user.is_superuser
+    )
+
     blocking_reasons = []
-    if player.age < 18 or player.age > 23:
-        blocking_reasons.append('Age must be between 18 and 23.')
-    if player.verifisha_status != 'verified' and player.huduma_status != 'verified':
-        blocking_reasons.append('IPRS identity must be verified (via Verifisha auto-check or manual Huduma approval).')
+    if not player.is_age_eligible:
+        blocking_reasons.append(f'Player age ({player.age}) is outside the 18–23 bracket.')
+    if player.prembly_status not in ('verified',) and player.verifisha_status != 'verified' and player.huduma_status != 'verified':
+        blocking_reasons.append('IPRS identity must be verified (via Prembly, Verifisha auto-check, or manual Huduma approval).')
     if player.higher_league_status != 'clear':
         blocking_reasons.append(f'{clearance_check_label} check must be marked as Clear.')
+    if not can_final_approve:
+        blocking_reasons.append('Final approval requires Organising Secretary or Secretary General.')
 
     can_verify = len(blocking_reasons) == 0
 
     if request.method == 'POST':
         action = request.POST.get('action')
         from admin_dashboard.models import ActivityLog
+
+        if action == 'prembly_check':
+            # Run Prembly IPRS check on the player's National ID
+            from teams.prembly_service import PremblyService
+            svc = PremblyService()
+            result = svc.lookup_by_national_id(player.national_id_number)
+            if result.success and result.person_found:
+                # Check name/DOB match
+                iprs_name = result.full_name.upper()
+                reg_name  = f"{player.first_name} {player.last_name}".upper()
+                dob_match = (result.date_of_birth == player.date_of_birth) if result.date_of_birth else False
+                name_match = any(
+                    part in iprs_name for part in reg_name.split() if len(part) > 2
+                )
+                if dob_match and name_match:
+                    player.prembly_status = 'verified'
+                    msg = f'✅ Prembly IPRS verified: {result.full_name}, DOB {result.date_of_birth}'
+                    messages.success(request, msg)
+                else:
+                    player.prembly_status = 'mismatch'
+                    msg = (
+                        f'⚠️ Prembly returned: {result.full_name}, DOB {result.date_of_birth}. '
+                        f'Does not match registered: {player.first_name} {player.last_name}, DOB {player.date_of_birth}.'
+                    )
+                    messages.warning(request, msg)
+                player.prembly_reference    = result.reference_number
+                player.prembly_verified_name = result.full_name
+                player.prembly_checked_at   = timezone.now()
+                # Save IPRS photo if returned
+                if result.photo:
+                    from teams.utils import save_base64_photo
+                    try:
+                        photo_file = save_base64_photo(result.photo, f"prembly_{player.national_id_number}")
+                        if photo_file:
+                            player.iprs_photo = photo_file
+                    except Exception:
+                        pass
+            else:
+                player.prembly_status = 'failed'
+                player.prembly_checked_at = timezone.now()
+                messages.error(request, f'❌ Prembly IPRS failed: {result.error_message}')
+            player.save(update_fields=[
+                'prembly_status', 'prembly_reference', 'prembly_verified_name',
+                'prembly_checked_at', 'iprs_photo',
+            ])
+            ActivityLog.objects.create(
+                action='PLAYER_UPDATE',
+                description=f'Prembly IPRS check {player.prembly_status} for {player.first_name} {player.last_name} '
+                            f'(ID: {player.national_id_number})',
+                user=request.user,
+            )
+            return redirect('verify_county_player', player_pk=player.pk)
 
         if action == 'huduma_verify':
             player.huduma_status = 'verified'
@@ -5868,6 +5930,7 @@ def verify_county_player_view(request, player_pk):
         'is_football': is_football,
         'clearance_check_label': clearance_check_label,
         'can_verify': can_verify,
+        'can_final_approve': can_final_approve,
         'blocking_reasons': blocking_reasons,
     })
 

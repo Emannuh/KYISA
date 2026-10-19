@@ -433,11 +433,23 @@ class CountyPlayerForm(forms.ModelForm):
         if dob:
             today = timezone.now().date()
             age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
-            if age < PLAYER_MIN_AGE:
-                raise ValidationError(f'Player is {age} — minimum age is {PLAYER_MIN_AGE}.')
-            if age > PLAYER_MAX_AGE:
-                raise ValidationError(f'Player is {age} — maximum age is {PLAYER_MAX_AGE}.')
+            # Store age eligibility but do NOT block — ineligible players are added
+            # with is_age_eligible=False and routed to verification officer for review.
+            self._computed_age = age
+            self._is_age_eligible = (PLAYER_MIN_AGE <= age <= PLAYER_MAX_AGE)
         return dob
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        # Set age eligibility flag computed during clean
+        if hasattr(self, '_is_age_eligible'):
+            instance.is_age_eligible = self._is_age_eligible
+            if not self._is_age_eligible:
+                # Mark ineligible players with a special verification status
+                instance.verification_status = 'ineligible'
+        if commit:
+            instance.save()
+        return instance
 
     def clean_phone(self):
         return validate_kenya_phone_or_raise(self.cleaned_data.get('phone'), 'Phone number')

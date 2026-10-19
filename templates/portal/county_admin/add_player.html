@@ -1,46 +1,299 @@
 {% extends 'base.html' %}
-{% block title %}Add Player &mdash; {{ discipline.get_sport_type_display }} &mdash; KYISA{% endblock %}
+{% block title %}Add Player — {{ discipline.get_sport_type_display }} — KYISA{% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <div class="breadcrumb">
-        <a href="{% url 'county_admin_dashboard' %}">County Admin</a>
-        <a href="{% url 'county_admin_discipline_players' discipline_pk=discipline.pk %}">{{ discipline.get_sport_type_display }}</a>
-        <span>Add Player</span>
-    </div>
-    <h1><i class="bi bi-person-plus"></i> Add Player</h1>
-    <p>{{ reg.county }} County &mdash; {{ discipline.get_sport_type_display }} ({{ discipline.player_count }}/{{ discipline.squad_limit }})</p>
+  <div class="breadcrumb">
+    <a href="{% url 'county_admin_dashboard' %}">County Admin</a>
+    <a href="{% url 'county_admin_discipline_players' discipline_pk=discipline.pk %}">{{ discipline.get_sport_type_display }}</a>
+    <span>Add Player</span>
+  </div>
+  <h1><i class="bi bi-person-plus"></i> Add Player</h1>
+  <p>{{ reg.county }} County &mdash; {{ discipline.get_sport_type_display }} ({{ discipline.player_count }}/{{ discipline.squad_limit }})</p>
 </div>
 
-<div style="max-width:600px">
-    <div class="card" style="padding:2rem">
-        <form method="post" enctype="multipart/form-data" novalidate>
-            {% csrf_token %}
+<div style="max-width:640px">
+  <div class="card" style="padding:2rem">
 
-            {% if form.non_field_errors %}
-            <div style="color:#C62828;font-size:.9rem;margin-bottom:1rem;padding:.8rem;background:#fce4ec;border-radius:8px">
-                {% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}
-            </div>
-            {% endif %}
+    <!-- ── STEP 1: National ID Lookup ─────────────────────────────────── -->
+    <div style="margin-bottom:1.75rem;padding:1.1rem 1.25rem;background:#f0f7ff;border:1px solid #bfdbfe;border-radius:12px">
+      <h3 style="margin:0 0 .5rem;font-size:.95rem;font-weight:800;color:#1e40af">
+        <i class="bi bi-search"></i> Step 1 — Look up by National ID
+      </h3>
+      <p style="margin:0 0 .85rem;font-size:.82rem;color:#374151;line-height:1.5">
+        Enter the player's National ID number. The system will check IPRS and return the official name and date of birth automatically.
+      </p>
+      <div style="display:flex;gap:.6rem;align-items:flex-start">
+        <div style="flex:1">
+          <input type="text" id="lookup-nid"
+                 placeholder="e.g. 12345678"
+                 maxlength="8"
+                 style="width:100%;padding:.52rem .8rem;border:1.5px solid #93c5fd;border-radius:9px;font-size:.9rem;font-family:monospace;box-sizing:border-box">
+          <div id="lookup-error" style="display:none;margin-top:.4rem;font-size:.78rem;color:#dc2626;font-weight:600"></div>
+        </div>
+        <button type="button" id="lookup-btn" onclick="runIPRSLookup()"
+                style="padding:.52rem 1.2rem;background:#1d4ed8;color:#fff;border:none;border-radius:9px;font-size:.86rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">
+          <span id="lookup-btn-text"><i class="bi bi-search"></i> Lookup</span>
+        </button>
+      </div>
 
-            {% for field in form %}
-            <div style="margin-bottom:1.25rem">
-                <label for="{{ field.id_for_label }}" style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">{{ field.label }}</label>
-                {{ field }}
-                {% if field.help_text %}<small style="color:#888;font-size:.8rem">{{ field.help_text }}</small>{% endif %}
-                {% if field.errors %}<div style="color:#C62828;font-size:.82rem;margin-top:.3rem">{{ field.errors.0 }}</div>{% endif %}
+      <!-- Result box -->
+      <div id="lookup-result" style="display:none;margin-top:1rem;padding:.9rem 1rem;background:#fff;border:1.5px solid #6ee7b7;border-radius:10px">
+        <div style="display:flex;align-items:center;gap:.85rem">
+          <div id="iprs-photo-box" style="display:none;flex-shrink:0">
+            <img id="iprs-photo" src="" alt="IPRS Photo"
+                 style="width:64px;height:80px;object-fit:cover;border-radius:8px;border:2px solid #34d399">
+            <div style="font-size:.65rem;text-align:center;color:#059669;font-weight:700;margin-top:.2rem">IPRS Photo</div>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:.78rem;font-weight:700;color:#065f46;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.04em">✅ IPRS Record Found</div>
+            <div style="display:grid;grid-template-columns:100px 1fr;gap:.3rem .7rem;font-size:.84rem">
+              <span style="color:#6b7280">Official Name</span>
+              <strong id="r-name" style="color:#111"></strong>
+              <span style="color:#6b7280">Date of Birth</span>
+              <span id="r-dob"></span>
+              <span style="color:#6b7280">Age</span>
+              <span id="r-age"></span>
+              <span style="color:#6b7280">Gender</span>
+              <span id="r-gender"></span>
             </div>
-            {% endfor %}
-
-            <div style="display:flex;gap:1rem;margin-top:1.5rem">
-                <button type="submit" style="flex:1;padding:.8rem;background:#1B5E20;color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer">
-                    <i class="bi bi-check-circle"></i> Register Player
-                </button>
-                <a href="{% url 'county_admin_discipline_players' discipline_pk=discipline.pk %}" style="padding:.8rem 1.5rem;background:#e0e0e0;color:#333;border-radius:10px;font-size:1rem;font-weight:600;text-decoration:none;display:flex;align-items:center;justify-content:center">
-                    Cancel
-                </a>
-            </div>
-        </form>
+            <button type="button" onclick="applyIPRSData()"
+                    style="margin-top:.75rem;padding:.42rem 1rem;background:#059669;color:#fff;border:none;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer">
+              <i class="bi bi-check2-circle"></i> Use this data — fill form
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- ── STEP 2: Player Form ─────────────────────────────────────────── -->
+    <h3 style="font-size:.95rem;font-weight:800;color:#111;margin:0 0 1.25rem">
+      <i class="bi bi-person-badge"></i> Step 2 — Confirm & Complete Registration
+    </h3>
+
+    <form method="post" enctype="multipart/form-data" novalidate id="player-form">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+      <div style="color:#C62828;font-size:.9rem;margin-bottom:1rem;padding:.8rem;background:#fce4ec;border-radius:8px">
+        {% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Age ineligible warning (shown via JS if outside 18-23) -->
+      <div id="age-warning" style="display:none;margin-bottom:1rem;padding:.8rem 1rem;background:#fff7ed;border-left:4px solid #f59e0b;border-radius:0 8px 8px 0;font-size:.84rem;color:#92400e">
+        ⚠️ <strong>Age outside 18–23 bracket.</strong> This player will be added as <strong>Age Ineligible</strong> and routed to the Verification Officer for review. The county director can view them as ineligible but they will not appear in competition rosters until approved.
+      </div>
+
+      <!-- National ID (hidden, pre-filled by lookup) -->
+      <div style="margin-bottom:1.25rem">
+        <label style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">National ID Number *</label>
+        {{ form.national_id_number }}
+        {% if form.national_id_number.errors %}<div style="color:#C62828;font-size:.82rem;margin-top:.3rem">{{ form.national_id_number.errors.0 }}</div>{% endif %}
+      </div>
+
+      <!-- First Name -->
+      <div style="margin-bottom:1.25rem">
+        <label style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">First Name *</label>
+        {{ form.first_name }}
+        {% if form.first_name.errors %}<div style="color:#C62828;font-size:.82rem;margin-top:.3rem">{{ form.first_name.errors.0 }}</div>{% endif %}
+      </div>
+
+      <!-- Last Name -->
+      <div style="margin-bottom:1.25rem">
+        <label style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">Last Name *</label>
+        {{ form.last_name }}
+        {% if form.last_name.errors %}<div style="color:#C62828;font-size:.82rem;margin-top:.3rem">{{ form.last_name.errors.0 }}</div>{% endif %}
+      </div>
+
+      <!-- Date of Birth -->
+      <div style="margin-bottom:1.25rem">
+        <label style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">Date of Birth *</label>
+        {{ form.date_of_birth }}
+        <small style="color:#888;font-size:.8rem">Age bracket: 18–23 years. Outside this range will be flagged as ineligible.</small>
+        {% if form.date_of_birth.errors %}<div style="color:#C62828;font-size:.82rem;margin-top:.3rem">{{ form.date_of_birth.errors.0 }}</div>{% endif %}
+      </div>
+
+      <!-- Phone -->
+      <div style="margin-bottom:1.25rem">
+        <label style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">Phone Number *</label>
+        {{ form.phone }}
+        {% if form.phone.errors %}<div style="color:#C62828;font-size:.82rem;margin-top:.3rem">{{ form.phone.errors.0 }}</div>{% endif %}
+      </div>
+
+      <!-- Huduma Number -->
+      <div style="margin-bottom:1.25rem">
+        <label style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">Huduma Namba <span style="font-weight:400;color:#888">(optional)</span></label>
+        {{ form.huduma_number }}
+        {% if form.huduma_number.errors %}<div style="color:#C62828;font-size:.82rem;margin-top:.3rem">{{ form.huduma_number.errors.0 }}</div>{% endif %}
+      </div>
+
+      <!-- Position + Jersey -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem">
+        <div>
+          <label style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">Position</label>
+          {{ form.position }}
+        </div>
+        <div>
+          <label style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">Jersey Number</label>
+          {{ form.jersey_number }}
+        </div>
+      </div>
+
+      <!-- Documents -->
+      <div style="margin-bottom:1.25rem">
+        <label style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">Passport Photo *</label>
+        {{ form.photo }}
+        {% if form.photo.errors %}<div style="color:#C62828;font-size:.82rem;margin-top:.3rem">{{ form.photo.errors.0 }}</div>{% endif %}
+      </div>
+      <div style="margin-bottom:1.25rem">
+        <label style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">Copy of National ID *</label>
+        {{ form.id_document }}
+        {% if form.id_document.errors %}<div style="color:#C62828;font-size:.82rem;margin-top:.3rem">{{ form.id_document.errors.0 }}</div>{% endif %}
+      </div>
+      <div style="margin-bottom:1.75rem">
+        <label style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">Birth Certificate <span style="font-weight:400;color:#888">(optional)</span></label>
+        {{ form.birth_certificate }}
+      </div>
+
+      <div style="display:flex;gap:1rem">
+        <button type="submit"
+                style="flex:1;padding:.8rem;background:#1B5E20;color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer">
+          <i class="bi bi-check-circle"></i> Register Player
+        </button>
+        <a href="{% url 'county_admin_discipline_players' discipline_pk=discipline.pk %}"
+           style="padding:.8rem 1.5rem;background:#e0e0e0;color:#333;border-radius:10px;font-size:1rem;font-weight:600;text-decoration:none;display:flex;align-items:center;justify-content:center">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const IPRS_URL  = "{% url 'api_iprs_lookup' %}";
+const CSRF      = "{{ csrf_token }}";
+let iprsData    = null;
+
+function runIPRSLookup() {
+  const nid    = document.getElementById('lookup-nid').value.trim();
+  const errBox = document.getElementById('lookup-error');
+  const btn    = document.getElementById('lookup-btn-text');
+  const result = document.getElementById('lookup-result');
+
+  errBox.style.display = 'none';
+  result.style.display = 'none';
+
+  if (!nid || !/^\d{7,8}$/.test(nid)) {
+    errBox.textContent = 'Please enter a valid 7-8 digit National ID.';
+    errBox.style.display = 'block';
+    return;
+  }
+
+  btn.innerHTML = '<span style="opacity:.6">Checking…</span>';
+  document.getElementById('lookup-btn').disabled = true;
+
+  fetch(IPRS_URL, {
+    method: 'POST',
+    headers: {'X-CSRFToken': CSRF, 'Content-Type': 'application/x-www-form-urlencoded'},
+    body: 'national_id=' + encodeURIComponent(nid),
+  })
+  .then(r => r.json())
+  .then(data => {
+    btn.innerHTML = '<i class="bi bi-search"></i> Lookup';
+    document.getElementById('lookup-btn').disabled = false;
+
+    if (!data.success || !data.person_found) {
+      errBox.textContent = data.error_message || 'Person not found in IPRS database.';
+      errBox.style.display = 'block';
+      return;
+    }
+
+    iprsData = data;
+
+    // Populate result box
+    document.getElementById('r-name').textContent   = data.full_name || (data.first_name + ' ' + data.last_name);
+    document.getElementById('r-dob').textContent    = data.date_of_birth || '—';
+    document.getElementById('r-age').textContent    = data.age ? data.age + ' years' : '—';
+    document.getElementById('r-gender').textContent = data.gender || '—';
+
+    // Show IPRS photo if available
+    if (data.photo) {
+      const imgEl = document.getElementById('iprs-photo');
+      imgEl.src = 'data:image/jpeg;base64,' + data.photo;
+      document.getElementById('iprs-photo-box').style.display = 'block';
+    } else {
+      document.getElementById('iprs-photo-box').style.display = 'none';
+    }
+
+    result.style.display = 'block';
+
+    // Pre-fill National ID field
+    const nidField = document.getElementById('{{ form.national_id_number.id_for_label }}');
+    if (nidField) nidField.value = nid;
+  })
+  .catch(() => {
+    btn.innerHTML = '<i class="bi bi-search"></i> Lookup';
+    document.getElementById('lookup-btn').disabled = false;
+    errBox.textContent = 'Lookup failed. Please try again or fill the form manually.';
+    errBox.style.display = 'block';
+  });
+}
+
+function applyIPRSData() {
+  if (!iprsData) return;
+
+  // Split full name into first/last
+  const nameParts = (iprsData.full_name || '').trim().split(/\s+/);
+  const firstName = nameParts[0] || iprsData.first_name || '';
+  const lastName  = nameParts.slice(1).join(' ') || iprsData.last_name || '';
+
+  const f = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+  f('{{ form.first_name.id_for_label }}',       firstName);
+  f('{{ form.last_name.id_for_label }}',        lastName);
+  f('{{ form.date_of_birth.id_for_label }}',    iprsData.date_of_birth || '');
+  f('{{ form.national_id_number.id_for_label }}', document.getElementById('lookup-nid').value.trim());
+
+  // Check age eligibility and show warning
+  if (iprsData.age !== null && iprsData.age !== undefined) {
+    const ageWarning = document.getElementById('age-warning');
+    if (iprsData.age < 18 || iprsData.age > 23) {
+      ageWarning.style.display = 'block';
+    } else {
+      ageWarning.style.display = 'none';
+    }
+  }
+}
+
+// Also check DOB field on manual change
+document.addEventListener('DOMContentLoaded', function() {
+  const dobField = document.getElementById('{{ form.date_of_birth.id_for_label }}');
+  if (dobField) {
+    dobField.addEventListener('change', function() {
+      const dob = new Date(this.value);
+      if (!dob) return;
+      const today = new Date();
+      let age = today.getFullYear() - dob.getFullYear();
+      const m = today.getMonth() - dob.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+      const ageWarning = document.getElementById('age-warning');
+      if (age < 18 || age > 23) {
+        ageWarning.style.display = 'block';
+      } else {
+        ageWarning.style.display = 'none';
+      }
+    });
+  }
+
+  // Allow Enter key on lookup input
+  const nidInput = document.getElementById('lookup-nid');
+  if (nidInput) {
+    nidInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); runIPRSLookup(); }
+    });
+  }
+});
+</script>
 {% endblock %}
