@@ -52,6 +52,8 @@
                 <th style="padding:.7rem 1rem">Date of Birth</th>
                 <th style="padding:.7rem 1rem">National ID</th>
                 <th style="padding:.7rem 1rem">Phone</th>
+                <th style="padding:.7rem 1rem">IPRS</th>
+                <th style="padding:.7rem 1rem">Status</th>
                 <th style="padding:.7rem 1rem">Registered</th>
                 <th style="padding:.7rem 1rem"></th>
             </tr>
@@ -64,6 +66,36 @@
                 <td style="padding:.6rem 1rem">{{ p.date_of_birth|date:"d M Y" }}</td>
                 <td style="padding:.6rem 1rem"><code>{{ p.national_id_number }}</code></td>
                 <td style="padding:.6rem 1rem">{{ p.phone|default:"—" }}</td>
+                <td style="padding:.6rem 1rem">
+                    {% if p.verifisha_status == 'verified' %}
+                        <span title="Verifisha auto-verified" style="background:#E8F5E9;color:#1B5E20;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">✅ Verifisha</span>
+                    {% elif p.prembly_status == 'verified' %}
+                        <span title="Prembly IPRS verified" style="background:#E8F5E9;color:#1B5E20;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">✅ Prembly</span>
+                    {% elif p.huduma_status == 'verified' %}
+                        <span title="Huduma manual approval" style="background:#E8F5E9;color:#1B5E20;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">✅ Huduma</span>
+                    {% elif p.verifisha_status == 'pending' %}
+                        <span title="Verifisha check in progress" style="background:#E3F2FD;color:#0d47a1;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">🕐 Pending</span>
+                    {% elif p.prembly_status == 'mismatch' %}
+                        <span title="Prembly name/DOB mismatch" style="background:#FFF8E1;color:#E65100;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">⚠️ Mismatch</span>
+                    {% elif p.prembly_status == 'failed' %}
+                        <span title="Prembly check failed" style="background:#FFEBEE;color:#C62828;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">❌ Failed</span>
+                    {% else %}
+                        <span title="IPRS not yet checked" style="background:#f5f5f5;color:#888;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">— Unchecked</span>
+                    {% endif %}
+                </td>
+                <td style="padding:.6rem 1rem">
+                    {% if p.verification_status == 'pending' %}
+                        <span style="background:#FFF3E0;color:#E65100;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">Pending</span>
+                    {% elif p.verification_status == 'verified' %}
+                        <span style="background:#E8F5E9;color:#1B5E20;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">✅ Verified</span>
+                    {% elif p.verification_status == 'rejected' %}
+                        <span style="background:#FFEBEE;color:#C62828;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">❌ Rejected</span>
+                    {% elif p.verification_status == 'resubmit' %}
+                        <span style="background:#F3E5F5;color:#6A1B9A;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">🔄 Resubmit</span>
+                    {% elif p.verification_status == 'ineligible' %}
+                        <span style="background:#FFF8E1;color:#F57F17;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">⚠️ Age Review</span>
+                    {% endif %}
+                </td>
                 <td style="padding:.6rem 1rem;font-size:.82rem;color:#888">{{ p.registered_at|date:"d M Y" }}</td>
                 <td style="padding:.6rem 1rem">
                     <form method="post" action="{% url 'county_admin_delete_player' player_pk=p.pk %}" style="margin:0"

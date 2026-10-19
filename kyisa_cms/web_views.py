@@ -6306,12 +6306,68 @@ def county_admin_add_player_view(request, discipline_pk):
         if form.is_valid():
             player = form.save(commit=False)
             player.discipline = discipline
+
+            # ── Auto Prembly IPRS check on registration ───────────────────
+            # Run silently — failures don't block registration, status is
+            # stored on the player record for the VO to see immediately.
+            try:
+                from teams.prembly_service import PremblyService
+                from teams.utils import save_base64_photo
+                svc = PremblyService()
+                result = svc.lookup_by_national_id(player.national_id_number)
+                if result.success and result.person_found:
+                    iprs_name = result.full_name.upper()
+                    reg_name  = f"{player.first_name} {player.last_name}".upper()
+                    name_match = any(
+                        part in iprs_name for part in reg_name.split() if len(part) > 2
+                    )
+                    dob_match = (result.date_of_birth == player.date_of_birth) if result.date_of_birth else False
+                    player.prembly_status        = 'verified' if (name_match and dob_match) else 'mismatch'
+                    player.prembly_verified_name = result.full_name
+                    player.prembly_reference     = result.reference_number or ''
+                    player.prembly_checked_at    = timezone.now()
+                    # Save IPRS photo if returned and no photo already uploaded
+                    if result.photo and not player.iprs_photo:
+                        try:
+                            photo_file = save_base64_photo(
+                                result.photo, f"prembly_{player.national_id_number}"
+                            )
+                            if photo_file:
+                                player.iprs_photo = photo_file
+                        except Exception:
+                            pass
+                else:
+                    player.prembly_status     = 'failed'
+                    player.prembly_checked_at = timezone.now()
+            except Exception:
+                pass  # Never block registration due to IPRS errors
+            # ─────────────────────────────────────────────────────────────
+
             player.save()
-            messages.success(
-                request,
-                f'{player.first_name} {player.last_name} registered '
-                f'({discipline.player_count}/{discipline.squad_limit}).'
-            )
+            if player.prembly_status == 'verified':
+                messages.success(
+                    request,
+                    f'{player.first_name} {player.last_name} registered and IPRS verified ✅ '
+                    f'({discipline.player_count}/{discipline.squad_limit}).'
+                )
+            elif player.prembly_status == 'mismatch':
+                messages.warning(
+                    request,
+                    f'{player.first_name} {player.last_name} registered — IPRS returned a name/DOB mismatch ⚠️. '
+                    f'A verification officer will review.'
+                )
+            elif player.prembly_status == 'failed':
+                messages.warning(
+                    request,
+                    f'{player.first_name} {player.last_name} registered — IPRS check could not be completed. '
+                    f'A verification officer will run the check manually.'
+                )
+            else:
+                messages.success(
+                    request,
+                    f'{player.first_name} {player.last_name} registered '
+                    f'({discipline.player_count}/{discipline.squad_limit}).'
+                )
             return redirect('county_admin_discipline_players', discipline_pk=discipline_pk)
     else:
         form = CountyPlayerForm()
