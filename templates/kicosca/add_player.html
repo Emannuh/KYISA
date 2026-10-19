@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% block title %}Add KICOSCA Player — {{ discipline.get_sport_display }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="breadcrumb">
+    <a href="{% url 'kicosca_dashboard' %}">KICOSCA</a>
+    <a href="{% url 'kicosca_discipline_players' discipline_pk=discipline.pk %}">{{ discipline.get_sport_display }}</a>
+    <span>Add Player</span>
+  </div>
+  <h1><i class="bi bi-person-plus"></i> Add KICOSCA Player</h1>
+  <p>{{ reg.county }} County — {{ discipline.get_sport_display }} ({{ discipline.player_count }}/{{ discipline.squad_limit }})</p>
+</div>
+
+<div style="max-width:660px">
+
+  <!-- STEP 1: IPRS Lookup -->
+  <div style="margin-bottom:1.75rem;padding:1.1rem 1.25rem;background:#f5f3ff;border:1px solid #c4b5fd;border-radius:14px">
+    <h3 style="margin:0 0 .45rem;font-size:.95rem;font-weight:800;color:#4c1d95">
+      <i class="bi bi-search"></i> Step 1 — Verify Identity via IPRS
+    </h3>
+    <p style="margin:0 0 .85rem;font-size:.82rem;color:#374151;line-height:1.5">
+      Enter the player's National ID. The system checks Kenya IPRS via Prembly and returns their official name and date of birth.
+    </p>
+    <div style="display:flex;gap:.6rem">
+      <input type="text" id="lookup-nid" placeholder="e.g. 12345678" maxlength="8"
+             style="flex:1;padding:.52rem .8rem;border:1.5px solid #a78bfa;border-radius:9px;font-size:.9rem;font-family:monospace">
+      <button type="button" id="lookup-btn" onclick="runIPRS()"
+              style="padding:.52rem 1.2rem;background:#7c3aed;color:#fff;border:none;border-radius:9px;font-size:.86rem;font-weight:700;cursor:pointer;white-space:nowrap">
+        <i class="bi bi-search"></i> Lookup
+      </button>
+    </div>
+    <div id="iprs-error" style="display:none;margin-top:.4rem;font-size:.78rem;color:#dc2626;font-weight:600"></div>
+    <div id="iprs-result" style="display:none;margin-top:1rem;padding:.9rem 1rem;background:#fff;border:1.5px solid #86efac;border-radius:10px">
+      <div style="display:flex;gap:.85rem;align-items:flex-start">
+        <div id="iprs-photo-box" style="display:none;flex-shrink:0">
+          <img id="iprs-photo" src="" alt="IPRS" style="width:60px;height:75px;object-fit:cover;border-radius:7px;border:2px solid #22c55e">
+          <div style="font-size:.64rem;text-align:center;color:#16a34a;font-weight:700;margin-top:.2rem">IPRS</div>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:.76rem;font-weight:700;color:#14532d;margin-bottom:.4rem;text-transform:uppercase">✅ Identity Found</div>
+          <div style="display:grid;grid-template-columns:90px 1fr;gap:.25rem .6rem;font-size:.83rem">
+            <span style="color:#6b7280">Name</span><strong id="r-name"></strong>
+            <span style="color:#6b7280">DOB</span><span id="r-dob"></span>
+            <span style="color:#6b7280">Age</span><span id="r-age"></span>
+            <span style="color:#6b7280">Gender</span><span id="r-gender"></span>
+          </div>
+          <button type="button" onclick="applyIPRS()"
+                  style="margin-top:.65rem;padding:.38rem .9rem;background:#16a34a;color:#fff;border:none;border-radius:7px;font-size:.8rem;font-weight:700;cursor:pointer">
+            <i class="bi bi-check2-circle"></i> Use this data
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: KRA PIN Lookup -->
+  <div style="margin-bottom:1.75rem;padding:1.1rem 1.25rem;background:#fff7ed;border:1px solid #fed7aa;border-radius:14px">
+    <h3 style="margin:0 0 .45rem;font-size:.95rem;font-weight:800;color:#9a3412">
+      <i class="bi bi-building"></i> Step 2 — Check KRA PIN (Employment Verification)
+    </h3>
+    <p style="margin:0 0 .85rem;font-size:.82rem;color:#374151;line-height:1.5">
+      The KRA PIN is used after saving to verify that this person is a <strong>{{ reg.county }} County Government</strong> employee via KRA PAYE records.
+      Enter PIN manually or look it up from their National ID.
+    </p>
+    <div style="display:flex;gap:.6rem">
+      <input type="text" id="lookup-kra-pin" placeholder="e.g. A001234567B" maxlength="11"
+             style="flex:1;padding:.52rem .8rem;border:1.5px solid #fdba74;border-radius:9px;font-size:.9rem;font-family:monospace;text-transform:uppercase"
+             oninput="this.value=this.value.toUpperCase()">
+      <button type="button" onclick="lookupKRAPin()"
+              style="padding:.52rem 1.2rem;background:#ea580c;color:#fff;border:none;border-radius:9px;font-size:.86rem;font-weight:700;cursor:pointer;white-space:nowrap">
+        <i class="bi bi-search"></i> Find PIN
+      </button>
+    </div>
+    <div id="kra-error" style="display:none;margin-top:.4rem;font-size:.78rem;color:#dc2626;font-weight:600"></div>
+    <div id="kra-result" style="display:none;margin-top:.65rem;padding:.65rem .85rem;background:#fff;border:1px solid #fde68a;border-radius:8px;font-size:.83rem">
+      <strong style="color:#92400e">KRA PIN found:</strong> <span id="kra-found-pin" style="font-family:monospace;font-weight:700"></span>
+      <button type="button" onclick="applyKRAPin()"
+              style="margin-left:.75rem;padding:.25rem .7rem;background:#ea580c;color:#fff;border:none;border-radius:6px;font-size:.76rem;font-weight:700;cursor:pointer">
+        Use this PIN
+      </button>
+    </div>
+    <p style="margin:.65rem 0 0;font-size:.76rem;color:#9ca3af">
+      <i class="bi bi-info-circle"></i> Employment verification runs automatically after you save the player.
+    </p>
+  </div>
+
+  <!-- STEP 3: Registration Form -->
+  <h3 style="font-size:.95rem;font-weight:800;color:#111;margin:0 0 1.25rem">
+    <i class="bi bi-person-badge"></i> Step 3 — Complete Registration
+  </h3>
+
+  <div class="card" style="padding:1.75rem">
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+      <div style="color:#C62828;font-size:.88rem;padding:.75rem;background:#fce4ec;border-radius:8px;margin-bottom:1rem">
+        {% for e in form.non_field_errors %}{{ e }}<br>{% endfor %}
+      </div>
+      {% endif %}
+
+      {% for field in form %}
+      <div style="margin-bottom:1.1rem">
+        <label style="display:block;font-weight:600;color:#333;margin-bottom:.35rem;font-size:.88rem">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<small style="color:#9ca3af;font-size:.76rem">{{ field.help_text }}</small>{% endif %}
+        {% if field.errors %}<div style="color:#dc2626;font-size:.78rem;margin-top:.25rem">{{ field.errors.0 }}</div>{% endif %}
+      </div>
+      {% endfor %}
+
+      <div style="display:flex;gap:.75rem;margin-top:1.5rem">
+        <button type="submit" style="flex:1;padding:.8rem;background:#7c3aed;color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:700;cursor:pointer">
+          <i class="bi bi-check-circle"></i> Register Player
+        </button>
+        <a href="{% url 'kicosca_discipline_players' discipline_pk=discipline.pk %}"
+           style="padding:.8rem 1.5rem;background:#e5e7eb;color:#333;border-radius:10px;text-decoration:none;font-size:.95rem;font-weight:600;display:flex;align-items:center">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const IPRS_URL    = "{% url 'kicosca_iprs_lookup' %}";
+const KRA_URL     = "{% url 'kicosca_kra_pin_lookup' %}";
+const CSRF        = "{{ csrf_token }}";
+let iprsData      = null;
+let kraData       = null;
+
+// ── IPRS Lookup ────────────────────────────────────────────────────────────
+function runIPRS() {
+  const nid  = document.getElementById('lookup-nid').value.trim();
+  const err  = document.getElementById('iprs-error');
+  const btn  = document.getElementById('lookup-btn');
+  err.style.display = 'none';
+  document.getElementById('iprs-result').style.display = 'none';
+
+  if (!nid || !/^\d{7,8}$/.test(nid)) {
+    err.textContent = 'Enter a valid 7-8 digit National ID.';
+    err.style.display = 'block'; return;
+  }
+
+  btn.disabled = true; btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Checking…';
+
+  fetch(IPRS_URL, {
+    method: 'POST',
+    headers: {'X-CSRFToken': CSRF, 'Content-Type': 'application/x-www-form-urlencoded'},
+    body: 'national_id=' + encodeURIComponent(nid),
+  })
+  .then(r => r.json())
+  .then(data => {
+    btn.disabled = false; btn.innerHTML = '<i class="bi bi-search"></i> Lookup';
+    if (!data.success || !data.person_found) {
+      err.textContent = data.error_message || 'Not found in IPRS.';
+      err.style.display = 'block'; return;
+    }
+    iprsData = data;
+    document.getElementById('r-name').textContent   = data.full_name || data.first_name + ' ' + data.last_name;
+    document.getElementById('r-dob').textContent    = data.date_of_birth || '—';
+    document.getElementById('r-age').textContent    = data.age ? data.age + ' years' : '—';
+    document.getElementById('r-gender').textContent = data.gender || '—';
+    if (data.photo) {
+      document.getElementById('iprs-photo').src = 'data:image/jpeg;base64,' + data.photo;
+      document.getElementById('iprs-photo-box').style.display = 'block';
+    }
+    document.getElementById('iprs-result').style.display = 'block';
+    // Auto-fill National ID field
+    const nidField = document.querySelector('[name="national_id_number"]');
+    if (nidField) nidField.value = nid;
+    // Also try to find KRA PIN by this National ID
+    lookupKRAPinByID(nid);
+  })
+  .catch(() => {
+    btn.disabled = false; btn.innerHTML = '<i class="bi bi-search"></i> Lookup';
+    err.textContent = 'Lookup failed. Try again.'; err.style.display = 'block';
+  });
+}
+
+function applyIPRS() {
+  if (!iprsData) return;
+  const parts = (iprsData.full_name || '').trim().split(/\s+/);
+  const set = (name, val) => { const el = document.querySelector('[name="' + name + '"]'); if (el && val) el.value = val; };
+  set('first_name',         parts[0] || iprsData.first_name || '');
+  set('last_name',          parts.slice(1).join(' ') || iprsData.last_name || '');
+  set('date_of_birth',      iprsData.date_of_birth || '');
+  set('national_id_number', document.getElementById('lookup-nid').value.trim());
+}
+
+// ── KRA PIN Lookup ─────────────────────────────────────────────────────────
+function lookupKRAPinByID(nid) {
+  fetch(KRA_URL, {
+    method: 'POST',
+    headers: {'X-CSRFToken': CSRF, 'Content-Type': 'application/x-www-form-urlencoded'},
+    body: 'national_id=' + encodeURIComponent(nid),
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success && data.kra_pin) {
+      kraData = data;
+      document.getElementById('kra-found-pin').textContent = data.kra_pin;
+      document.getElementById('lookup-kra-pin').value = data.kra_pin;
+      document.getElementById('kra-result').style.display = 'block';
+      const pinField = document.querySelector('[name="kra_pin"]');
+      if (pinField) pinField.value = data.kra_pin;
+    }
+  }).catch(() => {});
+}
+
+function lookupKRAPin() {
+  const nid = document.getElementById('lookup-nid').value.trim() ||
+              (document.querySelector('[name="national_id_number"]') || {}).value || '';
+  if (nid) { lookupKRAPinByID(nid); return; }
+  const kraErr = document.getElementById('kra-error');
+  kraErr.textContent = 'Enter National ID in Step 1 first.';
+  kraErr.style.display = 'block';
+}
+
+function applyKRAPin() {
+  const pin = document.getElementById('kra-found-pin').textContent.trim();
+  const field = document.querySelector('[name="kra_pin"]');
+  if (field && pin) field.value = pin;
+  document.getElementById('lookup-kra-pin').value = pin;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('lookup-nid').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); runIPRS(); }
+  });
+  document.getElementById('lookup-kra-pin').addEventListener('change', function() {
+    const field = document.querySelector('[name="kra_pin"]');
+    if (field) field.value = this.value.toUpperCase();
+  });
+});
+</script>
+{% endblock %}

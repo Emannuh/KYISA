@@ -221,12 +221,16 @@ def send_credentials_email(user, temporary_password, role_label):
 
         <!-- FOOTER -->
         <tr>
-          <td style="background:#f8fafc;border-top:1px solid #e5e9f0;padding:20px 40px;text-align:center;">
-            <p style="margin:0;font-size:12px;color:#9ca3af;line-height:1.6;">
-              <strong style="color:#374151;">KYISA IT Team</strong> · it@kyisa.org<br>
-              Kenya Youth Intercounty Sports Association · kyisa.org<br>
-              This is an automated message — please do not reply directly to this email.
+          <td style="background:#f8fafc;border-top:1px solid #e5e9f0;padding:24px 40px;text-align:center;">
+            <p style="margin:0 0 6px;font-size:13px;font-weight:700;color:#1f2937;">KYISA IT Team</p>
+            <p style="margin:0 0 10px;font-size:11px;color:#9ca3af;letter-spacing:.5px;text-transform:uppercase;">Kenya Youth Intercounty Sports Association</p>
+            <p style="margin:0 0 12px;">
+              <a href="mailto:it@kyisa.org" style="color:#0b5d4b;text-decoration:none;font-size:12px;font-weight:600;">it@kyisa.org</a>
+              &nbsp;&nbsp;|&nbsp;&nbsp;
+              <a href="https://kyisa.org" style="color:#0b5d4b;text-decoration:none;font-size:12px;font-weight:600;">www.kyisa.org</a>
             </p>
+            <p style="margin:0 0 4px;font-size:10px;color:#d1d5db;">&copy; {timezone.now().year} Kenya Youth Intercounty Sports Association. All rights reserved.</p>
+            <p style="margin:0;font-size:9px;color:#e5e7eb;">This is an automated portal message. Do not reply to this email.<br>For support contact <a href="mailto:it@kyisa.org" style="color:#9ca3af;text-decoration:none;">it@kyisa.org</a></p>
           </td>
         </tr>
 
@@ -7329,22 +7333,32 @@ def team_list_pdf_view(request, discipline_pk):
 
 @role_required('secretary_general')
 def sg_dashboard_view(request):
-    """Secretary General overview: stats, recent actions, quick links."""
+    """Secretary General overview — hub-style portal matching sys admin layout."""
     from admin_dashboard.models import ActivityLog
-
-    total_players = CountyPlayer.objects.count()
-    verified_players = CountyPlayer.objects.filter(verification_status='verified').count()
-    pending_players = CountyPlayer.objects.filter(verification_status='pending').count()
-    rejected_players = CountyPlayer.objects.filter(verification_status='rejected').count()
-
     from appeals.models import Appeal, AppealStatus
-    total_appeals = Appeal.objects.count()
+    from django.db.models import Count
+
+    total_players    = CountyPlayer.objects.count()
+    verified_players = CountyPlayer.objects.filter(verification_status='verified').count()
+    pending_players  = CountyPlayer.objects.filter(verification_status='pending').count()
+    rejected_players = CountyPlayer.objects.filter(verification_status='rejected').count()
+    total_counties   = CountyRegistration.objects.count()
+    total_competitions = Competition.objects.count()
+    total_fixtures   = Fixture.objects.count()
+
+    total_appeals   = Appeal.objects.count()
     pending_appeals = Appeal.objects.filter(status=AppealStatus.SUBMITTED).count()
     decided_appeals = Appeal.objects.filter(status=AppealStatus.DECIDED).count()
 
     recent_activity = ActivityLog.objects.select_related('user').exclude(
         action__in=['LOGIN', 'LOGOUT']
     ).order_by('-timestamp')[:15]
+
+    recent_users = User.objects.order_by('-date_joined')[:8]
+
+    recent_fixtures = Fixture.objects.select_related(
+        'competition', 'home_team', 'away_team'
+    ).order_by('-match_date')[:8]
 
     disciplines = CountyDiscipline.objects.select_related('registration').all()
     sport_breakdown = {}
@@ -7355,17 +7369,34 @@ def sg_dashboard_view(request):
         sport_breakdown[sport]['total'] += d.players.count()
         sport_breakdown[sport]['verified'] += d.players.filter(verification_status='verified').count()
 
+    # Role distribution
+    role_counts = (
+        User.objects.values('role')
+        .annotate(count=Count('id'))
+        .order_by('-count')
+    )
+    role_display_map  = dict(UserRole.choices)
+    role_distribution = [
+        {'role': r['role'], 'role_display': role_display_map.get(r['role'], r['role']), 'count': r['count']}
+        for r in role_counts
+    ]
+
     return render(request, 'portal/secretary_general/dashboard.html', {
-        'total_players': total_players,
-        'verified_players': verified_players,
-        'pending_players': pending_players,
-        'rejected_players': rejected_players,
-        'total_appeals': total_appeals,
-        'pending_appeals': pending_appeals,
-        'decided_appeals': decided_appeals,
-        'recent_activity': recent_activity,
-        'sport_breakdown': sport_breakdown,
-        'total_counties': CountyRegistration.objects.count(),
+        'total_players':     total_players,
+        'verified_players':  verified_players,
+        'pending_players':   pending_players,
+        'rejected_players':  rejected_players,
+        'total_counties':    total_counties,
+        'total_competitions': total_competitions,
+        'total_fixtures':    total_fixtures,
+        'total_appeals':     total_appeals,
+        'pending_appeals':   pending_appeals,
+        'decided_appeals':   decided_appeals,
+        'recent_activity':   recent_activity,
+        'recent_users':      recent_users,
+        'recent_fixtures':   recent_fixtures,
+        'sport_breakdown':   sport_breakdown,
+        'role_distribution': role_distribution,
     })
 
 
@@ -8272,6 +8303,27 @@ def sys_admin_dashboard_view(request):
         },
     ]
 
+    # ── Attach users to each workspace for per-user portal cards ─────────────
+    _workspace_role_map = {
+        'System Admin':           [UserRole.ADMIN],
+        'Organising Secretary':   [UserRole.COMPETITION_MANAGER],
+        'Sport Coordinators':     [UserRole.COORDINATOR, UserRole.SOCCER_COORDINATOR, UserRole.HANDBALL_COORDINATOR, UserRole.BASKETBALL_COORDINATOR, UserRole.VOLLEYBALL_COORDINATOR],
+        'Media Managers':         [UserRole.MEDIA_MANAGER],
+        'Referees':               [UserRole.REFEREE],
+        'Team Managers':          [UserRole.TEAM_MANAGER],
+        'County Sports Directors': [UserRole.COUNTY_SPORTS_DIRECTOR],
+        'Treasurer':              [UserRole.TREASURER],
+        'Secretary General':      [UserRole.SECRETARY_GENERAL],
+        'Verification Officers':  [UserRole.VERIFICATION_OFFICER],
+        'Jury Chair':             [UserRole.JURY_CHAIR],
+        'Scouts':                 [UserRole.SCOUT],
+        'CEC Sports':             [UserRole.CEC_SPORTS_MEMBER],
+    }
+    all_active_users = list(User.objects.filter(is_active=True).order_by('last_name', 'first_name'))
+    for ws in role_workspaces:
+        role_keys = _workspace_role_map.get(ws['title'], [])
+        ws['users'] = [u for u in all_active_users if u.role in role_keys]
+
     dashboard_hubs = [
         {
             'title': 'Coordinator Desk',
@@ -8445,6 +8497,14 @@ def sys_admin_dashboard_view(request):
         },
     ]
 
+    # ── Users grouped by role (for per-user portal cards) ────────────────
+    all_users = User.objects.filter(is_active=True).order_by('role', 'last_name', 'first_name')
+    users_by_role = {}
+    for u in all_users:
+        if u.role not in users_by_role:
+            users_by_role[u.role] = []
+        users_by_role[u.role].append(u)
+
     return render(request, 'portal/admin/dashboard.html', {
         'total_users': total_users,
         'total_competitions': total_competitions,
@@ -8463,4 +8523,5 @@ def sys_admin_dashboard_view(request):
         'role_distribution': role_distribution,
         'role_workspaces': role_workspaces,
         'dashboard_hubs': dashboard_hubs,
+        'users_by_role': users_by_role,
     })

@@ -63,11 +63,18 @@
      style="padding:.55rem 1rem;font-size:.83rem;font-weight:700;border-radius:8px 8px 0 0;text-decoration:none;
             background:var(--primary);color:#fff;border:1px solid var(--primary);margin-bottom:-2px;">
     <i class="bi bi-inbox-fill"></i> Inbox
+    <span style="margin-left:.3rem;background:rgba(255,255,255,.25);border-radius:999px;padding:.05rem .45rem;font-size:.72rem;">{{ stats.total }}</span>
   </a>
   <a href="{% url 'email_logs' %}"
      style="padding:.55rem 1rem;font-size:.83rem;font-weight:600;border-radius:8px 8px 0 0;text-decoration:none;
             background:#fff;color:var(--gray);border:1px solid var(--border);margin-bottom:-2px;">
-    <i class="bi bi-send"></i> Outbox
+    <i class="bi bi-send-fill"></i> Sent
+  </a>
+  <a href="{% url 'email_logs' %}?status=failed"
+     style="padding:.55rem 1rem;font-size:.83rem;font-weight:600;border-radius:8px 8px 0 0;text-decoration:none;
+            background:#fff;color:{% if stats.failed %}#dc2626{% else %}var(--gray){% endif %};border:1px solid var(--border);margin-bottom:-2px;">
+    <i class="bi bi-x-circle-fill"></i> Failed
+    {% if stats.failed %}<span style="margin-left:.3rem;background:#fee2e2;color:#dc2626;border-radius:999px;padding:.05rem .45rem;font-size:.72rem;font-weight:700;">{{ stats.failed }}</span>{% endif %}
   </a>
   <a href="{% url 'email_compose' %}"
      style="padding:.55rem 1rem;font-size:.83rem;font-weight:600;border-radius:8px 8px 0 0;text-decoration:none;

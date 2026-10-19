@@ -496,6 +496,28 @@
           <span>{{ workspace.count_label }}</span>
         </div>
       </div>
+
+      {# ── Per-user cards ── #}
+      {% if workspace.users %}
+      <div style="margin-bottom:.8rem">
+        <div style="font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--hub-muted);margin-bottom:.45rem">
+          <i class="bi bi-people-fill" style="opacity:.55"></i> Users in this role
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:.35rem">
+          {% for u in workspace.users %}
+          <a href="{% url 'user_detail' u.pk %}"
+             style="display:inline-flex;align-items:center;gap:.38rem;padding:.28rem .65rem;background:#f8fafc;border:1px solid var(--hub-border);border-radius:999px;text-decoration:none;color:var(--hub-ink);font-size:.74rem;font-weight:600;transition:all .15s;"
+             onmouseover="this.style.background='#eff6ff';this.style.borderColor='#93c5fd';"
+             onmouseout="this.style.background='#f8fafc';this.style.borderColor='var(--hub-border)';"
+             title="{{ u.get_full_name }} — click to open portal">
+            <span style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,var(--hub-brand),var(--hub-brand2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.6rem;font-weight:800;flex-shrink:0;line-height:1;">{{ u.first_name.0 }}{{ u.last_name.0 }}</span>
+            {{ u.get_full_name }}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
       <div class="hub-fns">
         {% for function in workspace.functions %}
         <a href="{% url function.url %}" class="hub-fn">

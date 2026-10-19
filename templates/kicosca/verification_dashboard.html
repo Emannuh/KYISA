@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}KICOSCA Verification Dashboard{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1><i class="bi bi-shield-check"></i> KICOSCA Verification Dashboard</h1>
+  <p>{% if edition %}{{ edition.name }}{% else %}No active edition{% endif %}</p>
+</div>
+
+<!-- Filters -->
+<div class="card" style="margin-bottom:1rem">
+  <form method="get" style="padding:.75rem;display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end">
+    <div style="flex:1;min-width:160px">
+      <label style="font-size:.72rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.2rem">Search</label>
+      <input type="text" name="q" value="{{ search }}" placeholder="Name or National ID…" class="form-input" style="width:100%">
+    </div>
+    <div style="min-width:140px">
+      <label style="font-size:.72rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.2rem">Sport</label>
+      <select name="sport" class="form-input">
+        <option value="">All sports</option>
+        {% for val, label in sport_choices %}
+        <option value="{{ val }}" {% if sport_filter == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div style="min-width:130px">
+      <label style="font-size:.72rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.2rem">Status</label>
+      <select name="status" class="form-input">
+        <option value="">All</option>
+        <option value="pending"  {% if status_filter == 'pending'  %}selected{% endif %}>⏳ Pending</option>
+        <option value="verified" {% if status_filter == 'verified' %}selected{% endif %}>✅ Verified</option>
+        <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>❌ Rejected</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Filter</button>
+    <a href="{% url 'kicosca_verification' %}" class="btn btn-outline">Clear</a>
+  </form>
+</div>
+
+<div class="card">
+  <div class="card-header"><h3>KICOSCA Players ({{ players|length }})</h3></div>
+  <div style="overflow-x:auto">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>County</th>
+          <th>Sport</th>
+          <th>National ID</th>
+          <th>KRA PIN</th>
+          <th style="text-align:center">IPRS</th>
+          <th style="text-align:center">KRA Employment</th>
+          <th style="text-align:center">Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in players %}
+        <tr>
+          <td style="font-weight:600">{{ p.full_name }}</td>
+          <td style="font-size:.82rem">{{ p.discipline.entry.county }}</td>
+          <td style="font-size:.82rem">{{ p.discipline.get_sport_display }}</td>
+          <td style="font-family:monospace;font-size:.8rem">{{ p.national_id_number }}</td>
+          <td style="font-family:monospace;font-size:.8rem">{{ p.kra_pin|default:"—" }}</td>
+          <td style="text-align:center">
+            {% if p.prembly_status == 'verified' %}<span class="badge badge-success">✓</span>
+            {% elif p.prembly_status == 'failed' %}<span class="badge badge-danger">✗</span>
+            {% else %}<span style="color:#d1d5db">—</span>{% endif %}
+          </td>
+          <td style="text-align:center">
+            {% if p.kra_employment_status == 'verified' %}<span class="badge badge-success">✓ {{ p.kra_employer_name|truncatechars:20 }}</span>
+            {% elif p.kra_employment_status == 'failed' %}<span class="badge badge-danger">✗</span>
+            {% elif p.kra_employment_status == 'mismatch' %}<span class="badge badge-warning">⚠ Mismatch</span>
+            {% else %}<span style="color:#d1d5db">—</span>{% endif %}
+          </td>
+          <td style="text-align:center">
+            {% if p.verification_status == 'verified' %}<span class="badge badge-success">Verified</span>
+            {% elif p.verification_status == 'rejected' %}<span class="badge badge-danger">Rejected</span>
+            {% else %}<span class="badge badge-warning">Pending</span>{% endif %}
+          </td>
+          <td>
+            <a href="{% url 'kicosca_player_detail' player_pk=p.pk %}" class="btn btn-outline" style="padding:.2rem .5rem;font-size:.7rem">
+              <i class="bi bi-eye"></i>
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--gray)">No players found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

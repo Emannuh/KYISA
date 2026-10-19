@@ -434,6 +434,9 @@ urlpatterns = [
     # ── SYSTEM ADMIN PORTAL ────────────────────────────────────────────────────
     path("portal/system/",                      sys_admin_dashboard_view,    name="sys_admin_dashboard"),
 
+    # ── KICOSCA GAMES ─────────────────────────────────────────────────────────
+    path("portal/kicosca/", include("kicosca.urls")),
+
     # ── ADMIN DASHBOARD ───────────────────────────────────────────────────────
     path("portal/admin-dashboard/", include("admin_dashboard.urls")),
 

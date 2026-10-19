@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     "admin_dashboard",
     "appeals",
     "news_media",
+    "kicosca",
 ]
 
 # ── MIDDLEWARE ─────────────────────────────────────────────────────────────────
@@ -473,6 +474,13 @@ DIDIT_ENABLED          = env.bool("DIDIT_ENABLED", default=True)
 # Test ID in sandbox: 10101010
 PREMBLY_API_KEY     = env("PREMBLY_API_KEY",     default="")
 PREMBLY_ENVIRONMENT = env("PREMBLY_ENVIRONMENT", default="sandbox")  # 'sandbox' or 'production'
+
+# ── GAVACONNECT (KRA Employment Verification — KICOSCA) ───────────────────────
+# Sign up at gavaconnect.co.ke → Subscribe to "Fetch Taxpayer Obligations" + "PIN Checker by ID"
+# Sandbox test PIN: P051234567A
+GAVACONNECT_CLIENT_ID     = env("GAVACONNECT_CLIENT_ID",     default="")
+GAVACONNECT_CLIENT_SECRET = env("GAVACONNECT_CLIENT_SECRET", default="")
+GAVACONNECT_ENVIRONMENT   = env("GAVACONNECT_ENVIRONMENT",   default="sandbox")
 
 # ── SMILE IDENTITY (Legacy — kept for backwards compat, prefer Prembly) ───────
 # Smile Identity — IPRS / Enhanced KYC Verification

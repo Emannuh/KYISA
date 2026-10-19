@@ -91,15 +91,22 @@ def _base_html(title, body_content):
 
   <!-- ═══ FOOTER ═══ -->
   <tr>
-    <td style="padding:24px 32px;text-align:center;">
-      <p style="margin:0;font-size:12px;font-weight:600;color:#555;letter-spacing:.5px;">Kenya Youth Intercounty Sports Association</p>
-      <p style="margin:6px 0 0;font-size:11px;color:#999;">
-        <a href="mailto:admin@kyisa.org" style="color:#4CAF50;text-decoration:none;">admin@kyisa.org</a>
-        &nbsp;&bull;&nbsp;
-        <a href="https://kyisa.org" style="color:#4CAF50;text-decoration:none;">www.kyisa.org</a>
-      </p>
-      <p style="margin:12px 0 0;font-size:10px;color:#bbb;">&copy; {year} KYISA. All rights reserved.</p>
-      <p style="margin:4px 0 0;font-size:9px;color:#ccc;">This is an automated message. Please do not reply directly.</p>
+    <td style="padding:28px 32px 24px;text-align:center;background:#f9fafb;border-top:1px solid #e5e9f0;">
+      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+        <tr>
+          <td style="text-align:center;">
+            <p style="margin:0 0 4px;font-size:13px;font-weight:700;color:#1f2937;letter-spacing:.3px;">KYISA IT Team</p>
+            <p style="margin:0 0 10px;font-size:11px;color:#9ca3af;letter-spacing:.5px;text-transform:uppercase;">Kenya Youth Intercounty Sports Association</p>
+            <p style="margin:0 0 10px;">
+              <a href="mailto:it@kyisa.org" style="color:#0b5d4b;text-decoration:none;font-size:12px;font-weight:600;">it@kyisa.org</a>
+              &nbsp;&nbsp;|&nbsp;&nbsp;
+              <a href="https://kyisa.org" style="color:#0b5d4b;text-decoration:none;font-size:12px;font-weight:600;">www.kyisa.org</a>
+            </p>
+            <p style="margin:0 0 4px;font-size:10px;color:#d1d5db;">&copy; {year} Kenya Youth Intercounty Sports Association. All rights reserved.</p>
+            <p style="margin:0;font-size:9px;color:#e5e7eb;">This is an automated message from the KYISA portal. Please do not reply to this email.<br>For support, contact us at <a href="mailto:it@kyisa.org" style="color:#9ca3af;text-decoration:none;">it@kyisa.org</a></p>
+          </td>
+        </tr>
+      </table>
     </td>
   </tr>
 
@@ -160,7 +167,7 @@ def _send(subject, html_body, recipients, fail_silently=True, sent_by=None, cc=N
         from admin_dashboard.models import EmailLog
 
         plain_body = strip_tags(html_body)
-        from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "KYISA Administration <admin@kyisa.org>")
+        from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "KYISA IT Team <it@kyisa.org>")
         max_retries = 3
         last_error = ""
 
