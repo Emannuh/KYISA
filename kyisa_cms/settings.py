@@ -457,17 +457,6 @@ FIFA_CONNECT_API_KEY = env("FIFA_CONNECT_API_KEY", default="")
 FIFA_CONNECT_ENABLED = env.bool("FIFA_CONNECT_ENABLED", default=True)
 FIFA_CONNECT_TIMEOUT = env.int("FIFA_CONNECT_TIMEOUT", default=30)
 
-# ── DIDIT.ME — Identity Verification (NRB IPRS) ───────────────────────────────
-# Sign up at business.didit.me → Settings → API & Webhooks
-# Create a KYC workflow with Database Validation (kenya: ken_national_id) enabled
-# Free tier: 500 verifications/month. After that: $0.15/ID check + $3.15/NRB lookup
-DIDIT_API_KEY          = env("DIDIT_API_KEY", default="")
-DIDIT_WORKFLOW_ID      = env("DIDIT_WORKFLOW_ID", default="")       # UUID from Console → Workflows
-DIDIT_WEBHOOK_SECRET   = env("DIDIT_WEBHOOK_SECRET", default="")    # From Console → API & Webhooks
-DIDIT_ENVIRONMENT      = env("DIDIT_ENVIRONMENT", default="sandbox") # 'sandbox' or 'live'
-DIDIT_TIMEOUT          = env.int("DIDIT_TIMEOUT", default=30)
-DIDIT_ENABLED          = env.bool("DIDIT_ENABLED", default=True)
-
 # ── PREMBLY (Kenya IPRS Identity Verification) ────────────────────────────────
 # Replaces Smile Identity for Kenya National ID lookups.
 # Sign up at app.prembly.com → API Keys → copy your live key.

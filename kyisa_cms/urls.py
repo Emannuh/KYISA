@@ -19,12 +19,6 @@ from teams.verification_views import (
     bulk_fifa_connect_check as _bulk_fifa,
     api_fifa_connect_quick_check as _api_fifa_quick,
     api_iprs_lookup as _api_iprs_lookup,
-    # ── Didit.me verification station ─────────────────────────────────────
-    didit_station_view as _didit_station,
-    didit_create_session_view as _didit_create_session,
-    didit_poll_session_view as _didit_poll,
-    didit_manual_apply_view as _didit_manual_apply,
-    didit_webhook_view as _didit_webhook,
     # ── Verifisha ──────────────────────────────────────────────────────────
     verifisha_verify_player as _verifisha_verify,
     verifisha_poll_report as _verifisha_poll,
@@ -259,22 +253,6 @@ urlpatterns = [
     path("portal/players/bulk-fifa-connect-check/",               _bulk_fifa,                 name="bulk_fifa_connect_check"),
     path("api/v1/fifa-connect/quick-check/",                      _api_fifa_quick,            name="api_fifa_connect_quick_check"),
     path("api/v1/iprs/lookup/",                                   _api_iprs_lookup,           name="api_iprs_lookup"),
-
-    # ── DIDIT.ME VERIFICATION STATION ────────────────────────────────────────
-    # Station dashboard — verification officer opens this on the station PC
-    path("portal/verification/didit/",                            _didit_station,             name="didit_station"),
-    # Create a Didit KYC session for a player (AJAX POST → returns session_url + QR)
-    path("portal/verification/didit/players/<int:player_pk>/create-session/",
-                                                                  _didit_create_session,      name="didit_create_session"),
-    # Poll session status (AJAX GET — called every 3 s by the station browser)
-    path("portal/verification/didit/sessions/<str:session_id>/poll/",
-                                                                  _didit_poll,                name="didit_poll_session"),
-    # Manually apply a completed session to a player (POST fallback if webhook missed)
-    path("portal/verification/didit/players/<int:player_pk>/apply/",
-                                                                  _didit_manual_apply,        name="didit_manual_apply"),
-    # Didit webhook — register this URL in Didit Console → API & Webhooks
-    # Full URL: https://kyisa.org/api/v1/didit/webhook/
-    path("api/v1/didit/webhook/",                                 _didit_webhook,             name="didit_webhook"),
 
     # ── VERIFISHA IDENTITY VERIFICATION (club Player — legacy) ───────────────
     path("portal/players/<int:player_pk>/verifisha-verify/",      _verifisha_verify,          name="verifisha_verify_player"),
