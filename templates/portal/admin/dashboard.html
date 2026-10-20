@@ -6,99 +6,81 @@
 {% block extra_css %}
 <style>
 :root {
-  --hub-bg:      #f0f2f7;
-  --hub-surface: #ffffff;
-  --hub-ink:     #0d1117;
-  --hub-muted:   #6b7280;
-  --hub-border:  #e5e9f0;
-  --hub-brand:   #0b5d4b;
-  --hub-brand2:  #0f766e;
-  --hub-accent:  #0a66c2;
-  --hub-r:       14px;
-  --hub-r-lg:    20px;
-  --hub-shadow:  0 2px 8px rgba(13,17,23,.07);
-  --hub-shadow-md: 0 6px 24px rgba(13,17,23,.11);
+  --hub-bg:     #f0f2f7;
+  --hub-surf:   #ffffff;
+  --hub-ink:    #0d1117;
+  --hub-muted:  #6b7280;
+  --hub-border: #e5e9f0;
+  --hub-brand:  #0b5d4b;
+  --hub-accent: #0a66c2;
+  --hub-r:      12px;
+  --hub-shadow: 0 2px 8px rgba(13,17,23,.07);
+  --hub-shadow-lg: 0 8px 28px rgba(13,17,23,.12);
 }
 
 .hub { background:var(--hub-bg); min-height:100vh; padding:1.5rem 1.25rem 3rem; }
 
-/* ── HERO ──────────────────────────────────────────────────────────────────── */
+/* ── HERO ── */
 .hub-hero {
-  position:relative; overflow:hidden;
-  border-radius:22px;
-  background:linear-gradient(130deg,#0d1117 0%,#1a2744 45%,#0b5d4b 100%);
-  padding:2rem 2.25rem 1.75rem;
+  border-radius:20px;
+  background:linear-gradient(130deg,#0d1117 0%,#1a2744 50%,#0b5d4b 100%);
+  padding:1.75rem 2rem;
   margin-bottom:1.25rem;
-  box-shadow:0 16px 48px rgba(11,93,75,.25);
+  box-shadow:0 12px 40px rgba(11,93,75,.22);
+  position:relative; overflow:hidden;
 }
 .hub-hero::before {
-  content:""; position:absolute;
-  width:400px; height:400px; border-radius:50%;
-  background:radial-gradient(circle,rgba(15,118,110,.3),transparent 70%);
-  right:-60px; top:-120px; pointer-events:none;
+  content:""; position:absolute; inset:0;
+  background:radial-gradient(ellipse at 75% 30%,rgba(15,118,110,.25) 0%,transparent 60%);
+  pointer-events:none;
 }
-.hub-hero::after {
-  content:""; position:absolute;
-  width:200px; height:200px; border-radius:50%;
-  background:radial-gradient(circle,rgba(10,102,194,.15),transparent 70%);
-  left:38%; bottom:-80px; pointer-events:none;
-}
-.hub-hero-inner { position:relative; z-index:1; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem; }
-.hub-hero-left { flex:1; min-width:260px; }
+.hub-hero-inner { position:relative; z-index:1; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
+.hub-hero-left { flex:1; min-width:240px; }
 .hub-badge {
-  display:inline-flex; align-items:center; gap:.4rem;
-  padding:.32rem .8rem; border-radius:999px;
-  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18);
-  font-size:.7rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
-  color:#d1fae5; margin-bottom:.85rem;
-}
-.hub-hero-title {
-  font-size:clamp(1.5rem,2.2vw,2.1rem); font-weight:800;
-  color:#fff; line-height:1.2; margin:0 0 .5rem;
-}
-.hub-hero-sub { color:#94d5c7; font-size:.88rem; margin:0 0 1.25rem; max-width:55ch; line-height:1.6; }
-.hub-chips { display:flex; flex-wrap:wrap; gap:.45rem; }
-.hub-chip {
   display:inline-flex; align-items:center; gap:.35rem;
+  padding:.28rem .7rem; border-radius:999px;
+  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18);
+  font-size:.68rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  color:#d1fae5; margin-bottom:.7rem;
+}
+.hub-hero-title { font-size:clamp(1.35rem,2vw,1.9rem); font-weight:800; color:#fff; margin:0 0 .4rem; line-height:1.2; }
+.hub-hero-sub   { color:rgba(255,255,255,.6); font-size:.85rem; margin:0 0 1rem; }
+.hub-chips { display:flex; flex-wrap:wrap; gap:.4rem; }
+.hub-chip {
+  display:inline-flex; align-items:center; gap:.3rem;
   background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.14);
-  color:#e2e8f0; font-size:.75rem; border-radius:999px; padding:.35rem .7rem;
+  color:#e2e8f0; font-size:.73rem; border-radius:999px; padding:.3rem .65rem;
 }
-
-/* Hero right — alert cards */
-.hub-hero-right {
-  display:flex; flex-direction:column; gap:.5rem; min-width:200px;
-}
+.hub-alerts { display:flex; flex-direction:column; gap:.4rem; min-width:190px; }
 .hub-alert {
-  display:flex; align-items:center; gap:.65rem;
+  display:flex; align-items:center; gap:.55rem;
   background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15);
-  border-radius:12px; padding:.7rem .9rem; text-decoration:none; color:#fff;
-  transition:background .15s;
+  border-radius:10px; padding:.6rem .8rem; text-decoration:none; color:#fff;
+  transition:background .14s;
 }
-.hub-alert:hover { background:rgba(255,255,255,.17); color:#fff; }
+.hub-alert:hover { background:rgba(255,255,255,.17); }
 .hub-alert-dot {
-  width:36px; height:36px; border-radius:10px; flex-shrink:0;
-  display:flex; align-items:center; justify-content:center; font-size:.9rem;
+  width:34px; height:34px; border-radius:9px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:.85rem;
 }
-.hub-alert-dot.amber { background:rgba(245,158,11,.25); color:#fbbf24; }
-.hub-alert-dot.red   { background:rgba(239,68,68,.25);  color:#f87171; }
-.hub-alert-dot.blue  { background:rgba(59,130,246,.25); color:#93c5fd; }
-.hub-alert-val { font-size:1.1rem; font-weight:800; line-height:1; }
-.hub-alert-lbl { font-size:.68rem; color:rgba(255,255,255,.6); margin-top:.1rem; }
+.hub-alert-dot.amber { background:rgba(245,158,11,.3); color:#fbbf24; }
+.hub-alert-dot.red   { background:rgba(239,68,68,.3);  color:#f87171; }
+.hub-alert-dot.blue  { background:rgba(59,130,246,.3); color:#93c5fd; }
+.hub-alert-val { font-size:1rem; font-weight:800; line-height:1; }
+.hub-alert-lbl { font-size:.65rem; color:rgba(255,255,255,.55); margin-top:.08rem; }
 
-/* ── STATS GRID ─────────────────────────────────────────────────────────────── */
+/* ── STATS ── */
 .hub-stats {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(125px,1fr));
-  gap:.7rem; margin-bottom:1.5rem;
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(118px,1fr));
+  gap:.65rem; margin-bottom:1.35rem;
 }
 .hub-stat {
-  background:var(--hub-surface); border:1px solid var(--hub-border);
-  border-radius:var(--hub-r); padding:.95rem 1rem .85rem;
+  background:var(--hub-surf); border:1px solid var(--hub-border);
+  border-radius:var(--hub-r); padding:.85rem .9rem .75rem;
   position:relative; overflow:hidden;
-  transition:transform .18s, box-shadow .18s;
-  cursor:default;
+  transition:transform .16s, box-shadow .16s;
 }
-.hub-stat:hover { transform:translateY(-3px); box-shadow:var(--hub-shadow-md); }
+.hub-stat:hover { transform:translateY(-2px); box-shadow:var(--hub-shadow-lg); }
 .hub-stat::after {
   content:""; position:absolute; top:0; left:0; right:0; height:3px;
   border-radius:var(--hub-r) var(--hub-r) 0 0;
@@ -111,12 +93,7 @@
 .hub-stat--orange::after { background:#f97316; }
 .hub-stat--red::after    { background:#ef4444; }
 .hub-stat--rose::after   { background:#f43f5e; }
-
-.hub-stat-icon {
-  width:34px; height:34px; border-radius:9px;
-  display:flex; align-items:center; justify-content:center;
-  font-size:.88rem; margin-bottom:.6rem;
-}
+.hub-stat-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:.85rem; margin-bottom:.55rem; }
 .hub-stat--blue   .hub-stat-icon { background:#eff6ff; color:#3b82f6; }
 .hub-stat--teal   .hub-stat-icon { background:#f0fdfa; color:#14b8a6; }
 .hub-stat--green  .hub-stat-icon { background:#f0fdf4; color:#22c55e; }
@@ -125,161 +102,137 @@
 .hub-stat--orange .hub-stat-icon { background:#fff7ed; color:#f97316; }
 .hub-stat--red    .hub-stat-icon { background:#fef2f2; color:#ef4444; }
 .hub-stat--rose   .hub-stat-icon { background:#fff1f2; color:#f43f5e; }
+.hub-stat-val   { font-size:1.35rem; font-weight:800; color:var(--hub-ink); line-height:1; margin-bottom:.15rem; }
+.hub-stat-label { font-size:.63rem; text-transform:uppercase; letter-spacing:.06em; color:var(--hub-muted); }
 
-.hub-stat-val   { font-size:1.45rem; font-weight:800; color:var(--hub-ink); line-height:1; margin-bottom:.18rem; }
-.hub-stat-label { font-size:.67rem; text-transform:uppercase; letter-spacing:.06em; color:var(--hub-muted); }
-
-/* ── SECTION HEADER ─────────────────────────────────────────────────────────── */
-.hub-sh {
-  display:flex; align-items:center; gap:.5rem;
-  margin:0 0 .9rem;
-}
-.hub-sh h2 { font-size:.95rem; font-weight:800; color:var(--hub-ink); margin:0; }
+/* ── SECTION HEADING ── */
+.hub-sh { display:flex; align-items:center; gap:.5rem; margin:0 0 .85rem; }
+.hub-sh h2 { font-size:.88rem; font-weight:800; color:var(--hub-ink); margin:0; white-space:nowrap; }
 .hub-sh-sep { flex:1; height:1px; background:var(--hub-border); }
 
-/* ── QUICK ACTIONS ──────────────────────────────────────────────────────────── */
-.hub-quick {
-  display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:.7rem; margin-bottom:1.5rem;
-}
+/* ── QUICK ACTIONS ── */
+.hub-quick { display:grid; grid-template-columns:repeat(auto-fit,minmax(185px,1fr)); gap:.65rem; margin-bottom:1.35rem; }
 .hub-qa {
-  display:flex; gap:.75rem; align-items:center;
-  background:var(--hub-surface); border:1px solid var(--hub-border);
-  border-radius:var(--hub-r); padding:.9rem 1rem;
+  display:flex; gap:.65rem; align-items:center;
+  background:var(--hub-surf); border:1px solid var(--hub-border);
+  border-radius:var(--hub-r); padding:.8rem .9rem;
   text-decoration:none; color:inherit;
-  transition:transform .17s, box-shadow .17s, border-color .17s;
+  transition:transform .15s, box-shadow .15s, border-color .15s;
 }
-.hub-qa:hover { transform:translateY(-3px); border-color:#b6c8e4; box-shadow:var(--hub-shadow-md); color:inherit; }
-.hub-qa-icon {
-  width:42px; height:42px; border-radius:11px; flex-shrink:0;
-  display:flex; align-items:center; justify-content:center; font-size:1.05rem;
-}
+.hub-qa:hover { transform:translateY(-2px); border-color:#b6c8e4; box-shadow:var(--hub-shadow-lg); color:inherit; }
+.hub-qa-icon { width:38px; height:38px; border-radius:10px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:.95rem; }
 .hub-qa-icon.blue   { background:#eff6ff; color:#3b82f6; }
 .hub-qa-icon.green  { background:#ecfdf5; color:#059669; }
 .hub-qa-icon.amber  { background:#fffbeb; color:#d97706; }
 .hub-qa-icon.purple { background:#f5f3ff; color:#7c3aed; }
 .hub-qa-icon.teal   { background:#f0fdfa; color:#0f766e; }
-.hub-qa h4 { margin:0; font-size:.86rem; font-weight:700; color:var(--hub-ink); }
-.hub-qa p  { margin:.12rem 0 0; font-size:.72rem; color:var(--hub-muted); }
+.hub-qa h4 { margin:0; font-size:.83rem; font-weight:700; color:var(--hub-ink); }
+.hub-qa p  { margin:.1rem 0 0; font-size:.7rem; color:var(--hub-muted); }
 
-/* ── WORKSPACE CARDS ─────────────────────────────────────────────────────────── */
-.hub-workspaces {
-  display:grid; grid-template-columns:repeat(auto-fit,minmax(310px,1fr));
-  gap:.9rem; margin-bottom:1.5rem;
-}
-.hub-ws {
-  background:var(--hub-surface); border:1px solid var(--hub-border);
-  border-radius:var(--hub-r-lg); padding:1.15rem;
-  display:flex; flex-direction:column; gap:.85rem;
-  transition:box-shadow .2s;
-}
-.hub-ws:hover { box-shadow:var(--hub-shadow-md); }
-.hub-ws-top { display:flex; justify-content:space-between; align-items:flex-start; gap:.5rem; }
-.hub-ws-left { flex:1; }
-.hub-ws-pill {
-  display:inline-flex; align-items:center; gap:.4rem;
-  padding:.28rem .65rem; border-radius:999px;
-  font-size:.68rem; font-weight:700;
-  background:#f0fdf9; color:#065f46; border:1px solid #a7f3d0;
-  margin-bottom:.5rem;
-}
-.hub-ws-title { font-size:.94rem; font-weight:800; color:var(--hub-ink); margin:0 0 .28rem; }
-.hub-ws-desc  { font-size:.73rem; color:var(--hub-muted); line-height:1.55; margin:0; }
-.hub-ws-count {
-  text-align:right; flex-shrink:0;
-  background:#f8fafc; border:1px solid var(--hub-border);
-  border-radius:10px; padding:.45rem .7rem; min-width:72px;
-}
-.hub-ws-count strong { display:block; font-size:1.15rem; font-weight:800; color:var(--hub-ink); line-height:1; }
-.hub-ws-count span   { font-size:.58rem; text-transform:uppercase; letter-spacing:.06em; color:var(--hub-muted); }
-
-.hub-ws-users { display:flex; flex-wrap:wrap; gap:.3rem; }
-.hub-ws-user {
-  display:inline-flex; align-items:center; gap:.32rem;
-  padding:.24rem .6rem; background:#f8fafc; border:1px solid var(--hub-border);
-  border-radius:999px; text-decoration:none; color:var(--hub-ink);
-  font-size:.71rem; font-weight:600; transition:all .14s;
-}
-.hub-ws-user:hover { background:#eff6ff; border-color:#93c5fd; color:var(--hub-ink); }
-.hub-ws-avatar {
-  width:18px; height:18px; border-radius:50%;
-  background:linear-gradient(135deg,var(--hub-brand),var(--hub-brand2));
-  display:flex; align-items:center; justify-content:center;
-  color:#fff; font-size:.55rem; font-weight:800; flex-shrink:0;
-}
-
-.hub-fns { display:grid; grid-template-columns:1fr 1fr; gap:.5rem; }
-.hub-fn {
-  display:flex; gap:.55rem; align-items:flex-start;
-  text-decoration:none; color:inherit;
-  border:1px solid var(--hub-border); border-radius:10px;
-  background:#fafbfc; padding:.65rem .75rem;
-  transition:transform .15s, border-color .15s, box-shadow .15s;
-}
-.hub-fn:hover { transform:translateY(-2px); border-color:#bfcfe9; box-shadow:0 5px 16px rgba(13,17,23,.08); color:inherit; }
-.hub-fn-icon {
-  width:32px; height:32px; border-radius:8px; flex-shrink:0;
-  display:flex; align-items:center; justify-content:center;
-  background:linear-gradient(135deg,#ecfdf5,#d1fae5); color:#065f46; font-size:.82rem;
-}
-.hub-fn-body h5 { margin:0; font-size:.77rem; font-weight:700; color:var(--hub-ink); }
-.hub-fn-body p  { margin:.12rem 0 0; font-size:.67rem; color:var(--hub-muted); line-height:1.4; }
-
-/* ── PANELS ──────────────────────────────────────────────────────────────────── */
-.hub-panels { display:grid; grid-template-columns:1fr 1fr; gap:.9rem; margin-bottom:1rem; }
-.hub-panel {
-  background:var(--hub-surface); border:1px solid var(--hub-border);
-  border-radius:var(--hub-r); overflow:hidden;
-}
-.hub-panel-head {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:.8rem 1rem; border-bottom:1px solid var(--hub-border); background:#fafbfc;
-}
-.hub-panel-head h3 { margin:0; font-size:.84rem; font-weight:700; color:var(--hub-ink); display:flex; align-items:center; gap:.4rem; }
-.hub-panel-head a  { font-size:.72rem; color:var(--hub-accent); text-decoration:none; font-weight:600; }
-.hub-panel-head a:hover { text-decoration:underline; }
-.hub-panel-body { padding:.85rem 1rem; max-height:300px; overflow-y:auto; }
-
-.hub-email-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:.45rem; margin-bottom:.75rem; }
-.hub-email-stat  { text-align:center; background:#f8fafc; border:1px solid var(--hub-border); border-radius:9px; padding:.55rem .3rem; }
-.hub-email-stat strong { display:block; font-size:.95rem; font-weight:800; color:var(--hub-ink); }
-.hub-email-stat span   { font-size:.62rem; text-transform:uppercase; letter-spacing:.05em; color:var(--hub-muted); }
-.hub-email-actions { display:flex; flex-wrap:wrap; gap:.4rem; }
-.hub-ebtn {
-  display:inline-flex; align-items:center; gap:.32rem;
-  font-size:.71rem; font-weight:700; padding:.38rem .7rem; border-radius:999px;
-  text-decoration:none; border:1px solid #c7d8f0; color:#1d4e89; background:#f0f6ff;
-  transition:background .14s;
-}
+/* ── MONITORING PANELS ── */
+.hub-panels { display:grid; grid-template-columns:1fr 1fr; gap:.85rem; margin-bottom:1.35rem; }
+.hub-panel { background:var(--hub-surf); border:1px solid var(--hub-border); border-radius:var(--hub-r); overflow:hidden; }
+.hub-panel-head { display:flex; align-items:center; justify-content:space-between; padding:.75rem .95rem; border-bottom:1px solid var(--hub-border); background:#fafbfc; }
+.hub-panel-head h3 { margin:0; font-size:.82rem; font-weight:700; color:var(--hub-ink); display:flex; align-items:center; gap:.4rem; }
+.hub-panel-head a  { font-size:.7rem; color:var(--hub-accent); text-decoration:none; font-weight:600; }
+.hub-panel-body    { padding:.8rem .95rem; max-height:280px; overflow-y:auto; }
+.hub-email-stats   { display:grid; grid-template-columns:repeat(4,1fr); gap:.4rem; margin-bottom:.65rem; }
+.hub-email-stat    { text-align:center; background:#f8fafc; border:1px solid var(--hub-border); border-radius:8px; padding:.5rem .3rem; }
+.hub-email-stat strong { display:block; font-size:.9rem; font-weight:800; color:var(--hub-ink); }
+.hub-email-stat span   { font-size:.6rem; text-transform:uppercase; letter-spacing:.04em; color:var(--hub-muted); }
+.hub-email-actions { display:flex; flex-wrap:wrap; gap:.35rem; }
+.hub-ebtn { display:inline-flex; align-items:center; gap:.3rem; font-size:.69rem; font-weight:700; padding:.35rem .65rem; border-radius:999px; text-decoration:none; border:1px solid #c7d8f0; color:#1d4e89; background:#f0f6ff; transition:background .13s; }
 .hub-ebtn:hover { background:#e1effe; color:#1d4e89; }
 .hub-ebtn.primary { background:var(--hub-accent); border-color:var(--hub-accent); color:#fff; }
 .hub-ebtn.primary:hover { background:#0959ab; color:#fff; }
-
-.hub-feed { display:flex; flex-direction:column; gap:.45rem; }
-.hub-feed-row {
-  display:flex; gap:.65rem; align-items:flex-start;
-  padding:.58rem .68rem; border:1px solid #edf2fb; border-radius:9px;
-  background:#fafbfe; transition:background .14s;
-}
+.hub-feed { display:flex; flex-direction:column; gap:.4rem; }
+.hub-feed-row { display:flex; gap:.6rem; align-items:flex-start; padding:.52rem .62rem; border:1px solid #edf2fb; border-radius:8px; background:#fafbfe; transition:background .12s; }
 .hub-feed-row:hover { background:#f3f7ff; }
-.hub-feed-dot { width:7px; height:7px; border-radius:50%; background:#14b8a6; flex-shrink:0; margin-top:.38rem; }
-.hub-feed-main { font-size:.76rem; color:var(--hub-ink); line-height:1.45; }
-.hub-feed-meta { font-size:.66rem; color:var(--hub-muted); margin-top:.08rem; }
+.hub-feed-dot { width:6px; height:6px; border-radius:50%; background:#14b8a6; flex-shrink:0; margin-top:.42rem; }
+.hub-feed-main { font-size:.74rem; color:var(--hub-ink); line-height:1.45; }
+.hub-feed-meta { font-size:.64rem; color:var(--hub-muted); margin-top:.06rem; }
 
-.hub-roles { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:.45rem; }
-.hub-role  { background:#f8fafc; border:1px solid var(--hub-border); border-radius:9px; padding:.55rem .7rem; }
-.hub-role h5 { margin:0; font-size:.74rem; font-weight:700; color:var(--hub-ink); }
-.hub-role p  { margin:.12rem 0 0; font-size:.68rem; color:var(--hub-muted); }
+/* ── WORKSPACE GRID ── */
+.hub-workspaces {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:.75rem; margin-bottom:1.35rem;
+}
+.hub-ws {
+  background:var(--hub-surf); border:1px solid var(--hub-border);
+  border-radius:var(--hub-r); overflow:hidden;
+  transition:box-shadow .18s, border-color .18s;
+  display:flex; flex-direction:column;
+}
+.hub-ws:hover { box-shadow:var(--hub-shadow-lg); border-color:#d0daf0; }
+
+/* Workspace header — coloured accent left border */
+.hub-ws-hd {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:.7rem .9rem; border-bottom:1px solid var(--hub-border);
+  background:#fafbfc;
+}
+.hub-ws-hd-left { display:flex; align-items:center; gap:.5rem; }
+.hub-ws-icon {
+  width:30px; height:30px; border-radius:8px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:.82rem;
+  background:linear-gradient(135deg,#ecfdf5,#d1fae5); color:#065f46;
+}
+.hub-ws-title { font-size:.86rem; font-weight:800; color:var(--hub-ink); margin:0; }
+.hub-ws-badge {
+  font-size:.68rem; font-weight:700; padding:.15rem .55rem;
+  border-radius:20px; background:#f0fdf9; color:#065f46;
+  border:1px solid #a7f3d0; white-space:nowrap;
+}
+
+/* Workspace body */
+.hub-ws-body { padding:.75rem .9rem; flex:1; display:flex; flex-direction:column; gap:.65rem; }
+.hub-ws-desc { font-size:.72rem; color:var(--hub-muted); line-height:1.5; margin:0; }
+
+/* User pills */
+.hub-ws-users { display:flex; flex-wrap:wrap; gap:.25rem; }
+.hub-ws-user {
+  display:inline-flex; align-items:center; gap:.28rem;
+  padding:.2rem .52rem; background:#f8fafc; border:1px solid var(--hub-border);
+  border-radius:999px; text-decoration:none; color:var(--hub-ink);
+  font-size:.68rem; font-weight:600; transition:all .12s;
+}
+.hub-ws-user:hover { background:#eff6ff; border-color:#93c5fd; }
+.hub-ws-avatar {
+  width:16px; height:16px; border-radius:50%;
+  background:linear-gradient(135deg,var(--hub-brand),#0f766e);
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:.5rem; font-weight:800; flex-shrink:0;
+}
+
+/* Function links — horizontal scrollable row instead of cluttered grid */
+.hub-fns { display:flex; gap:.4rem; flex-wrap:wrap; }
+.hub-fn {
+  display:inline-flex; align-items:center; gap:.35rem;
+  text-decoration:none; color:var(--hub-ink);
+  border:1px solid var(--hub-border); border-radius:8px;
+  background:#fafbfc; padding:.38rem .65rem;
+  font-size:.72rem; font-weight:600;
+  transition:transform .13s, border-color .13s, box-shadow .13s;
+  white-space:nowrap;
+}
+.hub-fn:hover { transform:translateY(-1px); border-color:#bfcfe9; box-shadow:0 3px 10px rgba(13,17,23,.08); color:inherit; }
+.hub-fn i { font-size:.72rem; opacity:.7; }
+
+/* ── ROLE DISTRIBUTION ── */
+.hub-roles { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:.4rem; }
+.hub-role  { background:#f8fafc; border:1px solid var(--hub-border); border-radius:9px; padding:.5rem .65rem; }
+.hub-role h5 { margin:0; font-size:.72rem; font-weight:700; color:var(--hub-ink); }
+.hub-role p  { margin:.1rem 0 0; font-size:.66rem; color:var(--hub-muted); }
 
 @media(max-width:900px) { .hub-panels { grid-template-columns:1fr; } }
 @media(max-width:640px) {
-  .hub { padding:1rem .85rem 2rem; }
-  .hub-hero { padding:1.35rem 1.1rem; border-radius:16px; }
-  .hub-fns  { grid-template-columns:1fr; }
+  .hub { padding:1rem .75rem 2rem; }
+  .hub-hero { padding:1.25rem 1rem; border-radius:14px; }
+  .hub-workspaces { grid-template-columns:1fr; }
+  .hub-hero-inner { flex-direction:column; }
+  .hub-alerts { flex-direction:row; flex-wrap:wrap; }
   .hub-email-stats { grid-template-columns:repeat(2,1fr); }
-  .hub-workspaces  { grid-template-columns:1fr; }
-  .hub-hero-inner  { flex-direction:column; }
-  .hub-hero-right  { flex-direction:row; flex-wrap:wrap; }
 }
 </style>
 {% endblock %}
@@ -287,13 +240,13 @@
 {% block content %}
 <div class="hub">
 
-  <!-- ── HERO ────────────────────────────────────────────────────────────── -->
-  <div class="hub-hero" style="margin-bottom:1.25rem">
+  <!-- ── HERO ─────────────────────────────────────────────────────────── -->
+  <div class="hub-hero">
     <div class="hub-hero-inner">
       <div class="hub-hero-left">
-        <div class="hub-badge"><i class="bi bi-shield-lock-fill"></i> Super Admin Control</div>
+        <div class="hub-badge"><i class="bi bi-shield-lock-fill"></i> Super Admin</div>
         <h1 class="hub-hero-title">System Admin Portal</h1>
-        <p class="hub-hero-sub">Unified control centre for every KYISA portal, role, and workflow — all in one place.</p>
+        <p class="hub-hero-sub">Full oversight of every KYISA portal, role, and workflow.</p>
         <div class="hub-chips">
           <span class="hub-chip"><i class="bi bi-people-fill"></i> {{ total_users|intcomma }} users</span>
           <span class="hub-chip"><i class="bi bi-trophy-fill"></i> {{ total_competitions|intcomma }} competitions</span>
@@ -301,114 +254,55 @@
           <span class="hub-chip"><i class="bi bi-envelope-fill"></i> {{ email_stats.total|intcomma }} emails</span>
         </div>
       </div>
-      <div class="hub-hero-right">
+      <div class="hub-alerts">
         {% if pending_verifications > 0 %}
         <a href="{% url 'county_player_verification_list' %}" class="hub-alert">
           <div class="hub-alert-dot amber"><i class="bi bi-patch-check-fill"></i></div>
-          <div>
-            <div class="hub-alert-val">{{ pending_verifications }}</div>
-            <div class="hub-alert-lbl">Pending Verifications</div>
-          </div>
+          <div><div class="hub-alert-val">{{ pending_verifications }}</div><div class="hub-alert-lbl">Pending Verifications</div></div>
         </a>
         {% endif %}
         {% if pending_registrations > 0 %}
         <a href="{% url 'pending_teams' %}" class="hub-alert">
           <div class="hub-alert-dot blue"><i class="bi bi-building-check"></i></div>
-          <div>
-            <div class="hub-alert-val">{{ pending_registrations }}</div>
-            <div class="hub-alert-lbl">Pending Registrations</div>
-          </div>
+          <div><div class="hub-alert-val">{{ pending_registrations }}</div><div class="hub-alert-lbl">Pending Registrations</div></div>
         </a>
         {% endif %}
         {% if pending_appeals > 0 %}
         <a href="{% url 'appeals_list' %}" class="hub-alert">
           <div class="hub-alert-dot red"><i class="bi bi-briefcase-fill"></i></div>
-          <div>
-            <div class="hub-alert-val">{{ pending_appeals }}</div>
-            <div class="hub-alert-lbl">Pending Appeals</div>
-          </div>
+          <div><div class="hub-alert-val">{{ pending_appeals }}</div><div class="hub-alert-lbl">Pending Appeals</div></div>
         </a>
         {% endif %}
       </div>
     </div>
   </div>
 
-  <!-- ── STATS ────────────────────────────────────────────────────────────── -->
+  <!-- ── STATS ─────────────────────────────────────────────────────────── -->
   <div class="hub-stats">
-    <div class="hub-stat hub-stat--blue">
-      <div class="hub-stat-icon"><i class="bi bi-people-fill"></i></div>
-      <div class="hub-stat-val">{{ total_users|intcomma }}</div>
-      <div class="hub-stat-label">Total Users</div>
-    </div>
-    <div class="hub-stat hub-stat--teal">
-      <div class="hub-stat-icon"><i class="bi bi-shield-fill"></i></div>
-      <div class="hub-stat-val">{{ total_teams|intcomma }}</div>
-      <div class="hub-stat-label">Teams</div>
-    </div>
-    <div class="hub-stat hub-stat--green">
-      <div class="hub-stat-icon"><i class="bi bi-person-badge-fill"></i></div>
-      <div class="hub-stat-val">{{ total_players|intcomma }}</div>
-      <div class="hub-stat-label">Players</div>
-    </div>
-    <div class="hub-stat hub-stat--slate">
-      <div class="hub-stat-icon"><i class="bi bi-whistle-fill"></i></div>
-      <div class="hub-stat-val">{{ total_referees|intcomma }}</div>
-      <div class="hub-stat-label">Referees</div>
-    </div>
-    <div class="hub-stat hub-stat--amber">
-      <div class="hub-stat-icon"><i class="bi bi-trophy-fill"></i></div>
-      <div class="hub-stat-val">{{ total_competitions|intcomma }}</div>
-      <div class="hub-stat-label">Competitions</div>
-    </div>
-    <div class="hub-stat hub-stat--orange">
-      <div class="hub-stat-icon"><i class="bi bi-calendar-event-fill"></i></div>
-      <div class="hub-stat-val">{{ total_fixtures|intcomma }}</div>
-      <div class="hub-stat-label">Fixtures</div>
-    </div>
-    <div class="hub-stat hub-stat--red">
-      <div class="hub-stat-icon"><i class="bi bi-patch-check-fill"></i></div>
-      <div class="hub-stat-val">{{ pending_verifications|intcomma }}</div>
-      <div class="hub-stat-label">Pending Verifications</div>
-    </div>
-    <div class="hub-stat hub-stat--rose">
-      <div class="hub-stat-icon"><i class="bi bi-file-earmark-text-fill"></i></div>
-      <div class="hub-stat-val">{{ pending_reports|intcomma }}</div>
-      <div class="hub-stat-label">Pending Reports</div>
-    </div>
+    <div class="hub-stat hub-stat--blue"><div class="hub-stat-icon"><i class="bi bi-people-fill"></i></div><div class="hub-stat-val">{{ total_users|intcomma }}</div><div class="hub-stat-label">Users</div></div>
+    <div class="hub-stat hub-stat--teal"><div class="hub-stat-icon"><i class="bi bi-shield-fill"></i></div><div class="hub-stat-val">{{ total_teams|intcomma }}</div><div class="hub-stat-label">Teams</div></div>
+    <div class="hub-stat hub-stat--green"><div class="hub-stat-icon"><i class="bi bi-person-badge-fill"></i></div><div class="hub-stat-val">{{ total_players|intcomma }}</div><div class="hub-stat-label">Players</div></div>
+    <div class="hub-stat hub-stat--slate"><div class="hub-stat-icon"><i class="bi bi-whistle-fill"></i></div><div class="hub-stat-val">{{ total_referees|intcomma }}</div><div class="hub-stat-label">Referees</div></div>
+    <div class="hub-stat hub-stat--amber"><div class="hub-stat-icon"><i class="bi bi-trophy-fill"></i></div><div class="hub-stat-val">{{ total_competitions|intcomma }}</div><div class="hub-stat-label">Competitions</div></div>
+    <div class="hub-stat hub-stat--orange"><div class="hub-stat-icon"><i class="bi bi-calendar-event-fill"></i></div><div class="hub-stat-val">{{ total_fixtures|intcomma }}</div><div class="hub-stat-label">Fixtures</div></div>
+    <div class="hub-stat hub-stat--red"><div class="hub-stat-icon"><i class="bi bi-patch-check-fill"></i></div><div class="hub-stat-val">{{ pending_verifications|intcomma }}</div><div class="hub-stat-label">Pending Verif.</div></div>
+    <div class="hub-stat hub-stat--rose"><div class="hub-stat-icon"><i class="bi bi-file-earmark-text-fill"></i></div><div class="hub-stat-val">{{ pending_reports|intcomma }}</div><div class="hub-stat-label">Pending Reports</div></div>
   </div>
 
-  <!-- ── QUICK ACTIONS ─────────────────────────────────────────────────────── -->
-  <div class="hub-sh"><h2><i class="bi bi-sliders" style="margin-right:.35rem"></i>System Controls</h2><div class="hub-sh-sep"></div></div>
-  <div class="hub-quick" style="margin-bottom:1.5rem">
-    <a href="{% url 'manage_users' %}" class="hub-qa">
-      <div class="hub-qa-icon blue"><i class="bi bi-people-fill"></i></div>
-      <div><h4>User Management</h4><p>Create, edit, suspend and review users.</p></div>
-    </a>
-    <a href="{% url 'activity_logs' %}" class="hub-qa">
-      <div class="hub-qa-icon green"><i class="bi bi-journal-text"></i></div>
-      <div><h4>Activity Logs</h4><p>Trace user actions and system operations.</p></div>
-    </a>
-    <a href="{% url 'audit_report' %}" class="hub-qa">
-      <div class="hub-qa-icon amber"><i class="bi bi-shield-check"></i></div>
-      <div><h4>Audit Reports</h4><p>Export and review security and compliance.</p></div>
-    </a>
-    <a href="{% url 'email_logs' %}" class="hub-qa">
-      <div class="hub-qa-icon teal"><i class="bi bi-envelope-paper-fill"></i></div>
-      <div><h4>Email Centre</h4><p>Monitor outgoing mail and resend failures.</p></div>
-    </a>
-    <a href="{% url 'county_player_verification_list' %}" class="hub-qa">
-      <div class="hub-qa-icon purple"><i class="bi bi-patch-check-fill"></i></div>
-      <div><h4>Player Verification</h4><p>Review county player queues and IPRS checks.</p></div>
-    </a>
-    <a href="{% url 'admin:index' %}" class="hub-qa">
-      <div class="hub-qa-icon amber"><i class="bi bi-gear-wide-connected"></i></div>
-      <div><h4>Django Admin</h4><p>Super-admin native admin site access.</p></div>
-    </a>
+  <!-- ── SYSTEM CONTROLS ───────────────────────────────────────────────── -->
+  <div class="hub-sh"><h2><i class="bi bi-sliders" style="margin-right:.3rem"></i>System Controls</h2><div class="hub-sh-sep"></div></div>
+  <div class="hub-quick" style="margin-bottom:1.35rem">
+    <a href="{% url 'manage_users' %}"                      class="hub-qa"><div class="hub-qa-icon blue"><i class="bi bi-people-fill"></i></div><div><h4>User Management</h4><p>Create, edit and suspend users</p></div></a>
+    <a href="{% url 'county_player_verification_list' %}"   class="hub-qa"><div class="hub-qa-icon purple"><i class="bi bi-patch-check-fill"></i></div><div><h4>Player Verification</h4><p>County player IPRS queues</p></div></a>
+    <a href="{% url 'email_logs' %}"                        class="hub-qa"><div class="hub-qa-icon teal"><i class="bi bi-envelope-paper-fill"></i></div><div><h4>Email Centre</h4><p>Monitor and compose emails</p></div></a>
+    <a href="{% url 'activity_logs' %}"                     class="hub-qa"><div class="hub-qa-icon green"><i class="bi bi-journal-text"></i></div><div><h4>Activity Logs</h4><p>User actions and system events</p></div></a>
+    <a href="{% url 'audit_report' %}"                      class="hub-qa"><div class="hub-qa-icon amber"><i class="bi bi-shield-check"></i></div><div><h4>Audit Reports</h4><p>Compliance and security exports</p></div></a>
+    <a href="{% url 'admin:index' %}"                       class="hub-qa"><div class="hub-qa-icon amber"><i class="bi bi-gear-wide-connected"></i></div><div><h4>Django Admin</h4><p>Super-admin database access</p></div></a>
   </div>
 
-  <!-- ── LIVE MONITORING ───────────────────────────────────────────────────── -->
-  <div class="hub-sh"><h2><i class="bi bi-activity" style="margin-right:.35rem"></i>Live Monitoring</h2><div class="hub-sh-sep"></div></div>
-  <div class="hub-panels" style="margin-bottom:1.5rem">
+  <!-- ── LIVE MONITORING ──────────────────────────────────────────────── -->
+  <div class="hub-sh"><h2><i class="bi bi-activity" style="margin-right:.3rem"></i>Live Monitoring</h2><div class="hub-sh-sep"></div></div>
+  <div class="hub-panels" style="margin-bottom:1.35rem">
     <section class="hub-panel">
       <div class="hub-panel-head">
         <h3><i class="bi bi-envelope-paper-fill"></i> Email Centre</h3>
@@ -422,10 +316,10 @@
           <div class="hub-email-stat"><strong>{{ email_stats.today|intcomma }}</strong><span>Today</span></div>
         </div>
         <div class="hub-email-actions">
-          <a href="{% url 'email_compose' %}" class="hub-ebtn primary"><i class="bi bi-pencil-square"></i> Compose</a>
-          <a href="{% url 'email_compose' %}?preset=all_managers" class="hub-ebtn"><i class="bi bi-people"></i> Managers</a>
-          <a href="{% url 'email_compose' %}?preset=all_referees" class="hub-ebtn"><i class="bi bi-flag"></i> Referees</a>
-          <a href="{% url 'email_inbox' %}" class="hub-ebtn"><i class="bi bi-inbox"></i> Inbox</a>
+          <a href="{% url 'email_compose' %}"                         class="hub-ebtn primary"><i class="bi bi-pencil-square"></i> Compose</a>
+          <a href="{% url 'email_compose' %}?preset=all_managers"     class="hub-ebtn"><i class="bi bi-people"></i> Managers</a>
+          <a href="{% url 'email_compose' %}?preset=all_referees"     class="hub-ebtn"><i class="bi bi-flag"></i> Referees</a>
+          <a href="{% url 'email_inbox' %}"                           class="hub-ebtn"><i class="bi bi-inbox"></i> Inbox</a>
         </div>
       </div>
     </section>
@@ -441,7 +335,7 @@
           <div class="hub-feed-row">
             <div class="hub-feed-dot"></div>
             <div>
-              <div class="hub-feed-main">{{ log.description|truncatechars:90 }}</div>
+              <div class="hub-feed-main">{{ log.description|truncatechars:85 }}</div>
               <div class="hub-feed-meta">{{ log.user.get_full_name|default:"System" }} &middot; {{ log.timestamp|timesince }} ago</div>
             </div>
           </div>
@@ -453,8 +347,7 @@
     </section>
   </div>
 
-  <!-- ── USERS + FIXTURES ──────────────────────────────────────────────────── -->
-  <div class="hub-panels" style="margin-bottom:1.5rem">
+  <div class="hub-panels" style="margin-bottom:1.35rem">
     <section class="hub-panel">
       <div class="hub-panel-head">
         <h3><i class="bi bi-person-plus-fill"></i> Recently Created Users</h3>
@@ -466,7 +359,7 @@
           <div class="hub-feed-row">
             <div class="hub-feed-dot" style="background:#3b82f6"></div>
             <div>
-              <div class="hub-feed-main">{{ u.get_full_name|default:u.email }} <span style="color:var(--hub-muted);font-size:.7rem">({{ u.get_role_display }})</span></div>
+              <div class="hub-feed-main">{{ u.get_full_name|default:u.email }} <span style="color:var(--hub-muted);font-size:.68rem">({{ u.get_role_display }})</span></div>
               <div class="hub-feed-meta">{{ u.email }} &middot; {{ u.date_joined|timesince }} ago</div>
             </div>
           </div>
@@ -493,66 +386,68 @@
             </div>
           </div>
           {% empty %}
-          <div class="hub-feed-row"><div class="hub-feed-main" style="color:var(--hub-muted)">No fixtures available.</div></div>
+          <div class="hub-feed-row"><div class="hub-feed-main" style="color:var(--hub-muted)">No fixtures.</div></div>
           {% endfor %}
         </div>
       </div>
     </section>
   </div>
 
-  <!-- ── ROLE WORKSPACES ───────────────────────────────────────────────────── -->
-  <div class="hub-sh"><h2><i class="bi bi-layout-wtf" style="margin-right:.35rem"></i>Role Workspaces</h2><div class="hub-sh-sep"></div></div>
+  <!-- ── ROLE WORKSPACES ──────────────────────────────────────────────── -->
+  <div class="hub-sh"><h2><i class="bi bi-grid-3x3-gap-fill" style="margin-right:.3rem"></i>Role Workspaces</h2><div class="hub-sh-sep"></div></div>
   <div class="hub-workspaces">
     {% for workspace in role_workspaces %}
     <article class="hub-ws">
-      <div class="hub-ws-top">
-        <div class="hub-ws-left">
-          <div class="hub-ws-pill"><i class="{{ workspace.icon }}"></i> {{ workspace.title }}</div>
+
+      <!-- Header -->
+      <div class="hub-ws-hd">
+        <div class="hub-ws-hd-left">
+          <div class="hub-ws-icon"><i class="{{ workspace.icon }}"></i></div>
           <h3 class="hub-ws-title">{{ workspace.title }}</h3>
-          <p class="hub-ws-desc">{{ workspace.description }}</p>
         </div>
-        <div class="hub-ws-count">
-          <strong>{{ workspace.count|intcomma }}</strong>
-          <span>{{ workspace.count_label }}</span>
-        </div>
+        <span class="hub-ws-badge">{{ workspace.count|intcomma }} {{ workspace.count_label }}</span>
       </div>
 
-      {% if workspace.users %}
-      <div>
-        <div style="font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--hub-muted);margin-bottom:.38rem">
-          <i class="bi bi-people-fill" style="opacity:.55"></i> Users
+      <!-- Body -->
+      <div class="hub-ws-body">
+
+        <!-- Description — concise -->
+        <p class="hub-ws-desc">{{ workspace.description }}</p>
+
+        <!-- Users (if any) -->
+        {% if workspace.users %}
+        <div>
+          <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--hub-muted);margin-bottom:.3rem"><i class="bi bi-people-fill" style="opacity:.5"></i> Users</div>
+          <div class="hub-ws-users">
+            {% for u in workspace.users %}
+            <a href="{% url 'user_detail' u.pk %}" class="hub-ws-user">
+              <div class="hub-ws-avatar">{{ u.first_name.0 }}{{ u.last_name.0 }}</div>
+              {{ u.get_full_name }}
+            </a>
+            {% endfor %}
+          </div>
         </div>
-        <div class="hub-ws-users">
-          {% for u in workspace.users %}
-          <a href="{% url 'user_detail' u.pk %}" class="hub-ws-user">
-            <div class="hub-ws-avatar">{{ u.first_name.0 }}{{ u.last_name.0 }}</div>
-            {{ u.get_full_name }}
+        {% endif %}
+
+        <!-- Function links — pill style, not a grid -->
+        <div class="hub-fns">
+          {% for fn in workspace.functions %}
+          <a href="{% url fn.url %}" class="hub-fn" title="{{ fn.summary }}">
+            <i class="{{ fn.icon }}"></i>{{ fn.label }}
           </a>
           {% endfor %}
         </div>
-      </div>
-      {% endif %}
 
-      <div class="hub-fns">
-        {% for fn in workspace.functions %}
-        <a href="{% url fn.url %}" class="hub-fn">
-          <div class="hub-fn-icon"><i class="{{ fn.icon }}"></i></div>
-          <div class="hub-fn-body">
-            <h5>{{ fn.label }}</h5>
-            <p>{{ fn.summary }}</p>
-          </div>
-        </a>
-        {% endfor %}
       </div>
     </article>
     {% endfor %}
   </div>
 
-  <!-- ── ROLE DISTRIBUTION ─────────────────────────────────────────────────── -->
-  <div class="hub-sh" style="margin-top:.5rem"><h2><i class="bi bi-pie-chart-fill" style="margin-right:.35rem"></i>Users By Role</h2><div class="hub-sh-sep"></div></div>
+  <!-- ── ROLE DISTRIBUTION ─────────────────────────────────────────────── -->
+  <div class="hub-sh" style="margin-top:.25rem"><h2><i class="bi bi-bar-chart-fill" style="margin-right:.3rem"></i>Users by Role</h2><div class="hub-sh-sep"></div></div>
   <div class="hub-panel" style="margin-bottom:.5rem">
     <div class="hub-panel-head">
-      <h3><i class="bi bi-bar-chart-fill"></i> Role Distribution</h3>
+      <h3><i class="bi bi-pie-chart-fill"></i> Role Distribution</h3>
       <a href="{% url 'manage_users' %}">Open user manager →</a>
     </div>
     <div class="hub-panel-body">
