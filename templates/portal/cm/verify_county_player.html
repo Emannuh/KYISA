@@ -57,7 +57,7 @@
     <!-- ══ LEFT COLUMN ════════════════════════════════════════════════════ -->
     <div style="display:flex;flex-direction:column;gap:1.1rem">
 
-        <!-- Player Info Card -->
+        <!-- Player Details + IPRS Comparison Card -->
         <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden">
             <div style="padding:.75rem 1rem;background:linear-gradient(135deg,#1B5E20,#2E7D32);display:flex;align-items:center;gap:.6rem">
                 <span style="font-size:1rem">👤</span>
@@ -99,68 +99,86 @@
             </div>
         </div>
 
-        <!-- Documents Card -->
+        <!-- IPRS vs Registered Comparison (shown after Prembly check) -->
+        {% if player.prembly_status == 'verified' and player.prembly_notes %}
+        <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden" id="iprs-comparison">
+            <div style="padding:.75rem 1rem;background:linear-gradient(135deg,#0D47A1,#1565C0);display:flex;align-items:center;justify-content:space-between">
+                <div style="display:flex;align-items:center;gap:.6rem">
+                    <span style="font-size:1rem">🔍</span>
+                    <span style="font-weight:700;font-size:.9rem;color:#fff">IPRS vs Registered — Comparison</span>
+                </div>
+                <span style="font-size:.7rem;padding:.2rem .55rem;background:rgba(255,255,255,.2);color:#fff;border-radius:20px;font-weight:600">Prembly Live</span>
+            </div>
+            <div style="padding:.9rem 1rem" id="iprs-comparison-body">
+                <p style="margin:0;font-size:.8rem;color:#888;font-style:italic">Loading comparison…</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Photo Comparison Card -->
         <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden">
             <div style="padding:.75rem 1rem;background:linear-gradient(135deg,#0D47A1,#1565C0);display:flex;align-items:center;gap:.6rem">
-                <span style="font-size:1rem">📄</span>
-                <span style="font-weight:700;font-size:.9rem;color:#fff">Uploaded Documents</span>
+                <span style="font-size:1rem">📸</span>
+                <span style="font-weight:700;font-size:.9rem;color:#fff">Photo Comparison</span>
             </div>
-            <div style="padding:.9rem 1rem;display:flex;flex-direction:column;gap:.9rem">
+            <div style="padding:.9rem 1rem">
 
-                <!-- Passport Photo row -->
-                <div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.45rem">
-                        <span style="font-size:.8rem;font-weight:700;color:#444">📸 Passport Photo</span>
-                        {% if player.photo %}<a href="{{ player.photo.url }}" target="_blank" style="font-size:.76rem;color:#1565C0">View full ↗</a>{% endif %}
+                <!-- Photos side by side -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:.9rem">
+                    <!-- Uploaded photo -->
+                    <div style="text-align:center">
+                        <p style="margin:0 0 .5rem;font-size:.78rem;font-weight:700;color:#444;text-transform:uppercase;letter-spacing:.04em">📤 Uploaded</p>
+                        {% if player.photo %}
+                        <img src="{{ player.photo.url }}" alt="Uploaded Photo"
+                             style="width:100%;max-height:180px;object-fit:cover;border-radius:10px;border:3px solid #e0e0e0">
+                        <a href="{{ player.photo.url }}" target="_blank" style="font-size:.75rem;color:#1565C0;display:block;margin-top:.3rem">View full ↗</a>
+                        {% else %}
+                        <div style="height:150px;background:#fce4ec;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#C62828;font-size:.82rem;font-weight:600">⚠️ Not uploaded</div>
+                        {% endif %}
                     </div>
-                    {% if player.photo %}
-                    <div style="display:flex;gap:.75rem;align-items:flex-start">
-                        <img src="{{ player.photo.url }}" alt="Photo"
-                             style="width:80px;height:100px;object-fit:cover;border-radius:8px;border:2px solid #e0e0e0">
+
+                    <!-- IPRS photo -->
+                    <div style="text-align:center">
+                        <p style="margin:0 0 .5rem;font-size:.78rem;font-weight:700;color:#1565C0;text-transform:uppercase;letter-spacing:.04em">🏛️ IPRS (Prembly)</p>
                         {% if player.iprs_photo %}
-                        <div style="text-align:center">
-                            <img src="{{ player.iprs_photo.url }}" alt="IPRS Photo"
-                                 style="width:65px;height:82px;object-fit:cover;border-radius:7px;border:2px solid #1565C0">
-                            <div style="font-size:.7rem;color:#1565C0;margin-top:.25rem;font-weight:600">IPRS Auto</div>
+                        <img src="{{ player.iprs_photo.url }}" alt="IPRS Photo"
+                             style="width:100%;max-height:180px;object-fit:cover;border-radius:10px;border:3px solid #1565C0">
+                        <a href="{{ player.iprs_photo.url }}" target="_blank" style="font-size:.75rem;color:#1565C0;display:block;margin-top:.3rem">View full ↗</a>
+                        {% else %}
+                        <div style="height:150px;background:#e3f2fd;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#1565C0;font-size:.82rem;text-align:center;padding:.5rem">
+                            {% if player.prembly_status == 'verified' %}
+                            ℹ️ IPRS photo not available for this record
+                            {% else %}
+                            Run Prembly check to get IPRS photo
+                            {% endif %}
                         </div>
                         {% endif %}
                     </div>
-                    {% else %}
-                    <div style="padding:.85rem;background:#fce4ec;border-radius:8px;text-align:center;font-size:.82rem;color:#C62828;font-weight:600">⚠️ Not uploaded</div>
-                    {% endif %}
                 </div>
 
-                <div style="height:1px;background:#f0f0f0"></div>
+                <div style="height:1px;background:#f0f0f0;margin-bottom:.85rem"></div>
 
-                <!-- National ID -->
+                <!-- National ID Document -->
                 <div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.45rem">
-                        <span style="font-size:.8rem;font-weight:700;color:#444">🪪 National ID Copy <span style="font-weight:400;color:#aaa;font-family:monospace">({{ player.national_id_number|default:"—" }})</span></span>
-                        {% if player.id_document %}<a href="{{ player.id_document.url }}" target="_blank" style="font-size:.76rem;color:#1565C0">View full ↗</a>{% endif %}
-                    </div>
+                    <p style="margin:0 0 .45rem;font-size:.8rem;font-weight:700;color:#444">🪪 National ID Copy</p>
                     {% if player.id_document %}
                     <img src="{{ player.id_document.url }}" alt="ID"
-                         style="width:100%;max-height:160px;object-fit:contain;border-radius:8px;border:1px solid #e8e8e8;background:#fafafa">
+                         style="width:100%;max-height:160px;object-fit:contain;border-radius:8px;border:1px solid #e0e0e0;background:#fafafa">
+                    <a href="{{ player.id_document.url }}" target="_blank" style="font-size:.76rem;color:#1565C0;display:block;margin-top:.3rem">View full ↗</a>
                     {% else %}
                     <div style="padding:.85rem;background:#fce4ec;border-radius:8px;text-align:center;font-size:.82rem;color:#C62828;font-weight:600">⚠️ Not uploaded</div>
                     {% endif %}
                 </div>
 
-                <div style="height:1px;background:#f0f0f0"></div>
-
-                <!-- Birth Certificate -->
+                {% if player.birth_certificate %}
+                <div style="height:1px;background:#f0f0f0;margin:.85rem 0"></div>
                 <div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.45rem">
-                        <span style="font-size:.8rem;font-weight:700;color:#444">📜 Birth Certificate</span>
-                        {% if player.birth_certificate %}<a href="{{ player.birth_certificate.url }}" target="_blank" style="font-size:.76rem;color:#1565C0">View full ↗</a>{% endif %}
-                    </div>
-                    {% if player.birth_certificate %}
+                    <p style="margin:0 0 .45rem;font-size:.8rem;font-weight:700;color:#444">📜 Birth Certificate</p>
                     <img src="{{ player.birth_certificate.url }}" alt="Birth Cert"
-                         style="width:100%;max-height:160px;object-fit:contain;border-radius:8px;border:1px solid #e8e8e8;background:#fafafa">
-                    {% else %}
-                    <div style="padding:.65rem;background:#f9f9f9;border-radius:8px;text-align:center;font-size:.81rem;color:#bbb">Optional — not uploaded</div>
-                    {% endif %}
+                         style="width:100%;max-height:160px;object-fit:contain;border-radius:8px;border:1px solid #e0e0e0;background:#fafafa">
+                    <a href="{{ player.birth_certificate.url }}" target="_blank" style="font-size:.76rem;color:#1565C0;display:block;margin-top:.3rem">View full ↗</a>
                 </div>
+                {% endif %}
 
             </div>
         </div>
@@ -473,6 +491,71 @@
 
 {% block extra_js %}
 <script>
+/* ── IPRS Comparison Panel ─────────────────────────────────────────── */
+(function buildComparison() {
+    const body = document.getElementById('iprs-comparison-body');
+    if (!body) return;
+
+    const notes = `{{ player.prembly_notes|escapejs }}`;
+    const regName = `{{ player.first_name }} {{ player.last_name }}`.trim();
+    const regDob  = `{{ player.date_of_birth|date:"Y-m-d" }}`;
+    const regAge  = {{ player.age }};
+
+    // Parse notes: "Prembly IPRS [LIVE]: Name: X, DOB: Y, Age: Z, Gender: W. Ref: ..."
+    function extract(key) {
+        const m = notes.match(new RegExp(key + ':\\s*([^,\\.]+)'));
+        return m ? m[1].trim() : '—';
+    }
+
+    const iprsName   = extract('Name');
+    const iprsDob    = extract('DOB');
+    const iprsAge    = extract('Age');
+    const iprsGender = extract('Gender');
+
+    function fieldRow(label, reg, iprs) {
+        const match = reg.toLowerCase().trim() === iprs.toLowerCase().trim();
+        const icon  = match ? '✅' : '⚠️';
+        const bg    = match ? '' : 'background:#fff8e1';
+        return `<tr style="${bg}">
+            <td style="padding:.45rem .65rem;font-size:.8rem;font-weight:600;color:#555;white-space:nowrap">${label}</td>
+            <td style="padding:.45rem .65rem;font-size:.82rem;color:#333">${reg}</td>
+            <td style="padding:.45rem .65rem;font-size:.82rem;color:#111;font-weight:600">${iprs}</td>
+            <td style="padding:.45rem .65rem;text-align:center;font-size:.85rem">${icon}</td>
+        </tr>`;
+    }
+
+    const ageMatch = parseInt(iprsAge) >= 18 && parseInt(iprsAge) <= 23;
+    const ageColor = ageMatch ? '#1B5E20' : '#C62828';
+    const ageBg    = ageMatch ? '#e8f5e9' : '#fce4ec';
+
+    body.innerHTML = `
+    <div style="margin-bottom:.75rem;padding:.6rem .85rem;border-radius:8px;background:${ageBg}">
+        <strong style="color:${ageColor};font-size:.85rem">
+            ${ageMatch ? '✅' : '⚠️'} IPRS Age: ${iprsAge} yrs
+            ${!ageMatch ? ' — Outside 18–23 bracket!' : ' — Eligible'}
+        </strong>
+        ${parseInt(iprsAge) !== regAge ? `<div style="font-size:.8rem;margin-top:.2rem;color:#C62828">⚠️ Age mismatch: registered as ${regAge} yrs, IPRS says ${iprsAge} yrs</div>` : ''}
+    </div>
+    <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;font-size:.83rem">
+        <thead>
+            <tr style="background:#f8f9fb">
+                <th style="padding:.4rem .65rem;text-align:left;font-size:.72rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #eee">Field</th>
+                <th style="padding:.4rem .65rem;text-align:left;font-size:.72rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #eee">Registered</th>
+                <th style="padding:.4rem .65rem;text-align:left;font-size:.72rem;font-weight:700;color:#1565C0;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #eee">IPRS (Prembly)</th>
+                <th style="padding:.4rem .65rem;text-align:center;font-size:.72rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #eee">Match</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${fieldRow('Full Name', regName, iprsName)}
+            ${fieldRow('Date of Birth', regDob, iprsDob)}
+            ${fieldRow('Age', regAge + ' yrs', iprsAge + ' yrs')}
+            <tr><td style="padding:.4rem .65rem;font-size:.8rem;font-weight:600;color:#555">Gender</td><td style="padding:.4rem .65rem;font-size:.82rem;color:#888">—</td><td style="padding:.4rem .65rem;font-size:.82rem;color:#111;font-weight:600">${iprsGender}</td><td style="padding:.4rem .65rem;text-align:center">ℹ️</td></tr>
+        </tbody>
+    </table>
+    </div>`;
+})();
+
 function vcpLookup() {
     const id  = document.getElementById('vcp-iprs-input').value.trim();
     const box = document.getElementById('vcp-iprs-result');
