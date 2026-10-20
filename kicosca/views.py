@@ -228,25 +228,6 @@ def kicosca_delete_player(request, player_pk):
     return redirect('kicosca_discipline_players', discipline_pk=discipline_pk)
 
 
-# ── AJAX: Prembly IPRS Lookup ─────────────────────────────────────────────────
-
-@login_required(login_url='web_login')
-@require_POST
-def kicosca_iprs_lookup(request):
-    """
-    AJAX — look up a person by National ID via Prembly IPRS.
-    Same as KYISA but namespaced to KICOSCA.
-    """
-    national_id = request.POST.get('national_id', '').strip()
-    if not national_id or not national_id.isdigit() or len(national_id) < 7:
-        return JsonResponse({'success': False, 'error_message': 'Invalid National ID.'}, status=400)
-
-    from teams.prembly_service import PremblyService
-    svc    = PremblyService()
-    result = svc.lookup_by_national_id(national_id)
-    return JsonResponse(result.to_dict())
-
-
 # ── AJAX: KRA PIN Lookup (get PIN from National ID) ───────────────────────────
 
 @login_required(login_url='web_login')
@@ -360,53 +341,9 @@ def kicosca_player_detail(request, player_pk):
         messages.error(request, 'Access denied.')
         return redirect('dashboard')
 
-    # Handle Prembly IPRS check
+    # Handle verification actions
     if request.method == 'POST':
         action = request.POST.get('action')
-
-        if action == 'prembly_check':
-            from teams.prembly_service import PremblyService
-            svc    = PremblyService()
-            result = svc.lookup_by_national_id(player.national_id_number)
-            if result.success and result.person_found:
-                name_match = any(
-                    part in result.full_name.upper()
-                    for part in f"{player.first_name} {player.last_name}".upper().split()
-                    if len(part) > 2
-                )
-                dob_match = result.date_of_birth == player.date_of_birth if result.date_of_birth else False
-                if name_match and dob_match:
-                    player.prembly_status = EmploymentStatus.VERIFIED
-                    messages.success(request, f'✅ IPRS verified: {result.full_name}')
-                else:
-                    player.prembly_status = 'mismatch'
-                    messages.warning(
-                        request,
-                        f'⚠️ IPRS returned {result.full_name} / {result.date_of_birth} — '
-                        f'check against registered details.'
-                    )
-                player.prembly_verified_name = result.full_name
-                player.prembly_reference     = result.reference_number
-                player.prembly_checked_at    = timezone.now()
-                if result.photo:
-                    from teams.utils import save_base64_photo
-                    try:
-                        photo_file = save_base64_photo(
-                            result.photo, f"kicosca_{player.national_id_number}"
-                        )
-                        if photo_file:
-                            player.iprs_photo = photo_file
-                    except Exception:
-                        pass
-            else:
-                player.prembly_status = EmploymentStatus.FAILED
-                player.prembly_checked_at = timezone.now()
-                messages.error(request, f'❌ IPRS check failed: {result.error_message}')
-            player.save(update_fields=[
-                'prembly_status', 'prembly_verified_name', 'prembly_reference',
-                'prembly_checked_at', 'iprs_photo',
-            ])
-            return redirect('kicosca_player_detail', player_pk=player_pk)
 
         # Final verification decisions (admin/VO/CM/SG only)
         can_approve = user.is_superuser or user.role in (
@@ -414,10 +351,8 @@ def kicosca_player_detail(request, player_pk):
         )
 
         if action == 'verify' and can_approve:
-            if player.prembly_status != EmploymentStatus.VERIFIED:
-                messages.error(request, 'IPRS identity must be verified first.')
-            elif player.kra_employment_status != EmploymentStatus.VERIFIED:
-                messages.error(request, 'KRA employment must be verified first.')
+            if player.kra_employment_status != EmploymentStatus.VERIFIED:
+                messages.error(request, 'KRA employment must be verified before final approval.')
             else:
                 player.verification_status = 'verified'
                 player.verified_by         = user

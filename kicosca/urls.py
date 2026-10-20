@@ -16,6 +16,5 @@ urlpatterns = [
     path('verification/',                             views.kicosca_verification_dashboard, name='kicosca_verification'),
 
     # AJAX endpoints
-    path('api/iprs-lookup/',                          views.kicosca_iprs_lookup,         name='kicosca_iprs_lookup'),
     path('api/kra-pin-lookup/',                       views.kicosca_kra_pin_lookup,      name='kicosca_kra_pin_lookup'),
 ]
