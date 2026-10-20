@@ -22,52 +22,52 @@
 
 /* ── HERO ── */
 .hub-hero {
-  border-radius:20px;
+  border-radius:16px;
   background:linear-gradient(130deg,#0d1117 0%,#1a2744 50%,#0b5d4b 100%);
-  padding:1.75rem 2rem;
-  margin-bottom:1.25rem;
-  box-shadow:0 12px 40px rgba(11,93,75,.22);
+  padding:1.25rem 1.75rem;
+  margin-bottom:1rem;
+  box-shadow:0 8px 28px rgba(11,93,75,.18);
   position:relative; overflow:hidden;
 }
 .hub-hero::before {
   content:""; position:absolute; inset:0;
-  background:radial-gradient(ellipse at 75% 30%,rgba(15,118,110,.25) 0%,transparent 60%);
+  background:radial-gradient(ellipse at 75% 30%,rgba(15,118,110,.2) 0%,transparent 60%);
   pointer-events:none;
 }
-.hub-hero-inner { position:relative; z-index:1; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
-.hub-hero-left { flex:1; min-width:240px; }
+.hub-hero-inner { position:relative; z-index:1; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.75rem; }
+.hub-hero-left { flex:1; min-width:220px; }
 .hub-badge {
-  display:inline-flex; align-items:center; gap:.35rem;
-  padding:.28rem .7rem; border-radius:999px;
-  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18);
-  font-size:.68rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
-  color:#d1fae5; margin-bottom:.7rem;
-}
-.hub-hero-title { font-size:clamp(1.35rem,2vw,1.9rem); font-weight:800; color:#fff; margin:0 0 .4rem; line-height:1.2; }
-.hub-hero-sub   { color:rgba(255,255,255,.6); font-size:.85rem; margin:0 0 1rem; }
-.hub-chips { display:flex; flex-wrap:wrap; gap:.4rem; }
-.hub-chip {
   display:inline-flex; align-items:center; gap:.3rem;
-  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.14);
-  color:#e2e8f0; font-size:.73rem; border-radius:999px; padding:.3rem .65rem;
+  padding:.22rem .6rem; border-radius:999px;
+  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18);
+  font-size:.65rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  color:#d1fae5; margin-bottom:.5rem;
 }
-.hub-alerts { display:flex; flex-direction:column; gap:.4rem; min-width:190px; }
+.hub-hero-title { font-size:clamp(1.2rem,2vw,1.65rem); font-weight:800; color:#fff; margin:0 0 .28rem; line-height:1.2; }
+.hub-hero-sub   { color:rgba(255,255,255,.55); font-size:.8rem; margin:0 0 .75rem; }
+.hub-chips { display:flex; flex-wrap:wrap; gap:.35rem; }
+.hub-chip {
+  display:inline-flex; align-items:center; gap:.28rem;
+  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.13);
+  color:#e2e8f0; font-size:.7rem; border-radius:999px; padding:.25rem .6rem;
+}
+.hub-alerts { display:flex; flex-direction:column; gap:.35rem; min-width:180px; }
 .hub-alert {
-  display:flex; align-items:center; gap:.55rem;
-  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15);
-  border-radius:10px; padding:.6rem .8rem; text-decoration:none; color:#fff;
-  transition:background .14s;
+  display:flex; align-items:center; gap:.5rem;
+  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.14);
+  border-radius:9px; padding:.5rem .7rem; text-decoration:none; color:#fff;
+  transition:background .13s;
 }
 .hub-alert:hover { background:rgba(255,255,255,.17); }
 .hub-alert-dot {
-  width:34px; height:34px; border-radius:9px; flex-shrink:0;
-  display:flex; align-items:center; justify-content:center; font-size:.85rem;
+  width:30px; height:30px; border-radius:8px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:.8rem;
 }
 .hub-alert-dot.amber { background:rgba(245,158,11,.3); color:#fbbf24; }
 .hub-alert-dot.red   { background:rgba(239,68,68,.3);  color:#f87171; }
 .hub-alert-dot.blue  { background:rgba(59,130,246,.3); color:#93c5fd; }
-.hub-alert-val { font-size:1rem; font-weight:800; line-height:1; }
-.hub-alert-lbl { font-size:.65rem; color:rgba(255,255,255,.55); margin-top:.08rem; }
+.hub-alert-val { font-size:.95rem; font-weight:800; line-height:1; }
+.hub-alert-lbl { font-size:.62rem; color:rgba(255,255,255,.5); margin-top:.06rem; }
 
 /* ── STATS ── */
 .hub-stats {
@@ -344,97 +344,94 @@
     <a href="{% url 'admin:index' %}"                       class="hub-qa"><div class="hub-qa-icon amber"><i class="bi bi-gear-wide-connected"></i></div><div><h4>Django Admin</h4><p>Super-admin database access</p></div></a>
   </div>
 
-  <!-- ── LIVE MONITORING ──────────────────────────────────────────────── -->
+  <!-- ── LIVE MONITORING — 4 columns, no scrollbars ──────────────────── -->
   <div class="hub-sh"><h2><i class="bi bi-activity" style="margin-right:.3rem"></i>Live Monitoring</h2><div class="hub-sh-sep"></div></div>
-  <div class="hub-panels" style="margin-bottom:1.35rem">
-    <section class="hub-panel">
-      <div class="hub-panel-head">
-        <h3><i class="bi bi-envelope-paper-fill"></i> Email Centre</h3>
-        <a href="{% url 'email_logs' %}">View all →</a>
-      </div>
-      <div class="hub-panel-body">
-        <div class="hub-email-stats">
-          <div class="hub-email-stat"><strong>{{ email_stats.total|intcomma }}</strong><span>Total</span></div>
-          <div class="hub-email-stat"><strong>{{ email_stats.sent|intcomma }}</strong><span>Sent</span></div>
-          <div class="hub-email-stat"><strong>{{ email_stats.failed|intcomma }}</strong><span>Failed</span></div>
-          <div class="hub-email-stat"><strong>{{ email_stats.today|intcomma }}</strong><span>Today</span></div>
-        </div>
-        <div class="hub-email-actions">
-          <a href="{% url 'email_compose' %}"                         class="hub-ebtn primary"><i class="bi bi-pencil-square"></i> Compose</a>
-          <a href="{% url 'email_compose' %}?preset=all_managers"     class="hub-ebtn"><i class="bi bi-people"></i> Managers</a>
-          <a href="{% url 'email_compose' %}?preset=all_referees"     class="hub-ebtn"><i class="bi bi-flag"></i> Referees</a>
-          <a href="{% url 'email_inbox' %}"                           class="hub-ebtn"><i class="bi bi-inbox"></i> Inbox</a>
-        </div>
-      </div>
-    </section>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:1.35rem">
 
-    <section class="hub-panel">
-      <div class="hub-panel-head">
-        <h3><i class="bi bi-clock-history"></i> Recent Activity</h3>
-        <a href="{% url 'activity_logs' %}">Full timeline →</a>
+    <!-- Email stats -->
+    <div style="background:#fff;border-radius:10px;padding:.85rem;border:1px solid var(--hub-border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem">
+        <span style="font-size:.78rem;font-weight:700;color:#0d1117"><i class="bi bi-envelope-paper-fill" style="margin-right:.3rem;color:#0a66c2"></i>Emails</span>
+        <a href="{% url 'email_logs' %}" style="font-size:.68rem;color:#0a66c2;text-decoration:none">View →</a>
       </div>
-      <div class="hub-panel-body">
-        <div class="hub-feed">
-          {% for log in recent_activity %}
-          <div class="hub-feed-row">
-            <div class="hub-feed-dot"></div>
-            <div>
-              <div class="hub-feed-main">{{ log.description|truncatechars:85 }}</div>
-              <div class="hub-feed-meta">{{ log.user.get_full_name|default:"System" }} &middot; {{ log.timestamp|timesince }} ago</div>
-            </div>
-          </div>
-          {% empty %}
-          <div class="hub-feed-row"><div class="hub-feed-main" style="color:var(--hub-muted)">No recent activity.</div></div>
-          {% endfor %}
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin-bottom:.6rem">
+        <div style="text-align:center;background:#f8fafc;border-radius:7px;padding:.4rem .2rem">
+          <div style="font-size:.95rem;font-weight:800;color:#0d1117">{{ email_stats.total|intcomma }}</div>
+          <div style="font-size:.6rem;color:#9ca3af;text-transform:uppercase">Total</div>
+        </div>
+        <div style="text-align:center;background:#f8fafc;border-radius:7px;padding:.4rem .2rem">
+          <div style="font-size:.95rem;font-weight:800;color:#1B5E20">{{ email_stats.sent|intcomma }}</div>
+          <div style="font-size:.6rem;color:#9ca3af;text-transform:uppercase">Sent</div>
+        </div>
+        <div style="text-align:center;background:#f8fafc;border-radius:7px;padding:.4rem .2rem">
+          <div style="font-size:.95rem;font-weight:800;color:#C62828">{{ email_stats.failed|intcomma }}</div>
+          <div style="font-size:.6rem;color:#9ca3af;text-transform:uppercase">Failed</div>
+        </div>
+        <div style="text-align:center;background:#f8fafc;border-radius:7px;padding:.4rem .2rem">
+          <div style="font-size:.95rem;font-weight:800;color:#0a66c2">{{ email_stats.today|intcomma }}</div>
+          <div style="font-size:.6rem;color:#9ca3af;text-transform:uppercase">Today</div>
         </div>
       </div>
-    </section>
-  </div>
+      <div style="display:flex;gap:.3rem;flex-wrap:wrap">
+        <a href="{% url 'email_compose' %}" class="hub-ebtn primary"><i class="bi bi-pencil-square"></i> Compose</a>
+        <a href="{% url 'email_inbox' %}" class="hub-ebtn"><i class="bi bi-inbox"></i> Inbox</a>
+      </div>
+    </div>
 
-  <div class="hub-panels" style="margin-bottom:1.35rem">
-    <section class="hub-panel">
-      <div class="hub-panel-head">
-        <h3><i class="bi bi-person-plus-fill"></i> Recently Created Users</h3>
-        <a href="{% url 'manage_users' %}">Manage →</a>
+    <!-- Recent Activity -->
+    <div style="background:#fff;border-radius:10px;padding:.85rem;border:1px solid var(--hub-border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem">
+        <span style="font-size:.78rem;font-weight:700;color:#0d1117"><i class="bi bi-clock-history" style="margin-right:.3rem;color:#14b8a6"></i>Activity</span>
+        <a href="{% url 'activity_logs' %}" style="font-size:.68rem;color:#0a66c2;text-decoration:none">All →</a>
       </div>
-      <div class="hub-panel-body">
-        <div class="hub-feed">
-          {% for u in recent_users %}
-          <div class="hub-feed-row">
-            <div class="hub-feed-dot" style="background:#3b82f6"></div>
-            <div>
-              <div class="hub-feed-main">{{ u.get_full_name|default:u.email }} <span style="color:var(--hub-muted);font-size:.68rem">({{ u.get_role_display }})</span></div>
-              <div class="hub-feed-meta">{{ u.email }} &middot; {{ u.date_joined|timesince }} ago</div>
-            </div>
-          </div>
-          {% empty %}
-          <div class="hub-feed-row"><div class="hub-feed-main" style="color:var(--hub-muted)">No recent users.</div></div>
-          {% endfor %}
+      <div style="display:flex;flex-direction:column;gap:.3rem">
+        {% for log in recent_activity|slice:":4" %}
+        <div style="padding:.35rem .45rem;background:#f9fafb;border-radius:6px;border-left:2px solid #14b8a6">
+          <div style="font-size:.72rem;color:#0d1117;line-height:1.35">{{ log.description|truncatechars:55 }}</div>
+          <div style="font-size:.62rem;color:#9ca3af;margin-top:.08rem">{{ log.timestamp|timesince }} ago</div>
         </div>
+        {% empty %}
+        <div style="font-size:.75rem;color:#9ca3af;padding:.5rem 0">No recent activity.</div>
+        {% endfor %}
       </div>
-    </section>
+    </div>
 
-    <section class="hub-panel">
-      <div class="hub-panel-head">
-        <h3><i class="bi bi-calendar-event-fill"></i> Recent Fixtures</h3>
-        <a href="{% url 'matches_list' %}">View all →</a>
+    <!-- Recent Users -->
+    <div style="background:#fff;border-radius:10px;padding:.85rem;border:1px solid var(--hub-border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem">
+        <span style="font-size:.78rem;font-weight:700;color:#0d1117"><i class="bi bi-person-plus-fill" style="margin-right:.3rem;color:#3b82f6"></i>New Users</span>
+        <a href="{% url 'manage_users' %}" style="font-size:.68rem;color:#0a66c2;text-decoration:none">All →</a>
       </div>
-      <div class="hub-panel-body">
-        <div class="hub-feed">
-          {% for f in recent_fixtures %}
-          <div class="hub-feed-row">
-            <div class="hub-feed-dot" style="background:#f59e0b"></div>
-            <div>
-              <div class="hub-feed-main">{{ f.home_team.name }} <span style="color:var(--hub-muted)">vs</span> {{ f.away_team.name }}</div>
-              <div class="hub-feed-meta">{{ f.competition.name }} &middot; {{ f.match_date|date:"d M Y" }} &middot; {{ f.get_status_display }}</div>
-            </div>
-          </div>
-          {% empty %}
-          <div class="hub-feed-row"><div class="hub-feed-main" style="color:var(--hub-muted)">No fixtures.</div></div>
-          {% endfor %}
+      <div style="display:flex;flex-direction:column;gap:.3rem">
+        {% for u in recent_users|slice:":4" %}
+        <div style="padding:.35rem .45rem;background:#f9fafb;border-radius:6px;border-left:2px solid #3b82f6">
+          <div style="font-size:.72rem;color:#0d1117;font-weight:600">{{ u.get_full_name|default:u.email|truncatechars:28 }}</div>
+          <div style="font-size:.62rem;color:#9ca3af;margin-top:.04rem">{{ u.get_role_display }} · {{ u.date_joined|timesince }} ago</div>
         </div>
+        {% empty %}
+        <div style="font-size:.75rem;color:#9ca3af;padding:.5rem 0">No recent users.</div>
+        {% endfor %}
       </div>
-    </section>
+    </div>
+
+    <!-- Recent Fixtures -->
+    <div style="background:#fff;border-radius:10px;padding:.85rem;border:1px solid var(--hub-border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem">
+        <span style="font-size:.78rem;font-weight:700;color:#0d1117"><i class="bi bi-calendar-event-fill" style="margin-right:.3rem;color:#f59e0b"></i>Fixtures</span>
+        <a href="{% url 'matches_list' %}" style="font-size:.68rem;color:#0a66c2;text-decoration:none">All →</a>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.3rem">
+        {% for f in recent_fixtures|slice:":4" %}
+        <div style="padding:.35rem .45rem;background:#f9fafb;border-radius:6px;border-left:2px solid #f59e0b">
+          <div style="font-size:.72rem;color:#0d1117;font-weight:600">{{ f.home_team.name|truncatechars:14 }} vs {{ f.away_team.name|truncatechars:14 }}</div>
+          <div style="font-size:.62rem;color:#9ca3af;margin-top:.04rem">{{ f.match_date|date:"d M Y" }} · {{ f.get_status_display }}</div>
+        </div>
+        {% empty %}
+        <div style="font-size:.75rem;color:#9ca3af;padding:.5rem 0">No fixtures yet.</div>
+        {% endfor %}
+      </div>
+    </div>
+
   </div>
 
   <!-- ── ROLE WORKSPACES ──────────────────────────────────────────────── -->
