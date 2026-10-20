@@ -99,21 +99,8 @@
             </div>
         </div>
 
-        <!-- IPRS vs Registered Comparison (shown after Prembly check) -->
-        {% if player.prembly_status == 'verified' and player.prembly_notes %}
-        <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden" id="iprs-comparison">
-            <div style="padding:.75rem 1rem;background:linear-gradient(135deg,#0D47A1,#1565C0);display:flex;align-items:center;justify-content:space-between">
-                <div style="display:flex;align-items:center;gap:.6rem">
-                    <span style="font-size:1rem">🔍</span>
-                    <span style="font-weight:700;font-size:.9rem;color:#fff">IPRS vs Registered — Comparison</span>
-                </div>
-                <span style="font-size:.7rem;padding:.2rem .55rem;background:rgba(255,255,255,.2);color:#fff;border-radius:20px;font-weight:600">Prembly Live</span>
-            </div>
-            <div style="padding:.9rem 1rem" id="iprs-comparison-body">
-                <p style="margin:0;font-size:.8rem;color:#888;font-style:italic">Loading comparison…</p>
-            </div>
-        </div>
-        {% endif %}
+        <!-- IPRS vs Registered Comparison — shown inline in Step 1 on right column -->
+        {% comment %}Comparison is rendered by JS inside Step 1 card{% endcomment %}
 
         <!-- Photo Comparison Card -->
         <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden">
@@ -145,11 +132,11 @@
                              style="width:100%;max-height:180px;object-fit:cover;border-radius:10px;border:3px solid #1565C0">
                         <a href="{{ player.iprs_photo.url }}" target="_blank" style="font-size:.75rem;color:#1565C0;display:block;margin-top:.3rem">View full ↗</a>
                         {% else %}
-                        <div style="height:150px;background:#e3f2fd;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#1565C0;font-size:.82rem;text-align:center;padding:.5rem">
+                        <div style="height:150px;background:#f8fafc;border-radius:10px;border:1px dashed #c5cae9;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:.78rem;text-align:center;padding:.5rem">
                             {% if player.prembly_status == 'verified' %}
-                            ℹ️ IPRS photo not available for this record
+                            No IPRS photo returned
                             {% else %}
-                            Run Prembly check to get IPRS photo
+                            Run Prembly check to see IPRS photo
                             {% endif %}
                         </div>
                         {% endif %}
@@ -229,7 +216,7 @@
                         {% if player.prembly_status == 'verified' %}✓{% elif player.prembly_status == 'failed' %}✗{% else %}1{% endif %}
                     </span>
                     <span style="font-weight:700;font-size:.9rem;color:#111">IPRS Verification — Prembly</span>
-                    <span style="font-size:.68rem;padding:.12rem .5rem;background:#e8f5e9;color:#1B5E20;border-radius:20px;font-weight:700">🔴 Live</span>
+                    <span style="font-size:.68rem;padding:.12rem .5rem;background:#e8f5e9;color:#1B5E20;border-radius:20px;font-weight:700">● Live</span>
                 </div>
                 <span style="font-size:.75rem;padding:.2rem .65rem;border-radius:20px;font-weight:700;
                     {% if player.prembly_status == 'verified' %}background:#e8f5e9;color:#1B5E20
@@ -282,6 +269,12 @@
                     {% elif player.prembly_status == 'failed' %}background:#fce4ec;color:#C62828
                     {% else %}background:#f5f5f5;color:#555{% endif %}">
                     {{ player.prembly_notes }}
+                </div>
+                {% endif %}
+
+                {% if player.prembly_status == 'verified' and player.prembly_notes %}
+                <div style="margin-top:.75rem" id="iprs-comparison-body">
+                    <div style="font-size:.75rem;color:#888;padding:.4rem 0">Loading comparison…</div>
                 </div>
                 {% endif %}
             </div>
@@ -501,7 +494,6 @@
     const regDob  = `{{ player.date_of_birth|date:"Y-m-d" }}`;
     const regAge  = {{ player.age }};
 
-    // Parse notes: "Prembly IPRS [LIVE]: Name: X, DOB: Y, Age: Z, Gender: W. Ref: ..."
     function extract(key) {
         const m = notes.match(new RegExp(key + ':\\s*([^,\\.]+)'));
         return m ? m[1].trim() : '—';
@@ -509,50 +501,37 @@
 
     const iprsName   = extract('Name');
     const iprsDob    = extract('DOB');
-    const iprsAge    = extract('Age');
+    const iprsAge    = parseInt(extract('Age')) || 0;
     const iprsGender = extract('Gender');
 
-    function fieldRow(label, reg, iprs) {
-        const match = reg.toLowerCase().trim() === iprs.toLowerCase().trim();
-        const icon  = match ? '✅' : '⚠️';
-        const bg    = match ? '' : 'background:#fff8e1';
-        return `<tr style="${bg}">
-            <td style="padding:.45rem .65rem;font-size:.8rem;font-weight:600;color:#555;white-space:nowrap">${label}</td>
-            <td style="padding:.45rem .65rem;font-size:.82rem;color:#333">${reg}</td>
-            <td style="padding:.45rem .65rem;font-size:.82rem;color:#111;font-weight:600">${iprs}</td>
-            <td style="padding:.45rem .65rem;text-align:center;font-size:.85rem">${icon}</td>
-        </tr>`;
+    function row(label, reg, iprs) {
+        const match = reg.toLowerCase().replace(/\s+/g,'') === iprs.toLowerCase().replace(/\s+/g,'');
+        return `<div style="display:grid;grid-template-columns:80px 1fr 1fr 28px;gap:.3rem;padding:.4rem .5rem;border-radius:6px;background:${match?'#fafafa':'#fff8e1'};margin-bottom:.3rem;font-size:.78rem;align-items:center">
+            <span style="color:#888;font-size:.72rem;font-weight:600">${label}</span>
+            <span style="color:#555">${reg}</span>
+            <span style="color:#111;font-weight:600">${iprs}</span>
+            <span style="text-align:center">${match?'✅':'⚠️'}</span>
+        </div>`;
     }
 
-    const ageMatch = parseInt(iprsAge) >= 18 && parseInt(iprsAge) <= 23;
-    const ageColor = ageMatch ? '#1B5E20' : '#C62828';
-    const ageBg    = ageMatch ? '#e8f5e9' : '#fce4ec';
+    const ageOk  = iprsAge >= 18 && iprsAge <= 23;
+    const ageMm  = iprsAge !== regAge;
 
     body.innerHTML = `
-    <div style="margin-bottom:.75rem;padding:.6rem .85rem;border-radius:8px;background:${ageBg}">
-        <strong style="color:${ageColor};font-size:.85rem">
-            ${ageMatch ? '✅' : '⚠️'} IPRS Age: ${iprsAge} yrs
-            ${!ageMatch ? ' — Outside 18–23 bracket!' : ' — Eligible'}
-        </strong>
-        ${parseInt(iprsAge) !== regAge ? `<div style="font-size:.8rem;margin-top:.2rem;color:#C62828">⚠️ Age mismatch: registered as ${regAge} yrs, IPRS says ${iprsAge} yrs</div>` : ''}
+    ${ageMm ? `<div style="padding:.55rem .75rem;background:#fce4ec;border-radius:7px;font-size:.78rem;color:#C62828;font-weight:600;margin-bottom:.65rem">
+        ⚠️ Age mismatch — registered: ${regAge} yrs, IPRS: ${iprsAge} yrs ${!ageOk?'(outside 18–23 bracket!)':''}
+    </div>` : ''}
+    <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#888;display:grid;grid-template-columns:80px 1fr 1fr 28px;gap:.3rem;padding:.2rem .5rem;margin-bottom:.2rem">
+        <span>Field</span><span>Registered</span><span style="color:#1565C0">IPRS</span><span></span>
     </div>
-    <div style="overflow-x:auto">
-    <table style="width:100%;border-collapse:collapse;font-size:.83rem">
-        <thead>
-            <tr style="background:#f8f9fb">
-                <th style="padding:.4rem .65rem;text-align:left;font-size:.72rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #eee">Field</th>
-                <th style="padding:.4rem .65rem;text-align:left;font-size:.72rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #eee">Registered</th>
-                <th style="padding:.4rem .65rem;text-align:left;font-size:.72rem;font-weight:700;color:#1565C0;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #eee">IPRS (Prembly)</th>
-                <th style="padding:.4rem .65rem;text-align:center;font-size:.72rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #eee">Match</th>
-            </tr>
-        </thead>
-        <tbody>
-            ${fieldRow('Full Name', regName, iprsName)}
-            ${fieldRow('Date of Birth', regDob, iprsDob)}
-            ${fieldRow('Age', regAge + ' yrs', iprsAge + ' yrs')}
-            <tr><td style="padding:.4rem .65rem;font-size:.8rem;font-weight:600;color:#555">Gender</td><td style="padding:.4rem .65rem;font-size:.82rem;color:#888">—</td><td style="padding:.4rem .65rem;font-size:.82rem;color:#111;font-weight:600">${iprsGender}</td><td style="padding:.4rem .65rem;text-align:center">ℹ️</td></tr>
-        </tbody>
-    </table>
+    ${row('Name', regName, iprsName)}
+    ${row('DOB', regDob, iprsDob)}
+    ${row('Age', regAge+' yrs', iprsAge+' yrs')}
+    <div style="display:grid;grid-template-columns:80px 1fr 1fr 28px;gap:.3rem;padding:.4rem .5rem;border-radius:6px;background:#fafafa;font-size:.78rem;align-items:center">
+        <span style="color:#888;font-size:.72rem;font-weight:600">Gender</span>
+        <span style="color:#aaa">—</span>
+        <span style="color:#111;font-weight:600">${iprsGender}</span>
+        <span style="text-align:center;color:#888">ℹ️</span>
     </div>`;
 })();
 

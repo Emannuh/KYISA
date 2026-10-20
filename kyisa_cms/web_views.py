@@ -8194,6 +8194,7 @@ def sys_admin_dashboard_view(request):
             'icon': 'bi bi-shield-lock',
             'count': role_total(UserRole.ADMIN),
             'count_label': 'system admins',
+            'primary_url': 'manage_users',
             'description': 'Full-platform governance, security oversight, and configuration control.',
             'functions': [
                 {'label': 'User Management', 'summary': 'Create users, change roles, suspend access, and review accounts.', 'icon': 'bi bi-people-fill', 'url': 'manage_users'},
@@ -8207,6 +8208,7 @@ def sys_admin_dashboard_view(request):
             'icon': 'bi bi-diagram-3',
             'count': role_total(UserRole.COMPETITION_MANAGER),
             'count_label': 'organising secretaries',
+            'primary_url': 'cm_dashboard',
             'description': 'Competition-wide administration across registrations, venues, fixtures, and verified players.',
             'functions': [
                 {'label': 'Competitions', 'summary': 'Create competitions and manage tournament structure.', 'icon': 'bi bi-trophy', 'url': 'competitions_list'},
@@ -8226,6 +8228,7 @@ def sys_admin_dashboard_view(request):
                 UserRole.VOLLEYBALL_COORDINATOR,
             ),
             'count_label': 'coordinators',
+            'primary_url': 'coordinator_competitions',
             'description': 'Discipline operations for fixtures, appointments, reports, squads, and venues.',
             'functions': [
                 {'label': 'Competition Desk', 'summary': 'Open discipline competition hubs and manage tournament flow.', 'icon': 'bi bi-grid-1x2', 'url': 'coordinator_competitions'},
@@ -8239,6 +8242,7 @@ def sys_admin_dashboard_view(request):
             'icon': 'bi bi-camera-reels',
             'count': role_total(UserRole.MEDIA_MANAGER),
             'count_label': 'media managers',
+            'primary_url': 'media_dashboard',
             'description': 'Content publishing and media operations across articles, photos, and videos.',
             'functions': [
                 {'label': 'Media Dashboard', 'summary': 'Monitor publishing activity and recent content.', 'icon': 'bi bi-speedometer2', 'url': 'media_dashboard'},
@@ -8252,6 +8256,7 @@ def sys_admin_dashboard_view(request):
             'icon': 'bi bi-whistle',
             'count': role_total(UserRole.REFEREE),
             'count_label': 'referees',
+            'primary_url': 'referee_portal',
             'description': 'Personal officiating workspace for appointments, reports, and profile upkeep.',
             'functions': [
                 {'label': 'Referee Dashboard', 'summary': 'Open the referee portal and current assignments.', 'icon': 'bi bi-speedometer2', 'url': 'referee_portal'},
@@ -8264,6 +8269,7 @@ def sys_admin_dashboard_view(request):
             'icon': 'bi bi-people',
             'count': role_total(UserRole.TEAM_MANAGER),
             'count_label': 'team managers',
+            'primary_url': 'team_manager_dashboard',
             'description': 'Team operations covering squad readiness, sanctions, appeals, and fixtures.',
             'functions': [
                 {'label': 'Team Dashboard', 'summary': 'Open the manager landing page for team operations.', 'icon': 'bi bi-speedometer2', 'url': 'team_manager_dashboard'},
@@ -8277,6 +8283,7 @@ def sys_admin_dashboard_view(request):
             'icon': 'bi bi-building',
             'count': role_total(UserRole.COUNTY_SPORTS_DIRECTOR),
             'count_label': 'county directors',
+            'primary_url': 'county_admin_dashboard',
             'description': 'County onboarding, discipline registration, payment visibility, and delegation setup.',
             'functions': [
                 {'label': 'County Dashboard', 'summary': 'Open the county portal home and progress overview.', 'icon': 'bi bi-speedometer2', 'url': 'county_admin_dashboard'},
@@ -8290,6 +8297,7 @@ def sys_admin_dashboard_view(request):
             'icon': 'bi bi-cash-stack',
             'count': role_total(UserRole.TREASURER),
             'count_label': 'treasurer users',
+            'primary_url': 'treasurer_dashboard',
             'description': 'Finance control for county payments, registration approvals, and treasury workflows.',
             'functions': [
                 {'label': 'Treasurer Dashboard', 'summary': 'Open finance overview and treasury workload.', 'icon': 'bi bi-speedometer2', 'url': 'treasurer_dashboard'},
@@ -8303,6 +8311,7 @@ def sys_admin_dashboard_view(request):
             'icon': 'bi bi-shield-lock',
             'count': role_total(UserRole.SECRETARY_GENERAL),
             'count_label': 'secretary general users',
+            'primary_url': 'sg_dashboard',
             'description': 'Executive oversight across verifications, appeals, treasurer actions, and exceptions.',
             'functions': [
                 {'label': 'SG Dashboard', 'summary': 'Open executive dashboard for strategic oversight.', 'icon': 'bi bi-speedometer2', 'url': 'sg_dashboard'},
@@ -8316,6 +8325,7 @@ def sys_admin_dashboard_view(request):
             'icon': 'bi bi-patch-check',
             'count': role_total(UserRole.VERIFICATION_OFFICER),
             'count_label': 'verification officers',
+            'primary_url': 'vo_registered_counties',
             'description': 'County and player verification workflows for eligibility and compliance checks.',
             'functions': [
                 {'label': 'Registered Counties', 'summary': 'Review approved counties entering verification.', 'icon': 'bi bi-building', 'url': 'vo_registered_counties'},
@@ -8327,6 +8337,7 @@ def sys_admin_dashboard_view(request):
             'icon': 'bi bi-balance-scale',
             'count': role_total(UserRole.JURY_CHAIR),
             'count_label': 'jury chair users',
+            'primary_url': 'jury_dashboard',
             'description': 'Appeals and disciplinary review operations with report access.',
             'functions': [
                 {'label': 'Jury Dashboard', 'summary': 'Open jury control panel for hearing workflows.', 'icon': 'bi bi-speedometer2', 'url': 'jury_dashboard'},
@@ -8340,6 +8351,7 @@ def sys_admin_dashboard_view(request):
             'icon': 'bi bi-binoculars',
             'count': role_total(UserRole.SCOUT),
             'count_label': 'scout users',
+            'primary_url': 'scout_dashboard',
             'description': 'Scouting operations for browsing verified players and maintaining shortlists.',
             'functions': [
                 {'label': 'Scout Dashboard', 'summary': 'Open scouting hub and activity overview.', 'icon': 'bi bi-speedometer2', 'url': 'scout_dashboard'},
@@ -8352,6 +8364,7 @@ def sys_admin_dashboard_view(request):
             'icon': 'bi bi-award',
             'count': role_total(UserRole.COUNTY_SPORTS_DIRECTOR),
             'count_label': 'county directors',
+            'primary_url': 'kicosca_dashboard',
             'description': 'Kenya Inter-County Sports and Cultural Association — county employee registration and KRA employment verification.',
             'functions': [
                 {'label': 'KICOSCA Dashboard', 'summary': 'Open the county KICOSCA portal and registration overview.', 'icon': 'bi bi-speedometer2', 'url': 'kicosca_dashboard'},
@@ -8363,6 +8376,7 @@ def sys_admin_dashboard_view(request):
             'icon': 'bi bi-eye',
             'count': role_total(UserRole.CEC_SPORTS_MEMBER),
             'count_label': 'cec users',
+            'primary_url': 'cec_sports_portal',
             'description': 'Read-only county and competition oversight for executive leadership.',
             'functions': [
                 {'label': 'CEC Dashboard', 'summary': 'Open executive visibility dashboard.', 'icon': 'bi bi-speedometer2', 'url': 'cec_sports_portal'},
