@@ -15,42 +15,48 @@ class TeamsConfig(AppConfig):
 
     def _ensure_iprs_columns(self):
         """
-        Directly add verifisha_* and prembly_* columns to teams_countyplayer if missing.
-        Bypasses Django migration tracking — safe on every startup (checks first).
+        Add verifisha_* and prembly_* columns to teams_countyplayer if missing.
+        Each column is added individually so a partial failure doesn't block others.
         """
         try:
             from django.db import connection
+
+            columns_to_add = [
+                ('verifisha_report_id',  "VARCHAR(255) NOT NULL DEFAULT ''"),
+                ('verifisha_status',     "VARCHAR(20)  NOT NULL DEFAULT 'not_checked'"),
+                ('verifisha_notes',      "TEXT         NOT NULL DEFAULT ''"),
+                ('verifisha_checked_at', "TIMESTAMPTZ"),
+                ('prembly_status',       "VARCHAR(20)  NOT NULL DEFAULT 'not_checked'"),
+                ('prembly_reference',    "VARCHAR(255) NOT NULL DEFAULT ''"),
+                ('prembly_notes',        "TEXT         NOT NULL DEFAULT ''"),
+                ('prembly_checked_at',   "TIMESTAMPTZ"),
+            ]
+
             with connection.cursor() as cursor:
-                def col_exists(col):
-                    cursor.execute("""
-                        SELECT 1 FROM information_schema.columns
-                        WHERE table_name='teams_countyplayer' AND column_name=%s
-                    """, [col])
-                    return bool(cursor.fetchone())
+                # Drop stale columns from very early attempts
+                for stale in ('huduma_reference', 'huduma_notes'):
+                    try:
+                        cursor.execute(
+                            f"ALTER TABLE teams_countyplayer DROP COLUMN IF EXISTS {stale}"
+                        )
+                    except Exception:
+                        pass
 
-                # Verifisha columns
-                if not col_exists('verifisha_report_id'):
-                    for stale in ('huduma_reference', 'huduma_notes'):
-                        cursor.execute(f"ALTER TABLE teams_countyplayer DROP COLUMN IF EXISTS {stale}")
-                    cursor.execute("""
-                        ALTER TABLE teams_countyplayer
-                            ADD COLUMN verifisha_report_id  VARCHAR(255) NOT NULL DEFAULT '',
-                            ADD COLUMN verifisha_status     VARCHAR(20)  NOT NULL DEFAULT 'not_checked',
-                            ADD COLUMN verifisha_notes      TEXT         NOT NULL DEFAULT '',
-                            ADD COLUMN verifisha_checked_at TIMESTAMPTZ
-                    """)
+                for col, coldef in columns_to_add:
+                    try:
+                        cursor.execute("""
+                            SELECT 1 FROM information_schema.columns
+                            WHERE table_name='teams_countyplayer' AND column_name=%s
+                        """, [col])
+                        if not cursor.fetchone():
+                            cursor.execute(
+                                f"ALTER TABLE teams_countyplayer ADD COLUMN {col} {coldef}"
+                            )
+                    except Exception as exc:
+                        import logging
+                        logging.getLogger(__name__).warning(
+                            'teams.apps: failed to add column %s: %s', col, exc
+                        )
 
-                # Prembly columns
-                if not col_exists('prembly_status'):
-                    cursor.execute("""
-                        ALTER TABLE teams_countyplayer
-                            ADD COLUMN prembly_status     VARCHAR(20)  NOT NULL DEFAULT 'not_checked',
-                            ADD COLUMN prembly_reference  VARCHAR(255) NOT NULL DEFAULT '',
-                            ADD COLUMN prembly_notes      TEXT         NOT NULL DEFAULT '',
-                            ADD COLUMN prembly_checked_at TIMESTAMPTZ
-                    """)
-
-                import logging
-                logging.getLogger(__name__).info('teams.apps: IPRS columns checked/added')
         except Exception:
             pass
