@@ -154,70 +154,73 @@
 
 /* ── WORKSPACE GRID ── */
 .hub-workspaces {
-  display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:.75rem; margin-bottom:1.35rem;
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:.65rem; margin-bottom:1.35rem;
 }
 .hub-ws {
-  background:var(--hub-surf); border:1px solid var(--hub-border);
-  border-radius:var(--hub-r); overflow:hidden;
-  transition:box-shadow .18s, border-color .18s;
+  background:var(--hub-surf);
+  border:1px solid var(--hub-border);
+  border-left:3px solid #0b5d4b;
+  border-radius:var(--hub-r);
+  overflow:hidden;
+  transition:box-shadow .15s;
   display:flex; flex-direction:column;
 }
-.hub-ws:hover { box-shadow:var(--hub-shadow-lg); border-color:#d0daf0; }
+.hub-ws:hover { box-shadow:0 4px 16px rgba(13,17,23,.1); }
 
-/* Workspace header — coloured accent left border */
+/* Workspace header */
 .hub-ws-hd {
   display:flex; align-items:center; justify-content:space-between;
-  padding:.7rem .9rem; border-bottom:1px solid var(--hub-border);
-  background:#fafbfc;
+  padding:.6rem .85rem;
+  border-bottom:1px solid var(--hub-border);
 }
-.hub-ws-hd-left { display:flex; align-items:center; gap:.5rem; }
+.hub-ws-hd-left { display:flex; align-items:center; gap:.45rem; }
 .hub-ws-icon {
-  width:30px; height:30px; border-radius:8px; flex-shrink:0;
+  width:26px; height:26px; border-radius:7px; flex-shrink:0;
   display:flex; align-items:center; justify-content:center;
-  font-size:.82rem;
-  background:linear-gradient(135deg,#ecfdf5,#d1fae5); color:#065f46;
+  font-size:.75rem;
+  background:#f0fdf9; color:#065f46;
 }
-.hub-ws-title { font-size:.86rem; font-weight:800; color:var(--hub-ink); margin:0; }
+.hub-ws-title { font-size:.82rem; font-weight:700; color:var(--hub-ink); margin:0; }
 .hub-ws-badge {
-  font-size:.68rem; font-weight:700; padding:.15rem .55rem;
+  font-size:.65rem; font-weight:700; padding:.12rem .5rem;
   border-radius:20px; background:#f0fdf9; color:#065f46;
   border:1px solid #a7f3d0; white-space:nowrap;
 }
 
 /* Workspace body */
-.hub-ws-body { padding:.75rem .9rem; flex:1; display:flex; flex-direction:column; gap:.65rem; }
-.hub-ws-desc { font-size:.72rem; color:var(--hub-muted); line-height:1.5; margin:0; }
+.hub-ws-body { padding:.65rem .85rem; flex:1; display:flex; flex-direction:column; gap:.55rem; }
+.hub-ws-desc { font-size:.71rem; color:var(--hub-muted); line-height:1.5; margin:0; }
 
 /* User pills */
-.hub-ws-users { display:flex; flex-wrap:wrap; gap:.25rem; }
+.hub-ws-users { display:flex; flex-wrap:wrap; gap:.22rem; }
 .hub-ws-user {
-  display:inline-flex; align-items:center; gap:.28rem;
-  padding:.2rem .52rem; background:#f8fafc; border:1px solid var(--hub-border);
+  display:inline-flex; align-items:center; gap:.25rem;
+  padding:.18rem .48rem; background:#f8fafc; border:1px solid var(--hub-border);
   border-radius:999px; text-decoration:none; color:var(--hub-ink);
-  font-size:.68rem; font-weight:600; transition:all .12s;
+  font-size:.66rem; font-weight:600; transition:all .12s;
 }
 .hub-ws-user:hover { background:#eff6ff; border-color:#93c5fd; }
 .hub-ws-avatar {
-  width:16px; height:16px; border-radius:50%;
+  width:14px; height:14px; border-radius:50%;
   background:linear-gradient(135deg,var(--hub-brand),#0f766e);
   display:flex; align-items:center; justify-content:center;
-  color:#fff; font-size:.5rem; font-weight:800; flex-shrink:0;
+  color:#fff; font-size:.48rem; font-weight:800; flex-shrink:0;
 }
 
-/* Function links — horizontal scrollable row instead of cluttered grid */
-.hub-fns { display:flex; gap:.4rem; flex-wrap:wrap; }
+/* Function links */
+.hub-fns { display:flex; gap:.3rem; flex-wrap:wrap; }
 .hub-fn {
-  display:inline-flex; align-items:center; gap:.35rem;
-  text-decoration:none; color:var(--hub-ink);
-  border:1px solid var(--hub-border); border-radius:8px;
-  background:#fafbfc; padding:.38rem .65rem;
-  font-size:.72rem; font-weight:600;
-  transition:transform .13s, border-color .13s, box-shadow .13s;
+  display:inline-flex; align-items:center; gap:.3rem;
+  text-decoration:none; color:var(--hub-muted);
+  border:1px solid var(--hub-border); border-radius:7px;
+  background:#fafbfc; padding:.32rem .58rem;
+  font-size:.7rem; font-weight:600;
+  transition:color .12s, border-color .12s, background .12s;
   white-space:nowrap;
 }
-.hub-fn:hover { transform:translateY(-1px); border-color:#bfcfe9; box-shadow:0 3px 10px rgba(13,17,23,.08); color:inherit; }
-.hub-fn i { font-size:.72rem; opacity:.7; }
+.hub-fn:hover { color:var(--hub-accent); border-color:#93c5fd; background:#eff6ff; }
+.hub-fn i { font-size:.68rem; }
 
 /* ── ROLE DISTRIBUTION ── */
 .hub-roles { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:.4rem; }
@@ -278,15 +281,56 @@
   </div>
 
   <!-- ── STATS ─────────────────────────────────────────────────────────── -->
-  <div class="hub-stats">
-    <div class="hub-stat hub-stat--blue"><div class="hub-stat-icon"><i class="bi bi-people-fill"></i></div><div class="hub-stat-val">{{ total_users|intcomma }}</div><div class="hub-stat-label">Users</div></div>
-    <div class="hub-stat hub-stat--teal"><div class="hub-stat-icon"><i class="bi bi-shield-fill"></i></div><div class="hub-stat-val">{{ total_teams|intcomma }}</div><div class="hub-stat-label">Teams</div></div>
-    <div class="hub-stat hub-stat--green"><div class="hub-stat-icon"><i class="bi bi-person-badge-fill"></i></div><div class="hub-stat-val">{{ total_players|intcomma }}</div><div class="hub-stat-label">Players</div></div>
-    <div class="hub-stat hub-stat--slate"><div class="hub-stat-icon"><i class="bi bi-whistle-fill"></i></div><div class="hub-stat-val">{{ total_referees|intcomma }}</div><div class="hub-stat-label">Referees</div></div>
-    <div class="hub-stat hub-stat--amber"><div class="hub-stat-icon"><i class="bi bi-trophy-fill"></i></div><div class="hub-stat-val">{{ total_competitions|intcomma }}</div><div class="hub-stat-label">Competitions</div></div>
-    <div class="hub-stat hub-stat--orange"><div class="hub-stat-icon"><i class="bi bi-calendar-event-fill"></i></div><div class="hub-stat-val">{{ total_fixtures|intcomma }}</div><div class="hub-stat-label">Fixtures</div></div>
-    <div class="hub-stat hub-stat--red"><div class="hub-stat-icon"><i class="bi bi-patch-check-fill"></i></div><div class="hub-stat-val">{{ pending_verifications|intcomma }}</div><div class="hub-stat-label">Pending Verif.</div></div>
-    <div class="hub-stat hub-stat--rose"><div class="hub-stat-icon"><i class="bi bi-file-earmark-text-fill"></i></div><div class="hub-stat-val">{{ pending_reports|intcomma }}</div><div class="hub-stat-label">Pending Reports</div></div>
+  <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:.55rem;margin-bottom:1.35rem">
+
+    <div style="background:#fff;border-radius:10px;padding:.75rem .8rem;border-top:3px solid #3b82f6;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+      <div style="font-size:1.4rem;font-weight:800;color:#0d1117;line-height:1">{{ total_users|intcomma }}</div>
+      <div style="font-size:.67rem;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-top:.2rem">Users</div>
+      <div style="margin-top:.4rem;width:20px;height:20px;border-radius:6px;background:#eff6ff;display:flex;align-items:center;justify-content:center;color:#3b82f6;font-size:.72rem"><i class="bi bi-people-fill"></i></div>
+    </div>
+
+    <div style="background:#fff;border-radius:10px;padding:.75rem .8rem;border-top:3px solid #14b8a6;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+      <div style="font-size:1.4rem;font-weight:800;color:#0d1117;line-height:1">{{ total_teams|intcomma }}</div>
+      <div style="font-size:.67rem;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-top:.2rem">Teams</div>
+      <div style="margin-top:.4rem;width:20px;height:20px;border-radius:6px;background:#f0fdfa;display:flex;align-items:center;justify-content:center;color:#14b8a6;font-size:.72rem"><i class="bi bi-shield-fill"></i></div>
+    </div>
+
+    <div style="background:#fff;border-radius:10px;padding:.75rem .8rem;border-top:3px solid #22c55e;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+      <div style="font-size:1.4rem;font-weight:800;color:#0d1117;line-height:1">{{ total_players|intcomma }}</div>
+      <div style="font-size:.67rem;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-top:.2rem">Players</div>
+      <div style="margin-top:.4rem;width:20px;height:20px;border-radius:6px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;color:#22c55e;font-size:.72rem"><i class="bi bi-person-badge-fill"></i></div>
+    </div>
+
+    <div style="background:#fff;border-radius:10px;padding:.75rem .8rem;border-top:3px solid #64748b;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+      <div style="font-size:1.4rem;font-weight:800;color:#0d1117;line-height:1">{{ total_referees|intcomma }}</div>
+      <div style="font-size:.67rem;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-top:.2rem">Referees</div>
+      <div style="margin-top:.4rem;width:20px;height:20px;border-radius:6px;background:#f8fafc;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:.72rem"><i class="bi bi-whistle-fill"></i></div>
+    </div>
+
+    <div style="background:#fff;border-radius:10px;padding:.75rem .8rem;border-top:3px solid #f59e0b;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+      <div style="font-size:1.4rem;font-weight:800;color:#0d1117;line-height:1">{{ total_competitions|intcomma }}</div>
+      <div style="font-size:.67rem;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-top:.2rem">Competitions</div>
+      <div style="margin-top:.4rem;width:20px;height:20px;border-radius:6px;background:#fffbeb;display:flex;align-items:center;justify-content:center;color:#f59e0b;font-size:.72rem"><i class="bi bi-trophy-fill"></i></div>
+    </div>
+
+    <div style="background:#fff;border-radius:10px;padding:.75rem .8rem;border-top:3px solid #f97316;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+      <div style="font-size:1.4rem;font-weight:800;color:#0d1117;line-height:1">{{ total_fixtures|intcomma }}</div>
+      <div style="font-size:.67rem;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-top:.2rem">Fixtures</div>
+      <div style="margin-top:.4rem;width:20px;height:20px;border-radius:6px;background:#fff7ed;display:flex;align-items:center;justify-content:center;color:#f97316;font-size:.72rem"><i class="bi bi-calendar-event-fill"></i></div>
+    </div>
+
+    <div style="background:#fff;border-radius:10px;padding:.75rem .8rem;border-top:3px solid #ef4444;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+      <div style="font-size:1.4rem;font-weight:800;color:{% if pending_verifications > 0 %}#ef4444{% else %}#0d1117{% endif %};line-height:1">{{ pending_verifications|intcomma }}</div>
+      <div style="font-size:.67rem;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-top:.2rem">Pending Verif.</div>
+      <div style="margin-top:.4rem;width:20px;height:20px;border-radius:6px;background:#fef2f2;display:flex;align-items:center;justify-content:center;color:#ef4444;font-size:.72rem"><i class="bi bi-patch-check-fill"></i></div>
+    </div>
+
+    <div style="background:#fff;border-radius:10px;padding:.75rem .8rem;border-top:3px solid #f43f5e;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+      <div style="font-size:1.4rem;font-weight:800;color:{% if pending_reports > 0 %}#f43f5e{% else %}#0d1117{% endif %};line-height:1">{{ pending_reports|intcomma }}</div>
+      <div style="font-size:.67rem;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-top:.2rem">Pending Reports</div>
+      <div style="margin-top:.4rem;width:20px;height:20px;border-radius:6px;background:#fff1f2;display:flex;align-items:center;justify-content:center;color:#f43f5e;font-size:.72rem"><i class="bi bi-file-earmark-text-fill"></i></div>
+    </div>
+
   </div>
 
   <!-- ── SYSTEM CONTROLS ───────────────────────────────────────────────── -->
