@@ -1068,14 +1068,44 @@ def prembly_verify_county_player(request, player_pk):
 def prembly_iprs_lookup(request):
     """
     AJAX: type any National ID → instantly get IPRS data via Prembly.
-    Used in the Quick IPRS Lookup box on the verify page.
+    Checks if the player with this ID already has a stored result before
+    hitting the API — saves credits.
     GET ?id_number=12345678
     """
     from teams.prembly_service import PremblyService
+    from teams.models import CountyPlayer
 
     national_id = request.GET.get('id_number', '').strip()
     if not national_id:
         return JsonResponse({'success': False, 'error': 'id_number is required.'}, status=400)
+
+    # Check if any CountyPlayer already has a verified result for this ID
+    cached_player = CountyPlayer.objects.filter(
+        national_id_number=national_id,
+        prembly_status='verified',
+        prembly_notes__isnull=False,
+    ).exclude(prembly_notes='').first()
+
+    if cached_player:
+        # Parse the stored notes to return structured data
+        import re
+        notes = cached_player.prembly_notes
+        def extract(key):
+            m = re.search(key + r':\s*([^,\.]+)', notes)
+            return m.group(1).strip() if m else ''
+
+        return JsonResponse({
+            'success':      True,
+            'person_found': True,
+            'full_name':    extract('Name'),
+            'date_of_birth': extract('DOB'),
+            'age':          int(extract('Age').replace(' yrs','').strip() or 0) or None,
+            'gender':       extract('Gender'),
+            'national_id':  national_id,
+            'reference_number': cached_player.prembly_reference,
+            'is_simulation': False,
+            'from_cache':   True,
+        })
 
     svc    = PremblyService()
     result = svc.lookup_by_national_id(national_id)

@@ -233,9 +233,15 @@
                     Result comes back in seconds — no waiting.
                 </p>
 
-                <!-- Quick Lookup -->
+                <!-- Quick Lookup — uses cache if already verified -->
                 <div style="margin-bottom:.85rem;padding:.8rem;background:#f0f4ff;border-radius:9px">
                     <p style="margin:0 0 .45rem;font-size:.78rem;font-weight:700;color:#1565C0;text-transform:uppercase;letter-spacing:.04em">🔎 Quick IPRS Lookup</p>
+                    {% if player.prembly_status == 'verified' and player.prembly_notes %}
+                    <div style="padding:.5rem .75rem;background:#e8f5e9;border-radius:7px;font-size:.8rem;color:#1B5E20">
+                        <strong>✅ Cached result:</strong> {{ player.prembly_notes|truncatechars:100 }}
+                        <div style="font-size:.72rem;color:#555;margin-top:.2rem">No API call needed — result stored from previous check.</div>
+                    </div>
+                    {% else %}
                     <div style="display:flex;gap:.4rem">
                         <input type="text" id="vcp-iprs-input" value="{{ player.national_id_number|default:'' }}"
                                placeholder="National ID…"
@@ -243,9 +249,10 @@
                         <button onclick="vcpLookup()" style="padding:.4rem 1rem;background:#1565C0;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:700">Lookup</button>
                     </div>
                     <div id="vcp-iprs-result" style="display:none;margin-top:.6rem"></div>
+                    {% endif %}
                 </div>
 
-                <!-- Action buttons -->
+                <!-- Action buttons — hide Run button if already verified -->
                 <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
                     {% if player.prembly_status != 'verified' %}
                     <form method="post" action="{% url 'prembly_verify_county_player' player_pk=player.pk %}" style="margin:0">
@@ -254,11 +261,13 @@
                             🔍 Run Prembly IPRS Check
                         </button>
                     </form>
+                    {% else %}
+                    <span style="font-size:.8rem;color:#1B5E20;font-weight:600">✅ Verified — no re-check needed</span>
                     {% endif %}
                     {% if player.prembly_status != 'not_checked' %}
                     <form method="post" action="{% url 'prembly_verify_county_player' player_pk=player.pk %}" style="margin:0">
                         {% csrf_token %}<input type="hidden" name="action" value="reset">
-                        <button type="submit" style="padding:.45rem .9rem;background:#f5f5f5;color:#666;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:.82rem">Reset</button>
+                        <button type="submit" style="padding:.45rem .9rem;background:#f5f5f5;color:#666;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:.82rem" onclick="return confirm('This will clear the stored result and use a credit on next check. Continue?')">Reset</button>
                     </form>
                     {% endif %}
                 </div>
@@ -551,8 +560,9 @@ function vcpLookup() {
                 return;
             }
             const sim = d.is_simulation ? ' <span style="font-size:.73rem;color:#bbb">[Sandbox]</span>' : '';
+            const cached = d.from_cache ? ' <span style="font-size:.73rem;color:#1B5E20;font-weight:600">[Cached — no credit used]</span>' : '';
             box.innerHTML = `<div style="padding:.65rem .85rem;background:#e8f5e9;border-radius:8px;border:1px solid #c8e6c9">
-                <p style="margin:0 0 .4rem;font-size:.82rem;font-weight:700;color:#1B5E20">✅ IPRS Record Found${sim}</p>
+                <p style="margin:0 0 .4rem;font-size:.82rem;font-weight:700;color:#1B5E20">✅ IPRS Record Found${sim}${cached}</p>
                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.35rem;font-size:.81rem">
                     <div><span style="color:#888;display:block;font-size:.73rem">Full Name</span><strong>${d.full_name||'—'}</strong></div>
                     <div><span style="color:#888;display:block;font-size:.73rem">Date of Birth</span><strong>${d.date_of_birth||'—'}</strong></div>
