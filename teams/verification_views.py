@@ -978,3 +978,105 @@ def verifisha_poll_county_player(request, player_pk):
         'verifisha_status': player.verifisha_status,
         'verifisha_notes':  player.verifisha_notes,
     })
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#   PREMBLY IPRS — COUNTY PLAYER (primary live check)
+# ══════════════════════════════════════════════════════════════════════════════
+
+@clearance_role_required
+def prembly_verify_county_player(request, player_pk):
+    """
+    Run a live Prembly Kenya IPRS lookup for a CountyPlayer.
+    Synchronous — returns result immediately, saves to verifisha_* fields.
+    POST action=submit  → calls Prembly API with the player's National ID
+    POST action=reset   → clears the stored result
+    """
+    from teams.models import CountyPlayer
+    from teams.prembly_service import PremblyService
+
+    player = get_object_or_404(CountyPlayer, pk=player_pk)
+
+    if request.method == 'POST':
+        action = request.POST.get('action', 'submit')
+
+        if action == 'submit':
+            national_id = player.national_id_number.strip() if player.national_id_number else ''
+            if not national_id:
+                messages.error(request, f'❌ {player.first_name} {player.last_name} has no National ID number on file.')
+                return redirect('verify_county_player', player_pk=player.pk)
+
+            svc    = PremblyService()
+            result = svc.lookup_by_national_id(national_id)
+
+            if result.success and result.person_found:
+                notes = (
+                    f"Prembly IPRS {'[LIVE]' if not result.is_simulation else '[SANDBOX]'}: "
+                    f"Name: {result.full_name}, "
+                    f"DOB: {result.date_of_birth}, "
+                    f"Age: {result.age}, "
+                    f"Gender: {result.gender}. "
+                    f"Ref: {result.reference_number}"
+                )
+                player.prembly_status     = 'verified'
+                player.prembly_reference  = result.reference_number or f"prembly-{national_id}"
+                player.prembly_notes      = notes
+                player.prembly_checked_at = timezone.now()
+                player.save(update_fields=[
+                    'prembly_status', 'prembly_reference',
+                    'prembly_notes', 'prembly_checked_at',
+                ])
+                if result.photo:
+                    try:
+                        from teams.utils import save_base64_photo
+                        save_base64_photo(player, result.photo)
+                        player.save(update_fields=['iprs_photo'])
+                    except Exception:
+                        pass
+                messages.success(
+                    request,
+                    f'✅ Prembly IPRS — {result.full_name}, DOB {result.date_of_birth}, Age {result.age}.'
+                )
+            elif result.success and not result.person_found:
+                player.prembly_status     = 'failed'
+                player.prembly_reference  = f"prembly-{national_id}"
+                player.prembly_notes      = f"Not found in IPRS. ID: {national_id}"
+                player.prembly_checked_at = timezone.now()
+                player.save(update_fields=[
+                    'prembly_status', 'prembly_reference',
+                    'prembly_notes', 'prembly_checked_at',
+                ])
+                messages.warning(request, f'❌ {player.first_name} {player.last_name} — not found in IPRS.')
+            else:
+                messages.error(request, f'❌ Prembly check failed: {result.error_message}')
+
+        elif action == 'reset':
+            player.prembly_status     = 'not_checked'
+            player.prembly_reference  = ''
+            player.prembly_notes      = ''
+            player.prembly_checked_at = None
+            player.save(update_fields=[
+                'prembly_status', 'prembly_reference',
+                'prembly_notes', 'prembly_checked_at',
+            ])
+            messages.info(request, f'🔄 Prembly IPRS cleared for {player.first_name} {player.last_name}.')
+
+    return redirect('verify_county_player', player_pk=player.pk)
+
+
+@clearance_role_required
+def prembly_iprs_lookup(request):
+    """
+    AJAX: type any National ID → instantly get IPRS data via Prembly.
+    Used in the Quick IPRS Lookup box on the verify page.
+    GET ?id_number=12345678
+    """
+    from teams.prembly_service import PremblyService
+
+    national_id = request.GET.get('id_number', '').strip()
+    if not national_id:
+        return JsonResponse({'success': False, 'error': 'id_number is required.'}, status=400)
+
+    svc    = PremblyService()
+    result = svc.lookup_by_national_id(national_id)
+    return JsonResponse(result.to_dict())

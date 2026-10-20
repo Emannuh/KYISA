@@ -172,12 +172,12 @@
 
         <!-- Progress indicator -->
         <div style="background:#fff;border-radius:12px;padding:.85rem 1.1rem;box-shadow:0 1px 4px rgba(0,0,0,.08);display:flex;align-items:center;gap:0">
-            {% with s1=player.verifisha_status s2=player.huduma_status s3=player.higher_league_status s4=player.verification_status %}
+            {% with s1=player.prembly_status s2=player.huduma_status s3=player.higher_league_status s4=player.verification_status %}
             <!-- Step 1 -->
             <div style="flex:1;text-align:center">
                 <div style="width:32px;height:32px;border-radius:50%;margin:0 auto .3rem;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;
-                    {% if s1 == 'verified' or s2 == 'verified' %}background:#1B5E20;color:#fff{% elif s1 == 'failed' %}background:#C62828;color:#fff{% elif s1 == 'pending' %}background:#1565C0;color:#fff{% else %}background:#e8e8e8;color:#aaa{% endif %}">
-                    {% if s1 == 'verified' or s2 == 'verified' %}✓{% elif s1 == 'failed' %}✗{% elif s1 == 'pending' %}…{% else %}1{% endif %}
+                    {% if s1 == 'verified' or s2 == 'verified' %}background:#1B5E20;color:#fff{% elif s1 == 'failed' %}background:#C62828;color:#fff{% else %}background:#e8e8e8;color:#aaa{% endif %}">
+                    {% if s1 == 'verified' or s2 == 'verified' %}✓{% elif s1 == 'failed' %}✗{% else %}1{% endif %}
                 </div>
                 <div style="font-size:.7rem;font-weight:600;color:#666">IPRS</div>
             </div>
@@ -202,30 +202,30 @@
             {% endwith %}
         </div>
 
-        <!-- ── STEP 1: Verifisha Auto IPRS ──────────────────────────── -->
-        <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden">
+        <!-- ── STEP 1: Prembly IPRS Check (Live) ────────────────────── -->
+        <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden;border-left:4px solid {% if player.prembly_status == 'verified' %}#1B5E20{% elif player.prembly_status == 'failed' %}#C62828{% else %}#0D47A1{% endif %}">
             <div style="padding:.7rem 1rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f0f0f0">
                 <div style="display:flex;align-items:center;gap:.6rem">
                     <span style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:.75rem;font-weight:800;
-                        {% if player.verifisha_status == 'verified' %}background:#1B5E20;color:#fff{% elif player.verifisha_status == 'failed' %}background:#C62828;color:#fff{% elif player.verifisha_status == 'pending' %}background:#1565C0;color:#fff{% else %}background:#e8e8e8;color:#888{% endif %}">
-                        {% if player.verifisha_status == 'verified' %}✓{% elif player.verifisha_status == 'failed' %}✗{% elif player.verifisha_status == 'pending' %}…{% else %}1{% endif %}
+                        {% if player.prembly_status == 'verified' %}background:#1B5E20;color:#fff{% elif player.prembly_status == 'failed' %}background:#C62828;color:#fff{% else %}background:#e8e8e8;color:#888{% endif %}">
+                        {% if player.prembly_status == 'verified' %}✓{% elif player.prembly_status == 'failed' %}✗{% else %}1{% endif %}
                     </span>
-                    <span style="font-weight:700;font-size:.9rem;color:#111">IPRS Auto-Verification</span>
+                    <span style="font-weight:700;font-size:.9rem;color:#111">IPRS Verification — Prembly</span>
+                    <span style="font-size:.68rem;padding:.12rem .5rem;background:#e8f5e9;color:#1B5E20;border-radius:20px;font-weight:700">🔴 Live</span>
                 </div>
                 <span style="font-size:.75rem;padding:.2rem .65rem;border-radius:20px;font-weight:700;
-                    {% if player.verifisha_status == 'verified' %}background:#e8f5e9;color:#1B5E20
-                    {% elif player.verifisha_status == 'failed' %}background:#fce4ec;color:#C62828
-                    {% elif player.verifisha_status == 'pending' %}background:#e3f2fd;color:#1565C0
+                    {% if player.prembly_status == 'verified' %}background:#e8f5e9;color:#1B5E20
+                    {% elif player.prembly_status == 'failed' %}background:#fce4ec;color:#C62828
                     {% else %}background:#f5f5f5;color:#aaa{% endif %}">
-                    {% if player.verifisha_status == 'verified' %}✅ Verified
-                    {% elif player.verifisha_status == 'failed' %}❌ Failed
-                    {% elif player.verifisha_status == 'pending' %}⏳ Pending
+                    {% if player.prembly_status == 'verified' %}✅ Verified
+                    {% elif player.prembly_status == 'failed' %}❌ Failed
                     {% else %}Not checked{% endif %}
                 </span>
             </div>
             <div style="padding:.9rem 1rem">
                 <p style="margin:0 0 .85rem;font-size:.83rem;color:#777;line-height:1.5">
-                    Checks the player's National ID against Kenya IPRS via Verifisha. Results arrive automatically via webhook.
+                    Instantly checks this player's National ID against Kenya's IPRS government database via Prembly.
+                    Result comes back in seconds — no waiting.
                 </p>
 
                 <!-- Quick Lookup -->
@@ -235,52 +235,35 @@
                         <input type="text" id="vcp-iprs-input" value="{{ player.national_id_number|default:'' }}"
                                placeholder="National ID…"
                                style="flex:1;padding:.4rem .7rem;border:1px solid #c5cae9;border-radius:8px;font-size:.83rem;background:#fff">
-                        <button onclick="vcpLookup()"
-                                style="padding:.4rem 1rem;background:#1565C0;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:700">
-                            Lookup
-                        </button>
+                        <button onclick="vcpLookup()" style="padding:.4rem 1rem;background:#1565C0;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:700">Lookup</button>
                     </div>
                     <div id="vcp-iprs-result" style="display:none;margin-top:.6rem"></div>
                 </div>
 
                 <!-- Action buttons -->
                 <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
-                    {% if player.verifisha_status != 'verified' %}
-                    <form method="post" action="{% url 'verifisha_verify_county_player' player_pk=player.pk %}" style="margin:0">
+                    {% if player.prembly_status != 'verified' %}
+                    <form method="post" action="{% url 'prembly_verify_county_player' player_pk=player.pk %}" style="margin:0">
                         {% csrf_token %}<input type="hidden" name="action" value="submit">
-                        <button type="submit"
-                                style="padding:.45rem 1.1rem;background:#0D47A1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.84rem;font-weight:700">
-                            🔍 Run Auto IPRS Check
+                        <button type="submit" style="padding:.45rem 1.1rem;background:#0D47A1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.84rem;font-weight:700">
+                            🔍 Run Prembly IPRS Check
                         </button>
                     </form>
                     {% endif %}
-                    {% if player.verifisha_status != 'not_checked' %}
-                    <form method="post" action="{% url 'verifisha_verify_county_player' player_pk=player.pk %}" style="margin:0">
+                    {% if player.prembly_status != 'not_checked' %}
+                    <form method="post" action="{% url 'prembly_verify_county_player' player_pk=player.pk %}" style="margin:0">
                         {% csrf_token %}<input type="hidden" name="action" value="reset">
-                        <button type="submit"
-                                style="padding:.45rem .9rem;background:#f5f5f5;color:#666;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:.82rem">
-                            Reset
-                        </button>
+                        <button type="submit" style="padding:.45rem .9rem;background:#f5f5f5;color:#666;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:.82rem">Reset</button>
                     </form>
                     {% endif %}
                 </div>
 
-                {% if player.verifisha_status == 'pending' %}
-                <div style="margin-top:.75rem;padding:.5rem .85rem;background:#e3f2fd;border-radius:8px;display:flex;align-items:center;justify-content:space-between">
-                    <span style="color:#1565C0;font-size:.82rem;font-weight:600">⏳ Report submitted — awaiting webhook result…</span>
-                    <button onclick="vcpPoll()"
-                            style="padding:.25rem .75rem;background:#1565C0;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:.78rem;font-weight:600">
-                        Check Now
-                    </button>
-                </div>
-                {% endif %}
-
-                {% if player.verifisha_notes %}
+                {% if player.prembly_notes %}
                 <div style="margin-top:.75rem;padding:.6rem .85rem;border-radius:8px;font-size:.82rem;line-height:1.5;
-                    {% if player.verifisha_status == 'verified' %}background:#e8f5e9;color:#1B5E20
-                    {% elif player.verifisha_status == 'failed' %}background:#fce4ec;color:#C62828
+                    {% if player.prembly_status == 'verified' %}background:#e8f5e9;color:#1B5E20
+                    {% elif player.prembly_status == 'failed' %}background:#fce4ec;color:#C62828
                     {% else %}background:#f5f5f5;color:#555{% endif %}">
-                    {{ player.verifisha_notes }}
+                    {{ player.prembly_notes }}
                 </div>
                 {% endif %}
             </div>
@@ -305,29 +288,20 @@
             </div>
             <div style="padding:.85rem 1rem">
                 <p style="margin:0 0 .75rem;font-size:.83rem;color:#777;line-height:1.5">
-                    Use only if auto-verification failed. Mark after physical Huduma Kenya check.
-                    {% if player.verifisha_status == 'verified' %}
-                    <span style="color:#1B5E20;font-weight:600"> — Auto-check passed, this step is not required.</span>
+                    Use only if Prembly check failed or is unavailable. Mark after physical Huduma Kenya verification.
+                    {% if player.prembly_status == 'verified' %}
+                    <span style="color:#1B5E20;font-weight:600"> — Prembly check passed, this step is not required.</span>
                     {% endif %}
                 </p>
                 <div style="display:flex;gap:.4rem;flex-wrap:wrap">
                     <form method="post" style="margin:0">{% csrf_token %}
-                        <button type="submit" name="action" value="huduma_verify"
-                                style="padding:.4rem .9rem;background:#1B5E20;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:700">
-                            ✅ Mark Verified
-                        </button>
+                        <button type="submit" name="action" value="huduma_verify" style="padding:.4rem .9rem;background:#1B5E20;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:700">✅ Mark Verified</button>
                     </form>
                     <form method="post" style="margin:0">{% csrf_token %}
-                        <button type="submit" name="action" value="huduma_fail"
-                                style="padding:.4rem .9rem;background:#C62828;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:700">
-                            ❌ Mark Failed
-                        </button>
+                        <button type="submit" name="action" value="huduma_fail" style="padding:.4rem .9rem;background:#C62828;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:700">❌ Mark Failed</button>
                     </form>
                     <form method="post" style="margin:0">{% csrf_token %}
-                        <button type="submit" name="action" value="huduma_reset"
-                                style="padding:.4rem .85rem;background:#f5f5f5;color:#666;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:.82rem">
-                            Reset
-                        </button>
+                        <button type="submit" name="action" value="huduma_reset" style="padding:.4rem .85rem;background:#f5f5f5;color:#666;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:.82rem">Reset</button>
                     </form>
                 </div>
             </div>
@@ -505,7 +479,7 @@ function vcpLookup() {
     if (!id) return;
     box.style.display = 'block';
     box.innerHTML = '<p style="color:#1565C0;font-size:.82rem;margin:0">⏳ Looking up…</p>';
-    fetch("{% url 'verifisha_iprs_lookup' %}?id_number=" + encodeURIComponent(id))
+    fetch("{% url 'prembly_iprs_lookup' %}?id_number=" + encodeURIComponent(id))
         .then(r => r.json())
         .then(d => {
             if (!d.success || !d.person_found) {

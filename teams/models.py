@@ -218,6 +218,21 @@ class CountyPlayer(models.Model):
     verifisha_notes      = models.TextField(blank=True, default="")
     verifisha_checked_at = models.DateTimeField(null=True, blank=True)
 
+    # ── Prembly IPRS Live Check (primary production check) ────────────────
+    prembly_status = models.CharField(
+        max_length=20,
+        choices=[
+            ("not_checked", "Not Checked"),
+            ("verified",    "Verified"),
+            ("failed",      "Failed"),
+        ],
+        default="not_checked",
+        help_text="Prembly live IPRS check status",
+    )
+    prembly_reference   = models.CharField(max_length=255, blank=True, default="")
+    prembly_notes       = models.TextField(blank=True, default="")
+    prembly_checked_at  = models.DateTimeField(null=True, blank=True)
+
     # ── Prembly IPRS Verification ──────────────────────────────────────────
     prembly_status = models.CharField(
         max_length=20,
@@ -290,6 +305,10 @@ class CountyPlayer(models.Model):
         today = timezone.now().date()
         dob = self.date_of_birth
         return today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+
+    @property
+    def is_age_eligible(self):
+        return 18 <= self.age <= 23
 
     @property
     def is_verified(self):
