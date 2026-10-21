@@ -218,22 +218,7 @@ class CountyPlayer(models.Model):
     verifisha_notes      = models.TextField(blank=True, default="")
     verifisha_checked_at = models.DateTimeField(null=True, blank=True)
 
-    # ── Prembly IPRS Live Check (primary production check) ────────────────
-    prembly_status = models.CharField(
-        max_length=20,
-        choices=[
-            ("not_checked", "Not Checked"),
-            ("verified",    "Verified"),
-            ("failed",      "Failed"),
-        ],
-        default="not_checked",
-        help_text="Prembly live IPRS check status",
-    )
-    prembly_reference   = models.CharField(max_length=255, blank=True, default="")
-    prembly_notes       = models.TextField(blank=True, default="")
-    prembly_checked_at  = models.DateTimeField(null=True, blank=True)
-
-    # ── Prembly IPRS Verification ──────────────────────────────────────────
+    # ── Prembly IPRS Verification (primary live check) ────────────────────
     prembly_status = models.CharField(
         max_length=20,
         choices=[
@@ -245,36 +230,15 @@ class CountyPlayer(models.Model):
         default="not_checked",
         help_text="Prembly Kenya IPRS verification result",
     )
-    prembly_reference    = models.CharField(max_length=255, blank=True, default="",
-                                            help_text="Prembly verification reference ID")
+    prembly_reference     = models.CharField(max_length=255, blank=True, default="",
+                                             help_text="Prembly verification reference ID")
     prembly_verified_name = models.CharField(max_length=200, blank=True, default="",
                                              help_text="Official name returned by Prembly IPRS")
-    prembly_checked_at   = models.DateTimeField(null=True, blank=True)
+    prembly_notes         = models.TextField(blank=True, default="",
+                                             help_text="Full Prembly response summary for audit trail")
+    prembly_checked_at    = models.DateTimeField(null=True, blank=True)
 
-    # ── Prembly IPRS Verification ──────────────────────────────────────────
-    prembly_status = models.CharField(
-        max_length=20,
-        choices=[
-            ("not_checked", "Not Checked"),
-            ("verified",    "Verified"),
-            ("failed",      "Failed"),
-            ("mismatch",    "Name/DOB Mismatch"),
-        ],
-        default="not_checked",
-        help_text="Prembly Kenya IPRS verification result",
-    )
-    prembly_reference    = models.CharField(max_length=255, blank=True, default="",
-                                            help_text="Prembly verification reference ID")
-    prembly_verified_name = models.CharField(max_length=200, blank=True, default="",
-                                             help_text="Official name returned by Prembly IPRS")
-    prembly_checked_at   = models.DateTimeField(null=True, blank=True)
-
-    # ── Age Eligibility ───────────────────────────────────────────────────
-    is_age_eligible = models.BooleanField(
-        default=True,
-        help_text="False if player's age is outside 18-23 bracket at registration time",
-    )
-
+    # ── Age Eligibility (computed from DOB — not stored) ─────────────────
     # ── Higher League / National Team Check (non-football disciplines) ────
     higher_league_status = models.CharField(
         max_length=20,
@@ -308,6 +272,7 @@ class CountyPlayer(models.Model):
 
     @property
     def is_age_eligible(self):
+        """True if player is between 18 and 23 years old (inclusive)."""
         return 18 <= self.age <= 23
 
     @property

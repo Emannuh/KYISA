@@ -988,8 +988,9 @@ def verifisha_poll_county_player(request, player_pk):
 def prembly_verify_county_player(request, player_pk):
     """
     Run a live Prembly Kenya IPRS lookup for a CountyPlayer.
-    Synchronous — returns result immediately, saves to verifisha_* fields.
-    POST action=submit  → calls Prembly API with the player's National ID
+    Synchronous — returns result immediately, saves to prembly_* fields.
+    POST action=submit  → calls Prembly API with the player's National ID,
+                          does name/DOB matching, sets verified/mismatch/failed
     POST action=reset   → clears the stored result
     """
     from teams.models import CountyPlayer
@@ -1010,33 +1011,61 @@ def prembly_verify_county_player(request, player_pk):
             result = svc.lookup_by_national_id(national_id)
 
             if result.success and result.person_found:
+                # Name/DOB match check
+                iprs_name  = result.full_name.upper()
+                reg_name   = f"{player.first_name} {player.last_name}".upper()
+                name_match = any(
+                    part in iprs_name for part in reg_name.split() if len(part) > 2
+                )
+                dob_match = (result.date_of_birth == player.date_of_birth) if result.date_of_birth else False
+
+                if name_match and dob_match:
+                    player.prembly_status = 'verified'
+                elif name_match or dob_match:
+                    # Partial match — flag for manual review
+                    player.prembly_status = 'mismatch'
+                else:
+                    player.prembly_status = 'mismatch'
+
                 notes = (
                     f"Prembly IPRS {'[LIVE]' if not result.is_simulation else '[SANDBOX]'}: "
                     f"Name: {result.full_name}, "
                     f"DOB: {result.date_of_birth}, "
                     f"Age: {result.age}, "
                     f"Gender: {result.gender}. "
-                    f"Ref: {result.reference_number}"
+                    f"Ref: {result.reference_number}. "
+                    f"Name match: {name_match}, DOB match: {dob_match}."
                 )
-                player.prembly_status     = 'verified'
-                player.prembly_reference  = result.reference_number or f"prembly-{national_id}"
-                player.prembly_notes      = notes
-                player.prembly_checked_at = timezone.now()
+                player.prembly_reference     = result.reference_number or f"prembly-{national_id}"
+                player.prembly_verified_name = result.full_name
+                player.prembly_notes         = notes
+                player.prembly_checked_at    = timezone.now()
                 player.save(update_fields=[
-                    'prembly_status', 'prembly_reference',
+                    'prembly_status', 'prembly_reference', 'prembly_verified_name',
                     'prembly_notes', 'prembly_checked_at',
                 ])
                 if result.photo:
                     try:
                         from teams.utils import save_base64_photo
-                        save_base64_photo(player, result.photo)
-                        player.save(update_fields=['iprs_photo'])
+                        photo_file = save_base64_photo(result.photo, f"prembly_{national_id}")
+                        if photo_file:
+                            player.iprs_photo = photo_file
+                            player.save(update_fields=['iprs_photo'])
                     except Exception:
                         pass
-                messages.success(
-                    request,
-                    f'✅ Prembly IPRS — {result.full_name}, DOB {result.date_of_birth}, Age {result.age}.'
-                )
+
+                if player.prembly_status == 'verified':
+                    messages.success(
+                        request,
+                        f'✅ Prembly IPRS verified — {result.full_name}, DOB {result.date_of_birth}.'
+                    )
+                else:
+                    messages.warning(
+                        request,
+                        f'⚠️ Prembly returned {result.full_name} / {result.date_of_birth} — '
+                        f'does not fully match registered details. Manual review required.'
+                    )
+
             elif result.success and not result.person_found:
                 player.prembly_status     = 'failed'
                 player.prembly_reference  = f"prembly-{national_id}"
@@ -1051,12 +1080,13 @@ def prembly_verify_county_player(request, player_pk):
                 messages.error(request, f'❌ Prembly check failed: {result.error_message}')
 
         elif action == 'reset':
-            player.prembly_status     = 'not_checked'
-            player.prembly_reference  = ''
-            player.prembly_notes      = ''
-            player.prembly_checked_at = None
+            player.prembly_status        = 'not_checked'
+            player.prembly_reference     = ''
+            player.prembly_verified_name = ''
+            player.prembly_notes         = ''
+            player.prembly_checked_at    = None
             player.save(update_fields=[
-                'prembly_status', 'prembly_reference',
+                'prembly_status', 'prembly_reference', 'prembly_verified_name',
                 'prembly_notes', 'prembly_checked_at',
             ])
             messages.info(request, f'🔄 Prembly IPRS cleared for {player.first_name} {player.last_name}.')

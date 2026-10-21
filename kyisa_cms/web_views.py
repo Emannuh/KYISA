@@ -5735,56 +5735,12 @@ def verify_county_player_view(request, player_pk):
         from admin_dashboard.models import ActivityLog
 
         if action == 'prembly_check':
-            # Run Prembly IPRS check on the player's National ID
-            from teams.prembly_service import PremblyService
-            svc = PremblyService()
-            result = svc.lookup_by_national_id(player.national_id_number)
-            if result.success and result.person_found:
-                # Check name/DOB match
-                iprs_name = result.full_name.upper()
-                reg_name  = f"{player.first_name} {player.last_name}".upper()
-                dob_match = (result.date_of_birth == player.date_of_birth) if result.date_of_birth else False
-                name_match = any(
-                    part in iprs_name for part in reg_name.split() if len(part) > 2
-                )
-                if dob_match and name_match:
-                    player.prembly_status = 'verified'
-                    msg = f'✅ Prembly IPRS verified: {result.full_name}, DOB {result.date_of_birth}'
-                    messages.success(request, msg)
-                else:
-                    player.prembly_status = 'mismatch'
-                    msg = (
-                        f'⚠️ Prembly returned: {result.full_name}, DOB {result.date_of_birth}. '
-                        f'Does not match registered: {player.first_name} {player.last_name}, DOB {player.date_of_birth}.'
-                    )
-                    messages.warning(request, msg)
-                player.prembly_reference    = result.reference_number
-                player.prembly_verified_name = result.full_name
-                player.prembly_checked_at   = timezone.now()
-                # Save IPRS photo if returned
-                if result.photo:
-                    from teams.utils import save_base64_photo
-                    try:
-                        photo_file = save_base64_photo(result.photo, f"prembly_{player.national_id_number}")
-                        if photo_file:
-                            player.iprs_photo = photo_file
-                    except Exception:
-                        pass
-            else:
-                player.prembly_status = 'failed'
-                player.prembly_checked_at = timezone.now()
-                messages.error(request, f'❌ Prembly IPRS failed: {result.error_message}')
-            player.save(update_fields=[
-                'prembly_status', 'prembly_reference', 'prembly_verified_name',
-                'prembly_checked_at', 'iprs_photo',
-            ])
-            ActivityLog.objects.create(
-                action='PLAYER_UPDATE',
-                description=f'Prembly IPRS check {player.prembly_status} for {player.first_name} {player.last_name} '
-                            f'(ID: {player.national_id_number})',
-                user=request.user,
+            # Delegate to the dedicated prembly view to avoid duplicate logic
+            from django.urls import reverse
+            return redirect(
+                reverse('prembly_verify_county_player', kwargs={'player_pk': player.pk})
+                + '?next=' + request.path
             )
-            return redirect('verify_county_player', player_pk=player.pk)
 
         if action == 'huduma_verify':
             player.huduma_status = 'verified'

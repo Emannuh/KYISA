@@ -22,14 +22,16 @@ class TeamsConfig(AppConfig):
             from django.db import connection
 
             columns_to_add = [
-                ('verifisha_report_id',  "VARCHAR(255) NOT NULL DEFAULT ''"),
-                ('verifisha_status',     "VARCHAR(20)  NOT NULL DEFAULT 'not_checked'"),
-                ('verifisha_notes',      "TEXT         NOT NULL DEFAULT ''"),
-                ('verifisha_checked_at', "TIMESTAMPTZ"),
-                ('prembly_status',       "VARCHAR(20)  NOT NULL DEFAULT 'not_checked'"),
-                ('prembly_reference',    "VARCHAR(255) NOT NULL DEFAULT ''"),
-                ('prembly_notes',        "TEXT         NOT NULL DEFAULT ''"),
-                ('prembly_checked_at',   "TIMESTAMPTZ"),
+                ('verifisha_report_id',   "VARCHAR(255) NOT NULL DEFAULT ''"),
+                ('verifisha_status',      "VARCHAR(20)  NOT NULL DEFAULT 'not_checked'"),
+                ('verifisha_notes',       "TEXT         NOT NULL DEFAULT ''"),
+                ('verifisha_checked_at',  "TIMESTAMPTZ"),
+                ('prembly_status',        "VARCHAR(20)  NOT NULL DEFAULT 'not_checked'"),
+                ('prembly_reference',     "VARCHAR(255) NOT NULL DEFAULT ''"),
+                ('prembly_verified_name', "VARCHAR(200) NOT NULL DEFAULT ''"),
+                ('prembly_notes',         "TEXT         NOT NULL DEFAULT ''"),
+                ('prembly_checked_at',    "TIMESTAMPTZ"),
+                ('is_age_eligible',       "BOOLEAN NOT NULL DEFAULT TRUE"),
             ]
 
             with connection.cursor() as cursor:
