@@ -100,12 +100,12 @@ def send_credentials_email(user, temporary_password, role_label):
     from datetime import timedelta
     from accounts.models import LoginToken
 
-    # Generate a single-use magic login token (valid 72 hours)
+    # Generate a single-use magic login token (valid 7 days — gives time for treasurer approval)
     raw_token = secrets.token_urlsafe(48)
     LoginToken.objects.create(
         user=user,
         token=raw_token,
-        expires_at=timezone.now() + timedelta(hours=72),
+        expires_at=timezone.now() + timedelta(days=7),
     )
 
     site_url = "https://kyisa.org"
@@ -124,7 +124,7 @@ def send_credentials_email(user, temporary_password, role_label):
         f'Login URL: {login_url}\n\n'
         f'OR — click this magic link to log in directly (no password needed):\n'
         f'{magic_url}\n\n'
-        f'The magic link expires in 72 hours and can only be used once.\n'
+        f'The magic link expires in 7 days and can only be used once.\n'
         f'Please change your password immediately after first login.\n\n'
         f'KYISA IT Team\n'
         f'it@kyisa.org'
@@ -243,7 +243,7 @@ def send_credentials_email(user, temporary_password, role_label):
     email = EmailMultiAlternatives(
         subject,
         text_content,
-        getattr(django_settings, 'DEFAULT_FROM_EMAIL', 'KYISA IT Team <it@kyisa.org>'),
+        getattr(django_settings, 'DEFAULT_FROM_EMAIL', 'KYISA Administration <it@kyisa.org>'),
         [user.email],
     )
     email.attach_alternative(html_content, "text/html")
@@ -1031,12 +1031,11 @@ def magic_login_view(request, token):
     user.backend = 'django.contrib.auth.backends.ModelBackend'
     login(request, user)
 
-    messages.success(request, f'Welcome, {user.first_name}! You have been logged in via your magic link.')
-
+    # First-time users → go straight to password change, no detour
     if getattr(user, 'must_change_password', False):
-        messages.warning(request, 'Please set a new password to continue.')
         return redirect('force_change_password')
 
+    messages.success(request, f'Welcome back, {user.first_name}! You are now logged in.')
     return redirect('dashboard')
 
 
