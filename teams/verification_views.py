@@ -1013,33 +1013,31 @@ def prembly_verify_county_player(request, player_pk):
             result = svc.lookup_by_national_id(national_id)
 
             if result.success and result.person_found:
-                # Name/DOB match
+                # Name/DOB match check
                 iprs_name  = result.full_name.upper()
                 reg_name   = f"{player.first_name} {player.last_name}".upper()
-                name_match = any(part in iprs_name for part in reg_name.split() if len(part) > 2)
-                dob_match  = (result.date_of_birth == player.date_of_birth) if result.date_of_birth else False
+                name_match = any(
+                    part in iprs_name for part in reg_name.split() if len(part) > 2
+                )
+                dob_match = (result.date_of_birth == player.date_of_birth) if result.date_of_birth else False
 
-                player.prembly_status = 'verified' if (name_match and dob_match) else 'mismatch'
-
-                # Build comprehensive notes with all returned data
-                extras = []
-                if result.serial_number:  extras.append(f"Serial: {result.serial_number}")
-                if result.date_of_issue:  extras.append(f"Issued: {result.date_of_issue}")
-                if result.place_of_birth: extras.append(f"Born: {result.place_of_birth}")
-                extra_str = " | ".join(extras)
+                if name_match and dob_match:
+                    player.prembly_status = 'verified'
+                elif name_match or dob_match:
+                    # Partial match — flag for manual review
+                    player.prembly_status = 'mismatch'
+                else:
+                    player.prembly_status = 'mismatch'
 
                 notes = (
                     f"Prembly IPRS {'[LIVE]' if not result.is_simulation else '[SANDBOX]'}: "
-                    f"Name: {result.full_name} | "
-                    f"DOB: {result.date_of_birth} | "
-                    f"Age: {result.age} | "
-                    f"Gender: {result.gender} | "
-                    f"Ref: {result.reference_number}"
+                    f"Name: {result.full_name}, "
+                    f"DOB: {result.date_of_birth}, "
+                    f"Age: {result.age}, "
+                    f"Gender: {result.gender}. "
+                    f"Ref: {result.reference_number}. "
+                    f"Name match: {name_match}, DOB match: {dob_match}."
                 )
-                if extra_str:
-                    notes += f" | {extra_str}"
-                notes += f" | Name match: {name_match}, DOB match: {dob_match}. Photo: {'yes' if result.photo else 'no'}."
-
                 player.prembly_reference     = result.reference_number or f"prembly-{national_id}"
                 player.prembly_verified_name = result.full_name
                 player.prembly_notes         = notes
