@@ -18,54 +18,53 @@
     <!-- ── STEP 1: National ID Lookup ─────────────────────────────────── -->
     <div style="margin-bottom:1.75rem;padding:1.1rem 1.25rem;background:#f0f7ff;border:1px solid #bfdbfe;border-radius:12px">
       <h3 style="margin:0 0 .5rem;font-size:.95rem;font-weight:800;color:#1e40af">
-        <i class="bi bi-search"></i> Step 1 — Look up by National ID
+        <i class="bi bi-search"></i> Step 1 — IPRS Lookup
       </h3>
       <p style="margin:0 0 .85rem;font-size:.82rem;color:#374151;line-height:1.5">
-        Enter the National ID number. Optionally enter the <strong>serial number</strong> (on the back of the ID card) to also retrieve the government photo.
+        Enter the National ID number. The system checks all available IPRS records and returns the full government data including photo where available.
       </p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.5rem">
-        <div>
-          <label style="font-size:.74rem;font-weight:700;display:block;margin-bottom:.25rem;color:#1e40af">National ID *</label>
+      <div style="display:flex;gap:.5rem;align-items:flex-end">
+        <div style="flex:1">
+          <label style="font-size:.74rem;font-weight:700;display:block;margin-bottom:.25rem;color:#1e40af">National ID Number</label>
           <input type="text" id="lookup-nid"
                  placeholder="e.g. 12345678"
                  maxlength="8"
                  style="width:100%;padding:.52rem .8rem;border:1.5px solid #93c5fd;border-radius:9px;font-size:.9rem;font-family:monospace;box-sizing:border-box">
         </div>
-        <div>
-          <label style="font-size:.74rem;font-weight:700;display:block;margin-bottom:.25rem;color:#64748b">Serial Number <span style="font-weight:400;font-size:.7rem">(back of card)</span></label>
-          <input type="text" id="lookup-serial"
-                 placeholder="e.g. AA1234567"
-                 maxlength="20"
-                 style="width:100%;padding:.52rem .8rem;border:1.5px solid #e2e8f0;border-radius:9px;font-size:.9rem;font-family:monospace;box-sizing:border-box">
-        </div>
+        <button type="button" id="lookup-btn" onclick="runIPRSLookup()"
+                style="padding:.52rem 1.25rem;background:#1d4ed8;color:#fff;border:none;border-radius:9px;font-size:.86rem;font-weight:700;cursor:pointer;white-space:nowrap">
+          <span id="lookup-btn-text"><i class="bi bi-search"></i> Lookup</span>
+        </button>
       </div>
-      <button type="button" id="lookup-btn" onclick="runIPRSLookup()"
-              style="padding:.52rem 1.2rem;background:#1d4ed8;color:#fff;border:none;border-radius:9px;font-size:.86rem;font-weight:700;cursor:pointer">
-        <span id="lookup-btn-text"><i class="bi bi-search"></i> Lookup</span>
-      </button>
       <div id="lookup-error" style="display:none;margin-top:.4rem;font-size:.78rem;color:#dc2626;font-weight:600"></div>
 
       <!-- Result box -->
-      <div id="lookup-result" style="display:none;margin-top:1rem;padding:.9rem 1rem;background:#fff;border:1.5px solid #6ee7b7;border-radius:10px">
-        <div style="display:flex;align-items:center;gap:.85rem">
-          <div id="iprs-photo-box" style="display:none;flex-shrink:0">
+      <div id="lookup-result" style="display:none;margin-top:1rem;padding:1rem;background:#fff;border:1.5px solid #6ee7b7;border-radius:10px">
+        <div style="display:flex;align-items:flex-start;gap:1rem">
+          <!-- IPRS Photo -->
+          <div id="iprs-photo-box" style="display:none;flex-shrink:0;text-align:center">
             <img id="iprs-photo" src="" alt="IPRS Photo"
-                 style="width:64px;height:80px;object-fit:cover;border-radius:8px;border:2px solid #34d399">
-            <div style="font-size:.65rem;text-align:center;color:#059669;font-weight:700;margin-top:.2rem">IPRS Photo</div>
+                 style="width:72px;height:90px;object-fit:cover;border-radius:8px;border:2px solid #34d399">
+            <div style="font-size:.62rem;color:#059669;font-weight:700;margin-top:.2rem">GOVT PHOTO</div>
           </div>
+          <!-- Data grid -->
           <div style="flex:1">
-            <div style="font-size:.78rem;font-weight:700;color:#065f46;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.04em">✅ IPRS Record Found</div>
-            <div style="display:grid;grid-template-columns:110px 1fr;gap:.3rem .7rem;font-size:.84rem">
-              <span style="color:#6b7280">Official Name</span>
+            <div style="font-size:.75rem;font-weight:700;color:#065f46;margin-bottom:.6rem;text-transform:uppercase;letter-spacing:.05em">✅ IPRS Record Found</div>
+            <div style="display:grid;grid-template-columns:120px 1fr;gap:.28rem .65rem;font-size:.83rem">
+              <span style="color:#6b7280;font-weight:500">Official Name</span>
               <strong id="r-name" style="color:#111"></strong>
-              <span style="color:#6b7280">Date of Birth</span>
+              <span style="color:#6b7280;font-weight:500">Date of Birth</span>
               <span id="r-dob"></span>
-              <span style="color:#6b7280">Age</span>
+              <span style="color:#6b7280;font-weight:500">Age</span>
               <span id="r-age"></span>
-              <span style="color:#6b7280">Gender</span>
+              <span style="color:#6b7280;font-weight:500">Gender</span>
               <span id="r-gender"></span>
-              <span style="color:#6b7280" id="r-serial-label" style="display:none">Serial No.</span>
-              <span id="r-serial" style="font-family:monospace"></span>
+              <span id="r-serial-lbl" style="color:#6b7280;font-weight:500;display:none">Serial No.</span>
+              <span id="r-serial" style="font-family:monospace;font-size:.8rem"></span>
+              <span id="r-doi-lbl" style="color:#6b7280;font-weight:500;display:none">Date of Issue</span>
+              <span id="r-doi"></span>
+              <span id="r-pob-lbl" style="color:#6b7280;font-weight:500;display:none">Place of Birth</span>
+              <span id="r-pob"></span>
             </div>
             <button type="button" onclick="applyIPRSData()"
                     style="margin-top:.75rem;padding:.42rem 1rem;background:#059669;color:#fff;border:none;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer">
@@ -183,13 +182,12 @@
 
 {% block extra_js %}
 <script>
-const IPRS_URL  = "{% url 'api_iprs_lookup' %}";
-const CSRF      = "{{ csrf_token }}";
-let iprsData    = null;
+const IPRS_URL = "{% url 'api_iprs_lookup' %}";
+const CSRF     = "{{ csrf_token }}";
+let iprsData   = null;
 
 function runIPRSLookup() {
   const nid    = document.getElementById('lookup-nid').value.trim();
-  const serial = document.getElementById('lookup-serial') ? document.getElementById('lookup-serial').value.trim() : '';
   const errBox = document.getElementById('lookup-error');
   const btn    = document.getElementById('lookup-btn-text');
   const result = document.getElementById('lookup-result');
@@ -203,16 +201,13 @@ function runIPRSLookup() {
     return;
   }
 
-  btn.innerHTML = '<span style="opacity:.6">Checking…</span>';
+  btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Checking IPRS…';
   document.getElementById('lookup-btn').disabled = true;
-
-  let body = 'national_id=' + encodeURIComponent(nid);
-  if (serial) body += '&serial_number=' + encodeURIComponent(serial);
 
   fetch(IPRS_URL, {
     method: 'POST',
     headers: {'X-CSRFToken': CSRF, 'Content-Type': 'application/x-www-form-urlencoded'},
-    body: body,
+    body: 'national_id=' + encodeURIComponent(nid),
   })
   .then(r => r.json())
   .then(data => {
@@ -227,37 +222,41 @@ function runIPRSLookup() {
 
     iprsData = data;
 
-    // Populate result box
-    document.getElementById('r-name').textContent   = data.full_name || (data.first_name + ' ' + data.last_name);
+    // Core fields
+    document.getElementById('r-name').textContent   = data.full_name || ((data.first_name||'') + ' ' + (data.last_name||''));
     document.getElementById('r-dob').textContent    = data.date_of_birth || '—';
     document.getElementById('r-age').textContent    = data.age ? data.age + ' years' : '—';
     document.getElementById('r-gender').textContent = data.gender || '—';
 
-    // Show serial number if returned
-    if (data.serial_number) {
-      document.getElementById('r-serial').textContent = data.serial_number;
-      document.getElementById('r-serial-label').style.display = '';
-    }
+    // Optional extra fields
+    const show = (lbl, val, valEl) => {
+      const l = document.getElementById(lbl);
+      const v = document.getElementById(valEl);
+      if (l && v) { l.style.display = val ? '' : 'none'; v.textContent = val || ''; }
+    };
+    show('r-serial-lbl', data.serial_number, 'r-serial');
+    show('r-doi-lbl',    data.date_of_issue,  'r-doi');
+    show('r-pob-lbl',    data.place_of_birth, 'r-pob');
 
-    // Show IPRS photo if available
+    // Government photo
+    const photoBox = document.getElementById('iprs-photo-box');
     if (data.photo) {
-      const imgEl = document.getElementById('iprs-photo');
-      imgEl.src = 'data:image/jpeg;base64,' + data.photo;
-      document.getElementById('iprs-photo-box').style.display = 'block';
+      document.getElementById('iprs-photo').src = 'data:image/jpeg;base64,' + data.photo;
+      photoBox.style.display = 'block';
     } else {
-      document.getElementById('iprs-photo-box').style.display = 'none';
+      photoBox.style.display = 'none';
     }
 
     result.style.display = 'block';
 
-    // Pre-fill National ID field
+    // Pre-fill national ID
     const nidField = document.getElementById('{{ form.national_id_number.id_for_label }}');
     if (nidField) nidField.value = nid;
   })
   .catch(() => {
     btn.innerHTML = '<i class="bi bi-search"></i> Lookup';
     document.getElementById('lookup-btn').disabled = false;
-    errBox.textContent = 'Lookup failed. Please try again or fill the form manually.';
+    errBox.textContent = 'Lookup failed. Try again or fill the form manually.';
     errBox.style.display = 'block';
   });
 }
@@ -265,7 +264,6 @@ function runIPRSLookup() {
 function applyIPRSData() {
   if (!iprsData) return;
 
-  // Split full name into first/last
   const nameParts = (iprsData.full_name || '').trim().split(/\s+/);
   const firstName = nameParts[0] || iprsData.first_name || '';
   const lastName  = nameParts.slice(1).join(' ') || iprsData.last_name || '';
