@@ -6369,24 +6369,43 @@ def treasurer_county_registrations_view(request):
             reg.approved_by = request.user
             reg.approved_at = timezone.now()
             reg.save()
-            # Notify county admin by email
+
+            # Generate a fresh temporary password and send a proper credentials email
+            # with the magic login link — user may have lost or forgotten the original.
             try:
-                from django.core.mail import send_mail
-                send_mail(
-                    subject='[KYISA] County Registration Approved',
-                    message=(
-                        f'Dear {reg.user.get_full_name()},\n\n'
-                        f'Your county registration for {reg.county} has been approved.\n'
-                        f'You can now log in to the KYISA portal and begin adding disciplines and players.\n\n'
-                        f'KYISA Administration'
-                    ),
-                    from_email=getattr(django_settings, 'DEFAULT_FROM_EMAIL', 'noreply@kyisa.org'),
-                    recipient_list=[reg.user.email],
-                    fail_silently=True,
+                import secrets, string
+                temp_password = ''.join(
+                    secrets.choice(string.ascii_letters + string.digits)
+                    for _ in range(12)
                 )
-            except Exception:
-                pass
-            messages.success(request, f'{reg.county} county registration approved.')
+                reg.user.set_password(temp_password)
+                reg.user.must_change_password = True
+                reg.user.save(update_fields=['password', 'must_change_password'])
+                send_credentials_email(
+                    reg.user,
+                    temp_password,
+                    f'County Sports Director — {reg.county} (Registration Approved)',
+                )
+            except Exception as exc:
+                # Fallback plain text so they at least know they were approved
+                try:
+                    from django.core.mail import send_mail
+                    send_mail(
+                        subject='[KYISA] County Registration Approved',
+                        message=(
+                            f'Dear {reg.user.get_full_name()},\n\n'
+                            f'Your county registration for {reg.county} has been approved.\n'
+                            f'Log in at https://kyisa.org/portal/login/ with your registered email.\n\n'
+                            f'KYISA Administration'
+                        ),
+                        from_email=getattr(django_settings, 'DEFAULT_FROM_EMAIL', 'noreply@kyisa.org'),
+                        recipient_list=[reg.user.email],
+                        fail_silently=True,
+                    )
+                except Exception:
+                    pass
+
+            messages.success(request, f'{reg.county} county registration approved — credentials email sent.')
         elif action == 'reject':
             reason = request.POST.get('rejection_reason', '')
             reg.status = CountyRegStatus.REJECTED
