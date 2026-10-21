@@ -7412,6 +7412,204 @@ def sg_dashboard_view(request):
     })
 
 
+@role_required('secretary_general', 'admin')
+def sg_system_overview_view(request):
+    """
+    SG System Overview — all role portals and key functions in one read-only page.
+    Grouped by role. Each card links directly to the respective portal page.
+    Allows the SG (and admin) to navigate and test every portal for oversight.
+    """
+    from django.db.models import Count
+    role_counts = dict(
+        User.objects.values_list('role').annotate(c=Count('id'))
+    )
+
+    def rc(role):
+        return role_counts.get(role, 0)
+
+    sections = [
+        {
+            'title': 'Organising Secretary',
+            'icon': 'bi bi-diagram-3-fill',
+            'color': '#6d28d9',
+            'bg': '#f5f3ff',
+            'count': rc('competition_manager'),
+            'role': 'competition_manager',
+            'description': 'Competition structure, player verification, county registrations, venues, fixtures.',
+            'cards': [
+                {'icon': 'bi bi-speedometer2',    'label': 'CM Dashboard',          'desc': 'Main competition management hub.',               'url': 'cm_dashboard',                    'badge': 'Entry Portal'},
+                {'icon': 'bi bi-trophy-fill',      'label': 'Competitions',          'desc': 'Create and manage competition structure.',       'url': 'competitions_list',                'badge': 'Manage'},
+                {'icon': 'bi bi-geo-alt-fill',     'label': 'Venues',                'desc': 'Allocate venues across competitions.',           'url': 'cm_venues',                        'badge': 'Manage'},
+                {'icon': 'bi bi-person-vcard-fill','label': 'Player Verification',   'desc': 'County player IPRS and final approval queue.',   'url': 'county_player_verification_list',  'badge': 'Action'},
+                {'icon': 'bi bi-building-check',   'label': 'County Registrations',  'desc': 'Review county registration requests.',           'url': 'pending_teams',                    'badge': 'Action'},
+                {'icon': 'bi bi-cloud-upload',     'label': 'Upload Players',        'desc': 'Bulk upload verified player records.',           'url': 'cm_upload_players',                'badge': 'Action'},
+            ],
+        },
+        {
+            'title': 'Verification Officer',
+            'icon': 'bi bi-patch-check-fill',
+            'color': '#0f766e',
+            'bg': '#f0fdfa',
+            'count': rc('verification_officer'),
+            'role': 'verification_officer',
+            'description': 'County player eligibility checks — IPRS, age, league clearance.',
+            'cards': [
+                {'icon': 'bi bi-geo-alt-fill',    'label': 'Registered Counties',    'desc': 'All approved counties entering verification.',   'url': 'vo_registered_counties',          'badge': 'Entry Portal'},
+                {'icon': 'bi bi-person-vcard',    'label': 'Player Verification Queue','desc': 'All county player verification records.',       'url': 'county_player_verification_list', 'badge': 'Action'},
+            ],
+        },
+        {
+            'title': 'Sport Coordinators',
+            'icon': 'bi bi-person-gear',
+            'color': '#059669',
+            'bg': '#ecfdf5',
+            'count': rc('coordinator') + rc('soccer_coordinator') + rc('handball_coordinator') + rc('basketball_coordinator') + rc('volleyball_coordinator'),
+            'role': 'coordinator',
+            'description': 'Discipline-level fixtures, appointments, match reports, venues, squads.',
+            'cards': [
+                {'icon': 'bi bi-clipboard2-pulse', 'label': 'Coordinator Dashboard',  'desc': 'Competition control for coordinators.',          'url': 'coordinator_dashboard',           'badge': 'Entry Portal'},
+                {'icon': 'bi bi-trophy',           'label': 'Competitions',           'desc': 'Manage competitions per discipline.',             'url': 'coordinator_competitions',        'badge': 'Manage'},
+                {'icon': 'bi bi-calendar-event',   'label': 'Appointments',           'desc': 'Assign referees to fixtures.',                   'url': 'coordinator_appointments',        'badge': 'Action'},
+                {'icon': 'bi bi-clipboard-data',   'label': 'Match Reports',          'desc': 'Review submitted reports.',                      'url': 'coordinator_match_reports',       'badge': 'Action'},
+                {'icon': 'bi bi-people',           'label': 'Match Day Squads',       'desc': 'Approve submitted team squads.',                 'url': 'coordinator_squads',              'badge': 'Action'},
+                {'icon': 'bi bi-geo-alt',          'label': 'Venues',                 'desc': 'Maintain venue allocations.',                    'url': 'coordinator_venues',              'badge': 'Manage'},
+            ],
+        },
+        {
+            'title': 'Treasurer',
+            'icon': 'bi bi-cash-stack',
+            'color': '#b45309',
+            'bg': '#fffbeb',
+            'count': rc('treasurer'),
+            'role': 'treasurer',
+            'description': 'County payment approvals, registration fees, financial oversight.',
+            'cards': [
+                {'icon': 'bi bi-speedometer2',       'label': 'Treasurer Dashboard',   'desc': 'Finance overview and treasury workload.',       'url': 'treasurer_dashboard',             'badge': 'Entry Portal'},
+                {'icon': 'bi bi-credit-card-2-front','label': 'County Payments',       'desc': 'Review and confirm county payments.',           'url': 'treasurer_county_payments',       'badge': 'Action'},
+                {'icon': 'bi bi-building-check',     'label': 'County Registrations',  'desc': 'Approve or reject county registration requests.','url': 'treasurer_county_registrations',  'badge': 'Action'},
+            ],
+        },
+        {
+            'title': 'Referee',
+            'icon': 'bi bi-whistle-fill',
+            'color': '#c2410c',
+            'bg': '#fff7ed',
+            'count': rc('referee'),
+            'role': 'referee',
+            'description': 'Match officiating workspace — appointments, reports, squads.',
+            'cards': [
+                {'icon': 'bi bi-speedometer2',    'label': 'Referee Dashboard',      'desc': 'Current appointments and match reports.',       'url': 'referee_portal',                  'badge': 'Entry Portal'},
+                {'icon': 'bi bi-person-badge',    'label': 'Edit Profile',           'desc': 'Update referee profile and availability.',      'url': 'referee_edit_profile',            'badge': 'Profile'},
+                {'icon': 'bi bi-clipboard-check', 'label': 'Squad Approvals',        'desc': 'Approve submitted team squads.',                'url': 'squad_review_list',               'badge': 'Action'},
+            ],
+        },
+        {
+            'title': 'Team Manager',
+            'icon': 'bi bi-people-fill',
+            'color': '#1d4ed8',
+            'bg': '#eff6ff',
+            'count': rc('team_manager'),
+            'role': 'team_manager',
+            'description': 'Squad submissions, sanctions tracking, appeals filing.',
+            'cards': [
+                {'icon': 'bi bi-speedometer2',        'label': 'Manager Dashboard',    'desc': 'Team operations and match-day squads.',        'url': 'team_manager_dashboard',          'badge': 'Entry Portal'},
+                {'icon': 'bi bi-exclamation-triangle','label': 'Sanctions',            'desc': 'Track disciplinary sanctions.',                 'url': 'team_manager_sanctions',          'badge': 'Read Only'},
+                {'icon': 'bi bi-briefcase',           'label': 'File Appeal',          'desc': 'Submit and monitor team appeals.',             'url': 'team_manager_file_appeal',        'badge': 'Action'},
+            ],
+        },
+        {
+            'title': 'County Sports Director',
+            'icon': 'bi bi-building-fill',
+            'color': '#166534',
+            'bg': '#f0fdf4',
+            'count': rc('county_sports_admin'),
+            'role': 'county_sports_admin',
+            'description': 'County registration, disciplines, player squads, delegation, KICOSCA.',
+            'cards': [
+                {'icon': 'bi bi-speedometer2',  'label': 'County Dashboard',         'desc': 'KYISA county portal — registration and squads.','url': 'county_admin_dashboard',          'badge': 'Entry Portal'},
+                {'icon': 'bi bi-credit-card',   'label': 'Payment',                  'desc': 'Check and submit registration payment.',        'url': 'county_admin_payment',            'badge': 'Action'},
+                {'icon': 'bi bi-trophy',        'label': 'Disciplines',              'desc': 'Register county disciplines and players.',       'url': 'county_admin_add_discipline',     'badge': 'Manage'},
+                {'icon': 'bi bi-patch-check',   'label': 'Verification Status',      'desc': 'Track player and delegation readiness.',        'url': 'county_admin_verification',       'badge': 'Read Only'},
+                {'icon': 'bi bi-award-fill',    'label': 'KICOSCA Dashboard',        'desc': 'Kenya Inter-County Sports & Cultural Games.',   'url': 'kicosca_dashboard',               'badge': 'KICOSCA'},
+                {'icon': 'bi bi-patch-check',   'label': 'KICOSCA Verification',     'desc': 'Player KRA employment verification queue.',     'url': 'kicosca_verification',            'badge': 'KICOSCA'},
+            ],
+        },
+        {
+            'title': 'Jury Chair',
+            'icon': 'bi bi-bank-fill',
+            'color': '#475569',
+            'bg': '#f8fafc',
+            'count': rc('jury_chair'),
+            'role': 'jury_chair',
+            'description': 'Appeals hearings, disciplinary records, data oversight.',
+            'cards': [
+                {'icon': 'bi bi-speedometer2',        'label': 'Jury Dashboard',       'desc': 'Jury control panel and active appeals.',       'url': 'jury_dashboard',                  'badge': 'Entry Portal'},
+                {'icon': 'bi bi-briefcase-fill',      'label': 'All Appeals',          'desc': 'Review all appeals and outcomes.',             'url': 'appeals_list',                    'badge': 'Read Only'},
+                {'icon': 'bi bi-people',              'label': 'Teams Data',           'desc': 'Team records for appeal context.',             'url': 'jury_teams',                      'badge': 'Read Only'},
+                {'icon': 'bi bi-person-lines-fill',   'label': 'Approved Players',     'desc': 'Player eligibility and approval records.',     'url': 'jury_players',                    'badge': 'Read Only'},
+                {'icon': 'bi bi-exclamation-octagon', 'label': 'Disciplinary',         'desc': 'Disciplinary events and sanctions context.',   'url': 'jury_disciplinary',               'badge': 'Read Only'},
+            ],
+        },
+        {
+            'title': 'Media Manager',
+            'icon': 'bi bi-camera-reels-fill',
+            'color': '#7e22ce',
+            'bg': '#fdf4ff',
+            'count': rc('media_manager'),
+            'role': 'media_manager',
+            'description': 'News articles, photo galleries, video publishing.',
+            'cards': [
+                {'icon': 'bi bi-speedometer2', 'label': 'Media Dashboard',           'desc': 'Content overview and publishing queue.',        'url': 'media_dashboard',                 'badge': 'Entry Portal'},
+                {'icon': 'bi bi-newspaper',    'label': 'Articles',                  'desc': 'Create and publish news stories.',              'url': 'media_article_list',              'badge': 'Manage'},
+                {'icon': 'bi bi-images',       'label': 'Photo Albums',              'desc': 'Upload galleries and event photos.',            'url': 'media_album_list',                'badge': 'Manage'},
+                {'icon': 'bi bi-play-circle',  'label': 'Videos',                    'desc': 'Upload and publish video content.',             'url': 'media_video_list',                'badge': 'Manage'},
+            ],
+        },
+        {
+            'title': 'Scout',
+            'icon': 'bi bi-binoculars-fill',
+            'color': '#0369a1',
+            'bg': '#f0f9ff',
+            'count': rc('scout'),
+            'role': 'scout',
+            'description': 'Browse verified players and maintain scouting shortlists.',
+            'cards': [
+                {'icon': 'bi bi-speedometer2', 'label': 'Scout Dashboard',           'desc': 'Scouting hub and activity overview.',           'url': 'scout_dashboard',                 'badge': 'Entry Portal'},
+                {'icon': 'bi bi-search',       'label': 'Browse Players',            'desc': 'Discover and filter verified players.',         'url': 'scout_players',                   'badge': 'Read Only'},
+                {'icon': 'bi bi-star-fill',    'label': 'My Shortlist',              'desc': 'Manage shortlisted prospects.',                 'url': 'scout_shortlist',                 'badge': 'Manage'},
+            ],
+        },
+        {
+            'title': 'CEC Sports Member',
+            'icon': 'bi bi-eye-fill',
+            'color': '#78716c',
+            'bg': '#fafaf9',
+            'count': rc('cec_sports'),
+            'role': 'cec_sports',
+            'description': 'Read-only executive visibility portal for county leadership.',
+            'cards': [
+                {'icon': 'bi bi-speedometer2', 'label': 'CEC Portal',                'desc': 'Executive overview — competitions, players, results.','url': 'cec_sports_portal',            'badge': 'Entry Portal'},
+            ],
+        },
+    ]
+
+    # Badge colours
+    badge_styles = {
+        'Entry Portal': 'background:#eff6ff;color:#1d4ed8',
+        'Manage':       'background:#f0fdf4;color:#166534',
+        'Action':       'background:#dcfce7;color:#15803d',
+        'Read Only':    'background:#f8fafc;color:#475569;border:1px solid #e2e8f0',
+        'KICOSCA':      'background:#f5f3ff;color:#6d28d9',
+        'Profile':      'background:#fff7ed;color:#c2410c',
+        'Audit':        'background:#fffbeb;color:#b45309',
+    }
+
+    return render(request, 'portal/secretary_general/system_overview.html', {
+        'sections': sections,
+        'badge_styles': badge_styles,
+    })
+
+
 @role_required('secretary_general')
 def sg_team_lists_view(request):
     """SG: review uploaded team lists by county and discipline, then approve/lock."""

@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% block title %}System Overview — Secretary General — KYISA{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+  --so-bg:      #f3f4f8;
+  --so-surf:    #ffffff;
+  --so-border:  #e8eaf0;
+  --so-border2: #f0f2f5;
+  --so-ink:     #0f1117;
+  --so-ink2:    #374151;
+  --so-muted:   #6b7280;
+  --so-subtle:  #9ca3af;
+  --so-r:       12px;
+  --so-shadow:  0 1px 3px rgba(0,0,0,.05), 0 2px 8px rgba(0,0,0,.04);
+}
+
+.so-page { background: var(--so-bg); min-height: 100vh; padding: 1.5rem 1.25rem 3rem; }
+
+/* ── Page header ── */
+.so-header {
+  background: #0c0f14;
+  border-radius: 14px;
+  padding: 1.4rem 1.75rem;
+  margin-bottom: 1.5rem;
+  position: relative; overflow: hidden;
+  border: 1px solid rgba(255,255,255,.06);
+}
+.so-header::after {
+  content: ""; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 2px; background: linear-gradient(90deg, #8b5cf6, transparent 55%);
+}
+.so-header-inner { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.so-header h1 { font-family: 'Outfit', sans-serif; font-size: 1.35rem; font-weight: 800; color: #fff; margin: 0 0 .2rem; }
+.so-header p  { font-size: .82rem; color: rgba(255,255,255,.5); margin: 0; }
+.so-back { display: inline-flex; align-items: center; gap: .4rem; padding: .38rem .9rem; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 8px; color: rgba(255,255,255,.75); font-size: .78rem; font-weight: 600; text-decoration: none; transition: background .15s; }
+.so-back:hover { background: rgba(255,255,255,.14); color: #fff; }
+
+/* ── Role filter pills ── */
+.so-filters { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1.5rem; }
+.so-filter { padding: .3rem .8rem; border-radius: 20px; font-size: .75rem; font-weight: 600; border: 1px solid var(--so-border); background: var(--so-surf); color: var(--so-muted); cursor: pointer; text-decoration: none; transition: all .15s; }
+.so-filter:hover, .so-filter.active { background: #0c0f14; color: #fff; border-color: #0c0f14; }
+
+/* ── Section ── */
+.so-section { margin-bottom: 2rem; }
+.so-section-head {
+  display: flex; align-items: center; gap: .75rem;
+  margin-bottom: .9rem;
+  padding: .75rem 1rem;
+  background: var(--so-surf);
+  border: 1px solid var(--so-border);
+  border-radius: var(--so-r);
+  box-shadow: var(--so-shadow);
+}
+.so-section-icon {
+  width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 1rem;
+}
+.so-section-meta { flex: 1; }
+.so-section-meta h2 { font-family: 'Outfit', sans-serif; font-size: .95rem; font-weight: 800; color: var(--so-ink); margin: 0; }
+.so-section-meta p  { font-size: .76rem; color: var(--so-muted); margin: .1rem 0 0; }
+.so-section-count { font-size: .72rem; font-weight: 700; padding: .2rem .65rem; border-radius: 20px; background: var(--so-bg); color: var(--so-muted); border: 1px solid var(--so-border); white-space: nowrap; }
+.so-sep { flex: 1; height: 1px; background: var(--so-border); }
+
+/* ── Card grid ── */
+.so-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: .65rem; }
+
+/* ── Portal card ── */
+.so-card {
+  background: var(--so-surf);
+  border: 1px solid var(--so-border);
+  border-radius: var(--so-r);
+  padding: 1rem 1.1rem;
+  text-decoration: none; color: var(--so-ink);
+  display: flex; flex-direction: column; gap: .55rem;
+  box-shadow: var(--so-shadow);
+  transition: box-shadow .18s, transform .18s, border-color .18s;
+  position: relative;
+}
+.so-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,.08);
+  transform: translateY(-2px);
+  border-color: #c7d2fe;
+  color: var(--so-ink);
+}
+.so-card-icon-row { display: flex; align-items: center; justify-content: space-between; }
+.so-card-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; font-size: .95rem;
+}
+.so-card-body h4 { font-size: .85rem; font-weight: 700; color: var(--so-ink); margin: 0 0 .18rem; line-height: 1.25; }
+.so-card-body p  { font-size: .74rem; color: var(--so-muted); margin: 0; line-height: 1.4; }
+.so-badge {
+  display: inline-flex; align-items: center;
+  font-size: .63rem; font-weight: 700;
+  padding: .15rem .5rem; border-radius: 6px;
+  white-space: nowrap; letter-spacing: .03em;
+}
+.so-arrow {
+  position: absolute; bottom: .75rem; right: .9rem;
+  font-size: .72rem; color: var(--so-subtle);
+  opacity: 0; transition: opacity .15s;
+}
+.so-card:hover .so-arrow { opacity: 1; }
+
+/* ── Stats summary row ── */
+.so-summary {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: .6rem; margin-bottom: 1.5rem;
+}
+.so-summary-card {
+  background: var(--so-surf); border: 1px solid var(--so-border);
+  border-radius: var(--so-r); padding: .85rem .9rem;
+  box-shadow: var(--so-shadow); position: relative; overflow: hidden;
+}
+.so-summary-card::after {
+  content: ""; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px; border-radius: var(--so-r) var(--so-r) 0 0;
+}
+.so-summary-val { font-family: 'Outfit', sans-serif; font-size: 1.45rem; font-weight: 800; line-height: 1; color: var(--so-ink); }
+.so-summary-lbl { font-size: .67rem; text-transform: uppercase; letter-spacing: .06em; color: var(--so-muted); margin-top: .2rem; }
+
+@media (max-width: 768px) {
+  .so-cards { grid-template-columns: 1fr 1fr; }
+  .so-summary { grid-template-columns: repeat(2, 1fr); }
+  .so-page { padding: 1rem .85rem 2rem; }
+}
+@media (max-width: 480px) {
+  .so-cards { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="so-page">
+
+  <!-- ── Page header ─────────────────────────────────────────────────────── -->
+  <div class="so-header">
+    <div class="so-header-inner">
+      <div>
+        <div style="display:inline-flex;align-items:center;gap:.4rem;padding:.2rem .7rem;border-radius:999px;background:rgba(139,92,246,.2);border:1px solid rgba(139,92,246,.3);font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#c4b5fd;margin-bottom:.5rem">
+          <i class="bi bi-shield-fill-check"></i> Secretary General
+        </div>
+        <h1>System Overview</h1>
+        <p>Navigate all portals for testing, walkthrough, and role auditing. Every function in the system, by role.</p>
+      </div>
+      <a href="{% url 'sg_dashboard' %}" class="so-back">
+        <i class="bi bi-arrow-left"></i> Back to Dashboard
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Legend ──────────────────────────────────────────────────────────── -->
+  <div style="background:var(--so-surf);border:1px solid var(--so-border);border-radius:var(--so-r);padding:.7rem 1rem;margin-bottom:1.35rem;display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;font-size:.76rem;color:var(--so-muted)">
+    <span style="font-weight:700;color:var(--so-ink2)">Badge Key:</span>
+    <span class="so-badge" style="background:#eff6ff;color:#1d4ed8">Entry Portal</span> — landing page for that role
+    <span class="so-badge" style="background:#f0fdf4;color:#166534">Manage</span> — director has action rights
+    <span class="so-badge" style="background:#dcfce7;color:#15803d">Action</span> — approve / reject / submit
+    <span class="so-badge" style="background:#f8fafc;color:#475569;border:1px solid #e2e8f0">Read Only</span> — view access
+    <span class="so-badge" style="background:#f5f3ff;color:#6d28d9">KICOSCA</span> — KICOSCA Games portal
+  </div>
+
+  <!-- ── Role sections ───────────────────────────────────────────────────── -->
+  {% for section in sections %}
+  <div class="so-section">
+
+    <!-- Section header -->
+    <div class="so-section-head">
+      <div class="so-section-icon" style="background:{{ section.bg }};color:{{ section.color }}">
+        <i class="{{ section.icon }}"></i>
+      </div>
+      <div class="so-section-meta">
+        <h2>{{ section.title }}</h2>
+        <p>{{ section.description }}</p>
+      </div>
+      <span class="so-section-count">{{ section.count }} user{{ section.count|pluralize }}</span>
+    </div>
+
+    <!-- Cards -->
+    <div class="so-cards">
+      {% for card in section.cards %}
+      <a href="{% url card.url %}" class="so-card">
+        <div class="so-card-icon-row">
+          <div class="so-card-icon" style="background:{{ section.bg }};color:{{ section.color }}">
+            <i class="{{ card.icon }}"></i>
+          </div>
+          <span class="so-badge"
+            style="{% if card.badge == 'Entry Portal' %}background:#eff6ff;color:#1d4ed8
+                   {% elif card.badge == 'Manage' %}background:#f0fdf4;color:#166534
+                   {% elif card.badge == 'Action' %}background:#dcfce7;color:#15803d
+                   {% elif card.badge == 'Read Only' %}background:#f8fafc;color:#475569;border:1px solid #e2e8f0
+                   {% elif card.badge == 'KICOSCA' %}background:#f5f3ff;color:#6d28d9
+                   {% elif card.badge == 'Profile' %}background:#fff7ed;color:#c2410c
+                   {% elif card.badge == 'Audit' %}background:#fffbeb;color:#b45309
+                   {% else %}background:#f3f4f6;color:#6b7280{% endif %}">
+            {{ card.badge }}
+          </span>
+        </div>
+        <div class="so-card-body">
+          <h4>{{ card.label }}</h4>
+          <p>{{ card.desc }}</p>
+        </div>
+        <i class="bi bi-arrow-right so-arrow"></i>
+      </a>
+      {% endfor %}
+    </div>
+
+  </div>
+  {% endfor %}
+
+</div>
+{% endblock %}

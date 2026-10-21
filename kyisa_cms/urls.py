@@ -164,6 +164,7 @@ from .web_views import (
     sg_exceptional_overrides_view,
     sg_verified_players_view,
     sg_team_lists_view,
+    sg_system_overview_view,
     sg_approve_squad,
     sg_lock_squad,
     cec_sports_portal_view,
@@ -387,6 +388,7 @@ urlpatterns = [
     path("portal/sg/exceptional-overrides/",     sg_exceptional_overrides_view, name="sg_exceptional_overrides"),
     path("portal/sg/verified-players/",          sg_verified_players_view,   name="sg_verified_players"),
     path("portal/sg/team-lists/",               sg_team_lists_view,         name="sg_team_lists"),
+    path("portal/sg/system-overview/",          sg_system_overview_view,    name="sg_system_overview"),
     path("api/sg/squads/<int:squad_id>/approve/", sg_approve_squad,          name="sg_approve_squad"),
     path("api/sg/squads/<int:squad_id>/lock/",    sg_lock_squad,             name="sg_lock_squad"),
 

@@ -294,6 +294,9 @@
             <a href="{% url 'sg_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'sg_dashboard' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-speedometer2"></i></span> Dashboard
             </a>
+            <a href="{% url 'sg_system_overview' %}" class="sidebar-link {% if request.resolver_match.url_name == 'sg_system_overview' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-grid-3x3-gap-fill"></i></span> System Overview
+            </a>
             <a href="{% url 'sg_verifications' %}" class="sidebar-link {% if request.resolver_match.url_name == 'sg_verifications' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-person-vcard"></i></span> Verifications
             </a>
