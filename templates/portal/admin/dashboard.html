@@ -344,8 +344,69 @@
     <a href="{% url 'admin:index' %}"                       class="hub-qa"><div class="hub-qa-icon amber"><i class="bi bi-gear-wide-connected"></i></div><div><h4>Django Admin</h4><p>Super-admin database access</p></div></a>
   </div>
 
-  <!-- ── LIVE MONITORING — 4 columns, no scrollbars ──────────────────── -->
-  <div class="hub-sh"><h2><i class="bi bi-activity" style="margin-right:.3rem"></i>Live Monitoring</h2><div class="hub-sh-sep"></div></div>
+  <!-- ── ROLE WORKSPACES ──────────────────────────────────────────────── -->
+  <div class="hub-sh"><h2><i class="bi bi-grid-3x3-gap-fill" style="margin-right:.3rem"></i>Role Workspaces</h2><div class="hub-sh-sep"></div></div>
+  <div class="hub-workspaces">
+    {% for workspace in role_workspaces %}
+    <article class="hub-ws">
+
+      <!-- Header -->
+      <div class="hub-ws-hd">
+        <div class="hub-ws-hd-left">
+          <div class="hub-ws-icon"><i class="{{ workspace.icon }}"></i></div>
+          <h3 class="hub-ws-title">{{ workspace.title }}</h3>
+        </div>
+        <span class="hub-ws-badge">{{ workspace.count|intcomma }} {{ workspace.count_label }}</span>
+      </div>
+
+      <!-- Body -->
+      <div class="hub-ws-body">
+
+        <!-- Description — concise -->
+        <p class="hub-ws-desc">{{ workspace.description }}</p>
+
+        <!-- Users (if any) -->
+        {% if workspace.users %}
+        <div>
+          <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--hub-muted);margin-bottom:.3rem"><i class="bi bi-people-fill" style="opacity:.5"></i> Users</div>
+          <div class="hub-ws-users">
+            {% for u in workspace.users %}
+            <a href="{% url 'user_detail' u.pk %}" class="hub-ws-user">
+              <div class="hub-ws-avatar">{{ u.first_name.0 }}{{ u.last_name.0 }}</div>
+              {{ u.get_full_name }}
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Function links — pill style, not a grid -->
+        <div class="hub-fns">
+          {% for fn in workspace.functions %}
+          <a href="{% url fn.url %}" class="hub-fn" title="{{ fn.summary }}">
+            <i class="{{ fn.icon }}"></i>{{ fn.label }}
+          </a>
+          {% endfor %}
+        </div>
+
+        <!-- Preview button — per workspace role -->
+        {% if workspace.preview_role %}
+        <div style="margin-top:.65rem;padding-top:.65rem;border-top:1px solid var(--hub-border)">
+          <a href="{% url 'role_preview' workspace.preview_role %}"
+             style="display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .85rem;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:20px;font-size:.76rem;font-weight:700;text-decoration:none;transition:all .15s"
+             onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#eff6ff'">
+            👁️ Preview as {{ workspace.title }}
+          </a>
+        </div>
+        {% endif %}
+
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+
+  <!-- ── LIVE MONITORING — 4 columns ───────────────────────────────────── -->
+  <div class="hub-sh" style="margin-top:.5rem"><h2><i class="bi bi-activity" style="margin-right:.3rem"></i>Live Monitoring</h2><div class="hub-sh-sep"></div></div>
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:1.35rem">
 
     <!-- Email stats -->
@@ -432,67 +493,6 @@
       </div>
     </div>
 
-  </div>
-
-  <!-- ── ROLE WORKSPACES ──────────────────────────────────────────────── -->
-  <div class="hub-sh"><h2><i class="bi bi-grid-3x3-gap-fill" style="margin-right:.3rem"></i>Role Workspaces</h2><div class="hub-sh-sep"></div></div>
-  <div class="hub-workspaces">
-    {% for workspace in role_workspaces %}
-    <article class="hub-ws">
-
-      <!-- Header -->
-      <div class="hub-ws-hd">
-        <div class="hub-ws-hd-left">
-          <div class="hub-ws-icon"><i class="{{ workspace.icon }}"></i></div>
-          <h3 class="hub-ws-title">{{ workspace.title }}</h3>
-        </div>
-        <span class="hub-ws-badge">{{ workspace.count|intcomma }} {{ workspace.count_label }}</span>
-      </div>
-
-      <!-- Body -->
-      <div class="hub-ws-body">
-
-        <!-- Description — concise -->
-        <p class="hub-ws-desc">{{ workspace.description }}</p>
-
-        <!-- Users (if any) -->
-        {% if workspace.users %}
-        <div>
-          <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--hub-muted);margin-bottom:.3rem"><i class="bi bi-people-fill" style="opacity:.5"></i> Users</div>
-          <div class="hub-ws-users">
-            {% for u in workspace.users %}
-            <a href="{% url 'user_detail' u.pk %}" class="hub-ws-user">
-              <div class="hub-ws-avatar">{{ u.first_name.0 }}{{ u.last_name.0 }}</div>
-              {{ u.get_full_name }}
-            </a>
-            {% endfor %}
-          </div>
-        </div>
-        {% endif %}
-
-        <!-- Function links — pill style, not a grid -->
-        <div class="hub-fns">
-          {% for fn in workspace.functions %}
-          <a href="{% url fn.url %}" class="hub-fn" title="{{ fn.summary }}">
-            <i class="{{ fn.icon }}"></i>{{ fn.label }}
-          </a>
-          {% endfor %}
-        </div>
-
-        <!-- Preview button — per workspace role -->
-        {% if workspace.preview_role %}
-        <div style="margin-top:.65rem;padding-top:.65rem;border-top:1px solid var(--hub-border)">
-          <a href="{% url 'role_preview' workspace.preview_role %}"
-             style="display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .85rem;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:20px;font-size:.76rem;font-weight:700;text-decoration:none;transition:all .15s"
-             onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#eff6ff'">
-            👁️ Preview as {{ workspace.title }}
-          </a>
-        </div>
-        {% endif %}
-
-      </div>
-    </article>
-    {% endfor %}
   </div>
 
   <!-- ── ROLE DISTRIBUTION ─────────────────────────────────────────────── -->
