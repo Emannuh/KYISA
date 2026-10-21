@@ -333,9 +333,30 @@
 
   </div>
 
+  <!-- ── TEST DASHBOARDS ──────────────────────────────────────────────── -->
+  <div class="hub-sh" style="margin-bottom:.75rem"><h2><i class="bi bi-eye-fill" style="margin-right:.3rem;color:#6366f1"></i>Test Dashboards <span style="font-size:.7rem;font-weight:500;color:var(--hub-muted);margin-left:.5rem">— preview any role instantly, no account change needed</span></h2><div class="hub-sh-sep"></div></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:.5rem;margin-bottom:1.35rem">
+
+    {% for dash in test_dashboards %}
+    <a href="{% url 'role_preview' dash.role %}"
+       style="display:flex;flex-direction:column;align-items:flex-start;gap:.35rem;padding:.75rem .9rem;background:#fff;border:1px solid var(--hub-border);border-radius:10px;text-decoration:none;color:var(--hub-ink);transition:border-color .15s,box-shadow .15s;position:relative;overflow:hidden"
+       onmouseover="this.style.borderColor='#818cf8';this.style.boxShadow='0 3px 12px rgba(99,102,241,.14)'"
+       onmouseout="this.style.borderColor='var(--hub-border)';this.style.boxShadow='none'">
+      <div style="width:32px;height:32px;border-radius:8px;background:{{ dash.bg }};display:flex;align-items:center;justify-content:center;font-size:.85rem;color:{{ dash.color }}">
+        <i class="{{ dash.icon }}"></i>
+      </div>
+      <div>
+        <div style="font-size:.8rem;font-weight:700;color:var(--hub-ink);line-height:1.2">{{ dash.label }}</div>
+        <div style="font-size:.66rem;color:var(--hub-muted);margin-top:.1rem">{{ dash.count }} user{{ dash.count|pluralize }}</div>
+      </div>
+      <div style="position:absolute;top:.55rem;right:.6rem;font-size:.62rem;color:#818cf8;font-weight:700;opacity:.8">Preview →</div>
+    </a>
+    {% endfor %}
+
+  </div>
+
   <!-- ── SYSTEM CONTROLS ───────────────────────────────────────────────── -->
-  <div class="hub-sh"><h2><i class="bi bi-sliders" style="margin-right:.3rem"></i>System Controls</h2><div class="hub-sh-sep"></div></div>
-  <div class="hub-quick" style="margin-bottom:1.35rem">
+  <div class="hub-sh"><h2><i class="bi bi-sliders" style="margin-right:.3rem"></i>System Controls</h2><div class="hub-sh-sep"></div></div>  <div class="hub-quick" style="margin-bottom:1.35rem">
     <a href="{% url 'manage_users' %}"                      class="hub-qa"><div class="hub-qa-icon blue"><i class="bi bi-people-fill"></i></div><div><h4>User Management</h4><p>Create, edit and suspend users</p></div></a>
     <a href="{% url 'county_player_verification_list' %}"   class="hub-qa"><div class="hub-qa-icon purple"><i class="bi bi-patch-check-fill"></i></div><div><h4>Player Verification</h4><p>County player IPRS queues</p></div></a>
     <a href="{% url 'email_logs' %}"                        class="hub-qa"><div class="hub-qa-icon teal"><i class="bi bi-envelope-paper-fill"></i></div><div><h4>Email Centre</h4><p>Monitor and compose emails</p></div></a>

@@ -8626,6 +8626,22 @@ def sys_admin_dashboard_view(request):
             users_by_role[u.role] = []
         users_by_role[u.role].append(u)
 
+    # ── Test Dashboards — quick preview grid for sys admin testing ────────
+    test_dashboards = [
+        {'role': 'competition_manager', 'label': 'Organising Secretary', 'icon': 'bi bi-diagram-3-fill',    'bg': '#ede9fe', 'color': '#6d28d9', 'count': role_count_map.get(UserRole.COMPETITION_MANAGER, 0)},
+        {'role': 'county_sports_admin', 'label': 'County Sports Director','icon': 'bi bi-building-fill',     'bg': '#dcfce7', 'color': '#166534', 'count': role_count_map.get(UserRole.COUNTY_SPORTS_DIRECTOR, 0)},
+        {'role': 'treasurer',           'label': 'Treasurer',              'icon': 'bi bi-cash-stack',        'bg': '#fef9c3', 'color': '#854d0e', 'count': role_count_map.get(UserRole.TREASURER, 0)},
+        {'role': 'secretary_general',   'label': 'Secretary General',      'icon': 'bi bi-shield-lock-fill', 'bg': '#e0e7ff', 'color': '#3730a3', 'count': role_count_map.get(UserRole.SECRETARY_GENERAL, 0)},
+        {'role': 'verification_officer','label': 'Verification Officer',   'icon': 'bi bi-patch-check-fill', 'bg': '#f0fdfa', 'color': '#0f766e', 'count': role_count_map.get(UserRole.VERIFICATION_OFFICER, 0)},
+        {'role': 'referee',             'label': 'Referee',                'icon': 'bi bi-whistle-fill',      'bg': '#fff7ed', 'color': '#c2410c', 'count': role_count_map.get(UserRole.REFEREE, 0)},
+        {'role': 'team_manager',        'label': 'Team Manager',           'icon': 'bi bi-people-fill',       'bg': '#eff6ff', 'color': '#1d4ed8', 'count': role_count_map.get(UserRole.TEAM_MANAGER, 0)},
+        {'role': 'scout',               'label': 'Scout',                  'icon': 'bi bi-binoculars-fill',   'bg': '#f0f9ff', 'color': '#0369a1', 'count': role_count_map.get(UserRole.SCOUT, 0)},
+        {'role': 'media_manager',       'label': 'Media Manager',          'icon': 'bi bi-camera-reels-fill', 'bg': '#fdf4ff', 'color': '#7e22ce', 'count': role_count_map.get(UserRole.MEDIA_MANAGER, 0)},
+        {'role': 'jury_chair',          'label': 'Jury Chair',             'icon': 'bi bi-bank-fill',         'bg': '#f8fafc', 'color': '#475569', 'count': role_count_map.get(UserRole.JURY_CHAIR, 0)},
+        {'role': 'coordinator',         'label': 'Sport Coordinator',      'icon': 'bi bi-person-gear',       'bg': '#ecfdf5', 'color': '#065f46', 'count': role_total(UserRole.COORDINATOR, UserRole.SOCCER_COORDINATOR, UserRole.HANDBALL_COORDINATOR, UserRole.BASKETBALL_COORDINATOR, UserRole.VOLLEYBALL_COORDINATOR)},
+        {'role': 'cec_sports',          'label': 'CEC Sports',             'icon': 'bi bi-eye-fill',          'bg': '#fafaf9', 'color': '#78716c', 'count': role_count_map.get(UserRole.CEC_SPORTS_MEMBER, 0)},
+    ]
+
     return render(request, 'portal/admin/dashboard.html', {
         'total_users': total_users,
         'total_competitions': total_competitions,
@@ -8645,4 +8661,5 @@ def sys_admin_dashboard_view(request):
         'role_workspaces': role_workspaces,
         'dashboard_hubs': dashboard_hubs,
         'users_by_role': users_by_role,
+        'test_dashboards': test_dashboards,
     })
