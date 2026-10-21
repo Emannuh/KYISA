@@ -1,25 +1,21 @@
 """
 KYISA — Prembly Identity Verification Service
 ===============================================
-Replaces Smile Identity for Kenya IPRS (National ID) lookups.
-Uses Prembly's Kenya National ID endpoint to verify player identity
-against the government IPRS database.
+Uses Prembly's Kenya endpoints to verify player identity against IPRS.
 
-API endpoint: POST https://api.prembly.com/verification/ke/national_id
-Sandbox:      POST https://sandbox.prembly.com/verification/ke/national_id
-Test ID:      10101010
+Two endpoints:
+  1. National ID:  POST /verification/ke/national_id  — returns name/DOB only, no photo
+  2. Serial Number: POST /verification/ke/serial       — returns full record incl. photo
 
-Pricing: pay-per-lookup.
+We prefer the serial number endpoint when a serial is provided because it
+returns the government photo. Fall back to national_id when serial is absent.
+
+API docs: https://docs.prembly.com
 Dashboard: app.prembly.com
 
 Configuration (Railway environment variables):
-    PREMBLY_API_KEY=live_sk_...         # your Prembly API key
-    PREMBLY_ENVIRONMENT=sandbox         # 'sandbox' or 'production'
-
-Usage:
-    from teams.prembly_service import PremblyService
-    svc = PremblyService()
-    result = svc.lookup_by_national_id("12345678")  # returns IPRSLookupResult
+    PREMBLY_API_KEY=live_sk_...
+    PREMBLY_ENVIRONMENT=production   # 'sandbox' or 'production'
 """
 import logging
 import requests
@@ -36,30 +32,38 @@ logger = logging.getLogger(__name__)
 
 class PremblyService:
     """
-    Prembly Kenya National ID verification service.
-    Drop-in replacement for HudumaKenyaService IPRS calls.
+    Prembly Kenya identity verification service.
     Returns IPRSLookupResult — same interface used everywhere in the project.
     """
 
-    PRODUCTION_URL = "https://api.prembly.com/verification/ke/national_id"
-    SANDBOX_URL    = "https://sandbox.prembly.com/verification/ke/national_id"
+    # Basic national ID — returns name/DOB, photo often null
+    NATIONAL_ID_URL_PROD    = "https://api.prembly.com/verification/ke/national_id"
+    NATIONAL_ID_URL_SANDBOX = "https://sandbox.prembly.com/verification/ke/national_id"
+
+    # Serial number — returns full record including photo
+    SERIAL_URL_PROD    = "https://api.prembly.com/verification/ke/serial"
+    SERIAL_URL_SANDBOX = "https://sandbox.prembly.com/verification/ke/serial"
 
     def __init__(self):
         self.api_key     = getattr(settings, 'PREMBLY_API_KEY', '')
         self.environment = getattr(settings, 'PREMBLY_ENVIRONMENT', 'sandbox')
         self.timeout     = 30
         self._is_live    = bool(self.api_key) and self.environment == 'production'
-        self._is_sandbox = bool(self.api_key) and self.environment == 'sandbox'
-        self.base_url    = self.PRODUCTION_URL if self._is_live else self.SANDBOX_URL
 
     # ── Public interface ───────────────────────────────────────────────────────
 
-    def lookup_by_national_id(self, national_id: str) -> IPRSLookupResult:
+    def lookup_by_national_id(self, national_id: str, serial_number: str = '') -> IPRSLookupResult:
         """
         Look up a person by Kenya National ID number via Prembly IPRS.
-        Returns an IPRSLookupResult — compatible with all existing views.
+
+        If serial_number is also provided, the serial endpoint is called first
+        because it returns the full record including the government photo.
+        Falls back to the basic national_id endpoint if serial is not given.
+
+        Returns an IPRSLookupResult compatible with all existing views.
         """
-        national_id = national_id.strip()
+        national_id   = national_id.strip()
+        serial_number = serial_number.strip() if serial_number else ''
 
         if not national_id:
             return IPRSLookupResult(
@@ -67,20 +71,22 @@ class PremblyService:
                 error_message="National ID is required.",
             )
 
-        # Validate format — Kenyan IDs are 7-8 digits
         if not national_id.isdigit() or len(national_id) < 7 or len(national_id) > 8:
             return IPRSLookupResult(
                 success=False,
                 error_message="Invalid National ID format. Must be 7-8 digits.",
             )
 
-        # No API key — fall back to simulation
         if not self.api_key:
             logger.warning("PREMBLY_API_KEY not set — using simulation mode.")
             return self._simulate(national_id)
 
         try:
-            return self._call_prembly(national_id)
+            # Prefer serial endpoint — returns photo
+            if serial_number:
+                return self._call_serial(national_id, serial_number)
+            else:
+                return self._call_national_id(national_id)
         except Exception as exc:
             logger.exception("Prembly lookup error for ID %s: %s", national_id, exc)
             return IPRSLookupResult(
@@ -88,93 +94,68 @@ class PremblyService:
                 error_message=f"Verification failed: {exc}",
             )
 
-    # ── Private — API call ─────────────────────────────────────────────────────
+    def lookup_by_serial(self, national_id: str, serial_number: str) -> IPRSLookupResult:
+        """
+        Convenience method — explicitly call the serial endpoint.
+        Use this when the county director provides the serial number from the back of the ID.
+        """
+        return self.lookup_by_national_id(national_id, serial_number=serial_number)
 
-    def _call_prembly(self, national_id: str) -> IPRSLookupResult:
-        """POST to Prembly Kenya National ID endpoint."""
+    # ── Private — API calls ────────────────────────────────────────────────────
+
+    def _base_url(self, path_prod: str, path_sandbox: str) -> str:
+        return path_prod if self._is_live else path_sandbox
+
+    def _post(self, url: str, payload: dict) -> dict:
+        """Make a POST request to Prembly and return parsed JSON."""
         headers = {
             "x-api-key":    self.api_key,
             "Content-Type": "application/json",
             "Accept":       "application/json",
         }
-        payload = {"number": national_id}
-
-        logger.info(
-            "Prembly IPRS lookup — ID: %s, env: %s",
-            national_id, self.environment
-        )
-
         try:
-            resp = requests.post(
-                self.base_url,
-                json=payload,
-                headers=headers,
-                timeout=self.timeout,
-            )
+            resp = requests.post(url, json=payload, headers=headers, timeout=self.timeout)
             resp.raise_for_status()
-            raw = resp.json()
+            return resp.json()
         except requests.exceptions.Timeout:
-            logger.error("Prembly timeout for ID %s", national_id)
-            return IPRSLookupResult(
-                success=False,
-                error_message="Verification timed out. Please try again.",
-            )
+            raise Exception("Verification timed out. Please try again.")
         except requests.exceptions.HTTPError as exc:
-            status_code = exc.response.status_code if exc.response else 0
+            code = exc.response.status_code if exc.response else 0
             try:
-                body = exc.response.json()
-                msg  = body.get("detail", body.get("message", str(exc)))
+                msg = exc.response.json().get("detail", exc.response.json().get("message", str(exc)))
             except Exception:
                 msg = str(exc)
-            logger.error(
-                "Prembly HTTP %s for ID %s: %s", status_code, national_id, msg
-            )
-            return IPRSLookupResult(
-                success=False,
-                error_message=f"Verification service error ({status_code}): {msg}",
-            )
+            raise Exception(f"Service error ({code}): {msg}")
         except requests.exceptions.RequestException as exc:
-            logger.exception("Prembly network error for ID %s", national_id)
-            return IPRSLookupResult(
-                success=False,
-                error_message=f"Network error: {exc}",
-            )
+            raise Exception(f"Network error: {exc}")
 
+    def _call_national_id(self, national_id: str) -> IPRSLookupResult:
+        """Call the basic national ID endpoint — name/DOB only, photo rarely returned."""
+        url = self._base_url(self.NATIONAL_ID_URL_PROD, self.NATIONAL_ID_URL_SANDBOX)
+        logger.info("Prembly national_id lookup — ID: %s, env: %s", national_id, self.environment)
+        raw = self._post(url, {"number": national_id})
+        return self._parse_response(raw, national_id)
+
+    def _call_serial(self, national_id: str, serial_number: str) -> IPRSLookupResult:
+        """
+        Call the serial number endpoint — returns full record including photo.
+        The serial number is the alphanumeric code on the back of the Kenya National ID.
+        """
+        url = self._base_url(self.SERIAL_URL_PROD, self.SERIAL_URL_SANDBOX)
+        logger.info(
+            "Prembly serial lookup — ID: %s, serial: %s, env: %s",
+            national_id, serial_number, self.environment
+        )
+        # Serial endpoint accepts the serial number as the lookup key
+        raw = self._post(url, {"number": serial_number})
         return self._parse_response(raw, national_id)
 
     def _parse_response(self, raw: dict, national_id: str) -> IPRSLookupResult:
-        """
-        Parse Prembly's Kenya National ID response into IPRSLookupResult.
+        """Parse any Prembly Kenya response into IPRSLookupResult."""
 
-        Prembly response shape:
-        {
-            "status": true,
-            "detail": "Verification successful",
-            "response_code": "00",
-            "data": {
-                "first_name": "JOHN",
-                "last_name": "DOE",
-                "other_name": "PETER",
-                "date_of_birth": "1998-05-14",
-                "gender": "M",
-                "id_number": "12345678",
-                "citizenship": "KENYAN",
-                "photo": "base64...",
-                ...
-            },
-            "verification": {
-                "status": "VERIFIED",
-                "reference": "uuid-..."
-            }
-        }
-        """
-        # Check top-level status
         if not raw.get('status', False):
             msg = raw.get('detail', raw.get('message', 'Verification failed.'))
-            return IPRSLookupResult(
-                success=False,
-                error_message=msg,
-            )
+            return IPRSLookupResult(success=False, error_message=msg)
 
         verification = raw.get('verification', {})
         verified     = verification.get('status', '') == 'VERIFIED'
@@ -190,47 +171,47 @@ class PremblyService:
                 error_message="Person not found in IPRS database.",
             )
 
-        # Parse names
+        # Names — handle multiple field name variants across endpoints
         first_name  = (data.get('first_name', '') or '').strip().title()
-        last_name   = (data.get('last_name',  '') or data.get('surname', '')).strip().title()
+        last_name   = (data.get('last_name', '') or data.get('surname', '') or '').strip().title()
         other_names = (data.get('other_name', '') or '').strip().title()
-        full_name   = f"{first_name} {other_names} {last_name}".strip()
-        full_name   = ' '.join(full_name.split())  # collapse extra spaces
+        full_name   = ' '.join(f"{first_name} {other_names} {last_name}".split())
 
-        # Parse gender
+        # Gender
         raw_gender = (data.get('gender', '') or '').strip().upper()
-        if raw_gender in ('M', 'MALE'):
-            gender = 'Male'
-        elif raw_gender in ('F', 'FEMALE'):
-            gender = 'Female'
-        else:
-            gender = raw_gender
+        gender = 'Male' if raw_gender in ('M', 'MALE') else ('Female' if raw_gender in ('F', 'FEMALE') else raw_gender)
 
-        # Parse date of birth
+        # DOB — try both field names the endpoints use
         dob: Optional[date] = None
         dob_str = data.get('date_of_birth') or data.get('dob', '')
         if dob_str:
-            for fmt in ('%Y-%m-%d', '%d/%m/%Y', '%d-%m-%Y', '%Y/%m/%d'):
+            for fmt in ('%Y-%m-%d', '%d/%m/%Y', '%d-%m-%Y', '%Y/%m/%d', '%m/%d/%Y'):
                 try:
                     dob = datetime.strptime(str(dob_str), fmt).date()
                     break
                 except (ValueError, TypeError):
                     continue
 
-        # Calculate age
+        # Age
         age: Optional[int] = None
         if dob:
             today = timezone.now().date()
-            age   = today.year - dob.year - (
-                (today.month, today.day) < (dob.month, dob.day)
-            )
+            age   = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
 
-        # Photo (base64)
+        # Photo — the serial endpoint returns this; national_id often returns null
         photo = data.get('photo', '') or ''
 
+        # Extra fields only the serial endpoint returns
+        serial_number  = data.get('id_serial_number', '') or data.get('serial_number', '') or ''
+        date_of_issue  = data.get('date_of_issue', '') or ''
+        place_of_birth = data.get('place_of_birth', '') or ''
+
         logger.info(
-            "Prembly IPRS result — ID: %s, name: %s, dob: %s, ref: %s",
-            national_id, full_name, dob, reference
+            "Prembly result — ID: %s, name: %s, dob: %s, photo: %s, serial: %s, ref: %s",
+            national_id, full_name, dob,
+            'yes' if photo else 'no',
+            serial_number or 'n/a',
+            reference,
         )
 
         return IPRSLookupResult(
@@ -246,6 +227,10 @@ class PremblyService:
             national_id=data.get('id_number', national_id),
             reference_number=reference,
             photo=photo,
+            # Store extra fields in the result so callers can use them
+            serial_number=serial_number,
+            date_of_issue=date_of_issue,
+            place_of_birth=place_of_birth,
             is_simulation=False,
         )
 

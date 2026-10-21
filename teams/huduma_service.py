@@ -71,6 +71,10 @@ class IPRSLookupResult:
     error_message: str = ""
     is_simulation: bool = False
     photo: str = ""                      # Base64-encoded IPRS passport photo
+    # Extra fields returned by the serial number endpoint
+    serial_number: str = ""
+    date_of_issue: str = ""
+    place_of_birth: str = ""
 
     def to_dict(self) -> dict:
         """Serialize for JSON response."""
@@ -89,6 +93,9 @@ class IPRSLookupResult:
             "error_message": self.error_message,
             "is_simulation": self.is_simulation,
             "photo": self.photo,
+            "serial_number": self.serial_number,
+            "date_of_issue": self.date_of_issue,
+            "place_of_birth": self.place_of_birth,
         }
 
 

@@ -669,18 +669,20 @@ def api_fifa_connect_quick_check(request):
 @require_POST
 def api_iprs_lookup(request):
     """
-    AJAX endpoint — look up a person by National ID via IPRS.
+    AJAX endpoint — look up a person by National ID (+ optional serial number) via IPRS.
 
     Called from the add-player form when the user enters a National ID number.
-    Returns JSON with the person's name, date of birth, age, and gender so
-    the form fields can be auto-populated.
+    If the serial number from the back of the ID card is also provided, the
+    serial endpoint is called which returns the full record including the photo.
+
+    Returns JSON with name, DOB, age, gender, photo (if available), serial number.
     """
-    national_id = request.POST.get('national_id', '').strip()
+    national_id   = request.POST.get('national_id', '').strip()
+    serial_number = request.POST.get('serial_number', '').strip()
 
     if not national_id:
         return JsonResponse({'success': False, 'error_message': 'National ID is required.'}, status=400)
 
-    # Basic format validation — Kenyan IDs are 7-8 digits
     if not national_id.isdigit() or len(national_id) < 7 or len(national_id) > 8:
         return JsonResponse({
             'success': False,
@@ -688,7 +690,7 @@ def api_iprs_lookup(request):
         }, status=400)
 
     svc = PremblyService()
-    result = svc.lookup_by_national_id(national_id)
+    result = svc.lookup_by_national_id(national_id, serial_number=serial_number)
 
     return JsonResponse(result.to_dict())
 
