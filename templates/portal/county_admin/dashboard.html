@@ -1,184 +1,150 @@
 {% extends 'base.html' %}
-{% block title %}County Admin Dashboard &mdash; KYISA{% endblock %}
+{% block title %}County Admin Dashboard — KYISA{% endblock %}
 
 {% block content %}
+
 <!-- Hero -->
 <div class="dash-hero dash-hero--green">
-    <div class="hero-decor"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-    <span class="hero-badge"><span class="pulse-dot" style="background:#81C784"></span> County Admin</span>
-    <h1><i class="bi bi-building"></i> {{ reg.county }} County</h1>
-    <p>Manage your county registration, disciplines, and players</p>
+  <div class="hero-decor"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="hero-inner">
+    <div>
+      <span class="hero-badge"><span class="pulse-dot" style="background:#4ade80"></span> County Admin</span>
+      <h1><i class="bi bi-building"></i> {{ reg.county }} County</h1>
+      <p>Manage your county registration, disciplines, and players</p>
+    </div>
+    <div class="hero-chips">
+      <div class="hero-chip"><strong>{{ disciplines|length }}</strong><span>Disciplines</span></div>
+      <div class="hero-chip"><strong>{{ player_count }}</strong><span>Players</span></div>
+      <div class="hero-chip"><strong>{{ delegation_count }}</strong><span>Delegation</span></div>
+    </div>
+  </div>
 </div>
 
 <!-- Registration Status Banner -->
 {% if reg.status == 'pending_payment' %}
-<div style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);border:1px solid #ffcc80;border-radius:12px;padding:1rem 1.4rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
-    <span style="font-size:1.5rem"><i class="bi bi-exclamation-triangle"></i></span>
-    <div style="flex:1">
-        <strong style="color:#e65100">Payment Required</strong>
-        <div style="font-size:.88rem;color:#555">Submit your registration fee of <strong>KSh {{ registration_fee|floatformat:0 }}</strong> to get approved.</div>
-    </div>
-    <a href="{% url 'county_admin_payment' %}" class="btn btn--primary" style="padding:.5rem 1.2rem;font-size:.88rem;border-radius:8px">
-        <i class="bi bi-credit-card"></i> Submit Payment
-    </a>
+<div class="palert palert-warning">
+  <i class="bi bi-exclamation-triangle-fill"></i>
+  <div>
+    <strong>Payment Required</strong> — Submit your registration fee of <strong>KSh {{ registration_fee|floatformat:0 }}</strong> to get approved.
+    <a href="{% url 'county_admin_payment' %}" class="pbtn pbtn-primary pbtn-sm" style="margin-left:.75rem"><i class="bi bi-credit-card"></i> Submit Payment</a>
+  </div>
 </div>
 {% elif reg.status == 'payment_submitted' %}
-<div style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border:1px solid #90caf9;border-radius:12px;padding:1rem 1.4rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem">
-    <span style="font-size:1.5rem"><i class="bi bi-hourglass-split"></i></span>
-    <div>
-        <strong style="color:#1565c0">Payment Under Review</strong>
-        <div style="font-size:.88rem;color:#555">
-            Your payment proof has been submitted
-            {% if reg.mpesa_reference %}(Ref: {{ reg.mpesa_reference }}){% endif %}.
-            The KYISA Treasurer is reviewing it.
-        </div>
-    </div>
+<div class="palert palert-info">
+  <i class="bi bi-hourglass-split"></i>
+  <div><strong>Payment Under Review</strong> — Your payment proof has been submitted{% if reg.mpesa_reference %} (Ref: {{ reg.mpesa_reference }}){% endif %}. The KYISA Treasurer is reviewing it.</div>
 </div>
 {% elif reg.status == 'approved' %}
-<div style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border:1px solid #a5d6a7;border-radius:12px;padding:1rem 1.4rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem">
-    <span style="font-size:1.5rem"><i class="bi bi-check-circle"></i></span>
-    <div>
-        <strong style="color:#1B5E20">Approved</strong>
-        <div style="font-size:.88rem;color:#555">Your county is approved. Add disciplines first, then build your county delegation players under each selected discipline.</div>
-    </div>
+<div class="palert palert-success">
+  <i class="bi bi-check-circle-fill"></i>
+  <div><strong>Approved</strong> — Your county is approved. Add disciplines and build your player squads.</div>
 </div>
 {% elif reg.status == 'rejected' %}
-<div style="background:linear-gradient(135deg,#fce4ec,#f8bbd0);border:1px solid #ef9a9a;border-radius:12px;padding:1rem 1.4rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
-    <span style="font-size:1.5rem"><i class="bi bi-x-circle"></i></span>
-    <div style="flex:1">
-        <strong style="color:#C62828">Registration Rejected</strong>
-        <div style="font-size:.88rem;color:#555">
-            {% if reg.rejection_reason %}Reason: {{ reg.rejection_reason }}{% else %}Contact the treasurer for details.{% endif %}
-        </div>
-    </div>
-    <a href="{% url 'county_admin_payment' %}" class="btn btn--primary" style="padding:.5rem 1.2rem;font-size:.88rem;border-radius:8px">
-        <i class="bi bi-arrow-repeat"></i> Resubmit Payment
-    </a>
+<div class="palert palert-danger">
+  <i class="bi bi-x-circle-fill"></i>
+  <div>
+    <strong>Registration Rejected</strong>{% if reg.rejection_reason %} — {{ reg.rejection_reason }}{% endif %}
+    <a href="{% url 'county_admin_payment' %}" class="pbtn pbtn-danger pbtn-sm" style="margin-left:.75rem"><i class="bi bi-arrow-repeat"></i> Resubmit</a>
+  </div>
 </div>
 {% endif %}
 
 <!-- Stats -->
 <div class="dash-section-title"><i class="bi bi-graph-up"></i> Overview</div>
 <div class="dash-stats">
-    <div class="dash-stat {% if reg.status == 'approved' %}dash-stat--green{% elif reg.status == 'payment_submitted' %}dash-stat--blue{% else %}dash-stat--amber{% endif %}">
-        <div class="stat-icon"><i class="bi bi-clipboard-check"></i></div>
-        <div class="stat-num" style="font-size:1.1rem;text-transform:capitalize">{{ reg.get_status_display }}</div>
-        <div class="stat-lbl">Registration Status</div>
-    </div>
-    <div class="dash-stat dash-stat--purple">
-        <div class="stat-icon"><i class="bi bi-trophy"></i></div>
-        <div class="stat-num">{{ disciplines|length }}</div>
-        <div class="stat-lbl">Disciplines</div>
-    </div>
-    <div class="dash-stat dash-stat--blue">
-        <div class="stat-icon"><i class="bi bi-people"></i></div>
-        <div class="stat-num">{{ player_count }}</div>
-        <div class="stat-lbl">Total Players</div>
-    </div>
-    <div class="dash-stat dash-stat--teal">
-        <div class="stat-icon"><i class="bi bi-person-badge"></i></div>
-        <div class="stat-num">{{ delegation_count }}</div>
-        <div class="stat-lbl">Delegation Members</div>
-    </div>
+  <div class="dash-stat {% if reg.status == 'approved' %}dash-stat--green{% elif reg.status == 'payment_submitted' %}dash-stat--blue{% else %}dash-stat--amber{% endif %}">
+    <div class="stat-icon"><i class="bi bi-clipboard-check"></i></div>
+    <div class="stat-num" style="font-size:1rem;text-transform:capitalize">{{ reg.get_status_display }}</div>
+    <div class="stat-lbl">Status</div>
+  </div>
+  <div class="dash-stat dash-stat--purple">
+    <div class="stat-icon"><i class="bi bi-trophy"></i></div>
+    <div class="stat-num">{{ disciplines|length }}</div>
+    <div class="stat-lbl">Disciplines</div>
+  </div>
+  <div class="dash-stat dash-stat--blue">
+    <div class="stat-icon"><i class="bi bi-people"></i></div>
+    <div class="stat-num">{{ player_count }}</div>
+    <div class="stat-lbl">Players</div>
+  </div>
+  <div class="dash-stat dash-stat--teal">
+    <div class="stat-icon"><i class="bi bi-person-badge"></i></div>
+    <div class="stat-num">{{ delegation_count }}</div>
+    <div class="stat-lbl">Delegation</div>
+  </div>
 </div>
 
 {% if reg.is_approved %}
-<div class="dash-panel" style="margin-bottom:1.5rem;border-left:4px solid #00838f;">
-    <div class="dash-panel-body" style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
-        <div>
-            <h2 style="font-size:1.05rem;color:#333;margin:0 0 .35rem"><i class="bi bi-person-badge"></i> County Delegation Officials</h2>
-            <p style="margin:0;color:#666;font-size:.9rem">
-                Add county officials accompanying the delegation (full name, phone, ID number, and role).
-                {% if cecm_member %}<br><strong>CECM:</strong> {{ cecm_member.full_name }}{% else %}<br><strong>CECM account:</strong> not added yet.{% endif %}
-            </p>
+<!-- Delegation -->
+<div class="dash-panel" style="margin-bottom:1.25rem">
+  <div class="dash-panel-head">
+    <h3><i class="bi bi-person-badge-fill"></i> County Delegation Officials</h3>
+    <a href="{% url 'county_admin_delegation_members' %}" class="pbtn pbtn-primary pbtn-sm"><i class="bi bi-plus-circle"></i> Manage</a>
+  </div>
+  <div class="dash-panel-body" style="font-size:.83rem;color:#374151">
+    Add county officials accompanying the delegation (full name, phone, ID number, role).
+    {% if cecm_member %}<br><strong>CECM:</strong> {{ cecm_member.full_name }}{% else %}<br><span style="color:#9ca3af">CECM not added yet.</span>{% endif %}
+  </div>
+</div>
+
+<!-- Disciplines -->
+<div class="dash-section-title"><i class="bi bi-trophy-fill"></i> Disciplines</div>
+<div class="dash-panel" style="margin-bottom:1.25rem">
+  <div class="dash-panel-head">
+    <h3><i class="bi bi-grid"></i> My Disciplines</h3>
+    <a href="{% url 'county_admin_add_discipline' %}" class="pbtn pbtn-primary pbtn-sm"><i class="bi bi-plus-circle"></i> Add Discipline</a>
+  </div>
+  <div class="dash-panel-body">
+    {% if disciplines %}
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.75rem">
+      {% for d in disciplines %}
+      <div style="background:#f8f9fc;border-radius:10px;padding:1rem;border:1px solid #e8eaf0;border-left:3px solid #166534">
+        <div style="font-weight:700;color:#111;font-size:.9rem;margin-bottom:.3rem">{{ d.get_sport_type_display }}</div>
+        <div style="font-size:.78rem;color:#6b7280;margin-bottom:.75rem">{{ d.player_count }} / {{ d.squad_limit }} players</div>
+        <div style="display:flex;gap:.4rem">
+          <a href="{% url 'county_admin_discipline_players' discipline_pk=d.pk %}" class="pbtn pbtn-primary pbtn-sm"><i class="bi bi-people"></i> Players</a>
+          {% if d.can_add_player %}
+          <a href="{% url 'county_admin_add_player' discipline_pk=d.pk %}" class="pbtn pbtn-outline pbtn-sm"><i class="bi bi-person-plus"></i> Add</a>
+          {% else %}
+          <span class="pbtn pbtn-secondary pbtn-sm" style="pointer-events:none;opacity:.5">Squad Full</span>
+          {% endif %}
         </div>
-        <a href="{% url 'county_admin_delegation_members' %}" class="btn btn--primary" style="padding:.5rem 1rem;font-size:.88rem;border-radius:8px">
-            <i class="bi bi-plus-circle"></i> Manage Delegation Members
-        </a>
+      </div>
+      {% endfor %}
     </div>
+    {% else %}
+    <div class="portal-empty"><i class="bi bi-trophy"></i><p>No disciplines added yet.</p></div>
+    {% endif %}
+  </div>
 </div>
 {% endif %}
 
-{% if reg.is_approved %}
-<!-- Disciplines & Players -->
-<div class="dash-section-title"><i class="bi bi-trophy"></i> My Disciplines</div>
-<div class="dash-panel" style="margin-bottom:1.5rem">
-    <div class="dash-panel-head" style="display:flex;justify-content:space-between;align-items:center">
-        <span><i class="bi bi-trophy"></i> Disciplines</span>
-        <a href="{% url 'county_admin_add_discipline' %}" class="btn btn--primary" style="padding:.4rem 1rem;font-size:.85rem;border-radius:8px">
-            <i class="bi bi-plus-circle"></i> Add Discipline
-        </a>
-    </div>
-    <div class="dash-panel-body">
-        {% if disciplines %}
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem">
-            {% for d in disciplines %}
-            <div style="background:linear-gradient(135deg,#f5f5f5,#eeeeee);border-radius:12px;padding:1.2rem;border-left:4px solid #1B5E20">
-                <div style="font-weight:700;color:#333;font-size:1rem;margin-bottom:.4rem">{{ d.get_sport_type_display }}</div>
-                <div style="font-size:.88rem;color:#666;margin-bottom:.8rem">
-                    {{ d.player_count }} / {{ d.squad_limit }} players registered
-                </div>
-                <div style="display:flex;gap:.5rem">
-                    <a href="{% url 'county_admin_discipline_players' discipline_pk=d.pk %}" style="padding:.35rem .8rem;background:#1B5E20;color:#fff;border-radius:6px;font-size:.82rem;text-decoration:none;font-weight:600">
-                        <i class="bi bi-people"></i> View Players
-                    </a>
-                    {% if d.can_add_player %}
-                    <a href="{% url 'county_admin_add_player' discipline_pk=d.pk %}" style="padding:.35rem .8rem;background:#1565c0;color:#fff;border-radius:6px;font-size:.82rem;text-decoration:none;font-weight:600">
-                        <i class="bi bi-person-plus"></i> Add Player
-                    </a>
-                    {% else %}
-                    <span style="padding:.35rem .8rem;background:#e0e0e0;color:#888;border-radius:6px;font-size:.82rem;font-weight:600">Squad Full</span>
-                    {% endif %}
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class="dash-empty">
-            <i class="bi bi-trophy"></i>
-            <p>No disciplines added yet. Click "Add Discipline" to get started.</p>
-        </div>
-        {% endif %}
-    </div>
-</div>
-{% endif %}
-
-<!-- KICOSCA Games Section -->
-<div class="dash-panel" style="margin-bottom:1.5rem;border-left:4px solid #7c3aed;">
-    <div class="dash-panel-body" style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
-        <div>
-            <h2 style="font-size:1.05rem;color:#333;margin:0 0 .35rem"><i class="bi bi-trophy-fill" style="color:#7c3aed"></i> KICOSCA Games</h2>
-            <p style="margin:0;color:#666;font-size:.9rem">
-                Kenya Inter-County Sports & Cultural Association — register county government employees for the KICOSCA Games.
-                <br>Separate from KYISA youth sports — uses KRA employment verification.
-            </p>
-        </div>
-        <a href="{% url 'kicosca_dashboard' %}" style="padding:.5rem 1.2rem;background:#7c3aed;color:#fff;border-radius:8px;text-decoration:none;font-size:.88rem;font-weight:700;white-space:nowrap">
-            <i class="bi bi-trophy"></i> Open KICOSCA Portal
-        </a>
-    </div>
+<!-- KICOSCA -->
+<div class="dash-panel" style="margin-bottom:1.25rem;border-left:3px solid #7c3aed">
+  <div class="dash-panel-head">
+    <h3><i class="bi bi-award-fill" style="color:#7c3aed"></i> KICOSCA Games</h3>
+    <a href="{% url 'kicosca_dashboard' %}" class="pbtn pbtn-sm" style="background:#7c3aed;color:#fff;border:none"><i class="bi bi-trophy"></i> Open Portal</a>
+  </div>
+  <div class="dash-panel-body" style="font-size:.83rem;color:#374151">
+    Kenya Inter-County Sports & Cultural Association — register county government employees for the KICOSCA Games. Separate from KYISA youth sports — uses KRA employment verification.
+  </div>
 </div>
 
 <!-- Registration Details -->
 <div class="dash-panel">
-    <div class="dash-panel-head"><i class="bi bi-info-circle"></i> Registration Details</div>
-    <div class="dash-panel-body">
-        <table style="width:100%;font-size:.9rem">
-            <tr style="border-bottom:1px solid #eee"><td style="padding:.5rem 0;color:#888;width:180px">Name</td><td style="padding:.5rem 0;font-weight:600">{{ reg.user.first_name }} {{ reg.user.last_name }}</td></tr>
-            <tr style="border-bottom:1px solid #eee"><td style="padding:.5rem 0;color:#888">Email</td><td style="padding:.5rem 0">{{ reg.user.email }}</td></tr>
-            <tr style="border-bottom:1px solid #eee"><td style="padding:.5rem 0;color:#888">Phone</td><td style="padding:.5rem 0">{{ reg.user.phone }}</td></tr>
-            <tr style="border-bottom:1px solid #eee"><td style="padding:.5rem 0;color:#888">County</td><td style="padding:.5rem 0;font-weight:600">{{ reg.county }}</td></tr>
-            <tr style="border-bottom:1px solid #eee"><td style="padding:.5rem 0;color:#888">Registered</td><td style="padding:.5rem 0">{{ reg.created_at|date:"d M Y, H:i" }}</td></tr>
-            {% if reg.payment_amount %}
-            <tr style="border-bottom:1px solid #eee"><td style="padding:.5rem 0;color:#888">Payment Amount</td><td style="padding:.5rem 0">KSh {{ reg.payment_amount|floatformat:0 }}</td></tr>
-            {% endif %}
-            {% if reg.mpesa_reference %}
-            <tr style="border-bottom:1px solid #eee"><td style="padding:.5rem 0;color:#888">M-Pesa Ref</td><td style="padding:.5rem 0"><code>{{ reg.mpesa_reference }}</code></td></tr>
-            {% endif %}
-            {% if reg.approved_at %}
-            <tr><td style="padding:.5rem 0;color:#888">Approved</td><td style="padding:.5rem 0">{{ reg.approved_at|date:"d M Y, H:i" }}</td></tr>
-            {% endif %}
-        </table>
+  <div class="dash-panel-head"><h3><i class="bi bi-info-circle"></i> Registration Details</h3></div>
+  <div class="dash-panel-body">
+    <div style="display:grid;grid-template-columns:160px 1fr;gap:.35rem .75rem;font-size:.83rem">
+      <span style="color:#9ca3af">Name</span><span style="font-weight:600">{{ reg.user.first_name }} {{ reg.user.last_name }}</span>
+      <span style="color:#9ca3af">Email</span><span>{{ reg.user.email }}</span>
+      <span style="color:#9ca3af">Phone</span><span>{{ reg.user.phone }}</span>
+      <span style="color:#9ca3af">County</span><span style="font-weight:600">{{ reg.county }}</span>
+      <span style="color:#9ca3af">Registered</span><span>{{ reg.created_at|date:"d M Y, H:i" }}</span>
+      {% if reg.payment_amount %}<span style="color:#9ca3af">Payment</span><span>KSh {{ reg.payment_amount|floatformat:0 }}</span>{% endif %}
+      {% if reg.mpesa_reference %}<span style="color:#9ca3af">M-Pesa Ref</span><span><code>{{ reg.mpesa_reference }}</code></span>{% endif %}
+      {% if reg.approved_at %}<span style="color:#9ca3af">Approved</span><span>{{ reg.approved_at|date:"d M Y, H:i" }}</span>{% endif %}
     </div>
+  </div>
 </div>
+
 {% endblock %}
