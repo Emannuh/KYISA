@@ -176,6 +176,7 @@ from .web_views import (
     scout_remove_from_shortlist_view,
     # System Admin portal
     sys_admin_dashboard_view,
+    role_preview_view,
     # M-Pesa STK push endpoint
     mpesa_stk_push_view,
     mpesa_callback_view,
@@ -417,6 +418,7 @@ urlpatterns = [
 
     # ── SYSTEM ADMIN PORTAL ────────────────────────────────────────────────────
     path("portal/system/",                      sys_admin_dashboard_view,    name="sys_admin_dashboard"),
+    path("portal/preview-role/<str:role>/",     role_preview_view,           name="role_preview"),
 
     # ── KICOSCA GAMES ─────────────────────────────────────────────────────────
     path("portal/kicosca/", include("kicosca.urls")),

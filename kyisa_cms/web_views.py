@@ -8077,6 +8077,58 @@ def scout_remove_from_shortlist_view(request, pk):
 # ══════════════════════════════════════════════════════════════════════════════
 #   SYSTEM ADMIN PORTAL
 # ══════════════════════════════════════════════════════════════════════════════
+#   ROLE PREVIEW — System admin can browse any portal as any role (demo mode)
+# ══════════════════════════════════════════════════════════════════════════════
+
+from accounts.middleware import PREVIEWABLE_ROLES, PREVIEW_SESSION_KEY
+
+# Human-readable labels and landing URLs for each previewable role
+_PREVIEW_ROLE_META = {
+    'competition_manager':      ('Organising Secretary',    'cm_dashboard'),
+    'coordinator':              ('Sport Coordinator',       'coordinator_competitions'),
+    'soccer_coordinator':       ('Soccer Coordinator',      'coordinator_competitions'),
+    'handball_coordinator':     ('Handball Coordinator',    'coordinator_competitions'),
+    'basketball_coordinator':   ('Basketball Coordinator',  'coordinator_competitions'),
+    'volleyball_coordinator':   ('Volleyball Coordinator',  'coordinator_competitions'),
+    'verification_officer':     ('Verification Officer',    'vo_registered_counties'),
+    'referee':                  ('Referee',                 'referee_portal'),
+    'team_manager':             ('Team Manager',            'team_manager_dashboard'),
+    'county_sports_admin':      ('County Sports Director',  'county_admin_dashboard'),
+    'treasurer':                ('Treasurer',               'treasurer_dashboard'),
+    'secretary_general':        ('Secretary General',       'sg_dashboard'),
+    'scout':                    ('Scout',                   'scout_dashboard'),
+    'media_manager':            ('Media Manager',           'media_dashboard'),
+    'jury_chair':               ('Jury Chair',              'jury_dashboard'),
+    'cec_sports':               ('CEC Sports',              'cec_sports_portal'),
+}
+
+
+@login_required(login_url='web_login')
+def role_preview_view(request, role):
+    """
+    Start or exit role preview mode.
+    Only accessible to admins and superusers.
+    Sets a session flag — actual DB role is never changed.
+    """
+    if not (request.user.is_superuser or getattr(request.user, '_real_role', request.user.role) == 'admin'
+            or request.user.role == 'admin'):
+        messages.error(request, 'Role preview is only available to system administrators.')
+        return redirect('dashboard')
+
+    if role == 'exit':
+        request.session.pop(PREVIEW_SESSION_KEY, None)
+        messages.success(request, '✅ Preview mode ended — back to your admin account.')
+        return redirect('sys_admin_dashboard')
+
+    if role not in PREVIEWABLE_ROLES:
+        messages.error(request, f'Unknown role: {role}')
+        return redirect('sys_admin_dashboard')
+
+    request.session[PREVIEW_SESSION_KEY] = role
+    label, landing_url = _PREVIEW_ROLE_META.get(role, (role, 'dashboard'))
+    messages.info(request, f'👁️ Previewing as {label}. Click "Exit Preview" in the banner to return.')
+    return redirect(landing_url)
+
 
 @super_admin_required
 def sys_admin_dashboard_view(request):
@@ -8340,7 +8392,7 @@ def sys_admin_dashboard_view(request):
         },
     ]
 
-    # ── Attach users to each workspace for per-user portal cards ─────────────
+    # ── Attach users and preview_role to each workspace ──────────────────────
     _workspace_role_map = {
         'System Admin':           [UserRole.ADMIN],
         'Organising Secretary':   [UserRole.COMPETITION_MANAGER],
@@ -8357,10 +8409,27 @@ def sys_admin_dashboard_view(request):
         'Scouts':                 [UserRole.SCOUT],
         'CEC Sports':             [UserRole.CEC_SPORTS_MEMBER],
     }
+    # Map workspace title → previewable role slug
+    _workspace_preview_role = {
+        'Organising Secretary':   'competition_manager',
+        'Sport Coordinators':     'coordinator',
+        'Media Managers':         'media_manager',
+        'Referees':               'referee',
+        'Team Managers':          'team_manager',
+        'County Sports Directors': 'county_sports_admin',
+        'KICOSCA Games':          'county_sports_admin',
+        'Treasurer':              'treasurer',
+        'Secretary General':      'secretary_general',
+        'Verification Officers':  'verification_officer',
+        'Jury Chair':             'jury_chair',
+        'Scouts':                 'scout',
+        'CEC Sports':             'cec_sports',
+    }
     all_active_users = list(User.objects.filter(is_active=True).order_by('last_name', 'first_name'))
     for ws in role_workspaces:
         role_keys = _workspace_role_map.get(ws['title'], [])
-        ws['users'] = [u for u in all_active_users if u.role in role_keys]
+        ws['users']        = [u for u in all_active_users if u.role in role_keys]
+        ws['preview_role'] = _workspace_preview_role.get(ws['title'], '')
 
     dashboard_hubs = [
         {

@@ -59,3 +59,64 @@ class ForcePasswordChangeMiddleware:
             return redirect("force_change_password")
 
         return self.get_response(request)
+
+
+# ── Valid roles that can be previewed ────────────────────────────────────────
+PREVIEWABLE_ROLES = {
+    'competition_manager',
+    'coordinator',
+    'soccer_coordinator',
+    'handball_coordinator',
+    'basketball_coordinator',
+    'volleyball_coordinator',
+    'verification_officer',
+    'referee',
+    'team_manager',
+    'county_sports_admin',
+    'treasurer',
+    'secretary_general',
+    'scout',
+    'media_manager',
+    'jury_chair',
+    'cec_sports',
+}
+
+PREVIEW_SESSION_KEY = '_preview_role'
+
+
+class RolePreviewMiddleware:
+    """
+    Allows system admins (is_superuser or role='admin') to preview the portal
+    as any other role — useful for demos and debugging.
+
+    Usage:
+      - Start preview:  GET /portal/preview-role/referee/
+      - Stop preview:   GET /portal/preview-role/exit/
+
+    While in preview mode:
+      - request.user.role is temporarily patched to the preview role
+      - A banner is injected into the response (via context processor or base template tag)
+      - All role_required decorators pass because they check request.user.role
+      - The actual DB role is never changed
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if (
+            request.user.is_authenticated
+            and (request.user.is_superuser or getattr(request.user, 'role', '') == 'admin')
+        ):
+            preview_role = request.session.get(PREVIEW_SESSION_KEY)
+            if preview_role and preview_role in PREVIEWABLE_ROLES:
+                # Patch role for this request only — does NOT touch the DB
+                request.user._real_role = request.user.role
+                request.user.role       = preview_role
+                request._role_preview   = preview_role
+            else:
+                request._role_preview = None
+        else:
+            request._role_preview = None
+
+        return self.get_response(request)

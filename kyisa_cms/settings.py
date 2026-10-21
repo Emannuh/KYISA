@@ -93,6 +93,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "accounts.middleware.ForcePasswordChangeMiddleware",
+    "accounts.middleware.RolePreviewMiddleware",
     "admin_dashboard.activity_middleware.ActivityLoggingMiddleware",
 ]
 

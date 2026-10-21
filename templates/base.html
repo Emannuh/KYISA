@@ -91,6 +91,22 @@
     <div class="layout">
         {% include 'includes/sidebar.html' %}
         <main class="main-content">
+            {% if request._role_preview %}
+            <div style="position:sticky;top:0;z-index:999;background:linear-gradient(90deg,#0d47a1,#1565c0);color:#fff;padding:.55rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;font-size:.85rem;box-shadow:0 2px 8px rgba(0,0,0,.25)">
+                <div style="display:flex;align-items:center;gap:.65rem">
+                    <span style="font-size:1.1rem">👁️</span>
+                    <strong>Preview Mode</strong>
+                    <span style="opacity:.8">— viewing portal as</span>
+                    <span style="background:rgba(255,255,255,.2);padding:.15rem .65rem;border-radius:20px;font-weight:700;letter-spacing:.02em">{{ request._role_preview|title }}</span>
+                    <span style="opacity:.7;font-size:.78rem">Your admin role is unchanged</span>
+                </div>
+                <a href="{% url 'role_preview' 'exit' %}"
+                   style="background:#fff;color:#0d47a1;padding:.3rem .9rem;border-radius:20px;font-weight:700;font-size:.8rem;text-decoration:none;white-space:nowrap;transition:opacity .15s"
+                   onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+                    ✕ Exit Preview
+                </a>
+            </div>
+            {% endif %}
             {% if messages %}
             {% for message in messages %}
             <div class="alert alert-{{ message.tags }}">{{ message }}</div>
