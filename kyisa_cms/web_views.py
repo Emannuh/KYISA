@@ -7548,8 +7548,6 @@ def sg_system_overview_view(request):
                 {'icon': 'bi bi-credit-card',   'label': 'Payment',                  'desc': 'Check and submit registration payment.',        'url': 'county_admin_payment',            'badge': 'Action'},
                 {'icon': 'bi bi-trophy',        'label': 'Disciplines',              'desc': 'Register county disciplines and players.',       'url': 'county_admin_add_discipline',     'badge': 'Manage'},
                 {'icon': 'bi bi-patch-check',   'label': 'Verification Status',      'desc': 'Track player and delegation readiness.',        'url': 'county_admin_verification',       'badge': 'Read Only'},
-                {'icon': 'bi bi-award-fill',    'label': 'KICOSCA Dashboard',        'desc': 'Kenya Inter-County Sports & Cultural Games.',   'url': 'kicosca_dashboard',               'badge': 'KICOSCA'},
-                {'icon': 'bi bi-patch-check',   'label': 'KICOSCA Verification',     'desc': 'Player KRA employment verification queue.',     'url': 'kicosca_verification',            'badge': 'KICOSCA'},
             ],
         },
         {
@@ -8584,18 +8582,6 @@ def sys_admin_dashboard_view(request):
             ],
         },
         {
-            'title': 'KICOSCA Games',
-            'icon': 'bi bi-award',
-            'count': role_total(UserRole.COUNTY_SPORTS_DIRECTOR),
-            'count_label': 'county directors',
-            'primary_url': 'kicosca_dashboard',
-            'description': 'Kenya Inter-County Sports and Cultural Association — county employee registration and KRA employment verification.',
-            'functions': [
-                {'label': 'KICOSCA Dashboard', 'summary': 'Open the county KICOSCA portal and registration overview.', 'icon': 'bi bi-speedometer2', 'url': 'kicosca_dashboard'},
-                {'label': 'Verification Queue', 'summary': 'Review player IPRS and KRA verification statuses.', 'icon': 'bi bi-patch-check', 'url': 'kicosca_verification'},
-            ],
-        },
-        {
             'title': 'CEC Sports',
             'icon': 'bi bi-eye',
             'count': role_total(UserRole.CEC_SPORTS_MEMBER),
@@ -8617,7 +8603,6 @@ def sys_admin_dashboard_view(request):
         'Referees':               [UserRole.REFEREE],
         'Team Managers':          [UserRole.TEAM_MANAGER],
         'County Sports Directors': [UserRole.COUNTY_SPORTS_DIRECTOR],
-        'KICOSCA Games':          [UserRole.COUNTY_SPORTS_DIRECTOR],
         'Treasurer':              [UserRole.TREASURER],
         'Secretary General':      [UserRole.SECRETARY_GENERAL],
         'Verification Officers':  [UserRole.VERIFICATION_OFFICER],
@@ -8633,7 +8618,6 @@ def sys_admin_dashboard_view(request):
         'Referees':               'referee',
         'Team Managers':          'team_manager',
         'County Sports Directors': 'county_sports_admin',
-        'KICOSCA Games':          'county_sports_admin',
         'Treasurer':              'treasurer',
         'Secretary General':      'secretary_general',
         'Verification Officers':  'verification_officer',
@@ -8763,20 +8747,6 @@ def sys_admin_dashboard_view(request):
             ],
         },
         {
-            'title': 'KICOSCA Desk',
-            'icon': 'bi bi-award',
-            'theme': 'teal',
-            'description': 'KICOSCA Games player registration — county employee IPRS identity and KRA employment verification.',
-            'count_label': 'county director users',
-            'count': role_total(UserRole.COUNTY_SPORTS_DIRECTOR),
-            'primary_url': 'kicosca_dashboard',
-            'primary_label': 'Open KICOSCA portal',
-            'actions': [
-                {'label': 'KICOSCA Dashboard', 'url': 'kicosca_dashboard'},
-                {'label': 'Verification Queue', 'url': 'kicosca_verification'},
-            ],
-        },
-        {
             'title': 'Team Manager Desk',
             'icon': 'bi bi-people',
             'theme': 'blue',
@@ -8878,4 +8848,5 @@ def sys_admin_dashboard_view(request):
         'dashboard_hubs': dashboard_hubs,
         'users_by_role': users_by_role,
         'test_dashboards': test_dashboards,
+        'kicosca_county_count': role_count_map.get(UserRole.COUNTY_SPORTS_DIRECTOR, 0),
     })
