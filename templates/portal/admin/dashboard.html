@@ -535,5 +535,43 @@
     </div>
   </div>
 
+  <!-- ── KICOSCA GAMES — Separate Portal ─────────────────────────────────── -->
+  <div style="margin-top:1.75rem">
+    <div class="hub-sh"><h2><i class="bi bi-award-fill" style="margin-right:.3rem;color:#7c3aed"></i>KICOSCA Games</h2><div class="hub-sh-sep"></div></div>
+    <div style="background:#fff;border-radius:12px;border:1.5px solid #ede9fe;overflow:hidden;box-shadow:0 2px 8px rgba(109,40,217,.08)">
+      <div style="display:grid;grid-template-columns:1fr auto;align-items:center;gap:1rem;padding:1.1rem 1.25rem;border-bottom:1px solid #ede9fe;background:linear-gradient(135deg,#faf5ff,#f5f3ff)">
+        <div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem">
+            <div style="width:36px;height:36px;border-radius:10px;background:#ede9fe;color:#7c3aed;display:flex;align-items:center;justify-content:center;font-size:1rem"><i class="bi bi-award-fill"></i></div>
+            <div>
+              <div style="font-size:.95rem;font-weight:800;color:#0f1117">Kenya Inter-County Sports and Cultural Association</div>
+              <div style="font-size:.76rem;color:#6b7280">KICOSCA Games — separate programme, shared county director accounts</div>
+            </div>
+          </div>
+          <p style="margin:0;font-size:.81rem;color:#6b7280;line-height:1.5;max-width:640px">
+            KICOSCA is an independent programme that runs on this platform. County Sports Directors who are registered in KYISA also access the KICOSCA portal to register county government employees as Games participants. Eligibility is verified via KRA employment records (GavaConnect), not age brackets.
+          </p>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:1.5rem;font-weight:800;color:#7c3aed;line-height:1">{{ kicosca_county_count }}</div>
+          <div style="font-size:.68rem;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em">county directors</div>
+        </div>
+      </div>
+      <div style="padding:1rem 1.25rem;display:flex;gap:.65rem;flex-wrap:wrap;align-items:center">
+        <a href="{% url 'kicosca_dashboard' %}"
+           style="display:inline-flex;align-items:center;gap:.45rem;padding:.5rem 1.1rem;background:#7c3aed;color:#fff;border-radius:9px;font-size:.83rem;font-weight:700;text-decoration:none;transition:background .15s"
+           onmouseover="this.style.background='#6d28d9'" onmouseout="this.style.background='#7c3aed'">
+          <i class="bi bi-speedometer2"></i> Open KICOSCA Portal
+        </a>
+        <a href="{% url 'kicosca_verification' %}"
+           style="display:inline-flex;align-items:center;gap:.45rem;padding:.5rem 1rem;background:#f5f3ff;color:#7c3aed;border:1px solid #ede9fe;border-radius:9px;font-size:.83rem;font-weight:700;text-decoration:none;transition:background .15s"
+           onmouseover="this.style.background='#ede9fe'" onmouseout="this.style.background='#f5f3ff'">
+          <i class="bi bi-patch-check"></i> Verification Queue
+        </a>
+        <span style="font-size:.76rem;color:#a78bfa;margin-left:.25rem"><i class="bi bi-info-circle"></i> KICOSCA accounts are managed through KYISA — county directors log in with the same credentials</span>
+      </div>
+    </div>
+  </div>
+
 </div>
 {% endblock %}
