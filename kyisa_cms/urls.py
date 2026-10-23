@@ -114,6 +114,8 @@ from .web_views import (
     county_admin_add_discipline_view,
     county_admin_discipline_players_view,
     county_admin_add_player_view,
+    county_admin_bulk_upload_template_view,
+    county_admin_bulk_upload_view,
     county_admin_delete_player_view,
     # County Sports Director — technical bench & verification
     county_admin_add_bench_member_view,
@@ -309,6 +311,8 @@ urlpatterns = [
     path("portal/county-admin/add-discipline/",               county_admin_add_discipline_view,     name="county_admin_add_discipline"),
     path("portal/county-admin/discipline/<int:discipline_pk>/", county_admin_discipline_players_view, name="county_admin_discipline_players"),
     path("portal/county-admin/discipline/<int:discipline_pk>/add-player/", county_admin_add_player_view, name="county_admin_add_player"),
+    path("portal/county-admin/discipline/<int:discipline_pk>/upload-template.xlsx", county_admin_bulk_upload_template_view, name="county_admin_bulk_upload_template"),
+    path("portal/county-admin/discipline/<int:discipline_pk>/bulk-upload/", county_admin_bulk_upload_view, name="county_admin_bulk_upload"),
     path("portal/county-admin/player/<int:player_pk>/delete/", county_admin_delete_player_view,     name="county_admin_delete_player"),
     path("portal/county-admin/discipline/<int:discipline_pk>/add-bench-member/", county_admin_add_bench_member_view, name="county_admin_add_bench_member"),
     path("portal/county-admin/bench-member/<int:member_pk>/delete/", county_admin_delete_bench_member_view, name="county_admin_delete_bench_member"),

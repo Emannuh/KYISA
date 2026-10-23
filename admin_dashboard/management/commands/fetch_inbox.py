@@ -180,8 +180,8 @@ class Command(BaseCommand):
                         from_email = from_display[:254],
                         to_emails  = to_addr[:500],
                         subject    = subject[:500],
-                        body_text  = body_text[:5000],
-                        body_html  = body_html[:10000],
+                        body_text  = body_text,
+                        body_html  = body_html,
                         sent_at    = received_at,
                         message_id = message_id[:255],
                     )

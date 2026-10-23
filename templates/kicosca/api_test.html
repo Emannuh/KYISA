@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% block title %}KICOSCA API Test — KYISA{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="breadcrumb">
+    <a href="{% url 'kicosca_dashboard' %}">KICOSCA</a>
+    <span>API Test</span>
+  </div>
+  <h1><i class="bi bi-wrench-adjustable-circle"></i> KICOSCA API Integration Test</h1>
+  <p>Test GavaConnect KRA employment verification and IPRS identity checks. Admin only.</p>
+</div>
+
+<!-- Config Status -->
+<div class="dash-stats" style="margin-bottom:1.5rem">
+  <div class="dash-stat {% if gava_configured %}dash-stat--green{% else %}dash-stat--red{% endif %}">
+    <div class="stat-icon"><i class="bi bi-building-check"></i></div>
+    <div class="stat-num" style="font-size:1rem">{% if gava_configured %}Configured{% else %}Not Set{% endif %}</div>
+    <div class="stat-lbl">GavaConnect KRA ({{ gava_env }})</div>
+  </div>
+  <div class="dash-stat {% if prembly_configured %}dash-stat--green{% else %}dash-stat--red{% endif %}">
+    <div class="stat-icon"><i class="bi bi-fingerprint"></i></div>
+    <div class="stat-num" style="font-size:1rem">{% if prembly_configured %}Configured{% else %}Not Set{% endif %}</div>
+    <div class="stat-lbl">Prembly IPRS ({{ prembly_env }})</div>
+  </div>
+</div>
+
+{% if not gava_configured %}
+<div class="palert palert-warning" style="margin-bottom:1.25rem">
+  <i class="bi bi-exclamation-triangle-fill"></i>
+  <div>
+    <strong>GavaConnect credentials not set.</strong>
+    Add <code>GAVACONNECT_CLIENT_ID</code>, <code>GAVACONNECT_CLIENT_SECRET</code>, and <code>GAVACONNECT_ENVIRONMENT</code> to Railway variables.
+    Sandbox test PIN: <code>P051234567A</code>.
+    Register at <a href="https://sandbox.gavaconnect.co.ke" target="_blank" style="color:inherit;font-weight:700">sandbox.gavaconnect.co.ke</a> to get credentials.
+  </div>
+</div>
+{% endif %}
+
+{% if not prembly_configured %}
+<div class="palert palert-warning" style="margin-bottom:1.25rem">
+  <i class="bi bi-exclamation-triangle-fill"></i>
+  <div>
+    <strong>Prembly API key not set.</strong>
+    Add <code>PREMBLY_API_KEY</code> and set <code>PREMBLY_ENVIRONMENT=production</code> in Railway variables.
+  </div>
+</div>
+{% endif %}
+
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1.5rem">
+
+  <!-- Test 1: KRA Employment by PIN -->
+  <div class="dash-panel">
+    <div class="dash-panel-head"><h3><i class="bi bi-building-check"></i> KRA Employment Check</h3></div>
+    <div class="dash-panel-body">
+      <p style="font-size:.8rem;color:#6b7280;margin-bottom:1rem">Verify a person is employed by a county government via their KRA PIN.</p>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="test_kra">
+        <div style="margin-bottom:.75rem">
+          <label style="font-size:.75rem;font-weight:700;display:block;margin-bottom:.3rem">KRA PIN</label>
+          <input type="text" name="kra_pin" value="P051234567A" style="width:100%;padding:.45rem .75rem;border:1.5px solid #e5e7eb;border-radius:8px;font-family:monospace;font-size:.9rem;box-sizing:border-box">
+          <div style="font-size:.7rem;color:#9ca3af;margin-top:.2rem">Sandbox test: P051234567A</div>
+        </div>
+        <div style="margin-bottom:.75rem">
+          <label style="font-size:.75rem;font-weight:700;display:block;margin-bottom:.3rem">Expected County</label>
+          <input type="text" name="county" value="Nairobi" style="width:100%;padding:.45rem .75rem;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.9rem;box-sizing:border-box">
+        </div>
+        <button type="submit" class="pbtn pbtn-primary" style="width:100%">Run KRA Check</button>
+      </form>
+
+      {% if kra_result %}
+      <div style="margin-top:1rem;padding:.85rem;border-radius:8px;font-size:.82rem;
+        {% if kra_result.county_match %}background:#f0fdf4;border:1px solid #bbf7d0{% elif kra_result.success %}background:#fffbeb;border:1px solid #fde68a{% else %}background:#fef2f2;border:1px solid #fecaca{% endif %}">
+        <div style="font-weight:700;margin-bottom:.5rem">
+          {% if kra_result.county_match %}✅ County Match{% elif kra_result.is_county_employee %}⚠ County Employee (Wrong County){% elif kra_result.success %}❌ Not County Employee{% else %}❌ Failed{% endif %}
+          {% if kra_result.is_simulation %}<span style="font-size:.7rem;background:#e5e7eb;border-radius:4px;padding:.1rem .35rem;margin-left:.4rem">SIMULATION</span>{% endif %}
+        </div>
+        <div style="display:grid;grid-template-columns:120px 1fr;gap:.2rem .5rem">
+          <span style="color:#6b7280">PIN</span><span style="font-family:monospace">{{ kra_result.pin }}</span>
+          <span style="color:#6b7280">County</span><span>{{ kra_result.county }}</span>
+          <span style="color:#6b7280">Employer</span><span>{{ kra_result.employer_name|default:"—" }}</span>
+          <span style="color:#6b7280">Employer PIN</span><span style="font-family:monospace">{{ kra_result.employer_pin|default:"—" }}</span>
+          {% if kra_result.error_message %}<span style="color:#6b7280">Error</span><span style="color:#c2410c">{{ kra_result.error_message }}</span>{% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Test 2: KRA PIN by National ID -->
+  <div class="dash-panel">
+    <div class="dash-panel-head"><h3><i class="bi bi-search"></i> KRA PIN Lookup by ID</h3></div>
+    <div class="dash-panel-body">
+      <p style="font-size:.8rem;color:#6b7280;margin-bottom:1rem">Look up a person's KRA PIN using their Kenya National ID number.</p>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="test_kra_pin">
+        <div style="margin-bottom:.75rem">
+          <label style="font-size:.75rem;font-weight:700;display:block;margin-bottom:.3rem">National ID Number</label>
+          <input type="text" name="national_id" value="12345678" style="width:100%;padding:.45rem .75rem;border:1.5px solid #e5e7eb;border-radius:8px;font-family:monospace;font-size:.9rem;box-sizing:border-box">
+        </div>
+        <button type="submit" class="pbtn pbtn-primary" style="width:100%">Look Up PIN</button>
+      </form>
+
+      {% if kra_pin_result %}
+      <div style="margin-top:1rem;padding:.85rem;border-radius:8px;font-size:.82rem;
+        {% if kra_pin_result.success %}background:#f0fdf4;border:1px solid #bbf7d0{% else %}background:#fef2f2;border:1px solid #fecaca{% endif %}">
+        <div style="font-weight:700;margin-bottom:.5rem">
+          {% if kra_pin_result.success %}✅ PIN Found{% else %}❌ Failed{% endif %}
+          {% if kra_pin_result.is_simulation %}<span style="font-size:.7rem;background:#e5e7eb;border-radius:4px;padding:.1rem .35rem;margin-left:.4rem">SIMULATION</span>{% endif %}
+        </div>
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:.2rem .5rem">
+          <span style="color:#6b7280">National ID</span><span style="font-family:monospace">{{ kra_pin_result.national_id }}</span>
+          <span style="color:#6b7280">KRA PIN</span><span style="font-family:monospace;font-weight:700">{{ kra_pin_result.kra_pin|default:"—" }}</span>
+          <span style="color:#6b7280">Name</span><span>{{ kra_pin_result.name|default:"—" }}</span>
+          {% if kra_pin_result.error_message %}<span style="color:#6b7280">Error</span><span style="color:#c2410c">{{ kra_pin_result.error_message }}</span>{% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Test 3: Prembly IPRS -->
+  <div class="dash-panel">
+    <div class="dash-panel-head"><h3><i class="bi bi-fingerprint"></i> IPRS Identity Check</h3></div>
+    <div class="dash-panel-body">
+      <p style="font-size:.8rem;color:#6b7280;margin-bottom:1rem">Verify a person's identity against Kenya's IPRS government database.</p>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="test_iprs">
+        <div style="margin-bottom:.75rem">
+          <label style="font-size:.75rem;font-weight:700;display:block;margin-bottom:.3rem">National ID Number</label>
+          <input type="text" name="iprs_id" value="10101010" style="width:100%;padding:.45rem .75rem;border:1.5px solid #e5e7eb;border-radius:8px;font-family:monospace;font-size:.9rem;box-sizing:border-box">
+          <div style="font-size:.7rem;color:#9ca3af;margin-top:.2rem">Sandbox test: 10101010</div>
+        </div>
+        <button type="submit" class="pbtn pbtn-primary" style="width:100%">Run IPRS Check</button>
+      </form>
+
+      {% if iprs_result %}
+      <div style="margin-top:1rem;padding:.85rem;border-radius:8px;font-size:.82rem;
+        {% if iprs_result.person_found %}background:#f0fdf4;border:1px solid #bbf7d0{% else %}background:#fef2f2;border:1px solid #fecaca{% endif %}">
+        <div style="font-weight:700;margin-bottom:.5rem">
+          {% if iprs_result.person_found %}✅ Person Found{% else %}❌ Not Found{% endif %}
+          {% if iprs_result.is_simulation %}<span style="font-size:.7rem;background:#e5e7eb;border-radius:4px;padding:.1rem .35rem;margin-left:.4rem">SIMULATION</span>{% endif %}
+        </div>
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:.2rem .5rem">
+          <span style="color:#6b7280">ID</span><span style="font-family:monospace">{{ iprs_result.national_id }}</span>
+          <span style="color:#6b7280">Full Name</span><span style="font-weight:700">{{ iprs_result.full_name|default:"—" }}</span>
+          <span style="color:#6b7280">DOB</span><span>{{ iprs_result.date_of_birth|default:"—" }}</span>
+          <span style="color:#6b7280">Gender</span><span>{{ iprs_result.gender|default:"—" }}</span>
+          <span style="color:#6b7280">Serial No.</span><span style="font-family:monospace">{{ iprs_result.serial_number|default:"—" }}</span>
+          <span style="color:#6b7280">Place of Birth</span><span>{{ iprs_result.place_of_birth|default:"—" }}</span>
+          <span style="color:#6b7280">Date of Issue</span><span>{{ iprs_result.date_of_issue|default:"—" }}</span>
+          <span style="color:#6b7280">Photo</span><span>{% if iprs_result.has_photo %}✅ Returned{% else %}❌ Not in IPRS{% endif %}</span>
+          {% if iprs_result.error_message %}<span style="color:#6b7280">Error</span><span style="color:#c2410c">{{ iprs_result.error_message }}</span>{% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+<!-- Setup instructions -->
+<div class="dash-panel">
+  <div class="dash-panel-head"><h3><i class="bi bi-info-circle"></i> Setup Instructions</h3></div>
+  <div class="dash-panel-body" style="font-size:.84rem;line-height:1.7">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+      <div>
+        <strong style="color:#0f766e">GavaConnect KRA Setup</strong>
+        <ol style="margin:.5rem 0 0 1.2rem;color:#374151">
+          <li>Register at <a href="https://sandbox.gavaconnect.co.ke" target="_blank">sandbox.gavaconnect.co.ke</a></li>
+          <li>Create an App in your dashboard</li>
+          <li>Subscribe to "Fetch Taxpayer Obligations" and "PIN Checker by ID"</li>
+          <li>Copy your Client ID and Client Secret</li>
+          <li>Add to Railway: <code>GAVACONNECT_CLIENT_ID</code>, <code>GAVACONNECT_CLIENT_SECRET</code></li>
+          <li>Set <code>GAVACONNECT_ENVIRONMENT=sandbox</code> for testing, <code>production</code> for live</li>
+          <li>Test PIN: <code>P051234567A</code></li>
+        </ol>
+      </div>
+      <div>
+        <strong style="color:#166534">Prembly IPRS Setup</strong>
+        <ol style="margin:.5rem 0 0 1.2rem;color:#374151">
+          <li>Log in at <a href="https://app.prembly.com" target="_blank">app.prembly.com</a></li>
+          <li>Go to API Keys and copy your live key</li>
+          <li>Add to Railway: <code>PREMBLY_API_KEY</code></li>
+          <li>Set <code>PREMBLY_ENVIRONMENT=production</code></li>
+          <li>Test ID (sandbox): <code>10101010</code></li>
+          <li>Photo is returned only via the SDK flow (not the API endpoint)</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

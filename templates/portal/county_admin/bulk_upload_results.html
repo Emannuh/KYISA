@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block title %}Bulk Upload Results — {{ discipline.get_sport_type_display }} — KYISA{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="breadcrumb">
+    <a href="{% url 'county_admin_dashboard' %}">County Admin</a>
+    <a href="{% url 'county_admin_discipline_players' discipline_pk=discipline.pk %}">{{ discipline.get_sport_type_display }}</a>
+    <span>Upload Results</span>
+  </div>
+  <h1><i class="bi bi-upload"></i> Bulk Upload Results</h1>
+  <p>{{ reg.county }} County &mdash; {{ discipline.get_sport_type_display }}</p>
+</div>
+
+<!-- Summary cards -->
+<div class="dash-stats" style="margin-bottom:1.5rem">
+  <div class="dash-stat dash-stat--green">
+    <div class="stat-icon"><i class="bi bi-check-circle-fill"></i></div>
+    <div class="stat-num">{{ saved_count }}</div>
+    <div class="stat-lbl">Players Saved</div>
+  </div>
+  <div class="dash-stat dash-stat--red">
+    <div class="stat-icon"><i class="bi bi-x-circle-fill"></i></div>
+    <div class="stat-num">{{ error_count }}</div>
+    <div class="stat-lbl">Rows with Errors</div>
+  </div>
+  <div class="dash-stat dash-stat--green">
+    <div class="stat-icon"><i class="bi bi-patch-check-fill"></i></div>
+    <div class="stat-num">{{ iprs_verified }}</div>
+    <div class="stat-lbl">IPRS Verified</div>
+  </div>
+  <div class="dash-stat dash-stat--amber">
+    <div class="stat-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+    <div class="stat-num">{{ iprs_mismatch }}</div>
+    <div class="stat-lbl">IPRS Mismatch</div>
+  </div>
+  <div class="dash-stat dash-stat--grey">
+    <div class="stat-icon"><i class="bi bi-x-octagon-fill"></i></div>
+    <div class="stat-num">{{ iprs_failed }}</div>
+    <div class="stat-lbl">IPRS Not Found</div>
+  </div>
+</div>
+
+{% if iprs_mismatch > 0 %}
+<div class="palert palert-warning" style="margin-bottom:1.25rem">
+  <i class="bi bi-exclamation-triangle-fill"></i>
+  <div><strong>{{ iprs_mismatch }} player{{ iprs_mismatch|pluralize }} flagged for review</strong> — IPRS returned a name or date of birth that does not exactly match what was entered. These players have been saved and a Verification Officer will review them.</div>
+</div>
+{% endif %}
+
+{% if error_count > 0 %}
+<div class="palert palert-danger" style="margin-bottom:1.25rem">
+  <i class="bi bi-x-circle-fill"></i>
+  <div><strong>{{ error_count }} row{{ error_count|pluralize }} could not be saved.</strong> Check the errors below, fix your spreadsheet, and re-upload the failed rows.</div>
+</div>
+{% endif %}
+
+<!-- Results table -->
+<div class="portal-table-wrap">
+  <div class="portal-table-head">
+    <h3><i class="bi bi-table"></i> Row by Row Results</h3>
+    <a href="{% url 'county_admin_discipline_players' discipline_pk=discipline.pk %}" class="pbtn pbtn-primary pbtn-sm">
+      <i class="bi bi-arrow-left"></i> Back to Player List
+    </a>
+  </div>
+  <div class="portal-table-scroll">
+    <table class="portal-table">
+      <thead>
+        <tr>
+          <th>Row</th>
+          <th>Name</th>
+          <th>National ID</th>
+          <th>Age</th>
+          <th>IPRS Status</th>
+          <th>IPRS Name Returned</th>
+          <th>Result</th>
+          <th>Errors</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in results %}
+        <tr>
+          <td style="color:#9ca3af">{{ r.row }}</td>
+          <td style="font-weight:600">{{ r.name }}</td>
+          <td><code style="font-size:.8rem">{{ r.national_id|default:"—" }}</code></td>
+          <td>
+            {% if r.age %}
+              {{ r.age }} yrs
+              {% if not r.age_eligible %}
+                <span class="pstatus pstatus--warning" style="margin-left:.3rem">Age Review</span>
+              {% endif %}
+            {% else %}—{% endif %}
+          </td>
+          <td>
+            {% if r.iprs_status == 'verified' %}
+              <span class="pstatus pstatus--success">✅ Verified</span>
+            {% elif r.iprs_status == 'mismatch' %}
+              <span class="pstatus pstatus--warning">⚠ Mismatch</span>
+            {% elif r.iprs_status == 'failed' %}
+              <span class="pstatus pstatus--danger">❌ Not Found</span>
+            {% else %}
+              <span class="pstatus pstatus--neutral">—</span>
+            {% endif %}
+          </td>
+          <td style="font-size:.8rem;color:#374151">{{ r.iprs_name|default:"—" }}</td>
+          <td>
+            {% if r.status == 'saved' %}
+              <span class="pstatus pstatus--success">✅ Saved</span>
+            {% elif r.status == 'error' %}
+              <span class="pstatus pstatus--danger">❌ Not saved</span>
+            {% endif %}
+          </td>
+          <td style="font-size:.78rem;color:#c2410c">
+            {% for err in r.errors %}
+            <div>{{ err }}</div>
+            {% endfor %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Action buttons -->
+<div style="display:flex;gap:.75rem;margin-top:1.25rem;flex-wrap:wrap">
+  <a href="{% url 'county_admin_discipline_players' discipline_pk=discipline.pk %}" class="pbtn pbtn-primary">
+    <i class="bi bi-people-fill"></i> View Player List
+  </a>
+  <a href="{% url 'county_admin_bulk_upload_template' discipline_pk=discipline.pk %}" class="pbtn pbtn-outline">
+    <i class="bi bi-file-earmark-spreadsheet"></i> Download Template Again
+  </a>
+</div>
+{% endblock %}

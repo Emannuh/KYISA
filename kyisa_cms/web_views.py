@@ -6335,6 +6335,358 @@ def county_admin_add_player_view(request, discipline_pk):
 
 
 @role_required('county_sports_admin')
+def county_admin_bulk_upload_template_view(request, discipline_pk):
+    """
+    Download a pre-formatted Excel template for bulk player upload.
+    One template per discipline — columns match the required fields.
+    """
+    import io
+    import openpyxl
+    from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+    from django.http import HttpResponse
+
+    reg = CountyRegistration.objects.filter(user=request.user).first()
+    if reg is None:
+        return redirect('county_admin_complete_registration')
+    discipline = get_object_or_404(CountyDiscipline, pk=discipline_pk, registration=reg)
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = f"{discipline.get_sport_type_display()} Players"
+
+    # ── Header row ──────────────────────────────────────────────────────────
+    headers = [
+        ('first_name',        'First Name *'),
+        ('last_name',         'Last Name *'),
+        ('date_of_birth',     'Date of Birth * (YYYY-MM-DD)'),
+        ('national_id_number','National ID * (7-8 digits)'),
+        ('phone',             'Phone * (e.g. 0712345678)'),
+        ('position',          'Position (e.g. GK, CB, ST)'),
+        ('jersey_number',     'Jersey No. (1-99)'),
+        ('huduma_number',     'Huduma Namba (optional)'),
+    ]
+
+    header_fill  = PatternFill("solid", fgColor="1B5E20")
+    header_font  = Font(bold=True, color="FFFFFF", size=11)
+    thin         = Side(style='thin', color="CCCCCC")
+    border       = Border(left=thin, right=thin, top=thin, bottom=thin)
+
+    for col_idx, (_, label) in enumerate(headers, start=1):
+        cell = ws.cell(row=1, column=col_idx, value=label)
+        cell.font      = header_font
+        cell.fill      = header_fill
+        cell.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+        cell.border    = border
+
+    ws.row_dimensions[1].height = 30
+
+    # ── Example row ──────────────────────────────────────────────────────────
+    example = ['Jane', 'Wanjiku', '2004-03-15', '12345678', '0712345678', 'FW', '10', '']
+    for col_idx, val in enumerate(example, start=1):
+        cell = ws.cell(row=2, column=col_idx, value=val)
+        cell.fill      = PatternFill("solid", fgColor="F0FDF4")
+        cell.border    = border
+        cell.alignment = Alignment(horizontal='left', vertical='center')
+
+    # ── Column widths ─────────────────────────────────────────────────────────
+    col_widths = [15, 15, 25, 20, 18, 12, 12, 20]
+    for i, width in enumerate(col_widths, start=1):
+        ws.column_dimensions[ws.cell(row=1, column=i).column_letter].width = width
+
+    # ── Info sheet ─────────────────────────────────────────────────────────────
+    ws_info = wb.create_sheet(title="Instructions")
+    ws_info['A1'] = "KYISA Player Registration — Bulk Upload Instructions"
+    ws_info['A1'].font = Font(bold=True, size=13, color="1B5E20")
+    instructions = [
+        ("", ""),
+        ("Discipline:", discipline.get_sport_type_display()),
+        ("County:", reg.county),
+        ("Squad Limit:", str(discipline.squad_limit)),
+        ("Remaining Slots:", str(discipline.squad_limit - discipline.player_count)),
+        ("", ""),
+        ("Column Notes:", ""),
+        ("First Name:", "Player's official first name (as on National ID)"),
+        ("Last Name:", "Player's official surname (as on National ID)"),
+        ("Date of Birth:", "Format: YYYY-MM-DD (e.g. 2003-07-25). Age must be 18-23."),
+        ("National ID:", "7 or 8 digit Kenya National ID number. Must be unique."),
+        ("Phone:", "Kenyan mobile number — 07XXXXXXXX, 01XXXXXXXX, or +254XXXXXXXXX"),
+        ("Position:", "Playing position shortcode (e.g. GK, CB, LB, RB, CM, FW). Optional."),
+        ("Jersey No.:", "Number 1-99. Optional but recommended."),
+        ("Huduma Namba:", "Optional. Leave blank if unavailable."),
+        ("", ""),
+        ("Important:", "Do NOT change column headers or add extra columns."),
+        ("", "Documents (photo, ID scan) must be uploaded individually per player after upload."),
+        ("", "Players with mismatched IPRS data will be flagged for review, not rejected."),
+    ]
+    for row_i, (label, value) in enumerate(instructions, start=2):
+        ws_info.cell(row=row_i, column=1, value=label).font = Font(bold=bool(label and label.endswith(':')))
+        ws_info.cell(row=row_i, column=2, value=value)
+    ws_info.column_dimensions['A'].width = 22
+    ws_info.column_dimensions['B'].width = 65
+
+    # ── Stream response ──────────────────────────────────────────────────────────
+    buf = io.BytesIO()
+    wb.save(buf)
+    buf.seek(0)
+
+    filename = f"KYISA_{reg.county}_{discipline.get_sport_type_display().replace(' ', '_')}_Players_Template.xlsx"
+    response = HttpResponse(
+        buf.read(),
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response
+
+
+@role_required('county_sports_admin')
+def county_admin_bulk_upload_view(request, discipline_pk):
+    """
+    Parse an uploaded Excel file and register players in bulk.
+
+    Per-row processing:
+      1. Validate all required fields and formats
+      2. Check National ID uniqueness
+      3. Check squad limit (remaining slots)
+      4. Run IPRS check automatically on valid rows
+      5. Save player records
+      6. Return a results page showing per-row outcomes
+    """
+    import openpyxl
+    from datetime import date as date_type, datetime
+    from teams.forms import validate_kenya_phone_or_raise
+    from django.core.exceptions import ValidationError as DjangoValidationError
+
+    reg = CountyRegistration.objects.filter(user=request.user).first()
+    if reg is None:
+        messages.info(request, 'Please complete your county registration first.')
+        return redirect('county_admin_complete_registration')
+
+    discipline = get_object_or_404(CountyDiscipline, pk=discipline_pk, registration=reg)
+
+    if not reg.is_approved:
+        messages.warning(request, 'Registration must be approved before adding players.')
+        return redirect('county_admin_dashboard')
+
+    if request.method != 'POST':
+        return redirect('county_admin_discipline_players', discipline_pk=discipline_pk)
+
+    excel_file = request.FILES.get('excel_file')
+    if not excel_file:
+        messages.error(request, 'Please select an Excel file to upload.')
+        return redirect('county_admin_discipline_players', discipline_pk=discipline_pk)
+
+    if not excel_file.name.endswith(('.xlsx', '.xls')):
+        messages.error(request, 'Only Excel files (.xlsx) are accepted.')
+        return redirect('county_admin_discipline_players', discipline_pk=discipline_pk)
+
+    try:
+        wb = openpyxl.load_workbook(excel_file, read_only=True, data_only=True)
+        ws = wb.active
+    except Exception:
+        messages.error(request, 'Could not read the file. Make sure it is a valid .xlsx file.')
+        return redirect('county_admin_discipline_players', discipline_pk=discipline_pk)
+
+    # Column order must match the template
+    COL = {
+        'first_name':         0,
+        'last_name':          1,
+        'date_of_birth':      2,
+        'national_id_number': 3,
+        'phone':              4,
+        'position':           5,
+        'jersey_number':      6,
+        'huduma_number':      7,
+    }
+
+    rows = list(ws.iter_rows(min_row=2, values_only=True))  # skip header
+    wb.close()
+
+    remaining_slots = discipline.squad_limit - discipline.player_count
+    results = []
+    saved_count = 0
+
+    from teams.prembly_service import PremblyService
+    from teams.utils import save_base64_photo
+
+    svc = PremblyService()
+
+    for row_num, row in enumerate(rows, start=2):
+        # Skip completely empty rows
+        if not any(row):
+            continue
+
+        def cell(col_name):
+            val = row[COL[col_name]] if len(row) > COL[col_name] else None
+            return str(val).strip() if val is not None and str(val).strip() else ''
+
+        result = {
+            'row': row_num,
+            'name': f"{cell('first_name')} {cell('last_name')}".strip() or f"Row {row_num}",
+            'national_id': cell('national_id_number'),
+            'status': 'ok',
+            'iprs_status': 'not_checked',
+            'iprs_name': '',
+            'errors': [],
+        }
+
+        errors = result['errors']
+
+        # ── Required field checks ──────────────────────────────────────────
+        first_name = cell('first_name')
+        last_name  = cell('last_name')
+        nid        = cell('national_id_number')
+        phone_raw  = cell('phone')
+        dob_raw    = cell('date_of_birth')
+
+        if not first_name:  errors.append('First name is required.')
+        if not last_name:   errors.append('Last name is required.')
+        if not nid:         errors.append('National ID is required.')
+        elif not nid.isdigit() or not (7 <= len(nid) <= 8):
+            errors.append(f'National ID "{nid}" must be 7-8 digits.')
+        elif CountyPlayer.objects.filter(national_id_number=nid).exists():
+            existing = CountyPlayer.objects.get(national_id_number=nid)
+            errors.append(
+                f'National ID {nid} is already registered under '
+                f'{existing.discipline.registration.county} ({existing.discipline.get_sport_type_display()}).'
+            )
+
+        # ── Date of birth ──────────────────────────────────────────────────
+        dob = None
+        if not dob_raw:
+            errors.append('Date of birth is required.')
+        else:
+            for fmt in ('%Y-%m-%d', '%d/%m/%Y', '%d-%m-%Y'):
+                try:
+                    dob = datetime.strptime(str(dob_raw), fmt).date()
+                    break
+                except (ValueError, TypeError):
+                    continue
+            if dob is None:
+                errors.append(f'Date of birth "{dob_raw}" is not a valid date. Use YYYY-MM-DD format.')
+
+        # ── Phone ──────────────────────────────────────────────────────────
+        phone = ''
+        if not phone_raw:
+            errors.append('Phone number is required.')
+        else:
+            try:
+                phone = validate_kenya_phone_or_raise(phone_raw)
+            except DjangoValidationError as exc:
+                errors.append(str(exc.message))
+
+        # ── Jersey number ──────────────────────────────────────────────────
+        jersey_number = None
+        jersey_raw = cell('jersey_number')
+        if jersey_raw:
+            try:
+                jersey_number = int(float(jersey_raw))
+                if not (1 <= jersey_number <= 99):
+                    errors.append(f'Jersey number {jersey_number} must be between 1 and 99.')
+            except (ValueError, TypeError):
+                errors.append(f'Jersey number "{jersey_raw}" is not valid.')
+
+        # ── Squad limit check ──────────────────────────────────────────────
+        if not errors and remaining_slots <= 0:
+            errors.append(f'Squad limit reached ({discipline.squad_limit}). No more players can be added.')
+
+        if errors:
+            result['status'] = 'error'
+            results.append(result)
+            continue
+
+        # ── Age eligibility ────────────────────────────────────────────────
+        today = timezone.now().date()
+        age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+        is_age_eligible = (18 <= age <= 23)
+        verification_status = 'pending' if is_age_eligible else 'ineligible'
+
+        # ── IPRS check ─────────────────────────────────────────────────────
+        iprs_result = svc.lookup_by_national_id(nid)
+        prembly_status        = 'not_checked'
+        prembly_verified_name = ''
+        prembly_reference     = ''
+        prembly_notes         = ''
+        iprs_photo_file       = None
+
+        if iprs_result.success and iprs_result.person_found:
+            iprs_name  = iprs_result.full_name.upper()
+            reg_name   = f"{first_name} {last_name}".upper()
+            name_match = any(part in iprs_name for part in reg_name.split() if len(part) > 2)
+            dob_match  = (iprs_result.date_of_birth == dob) if iprs_result.date_of_birth else False
+
+            prembly_status        = 'verified' if (name_match and dob_match) else 'mismatch'
+            prembly_verified_name = iprs_result.full_name
+            prembly_reference     = iprs_result.reference_number or ''
+
+            extras = []
+            if iprs_result.serial_number:  extras.append(f"Serial: {iprs_result.serial_number}")
+            if iprs_result.date_of_issue:  extras.append(f"Issued: {iprs_result.date_of_issue}")
+            if iprs_result.place_of_birth: extras.append(f"Born: {iprs_result.place_of_birth}")
+
+            prembly_notes = (
+                f"IPRS: Name: {iprs_result.full_name} | "
+                f"DOB: {iprs_result.date_of_birth} | "
+                f"Gender: {iprs_result.gender} | "
+                f"Ref: {iprs_result.reference_number}"
+            )
+            if extras:
+                prembly_notes += ' | ' + ' | '.join(extras)
+            prembly_notes += f" | Name match: {name_match}, DOB match: {dob_match}."
+
+            if iprs_result.photo:
+                try:
+                    iprs_photo_file = save_base64_photo(iprs_result.photo, f"prembly_{nid}")
+                except Exception:
+                    pass
+        else:
+            prembly_status    = 'failed'
+            prembly_notes     = f"IPRS: Not found for ID {nid}. {iprs_result.error_message or ''}"
+
+        # ── Save player ────────────────────────────────────────────────────
+        player = CountyPlayer(
+            discipline            = discipline,
+            first_name            = first_name.title(),
+            last_name             = last_name.title(),
+            date_of_birth         = dob,
+            national_id_number    = nid,
+            phone                 = phone,
+            position              = cell('position'),
+            jersey_number         = jersey_number,
+            huduma_number         = cell('huduma_number'),
+            verification_status   = verification_status,
+            prembly_status        = prembly_status,
+            prembly_verified_name = prembly_verified_name,
+            prembly_reference     = prembly_reference,
+            prembly_notes         = prembly_notes,
+            prembly_checked_at    = timezone.now(),
+        )
+        if iprs_photo_file:
+            player.iprs_photo = iprs_photo_file
+        player.save()
+
+        remaining_slots -= 1
+        saved_count += 1
+
+        result['status']     = 'saved'
+        result['iprs_status'] = prembly_status
+        result['iprs_name']  = prembly_verified_name
+        result['age']        = age
+        result['age_eligible'] = is_age_eligible
+        results.append(result)
+
+    return render(request, 'portal/county_admin/bulk_upload_results.html', {
+        'discipline':  discipline,
+        'reg':         reg,
+        'results':     results,
+        'saved_count': saved_count,
+        'error_count': sum(1 for r in results if r['status'] == 'error'),
+        'iprs_verified': sum(1 for r in results if r.get('iprs_status') == 'verified'),
+        'iprs_mismatch': sum(1 for r in results if r.get('iprs_status') == 'mismatch'),
+        'iprs_failed':   sum(1 for r in results if r.get('iprs_status') == 'failed'),
+    })
+
+
+@role_required('county_sports_admin')
 def county_admin_delete_player_view(request, player_pk):
     """Remove a player from a discipline."""
     reg = CountyRegistration.objects.filter(user=request.user).first()

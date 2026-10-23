@@ -18,16 +18,37 @@
 
 {% if discipline.can_add_player %}
 <div style="display:flex;gap:.8rem;margin-bottom:1.5rem;flex-wrap:wrap">
-    <a href="{% url 'county_admin_add_player' discipline_pk=discipline.pk %}" class="btn btn--primary" style="display:inline-block;padding:.5rem 1.2rem;font-size:.9rem">
+    <a href="{% url 'county_admin_add_player' discipline_pk=discipline.pk %}" class="btn btn--primary" style="display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1.2rem;font-size:.9rem">
         <i class="bi bi-person-plus"></i> Add Player
     </a>
-    <a href="{% url 'county_admin_add_bench_member' discipline_pk=discipline.pk %}" style="display:inline-block;padding:.5rem 1.2rem;font-size:.9rem;background:#7b1fa2;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">
+    <a href="{% url 'county_admin_bulk_upload_template' discipline_pk=discipline.pk %}" style="display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1.2rem;font-size:.9rem;background:#0d6efd;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">
+        <i class="bi bi-file-earmark-spreadsheet"></i> Download Template
+    </a>
+    <label for="bulk-upload-input" style="display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1.2rem;font-size:.9rem;background:#198754;color:#fff;border-radius:8px;cursor:pointer;font-weight:600;margin:0">
+        <i class="bi bi-upload"></i> Bulk Upload
+    </label>
+    <a href="{% url 'county_admin_add_bench_member' discipline_pk=discipline.pk %}" style="display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1.2rem;font-size:.9rem;background:#7b1fa2;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">
         <i class="bi bi-person-badge"></i> Technical Bench
     </a>
-    <a href="{% url 'team_list_pdf' discipline_pk=discipline.pk %}" style="display:inline-block;padding:.5rem 1.2rem;font-size:.9rem;background:#1565c0;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">
+    <a href="{% url 'team_list_pdf' discipline_pk=discipline.pk %}" style="display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1.2rem;font-size:.9rem;background:#1565c0;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">
         <i class="bi bi-file-earmark-pdf"></i> Download Team List
     </a>
 </div>
+
+<!-- Hidden bulk upload form -->
+<form id="bulk-upload-form" method="post" action="{% url 'county_admin_bulk_upload' discipline_pk=discipline.pk %}" enctype="multipart/form-data" style="display:none">
+    {% csrf_token %}
+    <input type="file" id="bulk-upload-input" name="excel_file" accept=".xlsx,.xls" onchange="document.getElementById('bulk-upload-form').submit()">
+</form>
+<script>
+document.getElementById('bulk-upload-input').addEventListener('change', function() {
+    if (this.files.length) {
+        const label = document.querySelector('label[for="bulk-upload-input"]');
+        label.innerHTML = '<i class="bi bi-hourglass-split"></i> Uploading...';
+        document.getElementById('bulk-upload-form').submit();
+    }
+});
+</script>
 {% else %}
 <div style="display:flex;gap:.8rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center">
     <div style="background:#fce4ec;border:1px solid #ef9a9a;border-radius:8px;padding:.8rem 1.2rem;font-size:.9rem;color:#C62828;display:inline-block">
@@ -68,17 +89,17 @@
                 <td style="padding:.6rem 1rem">{{ p.phone|default:"—" }}</td>
                 <td style="padding:.6rem 1rem">
                     {% if p.verifisha_status == 'verified' %}
-                        <span title="Verifisha auto-verified" style="background:#E8F5E9;color:#1B5E20;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">✅ Verifisha</span>
+                        <span title="IPRS auto-verified" style="background:#E8F5E9;color:#1B5E20;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">✅ IPRS</span>
                     {% elif p.prembly_status == 'verified' %}
-                        <span title="Prembly IPRS verified" style="background:#E8F5E9;color:#1B5E20;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">✅ Prembly</span>
+                        <span title="IPRS Verified" style="background:#E8F5E9;color:#1B5E20;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">✅ IPRS</span>
                     {% elif p.huduma_status == 'verified' %}
-                        <span title="Huduma manual approval" style="background:#E8F5E9;color:#1B5E20;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">✅ Huduma</span>
+                        <span title="Manually verified" style="background:#E8F5E9;color:#1B5E20;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">✅ Verified</span>
                     {% elif p.verifisha_status == 'pending' %}
                         <span title="Verifisha check in progress" style="background:#E3F2FD;color:#0d47a1;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">🕐 Pending</span>
                     {% elif p.prembly_status == 'mismatch' %}
-                        <span title="Prembly name/DOB mismatch" style="background:#FFF8E1;color:#E65100;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">⚠️ Mismatch</span>
+                        <span title="IPRS name/DOB mismatch" style="background:#FFF8E1;color:#E65100;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">⚠️ Mismatch</span>
                     {% elif p.prembly_status == 'failed' %}
-                        <span title="Prembly check failed" style="background:#FFEBEE;color:#C62828;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">❌ Failed</span>
+                        <span title="IPRS check failed" style="background:#FFEBEE;color:#C62828;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">❌ Failed</span>
                     {% else %}
                         <span title="IPRS not yet checked" style="background:#f5f5f5;color:#888;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">— Unchecked</span>
                     {% endif %}

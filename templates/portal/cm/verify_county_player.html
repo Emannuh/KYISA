@@ -126,7 +126,7 @@
 
                     <!-- IPRS photo -->
                     <div style="text-align:center">
-                        <p style="margin:0 0 .5rem;font-size:.78rem;font-weight:700;color:#1565C0;text-transform:uppercase;letter-spacing:.04em">🏛️ IPRS (Prembly)</p>
+                        <p style="margin:0 0 .5rem;font-size:.78rem;font-weight:700;color:#1565C0;text-transform:uppercase;letter-spacing:.04em">🏛️ IPRS</p>
                         {% if player.iprs_photo %}
                         <img src="{{ player.iprs_photo.url }}" alt="IPRS Photo"
                              style="width:100%;max-height:180px;object-fit:cover;border-radius:10px;border:3px solid #1565C0">
@@ -136,7 +136,7 @@
                             {% if player.prembly_status == 'verified' %}
                             No IPRS photo returned
                             {% else %}
-                            Run Prembly check to see IPRS photo
+                            Run IPRS check to see government photo
                             {% endif %}
                         </div>
                         {% endif %}
@@ -207,7 +207,7 @@
             {% endwith %}
         </div>
 
-        <!-- ── STEP 1: Prembly IPRS Check (Live) ────────────────────── -->
+        <!-- ── STEP 1: IPRS Verification (Live) ────────────────────── -->
         <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden;border-left:4px solid {% if player.prembly_status == 'verified' %}#1B5E20{% elif player.prembly_status == 'failed' %}#C62828{% else %}#0D47A1{% endif %}">
             <div style="padding:.7rem 1rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f0f0f0">
                 <div style="display:flex;align-items:center;gap:.6rem">
@@ -215,7 +215,7 @@
                         {% if player.prembly_status == 'verified' %}background:#1B5E20;color:#fff{% elif player.prembly_status == 'failed' %}background:#C62828;color:#fff{% else %}background:#e8e8e8;color:#888{% endif %}">
                         {% if player.prembly_status == 'verified' %}✓{% elif player.prembly_status == 'failed' %}✗{% else %}1{% endif %}
                     </span>
-                    <span style="font-weight:700;font-size:.9rem;color:#111">IPRS Verification Prembly</span>
+                    <span style="font-weight:700;font-size:.9rem;color:#111">IPRS Verification</span>
                     <span style="font-size:.68rem;padding:.12rem .5rem;background:#e8f5e9;color:#1B5E20;border-radius:20px;font-weight:700">● Live</span>
                 </div>
                 <span style="font-size:.75rem;padding:.2rem .65rem;border-radius:20px;font-weight:700;
@@ -229,7 +229,7 @@
             </div>
             <div style="padding:.9rem 1rem">
                 <p style="margin:0 0 .85rem;font-size:.83rem;color:#777;line-height:1.5">
-                    Instantly checks this player's National ID against Kenya's IPRS government database via Prembly.
+                    Instantly checks this player's National ID against Kenya's IPRS government database .
                     Result comes back in seconds no waiting.
                 </p>
 
@@ -258,7 +258,7 @@
                     <form method="post" action="{% url 'prembly_verify_county_player' player_pk=player.pk %}" style="margin:0">
                         {% csrf_token %}<input type="hidden" name="action" value="submit">
                         <button type="submit" style="padding:.45rem 1.1rem;background:#0D47A1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.84rem;font-weight:700">
-                            🔍 Run Prembly IPRS Check
+                            🔍 Run IPRS Check
                         </button>
                     </form>
                     {% else %}
@@ -323,7 +323,7 @@
             </div>
             <div style="padding:.85rem 1rem">
                 <p style="margin:0 0 .75rem;font-size:.83rem;color:#777;line-height:1.5">
-                    Use only if Prembly check failed or is unavailable. Mark after physical Huduma Kenya verification.
+                    Use only if IPRS check failed or is unavailable. Mark after physical Huduma Kenya verification.
                     {% if player.prembly_status == 'verified' %}
                     <span style="color:#1B5E20;font-weight:600"> Prembly check passed, this step is not required.</span>
                     {% endif %}

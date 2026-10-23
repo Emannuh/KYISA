@@ -450,3 +450,92 @@ def kicosca_verification_dashboard(request):
         'search':        search,
         'sport_choices': KicoscaSport.choices,
     })
+
+
+# ── API Test Dashboard (admin only) ───────────────────────────────────────────
+
+@login_required(login_url='web_login')
+def kicosca_api_test(request):
+    """
+    Admin-only page to test GavaConnect KRA and Prembly IPRS integrations.
+    Run test lookups to confirm credentials are configured and working.
+    """
+    from django.conf import settings
+    user = request.user
+    if not (user.is_superuser or user.role in ('admin', 'competition_manager')):
+        messages.error(request, 'Access denied.')
+        return redirect('dashboard')
+
+    kra_result   = None
+    iprs_result  = None
+    kra_pin_result = None
+
+    # GavaConnect config status
+    gava_client_id  = getattr(settings, 'GAVACONNECT_CLIENT_ID',  '')
+    gava_env        = getattr(settings, 'GAVACONNECT_ENVIRONMENT', 'sandbox')
+    gava_configured = bool(gava_client_id)
+
+    # Prembly config status
+    prembly_key = getattr(settings, 'PREMBLY_API_KEY', '')
+    prembly_env = getattr(settings, 'PREMBLY_ENVIRONMENT', 'sandbox')
+    prembly_configured = bool(prembly_key)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'test_kra':
+            kra_pin = request.POST.get('kra_pin', 'P051234567A').strip().upper()
+            county  = request.POST.get('county', 'Nairobi').strip()
+            from .kra_service import KRAGavaConnectService
+            svc = KRAGavaConnectService()
+            result = svc.verify_county_employment(kra_pin, county)
+            kra_result = {
+                'pin':             kra_pin,
+                'county':          county,
+                'success':         result.success,
+                'employee_found':  result.employee_found,
+                'employer_name':   result.employer_name,
+                'employer_pin':    result.employer_pin,
+                'is_county_employee': result.is_county_employee,
+                'county_match':    result.county_match,
+                'is_simulation':   result.is_simulation,
+                'error_message':   result.error_message,
+            }
+
+        elif action == 'test_kra_pin':
+            national_id = request.POST.get('national_id', '12345678').strip()
+            from .kra_service import KRAGavaConnectService
+            svc = KRAGavaConnectService()
+            kra_pin_result = svc.get_pin_by_national_id(national_id)
+            kra_pin_result['national_id'] = national_id
+
+        elif action == 'test_iprs':
+            national_id = request.POST.get('iprs_id', '10101010').strip()
+            from teams.prembly_service import PremblyService
+            svc = PremblyService()
+            result = svc.lookup_by_national_id(national_id)
+            iprs_result = {
+                'national_id':    national_id,
+                'success':        result.success,
+                'person_found':   result.person_found,
+                'full_name':      result.full_name,
+                'date_of_birth':  str(result.date_of_birth) if result.date_of_birth else None,
+                'gender':         result.gender,
+                'serial_number':  result.serial_number,
+                'date_of_issue':  result.date_of_issue,
+                'place_of_birth': result.place_of_birth,
+                'has_photo':      bool(result.photo),
+                'reference':      result.reference_number,
+                'is_simulation':  result.is_simulation,
+                'error_message':  result.error_message,
+            }
+
+    return render(request, 'kicosca/api_test.html', {
+        'gava_configured':   gava_configured,
+        'gava_env':          gava_env,
+        'prembly_configured': prembly_configured,
+        'prembly_env':       prembly_env,
+        'kra_result':        kra_result,
+        'kra_pin_result':    kra_pin_result,
+        'iprs_result':       iprs_result,
+    })

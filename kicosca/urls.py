@@ -17,4 +17,7 @@ urlpatterns = [
 
     # AJAX endpoints
     path('api/kra-pin-lookup/',                       views.kicosca_kra_pin_lookup,      name='kicosca_kra_pin_lookup'),
+
+    # Admin API test
+    path('api-test/',                                 views.kicosca_api_test,            name='kicosca_api_test'),
 ]

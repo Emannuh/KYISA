@@ -30,17 +30,17 @@
                 <td>
                     {# Verifisha (auto IPRS) takes priority, then Prembly (manual IPRS) #}
                     {% if p.verifisha_status == 'verified' %}
-                        <span title="Verifisha auto-verified" style="background:#E8F5E9;color:#1B5E20;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">✅ Verifisha</span>
+                        <span title="IPRS auto-verified" style="background:#E8F5E9;color:#1B5E20;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">✅ IPRS</span>
                     {% elif p.prembly_status == 'verified' %}
-                        <span title="Prembly IPRS verified" style="background:#E8F5E9;color:#1B5E20;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">✅ Prembly</span>
+                        <span title="IPRS Verified" style="background:#E8F5E9;color:#1B5E20;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">✅ IPRS</span>
                     {% elif p.huduma_status == 'verified' %}
-                        <span title="Huduma manual approval" style="background:#E8F5E9;color:#1B5E20;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">✅ Huduma</span>
+                        <span title="Manually verified" style="background:#E8F5E9;color:#1B5E20;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">✅ Verified</span>
                     {% elif p.verifisha_status == 'pending' %}
                         <span title="Verifisha check pending" style="background:#E3F2FD;color:#0d47a1;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">🕐 Pending</span>
                     {% elif p.prembly_status == 'mismatch' %}
-                        <span title="Prembly name/DOB mismatch" style="background:#FFF8E1;color:#E65100;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">⚠️ Mismatch</span>
+                        <span title="IPRS name/DOB mismatch" style="background:#FFF8E1;color:#E65100;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">⚠️ Mismatch</span>
                     {% elif p.prembly_status == 'failed' %}
-                        <span title="Prembly check failed" style="background:#FFEBEE;color:#C62828;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">❌ Failed</span>
+                        <span title="IPRS check failed" style="background:#FFEBEE;color:#C62828;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">❌ Failed</span>
                     {% else %}
                         <span title="IPRS not yet checked" style="background:#f5f5f5;color:#888;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">— Not checked</span>
                     {% endif %}
