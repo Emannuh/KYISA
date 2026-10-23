@@ -489,6 +489,7 @@ def manage_users(request):
         'competition_managers': User.objects.filter(role='competition_manager').count(),
     }
 
+    from accounts.models import KenyaCounty
     context = {
         'users': users,
         'user_stats': user_stats,
@@ -496,6 +497,7 @@ def manage_users(request):
         'status_filter': status_filter,
         'search_query': search_query,
         'role_choices': UserRole.choices,
+        'county_choices': KenyaCounty.choices,
         'sport_coordinator_rows': sport_coordinator_rows,
         'unassigned_coordinators': unassigned_coordinators,
     }
@@ -514,11 +516,18 @@ def create_user(request):
         last_name = request.POST.get('last_name', '').strip()
         phone = request.POST.get('phone', '').strip()
         role = request.POST.get('role', 'team_manager')
+        county = request.POST.get('county', '').strip()
 
         # Validate phone format
         import re
         if not re.match(r'^\+254\d{9}$', phone):
             messages.error(request, "Phone number must be in the format +254XXXXXXXXX (country code + 9 digits).")
+            return redirect('manage_users')
+
+        # County required for county-based roles
+        roles_needing_county = ('county_sports_admin', 'kicosca_officer', 'kicosca_sg')
+        if role in roles_needing_county and not county:
+            messages.error(request, f"County is required for the {role.replace('_', ' ').title()} role.")
             return redirect('manage_users')
 
         if User.objects.filter(email=email).exists():
@@ -534,6 +543,7 @@ def create_user(request):
                 last_name=last_name,
                 phone=phone,
                 role=role,
+                county=county,
                 is_active=True,
             )
             user_obj.must_change_password = True

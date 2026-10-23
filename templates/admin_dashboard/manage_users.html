@@ -558,9 +558,18 @@
                 </div>
                 <div>
                     <label>Role <span class="req">*</span></label>
-                    <select name="role" class="form-control" required>
+                    <select name="role" id="create-role" class="form-control" required onchange="toggleCountyField()">
                         <option value="">Select Role...</option>
                         {% for value, label in role_choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div id="county-field-wrap" style="display:none">
+                    <label>County <span class="req">*</span></label>
+                    <select name="county" id="create-county" class="form-control">
+                        <option value="">Select County...</option>
+                        {% for value, label in county_choices %}
                         <option value="{{ value }}">{{ label }}</option>
                         {% endfor %}
                     </select>
@@ -577,6 +586,19 @@
         </form>
     </div>
 </div>
+
+<script>
+function toggleCountyField() {
+    var role  = document.getElementById('create-role').value;
+    var wrap  = document.getElementById('county-field-wrap');
+    var sel   = document.getElementById('create-county');
+    var needs = ['county_sports_admin', 'kicosca_officer', 'kicosca_sg'];
+    var show  = needs.indexOf(role) !== -1;
+    wrap.style.display = show ? '' : 'none';
+    sel.required = show;
+}
+document.addEventListener('DOMContentLoaded', toggleCountyField);
+</script>
 
 <!-- Filters & Search -->
 <div class="card" style="margin-bottom:1.5rem;">
