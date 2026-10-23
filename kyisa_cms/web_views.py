@@ -1094,6 +1094,9 @@ def dashboard_view(request):
     if user.role == 'media_manager':
         return redirect('media_dashboard')
 
+    if user.role == 'kicosca_officer':
+        return redirect('kicosca_dashboard')
+
     if user.role == 'scout':
         return redirect('scout_dashboard')
 

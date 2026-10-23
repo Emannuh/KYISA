@@ -31,6 +31,7 @@ class UserRole(models.TextChoices):
     SECRETARY_GENERAL   = "secretary_general",   "Secretary General"
     SCOUT               = "scout",               "Scout"
     ADMIN               = "admin",               "System Admin"
+    KICOSCA_OFFICER     = "kicosca_officer",     "KICOSCA Sports Officer"
 
 
 class UserManager(BaseUserManager):

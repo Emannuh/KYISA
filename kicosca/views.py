@@ -15,7 +15,6 @@ from django.views.decorators.http import require_POST
 from django.utils import timezone
 from functools import wraps
 
-from teams.models import CountyRegistration
 from .models import (
     KicoscaEdition, KicoscaCountyEntry, KicoscaDiscipline,
     KicoscaPlayer, KicoscaSport, KICOSCA_SQUAD_LIMITS, EmploymentStatus,
@@ -24,19 +23,35 @@ from .forms import KicoscaPlayerForm
 
 
 # ── Role guard ────────────────────────────────────────────────────────────────
-def county_director_required(view):
+def kicosca_required(view):
+    """Allow KICOSCA Sports Officers and admins/superusers to access KICOSCA portal."""
     @wraps(view)
     @login_required(login_url='web_login')
     def wrapper(request, *args, **kwargs):
-        if request.user.role != 'county_sports_admin' and not request.user.is_superuser:
-            messages.error(request, 'Only County Sports Directors can access the KICOSCA portal.')
+        allowed = ('kicosca_officer', 'admin', 'competition_manager', 'secretary_general')
+        if request.user.role not in allowed and not request.user.is_superuser:
+            messages.error(request, 'You do not have access to the KICOSCA portal.')
             return redirect('dashboard')
         return view(request, *args, **kwargs)
     return wrapper
 
+# Keep old name as alias so existing decorators don't break during transition
+county_director_required = kicosca_required
+
 
 def _get_reg(request):
-    """Helper — fetch the county registration for the logged-in director."""
+    """
+    For KICOSCA officers, return the CountyRegistration linked to their county field.
+    For county directors (legacy), return their own registration.
+    Falls back to None if not found.
+    """
+    from teams.models import CountyRegistration
+    # KICOSCA officer — match by county name stored on their user account
+    if request.user.role == 'kicosca_officer' and request.user.county:
+        return CountyRegistration.objects.filter(
+            county=request.user.county, status='approved'
+        ).first()
+    # Legacy county director
     return CountyRegistration.objects.filter(user=request.user).first()
 
 
@@ -51,10 +66,26 @@ def _get_or_create_entry(reg, edition):
 
 # ── Dashboard ─────────────────────────────────────────────────────────────────
 
-@county_director_required
+@kicosca_required
 def kicosca_dashboard(request):
-    """KICOSCA home for the county sports director."""
+    """KICOSCA home for the KICOSCA Sports Officer (or county director)."""
     reg = _get_reg(request)
+
+    # KICOSCA officer with no matching county registration — show setup message
+    # but don't redirect to KYISA county registration (wrong system)
+    if not reg and request.user.role == 'kicosca_officer':
+        edition = KicoscaEdition.get_active()
+        return render(request, 'kicosca/dashboard.html', {
+            'reg': None,
+            'edition': edition,
+            'entry': None,
+            'disciplines': [],
+            'total_players': 0,
+            'verified_count': 0,
+            'available_sports': list(KicoscaSport.choices),
+            'no_county_setup': True,
+        })
+
     if not reg:
         messages.info(request, 'Please complete your KYISA county registration first.')
         return redirect('county_admin_complete_registration')
@@ -89,7 +120,7 @@ def kicosca_dashboard(request):
 
 # ── Join / Create County Entry ─────────────────────────────────────────────────
 
-@county_director_required
+@kicosca_required
 def kicosca_join(request):
     """County director registers their county into the active KICOSCA edition."""
     reg = _get_reg(request)
@@ -109,7 +140,7 @@ def kicosca_join(request):
 
 # ── Add Discipline ─────────────────────────────────────────────────────────────
 
-@county_director_required
+@kicosca_required
 def kicosca_add_discipline(request):
     """County director selects a sport to participate in."""
     reg = _get_reg(request)
@@ -149,7 +180,7 @@ def kicosca_add_discipline(request):
 
 # ── Discipline Players ─────────────────────────────────────────────────────────
 
-@county_director_required
+@kicosca_required
 def kicosca_discipline_players(request, discipline_pk):
     """List KICOSCA players in a discipline."""
     reg = _get_reg(request)
@@ -169,7 +200,7 @@ def kicosca_discipline_players(request, discipline_pk):
 
 # ── Add Player ─────────────────────────────────────────────────────────────────
 
-@county_director_required
+@kicosca_required
 def kicosca_add_player(request, discipline_pk):
     """County director adds a KICOSCA player with Prembly + KRA verification."""
     reg = _get_reg(request)
@@ -211,7 +242,7 @@ def kicosca_add_player(request, discipline_pk):
 
 # ── Delete Player ──────────────────────────────────────────────────────────────
 
-@county_director_required
+@kicosca_required
 def kicosca_delete_player(request, player_pk):
     """Remove a KICOSCA player."""
     reg = _get_reg(request)

@@ -375,6 +375,22 @@
             <a href="{% url 'scout_shortlist' %}" class="sidebar-link {% if request.resolver_match.url_name == 'scout_shortlist' %}active{% endif %}"><span class="icon"><i class="bi bi-star"></i></span> My Shortlist</a>
         </div>
     </div>
+    {% elif user.role == 'kicosca_officer' %}
+    <!-- KICOSCA SPORTS OFFICER SIDEBAR -->
+    <div class="sidebar-section">
+        <div class="sidebar-section-toggle"><h4>KICOSCA Games</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
+        <div class="sidebar-section-body">
+            <a href="{% url 'kicosca_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'kicosca_dashboard' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-speedometer2"></i></span> Dashboard
+            </a>
+            <a href="{% url 'kicosca_add_discipline' %}" class="sidebar-link {% if request.resolver_match.url_name == 'kicosca_add_discipline' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-trophy"></i></span> Disciplines
+            </a>
+            <a href="{% url 'kicosca_api_test' %}" class="sidebar-link {% if request.resolver_match.url_name == 'kicosca_api_test' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-wrench-adjustable-circle"></i></span> API Test
+            </a>
+        </div>
+    </div>
     {% endif %}
 
     <div class="sidebar-section" style="margin-top: auto;">
