@@ -377,7 +377,6 @@
           <div class="hub-ws-icon"><i class="{{ workspace.icon }}"></i></div>
           <h3 class="hub-ws-title">{{ workspace.title }}</h3>
         </div>
-        <span class="hub-ws-badge">{{ workspace.count|intcomma }} {{ workspace.count_label }}</span>
       </div>
 
       <!-- Body -->
@@ -385,21 +384,6 @@
 
         <!-- Description — concise -->
         <p class="hub-ws-desc">{{ workspace.description }}</p>
-
-        <!-- Users (if any) -->
-        {% if workspace.users %}
-        <div>
-          <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--hub-muted);margin-bottom:.3rem"><i class="bi bi-people-fill" style="opacity:.5"></i> Users</div>
-          <div class="hub-ws-users">
-            {% for u in workspace.users %}
-            <a href="{% url 'user_detail' u.pk %}" class="hub-ws-user">
-              <div class="hub-ws-avatar">{{ u.first_name.0 }}{{ u.last_name.0 }}</div>
-              {{ u.get_full_name }}
-            </a>
-            {% endfor %}
-          </div>
-        </div>
-        {% endif %}
 
         <!-- Function links — pill style, not a grid -->
         <div class="hub-fns">

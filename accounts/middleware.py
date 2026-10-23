@@ -114,9 +114,12 @@ class RolePreviewMiddleware:
                 request.user._real_role = request.user.role
                 request.user.role       = preview_role
                 request._role_preview   = preview_role
+                request.session['role_preview_display'] = preview_role
             else:
                 request._role_preview = None
+                request.session.pop('role_preview_display', None)
         else:
             request._role_preview = None
+            request.session.pop('role_preview_display', None)
 
         return self.get_response(request)
