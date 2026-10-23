@@ -70,8 +70,8 @@ class KRAGavaConnectService:
     Falls back to simulation mode when credentials are not configured.
     """
 
-    TOKEN_URL_SANDBOX    = "https://sandbox.gavaconnect.co.ke/api/v1/oauth/token"
-    TOKEN_URL_PRODUCTION = "https://api.gavaconnect.co.ke/api/v1/oauth/token"
+    TOKEN_URL_SANDBOX    = "https://sandbox.gavaconnect.co.ke/oauth/client_credential/accesstoken?grant_type=client_credentials"
+    TOKEN_URL_PRODUCTION = "https://api.gavaconnect.co.ke/oauth/client_credential/accesstoken?grant_type=client_credentials"
 
     OBLIGATIONS_URL_SANDBOX    = "https://sandbox.gavaconnect.co.ke/api/v1/taxpayer/obligations"
     OBLIGATIONS_URL_PRODUCTION = "https://api.gavaconnect.co.ke/api/v1/taxpayer/obligations"
@@ -191,19 +191,25 @@ class KRAGavaConnectService:
     # ── Private — API calls ────────────────────────────────────────────────────
 
     def _get_access_token(self) -> Optional[str]:
-        """Get a cached or fresh OAuth2 access token from GavaConnect."""
+        """Get a cached or fresh OAuth2 access token from GavaConnect (Apigee)."""
+        import base64
         now = timezone.now()
         if self._token_cache and self._token_expiry and now < self._token_expiry:
             return self._token_cache
 
         try:
+            # Apigee client credentials — Consumer Key:Secret as Basic Auth header
+            credentials = base64.b64encode(
+                f"{self.client_id}:{self.client_secret}".encode()
+            ).decode()
+
             resp = requests.post(
                 self.token_url,
-                data={
-                    'grant_type':    'client_credentials',
-                    'client_id':     self.client_id,
-                    'client_secret': self.client_secret,
+                headers={
+                    "Authorization": f"Basic {credentials}",
+                    "Content-Type":  "application/x-www-form-urlencoded",
                 },
+                data={"grant_type": "client_credentials"},
                 timeout=15,
             )
             resp.raise_for_status()
