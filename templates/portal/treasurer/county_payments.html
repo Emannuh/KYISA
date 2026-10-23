@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}County Payments &#8212; KYISA Treasurer{% endblock %}
+{% block title %}County Payments   KYISA Treasurer{% endblock %}
 
 {% block content %}
 <div class="page-header">
@@ -7,7 +7,7 @@
         <a href="{% url 'treasurer_dashboard' %}">Treasurer</a>
         <span>County Payments</span>
     </div>
-    <h1><i class="bi bi-building"></i> County Payments &#8212; Season {{ season }}</h1>
+    <h1><i class="bi bi-building"></i> County Payments   Season {{ season }}</h1>
     <p>Each county pays a single fee of <strong>KSh {{ registration_fee|floatformat:0 }}</strong> per season to cover ALL sport disciplines.</p>
 </div>
 
@@ -40,7 +40,7 @@
             <div style="flex:1;min-width:200px">
                 <label class="form-label">County</label>
                 <select name="county" class="form-control" required>
-                    <option value="">&#8212; Select County &#8212;</option>
+                    <option value="">  Select County  </option>
                     {% for value, label in available_counties %}
                     <option value="{{ value }}">{{ label }}</option>
                     {% endfor %}
@@ -119,9 +119,9 @@
                 <tr>
                     <td><strong>{{ cp.county }}</strong></td>
                     <td>{{ cp.participation_fee|floatformat:0 }}</td>
-                    <td style="font-family:monospace;font-size:.85rem">{{ cp.payment_reference|default:"&#8212;" }}</td>
-                    <td>{{ cp.payment_date|date:"d M Y"|default:"&#8212;" }}</td>
-                    <td>{{ cp.confirmed_by.get_full_name|default:"&#8212;" }}</td>
+                    <td style="font-family:monospace;font-size:.85rem">{{ cp.payment_reference|default:" " }}</td>
+                    <td>{{ cp.payment_date|date:"d M Y"|default:" " }}</td>
+                    <td>{{ cp.confirmed_by.get_full_name|default:" " }}</td>
                     <td>
                         {% if cp.payment_status == 'paid' %}
                         <span class="badge badge--success">Paid</span>

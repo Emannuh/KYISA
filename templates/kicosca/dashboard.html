@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}KICOSCA Games — {{ reg.county }} County{% endblock %}
+{% block title %}KICOSCA Games {{ reg.county }} County{% endblock %}
 
 {% block content %}
 <!-- Hero -->
@@ -9,7 +9,7 @@
       <i class="bi bi-trophy-fill"></i> KICOSCA Games
     </div>
     <h1 style="font-size:clamp(1.5rem,2.5vw,2.1rem);font-weight:800;color:#fff;margin:0 0 .5rem">{{ reg.county }} County</h1>
-    <p style="color:#c4b5fd;font-size:.9rem;margin:0">Kenya Inter-County Sports & Cultural Association — County Government Employee Sports</p>
+    <p style="color:#c4b5fd;font-size:.9rem;margin:0">Kenya Inter-County Sports & Cultural Association County Government Employee Sports</p>
   </div>
 </div>
 
@@ -42,7 +42,7 @@
   {% endif %}
 </div>
 {% else %}
-<!-- Registered — show disciplines -->
+<!-- Registered show disciplines -->
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.75rem;margin-bottom:1.5rem">
   <div style="background:#fff;border:1px solid #ede9fe;border-radius:14px;padding:1rem;text-align:center">
     <div style="font-size:1.5rem;font-weight:800;color:#7c3aed">{{ disciplines|length }}</div>

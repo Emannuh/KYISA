@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Review Match Report &#8212; {{ competition.name }}{% endblock %}
+{% block title %}Review Match Report   {{ competition.name }}{% endblock %}
 
 {% block content %}
 <div class="page-header">
@@ -25,7 +25,7 @@
                 <div style="font-size:.8rem;color:#888">{{ report.fixture.home_team.county }}</div>
             </div>
             <div style="font-size:2.5rem;font-weight:900;font-family:monospace;color:#1b5e20;padding:0 1rem">
-                {{ report.home_score }} &#8212; {{ report.away_score }}
+                {{ report.home_score }}   {{ report.away_score }}
             </div>
             <div style="text-align:left;flex:1">
                 <div style="font-size:1.3rem;font-weight:800">{{ report.fixture.away_team.name }}</div>
@@ -49,12 +49,12 @@
     <div class="card" style="padding:1.2rem">
         <h4 style="margin-bottom:.8rem;color:#1b5e20">Match Details</h4>
         <div style="font-size:.88rem;line-height:1.8">
-            <div><strong>Referee:</strong> {{ report.referee.user.get_full_name|default:"&#8212;" }}</div>
+            <div><strong>Referee:</strong> {{ report.referee.user.get_full_name|default:" " }}</div>
             <div><strong>Duration:</strong> {{ report.match_duration }} mins</div>
             <div><strong>Added Time:</strong> +{{ report.added_time_ht }}' (HT), +{{ report.added_time_ft }}' (FT)</div>
             <div><strong>Pitch:</strong> {{ report.get_pitch_condition_display }}</div>
-            <div><strong>Weather:</strong> {{ report.weather|default:"&#8212;" }}</div>
-            <div><strong>Attendance:</strong> {{ report.attendance|default:"&#8212;" }}</div>
+            <div><strong>Weather:</strong> {{ report.weather|default:" " }}</div>
+            <div><strong>Attendance:</strong> {{ report.attendance|default:" " }}</div>
         </div>
     </div>
     <div class="card" style="padding:1.2rem">
@@ -127,7 +127,7 @@
                         {{ event.get_event_type_display }}
                         {% endif %}
                     </td>
-                    <td>{{ event.player.get_full_name|default:"&#8212;" }}</td>
+                    <td>{{ event.player.get_full_name|default:" " }}</td>
                     <td style="font-size:.85rem">{{ event.team.name }}</td>
                     <td style="font-size:.82rem;color:#888">{{ event.notes|default:"" }}</td>
                 </tr>

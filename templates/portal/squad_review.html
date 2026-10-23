@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Review Squad — {{ squad.team.name }} — KYISA CMS{% endblock %}
+{% block title %}Review Squad {{ squad.team.name }} KYISA CMS{% endblock %}
 
 {% block content %}
 <div class="page-header">
@@ -9,7 +9,7 @@
         <span>{{ squad.team.name }}</span>
     </div>
     <h1>📋 Review Squad Sheet</h1>
-    <p>{{ squad.team.name }} — {{ squad.fixture.home_team }} vs {{ squad.fixture.away_team }}</p>
+    <p>{{ squad.team.name }} {{ squad.fixture.home_team }} vs {{ squad.fixture.away_team }}</p>
 </div>
 
 <!-- Fixture & Submission Info -->

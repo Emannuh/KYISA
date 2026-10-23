@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ competition.name }} &mdash; KYISA CMS{% endblock %}
+{% block title %}{{ competition.name }}   KYISA CMS{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -408,7 +408,7 @@
                             {% endif %}
                             {% empty %}
                             <tr>
-                                <td colspan="7" style="text-align:center;padding:1rem;color:#bbb;">No fixtures yet — click <strong>Auto-Generate</strong> above</td>
+                                <td colspan="7" style="text-align:center;padding:1rem;color:#bbb;">No fixtures yet click <strong>Auto-Generate</strong> above</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -423,7 +423,7 @@
         {% else %}
         <div class="no-data" style="background:#fff;border-radius:10px;padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.05);">
             <i class="bi bi-calendar-x"></i>
-            No pools created yet — <a href="{% url 'cm_manage_pools' pk=competition.pk %}">create pools first</a>
+            No pools created yet <a href="{% url 'cm_manage_pools' pk=competition.pk %}">create pools first</a>
         </div>
         {% endif %}
     </div>

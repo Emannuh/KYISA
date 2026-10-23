@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Review Match Report — KYISA CMS{% endblock %}
+{% block title %}Review Match Report KYISA CMS{% endblock %}
 
 {% block content %}
 <div class="page-header">
@@ -9,7 +9,7 @@
         <span>Review Report</span>
     </div>
     <h1>⚖️ Review {{ sport_cfg.label }} Match Report</h1>
-    <p>{{ report.fixture.home_team }} vs {{ report.fixture.away_team }} — {{ report.fixture.match_date|date:"d M Y" }}</p>
+    <p>{{ report.fixture.home_team }} vs {{ report.fixture.away_team }} {{ report.fixture.match_date|date:"d M Y" }}</p>
 </div>
 
 <div class="alert alert-info" style="margin-bottom:1.5rem;">
@@ -37,7 +37,7 @@
             </div>
         </div>
         {% if sport_cfg.label == 'Volleyball' and report.home_sets is not None %}
-        <div style="margin-top:.5rem;color:#666;font-size:1rem;">Sets: {{ report.home_sets }} — {{ report.away_sets }}</div>
+        <div style="margin-top:.5rem;color:#666;font-size:1rem;">Sets: {{ report.home_sets }} {{ report.away_sets }}</div>
         {% endif %}
         {% if report.overtime_played %}
         <div style="margin-top:.3rem;color:#FF8F00;font-size:.9rem;">⏱️ {% if sport_cfg.label == 'Football' %}After Extra Time{% else %}After Overtime ({{ report.overtime_periods }} OT period{{ report.overtime_periods|pluralize }}){% endif %}</div>

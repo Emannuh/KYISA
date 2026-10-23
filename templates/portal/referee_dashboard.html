@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Referee Dashboard — KYISA CMS{% endblock %}
+{% block title %}Referee Dashboard KYISA CMS{% endblock %}
 
 {% block content %}
 
@@ -10,7 +10,7 @@
     <div>
       <span class="hero-badge"><span class="pulse-dot" style="background:#fbbf24"></span> Referee Portal</span>
       <h1><i class="bi bi-flag"></i> Referee Dashboard</h1>
-      <p>Welcome, {{ user.get_full_name }}{% if profile %} — {{ profile.get_level_display }}{% endif %}</p>
+      <p>Welcome, {{ user.get_full_name }}{% if profile %} {{ profile.get_level_display }}{% endif %}</p>
     </div>
     {% if profile %}
     <div class="hero-chips">
@@ -36,7 +36,7 @@
 {% if not profile.is_approved %}
 <div class="palert palert-warning" style="margin-bottom:1.25rem">
   <i class="bi bi-exclamation-triangle-fill"></i>
-  <div><strong>Account Pending Approval</strong> — Your referee profile is awaiting approval. Some features may be limited.</div>
+  <div><strong>Account Pending Approval</strong> Your referee profile is awaiting approval. Some features may be limited.</div>
 </div>
 {% endif %}
 

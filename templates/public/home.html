@@ -2,16 +2,16 @@
 {% load static %}
 
 {% block title %}Home{% endblock %}
-{% block meta_description %}KYISA official website — live match scores, fixtures, results, news, and gallery from Kenya Youth Intercounty Sports Association competitions.{% endblock %}
+{% block meta_description %}KYISA official website live match scores, fixtures, results, news, and gallery from Kenya Youth Intercounty Sports Association competitions.{% endblock %}
 {% block canonical_url %}https://kyisa.org/{% endblock %}
-{% block og_title %}KYISA — Kenya Youth Intercounty Sports Association{% endblock %}
+{% block og_title %}KYISA Kenya Youth Intercounty Sports Association{% endblock %}
 {% block og_description %}Live match scores, fixtures, results, news, and gallery from KYISA competitions across Kenya's counties.{% endblock %}
 {% block og_url %}https://kyisa.org/{% endblock %}
 
 {% block content %}
 
 <!-- ══════════════════════════════════════════════════════════════════════════
-     HERO — DARK CINEMATIC WITH INTEGRATED COUNTDOWN
+     HERO DARK CINEMATIC WITH INTEGRATED COUNTDOWN
      ══════════════════════════════════════════════════════════════════════════ -->
 <section class="hero hero--dark" id="hero">
     <!-- Background image slideshow -->
@@ -66,7 +66,7 @@
                 </div>
                 <div class="flag-text-block">
                     <p class="flag-quote">&ldquo;Our children may learn about heroes of the past. Our task is to make ourselves architects of the future.&rdquo;</p>
-                    <span class="flag-author">&mdash; Mzee Jomo Kenyatta, <em>First President of Kenya</em></span>
+                    <span class="flag-author">  Mzee Jomo Kenyatta, <em>First President of Kenya</em></span>
                 </div>
             </div>
 
@@ -155,7 +155,7 @@
                         </div>
 
                         {% elif upcoming_fixtures %}
-                        <!-- No finals yet — show upcoming -->
+                        <!-- No finals yet show upcoming -->
                         <div style="display:flex;align-items:center;gap:.45rem;margin-bottom:.75rem;">
                             <i class="bi bi-calendar-event" style="font-size:.75rem;color:#F9A825;"></i>
                             <span style="font-size:.72rem;font-weight:700;color:#F9A825;text-transform:uppercase;letter-spacing:1.5px;">Upcoming</span>
@@ -204,7 +204,7 @@
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════════════════
-     MEDIA HIGHLIGHTS — PHOTOS, NEWS, VIDEOS FROM MEDIA MANAGER
+     MEDIA HIGHLIGHTS PHOTOS, NEWS, VIDEOS FROM MEDIA MANAGER
      ══════════════════════════════════════════════════════════════════════════ -->
 
 <!-- ══════════════════════════════════════════════════════════════════════════
@@ -275,7 +275,7 @@
 {% endif %}
 
 <!-- ══════════════════════════════════════════════════════════════════════════
-     KNOCKOUT BRACKET — Auto-shows when knockout matches exist
+     KNOCKOUT BRACKET Auto-shows when knockout matches exist
      ══════════════════════════════════════════════════════════════════════════ -->
 {% if knockout_fixtures %}
 <section class="sec" id="knockout" style="background:#fff;padding:3rem 0;">
@@ -509,7 +509,7 @@
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════════════════
-     MATCH CENTER — FIXTURES + STATS + RESULTS
+     MATCH CENTER FIXTURES + STATS + RESULTS
      ══════════════════════════════════════════════════════════════════════════ -->
 <section class="match-center" id="fixtures">
     <!-- Results & Statistics strip -->
@@ -705,7 +705,7 @@
 })();
 
 (function(){
-    /* ── Live Match Card — Cycle through live matches ─────────────── */
+    /* ── Live Match Card Cycle through live matches ─────────────── */
     var liveCard = document.getElementById('liveMatchCard');
     if (liveCard) {
         var heroMatches = liveCard.querySelectorAll('.live-hero-match');

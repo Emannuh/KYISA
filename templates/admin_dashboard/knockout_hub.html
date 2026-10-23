@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Knockout Matches &mdash; KYISA CMS{% endblock %}
+{% block title %}Knockout Matches   KYISA CMS{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -174,7 +174,7 @@
                         {% if fx.home_score is not None %}
                             {{ fx.home_score }} - {{ fx.away_score }}
                         {% else %}
-                            &mdash;
+                             
                         {% endif %}
                     </td>
                     <td data-label="Away">{{ fx.away_team.name|default:"TBD" }}</td>

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Add Player — {{ team.name }} — KYISA CMS{% endblock %}
+{% block title %}Add Player {{ team.name }} KYISA CMS{% endblock %}
 
 {% block content %}
 <div class="page-header">
@@ -249,8 +249,8 @@ function lookupIPRS() {
             });
 
             let msg = '✅ <strong>' + escapeHtml(data.full_name) + '</strong>';
-            if (data.age !== null) msg += ' — Age: <strong>' + data.age + '</strong>';
-            if (data.gender) msg += ' — ' + escapeHtml(data.gender);
+            if (data.age !== null) msg += ' Age: <strong>' + data.age + '</strong>';
+            if (data.gender) msg += ' ' + escapeHtml(data.gender);
             if (data.is_simulation) msg += ' <em style="opacity:.7">(Simulation)</em>';
             showStatus(msg, '#1B5E20', '#e8f5e9');
         } else if (data.success && !data.person_found) {
@@ -260,7 +260,7 @@ function lookupIPRS() {
         }
     })
     .catch(err => {
-        showStatus('❌ Network error — please try again.', '#C62828', '#fce4ec');
+        showStatus('❌ Network error please try again.', '#C62828', '#fce4ec');
         console.error('IPRS lookup error:', err);
     })
     .finally(() => {

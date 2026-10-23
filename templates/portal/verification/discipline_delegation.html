@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}{{ discipline.get_sport_type_display }} — {{ reg.get_county_display }} — Delegation — KYISA CMS{% endblock %}
+{% block title %}{{ discipline.get_sport_type_display }} {{ reg.get_county_display }} Delegation KYISA CMS{% endblock %}
 
 {% block content %}
 <div class="page-header">
@@ -7,9 +7,9 @@
         <a href="{% url 'dashboard' %}">Dashboard</a>
         <a href="{% url 'vo_registered_counties' %}">Registered Counties</a>
         <a href="{% url 'vo_county_disciplines' county_reg_pk=reg.pk %}">{{ reg.get_county_display }}</a>
-        <span>{{ discipline.get_sport_type_display }} — Delegation</span>
+        <span>{{ discipline.get_sport_type_display }} Delegation</span>
     </div>
-    <h1><i class="bi bi-person-badge-fill"></i> {{ reg.get_county_display }} — {{ discipline.get_sport_type_display }} — Delegation</h1>
+    <h1><i class="bi bi-person-badge-fill"></i> {{ reg.get_county_display }} {{ discipline.get_sport_type_display }} Delegation</h1>
     <p>Technical bench / delegation members for this discipline.</p>
 </div>
 

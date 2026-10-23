@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}{{ competition.name }} &#8212; Standings &#38; Statistics{% endblock %}
+{% block title %}{{ competition.name }}   Standings &#38; Statistics{% endblock %}
 
 {% block content %}
 <div class="page-header">
@@ -16,7 +16,7 @@
 <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem">
     <span class="badge badge--primary" style="font-size:.85rem;padding:.4rem .8rem">{{ competition.get_format_type_display }}</span>
     <span class="badge badge--info" style="font-size:.85rem;padding:.4rem .8rem">{{ competition.get_status_display }}</span>
-    <span style="color:#888;font-size:.85rem">{{ competition.start_date|date:"d M" }} &#8212; {{ competition.end_date|date:"d M Y" }}</span>
+    <span style="color:#888;font-size:.85rem">{{ competition.start_date|date:"d M" }}   {{ competition.end_date|date:"d M Y" }}</span>
 </div>
 
 <!-- TAB NAVIGATION -->
@@ -109,7 +109,7 @@
                         <td{% if f.winner == f.home_team %} style="font-weight:800"{% endif %}>{{ f.home_team.name }}</td>
                         <td style="text-align:center;font-weight:700;font-family:monospace;font-size:1.1rem">
                             {% if f.home_score is not None %}
-                                {{ f.home_score }} &#8212; {{ f.away_score }}
+                                {{ f.home_score }}   {{ f.away_score }}
                                 {% if f.home_penalties is not None %}
                                 <br><span style="font-size:.75rem;color:#888">(Pens: {{ f.home_penalties }}-{{ f.away_penalties }})</span>
                                 {% elif f.home_score_et is not None %}

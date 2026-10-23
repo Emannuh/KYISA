@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}{{ reg.get_county_display }} — Disciplines — KYISA CMS{% endblock %}
+{% block title %}{{ reg.get_county_display }} Disciplines KYISA CMS{% endblock %}
 
 {% block content %}
 <div class="page-header">
@@ -8,7 +8,7 @@
         <a href="{% url 'vo_registered_counties' %}">Registered Counties</a>
         <span>{{ reg.get_county_display }}</span>
     </div>
-    <h1><i class="bi bi-diagram-3-fill"></i> {{ reg.get_county_display }} — Disciplines</h1>
+    <h1><i class="bi bi-diagram-3-fill"></i> {{ reg.get_county_display }} Disciplines</h1>
     <p>Disciplines registered under {{ reg.get_county_display }} County. Select a discipline to view players or delegation.</p>
 </div>
 

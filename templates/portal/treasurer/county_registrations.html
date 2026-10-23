@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}County Registrations &mdash; Treasurer &mdash; KYISA{% endblock %}
+{% block title %}County Registrations   Treasurer   KYISA{% endblock %}
 
 {% block content %}
 <div class="page-header">
@@ -28,7 +28,7 @@
         <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem">
             <div>
                 <strong style="font-size:1.05rem;color:#333">{{ r.county }}</strong>
-                <div style="font-size:.85rem;color:#888">{{ r.user.first_name }} {{ r.user.last_name }} &mdash; {{ r.user.email }}</div>
+                <div style="font-size:.85rem;color:#888">{{ r.user.first_name }} {{ r.user.last_name }}   {{ r.user.email }}</div>
             </div>
             <div style="font-size:.82rem;color:#888">Submitted {{ r.payment_submitted_at|date:"d M Y, H:i" }}</div>
         </div>
@@ -86,7 +86,7 @@
                         </span>
                     </td>
                     <td style="padding:.6rem 1rem;font-size:.85rem">
-                        {% if r.payment_amount %}KSh {{ r.payment_amount|floatformat:0 }}{% else %}&mdash;{% endif %}
+                        {% if r.payment_amount %}KSh {{ r.payment_amount|floatformat:0 }}{% else %} {% endif %}
                     </td>
                     <td style="padding:.6rem 1rem;font-size:.82rem;color:#888">{{ r.created_at|date:"d M Y" }}</td>
                 </tr>

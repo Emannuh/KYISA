@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}{{ team.name }} — KYISA CMS{% endblock %}
+{% block title %}{{ team.name }} KYISA CMS{% endblock %}
 
 {% block content %}
 <div class="page-header">
@@ -9,7 +9,7 @@
         <span>{{ team.name }}</span>
     </div>
     <h1>{{ team.name }}</h1>
-    <p>{{ team.county }} — {{ team.get_status_display }}</p>
+    <p>{{ team.county }} {{ team.get_status_display }}</p>
 </div>
 
 <div class="stats-grid">

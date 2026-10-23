@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Add KICOSCA Player — {{ discipline.get_sport_display }}{% endblock %}
+{% block title %}Add KICOSCA Player {{ discipline.get_sport_display }}{% endblock %}
 
 {% block content %}
 <div class="page-header">
@@ -9,7 +9,7 @@
     <span>Add Player</span>
   </div>
   <h1><i class="bi bi-person-plus"></i> Add KICOSCA Player</h1>
-  <p>{{ reg.county }} County — {{ discipline.get_sport_display }} ({{ discipline.player_count }}/{{ discipline.squad_limit }})</p>
+  <p>{{ reg.county }} County {{ discipline.get_sport_display }} ({{ discipline.player_count }}/{{ discipline.squad_limit }})</p>
 </div>
 
 <div style="max-width:660px">
@@ -17,7 +17,7 @@
   <!-- STEP 1: KRA PIN Lookup -->
   <div style="margin-bottom:1.75rem;padding:1.1rem 1.25rem;background:#fff7ed;border:1px solid #fed7aa;border-radius:14px">
     <h3 style="margin:0 0 .45rem;font-size:.95rem;font-weight:800;color:#9a3412">
-      <i class="bi bi-building"></i> Step 1 — KRA Employment Verification
+      <i class="bi bi-building"></i> Step 1 KRA Employment Verification
     </h3>
     <p style="margin:0 0 .85rem;font-size:.82rem;color:#374151;line-height:1.5">
       Enter the employee's KRA PIN to confirm they are a <strong>{{ reg.county }} County Government</strong> employee via KRA PAYE records. This is the only required check for KICOSCA eligibility.
@@ -46,7 +46,7 @@
 
   <!-- STEP 2: Registration Form -->
   <h3 style="font-size:.95rem;font-weight:800;color:#111;margin:0 0 1.25rem">
-    <i class="bi bi-person-badge"></i> Step 3 — Complete Registration
+    <i class="bi bi-person-badge"></i> Step 3 Complete Registration
   </h3>
 
   <div class="card" style="padding:1.75rem">

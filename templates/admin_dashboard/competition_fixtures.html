@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}{{ competition.name }} — Fixtures &amp; Results &mdash; KYISA CMS{% endblock %}
+{% block title %}{{ competition.name }} Fixtures &amp; Results   KYISA CMS{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -88,7 +88,7 @@
         <div class="meta">
             <span>{{ competition.get_sport_type_display }}</span>
             <span>{{ competition.get_age_group_display }}</span>
-            <span>{{ competition.start_date|date:"d M Y" }} — {{ competition.end_date|date:"d M Y" }}</span>
+            <span>{{ competition.start_date|date:"d M Y" }} {{ competition.end_date|date:"d M Y" }}</span>
             <span style="background:rgba(255,255,255,.2);padding:.15rem .5rem;border-radius:6px;">{{ competition.get_status_display }}</span>
         </div>
     </div>
@@ -139,7 +139,7 @@
     <!-- Update Results card -->
     <div class="result-card" style="margin-top:.5rem;">
         <div class="result-card-header">
-            <i class="bi bi-pencil-square"></i> Update Results — {{ pd.pool.name }}
+            <i class="bi bi-pencil-square"></i> Update Results {{ pd.pool.name }}
         </div>
         {% for fx in pd.fixtures %}
         <form method="post" action="{% url 'admin_quick_result' pk=competition.pk fixture_pk=fx.pk %}">
@@ -186,7 +186,7 @@
     {% if knockout_fixtures %}
     <div class="result-card" style="border-radius:0 0 12px 12px;">
         <div class="result-card-header">
-            <i class="bi bi-pencil-square"></i> Update Results — Knockout
+            <i class="bi bi-pencil-square"></i> Update Results Knockout
         </div>
         {% for fx in knockout_fixtures %}
         <form method="post" action="{% url 'admin_quick_result' pk=competition.pk fixture_pk=fx.pk %}">
@@ -244,7 +244,7 @@
     </div>
     <div class="result-card" style="border-radius:0 0 12px 12px;">
         <div class="result-card-header" style="background:#FFF3E0;color:#E65100;">
-            <i class="bi bi-pencil-square"></i> Update Results — Unassigned
+            <i class="bi bi-pencil-square"></i> Update Results Unassigned
         </div>
         {% for fx in unassigned_fixtures %}
         <form method="post" action="{% url 'admin_quick_result' pk=competition.pk fixture_pk=fx.pk %}">

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Match Report — {{ fixture }} — KYISA CMS{% endblock %}
+{% block title %}Match Report {{ fixture }} KYISA CMS{% endblock %}
 
 {% block content %}
 <div class="page-header">
@@ -9,7 +9,7 @@
         <span>Match Report</span>
     </div>
     <h1>📝 {{ sport_family }} Match Report</h1>
-    <p>{{ fixture.home_team }} vs {{ fixture.away_team }} — {{ fixture.match_date|date:"d M Y" }}</p>
+    <p>{{ fixture.home_team }} vs {{ fixture.away_team }} {{ fixture.match_date|date:"d M Y" }}</p>
 </div>
 
 {% if report and report.status == 'returned' and report.reviewer_notes %}

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}County Admin Dashboard — KYISA{% endblock %}
+{% block title %}County Admin Dashboard KYISA{% endblock %}
 
 {% block content %}
 
@@ -25,25 +25,25 @@
 <div class="palert palert-warning">
   <i class="bi bi-exclamation-triangle-fill"></i>
   <div>
-    <strong>Payment Required</strong> — Submit your registration fee of <strong>KSh {{ registration_fee|floatformat:0 }}</strong> to get approved.
+    <strong>Payment Required</strong> Submit your registration fee of <strong>KSh {{ registration_fee|floatformat:0 }}</strong> to get approved.
     <a href="{% url 'county_admin_payment' %}" class="pbtn pbtn-primary pbtn-sm" style="margin-left:.75rem"><i class="bi bi-credit-card"></i> Submit Payment</a>
   </div>
 </div>
 {% elif reg.status == 'payment_submitted' %}
 <div class="palert palert-info">
   <i class="bi bi-hourglass-split"></i>
-  <div><strong>Payment Under Review</strong> — Your payment proof has been submitted{% if reg.mpesa_reference %} (Ref: {{ reg.mpesa_reference }}){% endif %}. The KYISA Treasurer is reviewing it.</div>
+  <div><strong>Payment Under Review</strong> Your payment proof has been submitted{% if reg.mpesa_reference %} (Ref: {{ reg.mpesa_reference }}){% endif %}. The KYISA Treasurer is reviewing it.</div>
 </div>
 {% elif reg.status == 'approved' %}
 <div class="palert palert-success">
   <i class="bi bi-check-circle-fill"></i>
-  <div><strong>Approved</strong> — Your county is approved. Add disciplines and build your player squads.</div>
+  <div><strong>Approved</strong> Your county is approved. Add disciplines and build your player squads.</div>
 </div>
 {% elif reg.status == 'rejected' %}
 <div class="palert palert-danger">
   <i class="bi bi-x-circle-fill"></i>
   <div>
-    <strong>Registration Rejected</strong>{% if reg.rejection_reason %} — {{ reg.rejection_reason }}{% endif %}
+    <strong>Registration Rejected</strong>{% if reg.rejection_reason %} {{ reg.rejection_reason }}{% endif %}
     <a href="{% url 'county_admin_payment' %}" class="pbtn pbtn-danger pbtn-sm" style="margin-left:.75rem"><i class="bi bi-arrow-repeat"></i> Resubmit</a>
   </div>
 </div>
@@ -126,7 +126,7 @@
     <a href="{% url 'kicosca_dashboard' %}" class="pbtn pbtn-sm" style="background:#7c3aed;color:#fff;border:none"><i class="bi bi-trophy"></i> Open Portal</a>
   </div>
   <div class="dash-panel-body" style="font-size:.83rem;color:#374151">
-    Kenya Inter-County Sports & Cultural Association — register county government employees for the KICOSCA Games. Separate from KYISA youth sports — uses KRA employment verification.
+    Kenya Inter-County Sports & Cultural Association register county government employees for the KICOSCA Games. Separate from KYISA youth sports uses KRA employment verification.
   </div>
 </div>
 

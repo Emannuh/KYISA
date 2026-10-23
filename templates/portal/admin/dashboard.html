@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load humanize %}
 
-{% block title %}System Admin — KYISA Control Centre{% endblock %}
+{% block title %}System Admin KYISA Control Centre{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -23,15 +23,15 @@
 /* ── HERO ── */
 .hub-hero {
   border-radius:16px;
-  background:linear-gradient(130deg,#0d1117 0%,#1a2744 50%,#0b5d4b 100%);
+  background:linear-gradient(130deg,#0d1117 0%,#0b2e1a 40%,#0b5d4b 75%,#1B5E20 100%);
   padding:1.25rem 1.75rem;
   margin-bottom:1rem;
-  box-shadow:0 8px 28px rgba(11,93,75,.18);
+  box-shadow:0 8px 28px rgba(11,93,75,.22);
   position:relative; overflow:hidden;
 }
 .hub-hero::before {
   content:""; position:absolute; inset:0;
-  background:radial-gradient(ellipse at 75% 30%,rgba(15,118,110,.2) 0%,transparent 60%);
+  background:radial-gradient(ellipse at 75% 30%,rgba(27,94,32,.25) 0%,transparent 60%);
   pointer-events:none;
 }
 .hub-hero-inner { position:relative; z-index:1; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.75rem; }
@@ -334,7 +334,7 @@
   </div>
 
   <!-- ── TEST DASHBOARDS ──────────────────────────────────────────────── -->
-  <div class="hub-sh" style="margin-bottom:.75rem"><h2><i class="bi bi-eye-fill" style="margin-right:.3rem;color:#6366f1"></i>Test Dashboards <span style="font-size:.7rem;font-weight:500;color:var(--hub-muted);margin-left:.5rem">— preview any role instantly, no account change needed</span></h2><div class="hub-sh-sep"></div></div>
+  <div class="hub-sh" style="margin-bottom:.75rem"><h2><i class="bi bi-eye-fill" style="margin-right:.3rem;color:#6366f1"></i>Test Dashboards</h2><div class="hub-sh-sep"></div></div>
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:.5rem;margin-bottom:1.35rem">
 
     {% for dash in test_dashboards %}
@@ -382,10 +382,10 @@
       <!-- Body -->
       <div class="hub-ws-body">
 
-        <!-- Description — concise -->
+        <!-- Description concise -->
         <p class="hub-ws-desc">{{ workspace.description }}</p>
 
-        <!-- Function links — pill style, not a grid -->
+        <!-- Function links pill style, not a grid -->
         <div class="hub-fns">
           {% for fn in workspace.functions %}
           <a href="{% url fn.url %}" class="hub-fn" title="{{ fn.summary }}">
@@ -394,7 +394,7 @@
           {% endfor %}
         </div>
 
-        <!-- Preview button — per workspace role -->
+        <!-- Preview button per workspace role -->
         {% if workspace.preview_role %}
         <div style="margin-top:.65rem;padding-top:.65rem;border-top:1px solid var(--hub-border)">
           <a href="{% url 'role_preview' workspace.preview_role %}"
@@ -410,7 +410,7 @@
     {% endfor %}
   </div>
 
-  <!-- ── LIVE MONITORING — 4 columns ───────────────────────────────────── -->
+  <!-- ── LIVE MONITORING 4 columns ───────────────────────────────────── -->
   <div class="hub-sh" style="margin-top:.5rem"><h2><i class="bi bi-activity" style="margin-right:.3rem"></i>Live Monitoring</h2><div class="hub-sh-sep"></div></div>
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:1.35rem">
 
@@ -519,7 +519,7 @@
     </div>
   </div>
 
-  <!-- ── KICOSCA GAMES — Separate Portal ─────────────────────────────────── -->
+  <!-- ── KICOSCA GAMES Separate Portal ─────────────────────────────────── -->
   <div style="margin-top:1.75rem">
     <div class="hub-sh"><h2><i class="bi bi-award-fill" style="margin-right:.3rem;color:#7c3aed"></i>KICOSCA Games</h2><div class="hub-sh-sep"></div></div>
     <div style="background:#fff;border-radius:12px;border:1.5px solid #ede9fe;overflow:hidden;box-shadow:0 2px 8px rgba(109,40,217,.08)">

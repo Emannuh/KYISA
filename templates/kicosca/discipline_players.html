@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}{{ discipline.get_sport_display }} — KICOSCA{% endblock %}
+{% block title %}{{ discipline.get_sport_display }} KICOSCA{% endblock %}
 {% block content %}
 <div class="page-header">
   <div class="breadcrumb">
@@ -7,7 +7,7 @@
     <span>{{ discipline.get_sport_display }}</span>
   </div>
   <h1><i class="bi bi-people"></i> {{ discipline.get_sport_display }}</h1>
-  <p>{{ reg.county }} County — {{ discipline.player_count }} / {{ discipline.squad_limit }} players</p>
+  <p>{{ reg.county }} County {{ discipline.player_count }} / {{ discipline.squad_limit }} players</p>
 </div>
 
 <div style="background:#e5e7eb;border-radius:6px;height:8px;max-width:500px;margin-bottom:1.5rem">

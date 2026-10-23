@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}{{ competition.name }} — Manage &mdash; KYISA CMS{% endblock %}
+{% block title %}{{ competition.name }} Manage   KYISA CMS{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -41,7 +41,7 @@
         <div class="meta">
             <span>{{ competition.get_sport_type_display }}</span>
             <span>{{ competition.get_age_group_display }}</span>
-            <span>{{ competition.start_date|date:"d M Y" }} — {{ competition.end_date|date:"d M Y" }}</span>
+            <span>{{ competition.start_date|date:"d M Y" }} {{ competition.end_date|date:"d M Y" }}</span>
             <span class="comp-badge" style="background:rgba(255,255,255,.2);color:#fff;">{{ competition.get_status_display }}</span>
         </div>
     </div>
@@ -249,7 +249,7 @@
                             {% endif %}
                             {% empty %}
                             <tr>
-                                <td colspan="8" style="text-align:center;padding:1rem;color:#bbb;">No fixtures yet — click <strong>Auto-Generate</strong> above</td>
+                                <td colspan="8" style="text-align:center;padding:1rem;color:#bbb;">No fixtures yet click <strong>Auto-Generate</strong> above</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -262,7 +262,7 @@
             </div>
             {% endfor %}
         {% else %}
-            <div style="text-align:center;padding:1.5rem;color:#999;">No pools created yet — <a href="{% url 'coordinator_manage_pools' pk=competition.pk %}">create pools first</a></div>
+            <div style="text-align:center;padding:1.5rem;color:#999;">No pools created yet <a href="{% url 'coordinator_manage_pools' pk=competition.pk %}">create pools first</a></div>
         {% endif %}
     </div>
 </div>
