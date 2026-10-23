@@ -383,6 +383,9 @@
             <a href="{% url 'kicosca_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'kicosca_dashboard' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-speedometer2"></i></span> Dashboard
             </a>
+            <a href="{% url 'kicosca_verification' %}" class="sidebar-link {% if request.resolver_match.url_name == 'kicosca_verification' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-shield-check"></i></span> Verification
+            </a>
             <a href="{% url 'kicosca_add_discipline' %}" class="sidebar-link {% if request.resolver_match.url_name == 'kicosca_add_discipline' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-trophy"></i></span> Disciplines
             </a>

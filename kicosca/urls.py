@@ -14,6 +14,8 @@ urlpatterns = [
 
     # Admin verification dashboard
     path('verification/',                             views.kicosca_verification_dashboard, name='kicosca_verification'),
+    path('verification/create-edition/',              views.kicosca_create_edition,         name='kicosca_create_edition'),
+    path('player/<int:player_pk>/quick-verify/',      views.kicosca_quick_verify,           name='kicosca_quick_verify'),
 
     # AJAX endpoints
     path('api/kra-pin-lookup/',                       views.kicosca_kra_pin_lookup,      name='kicosca_kra_pin_lookup'),

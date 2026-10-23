@@ -436,26 +436,58 @@ def kicosca_player_detail(request, player_pk):
 
 @login_required(login_url='web_login')
 def kicosca_verification_dashboard(request):
-    """Admin/VO view of all KICOSCA players across counties."""
+    """Admin/VO/KICOSCA officer view of all KICOSCA players across counties."""
     user = request.user
-    if not (user.is_superuser or user.role in (
+    can_manage = user.is_superuser or user.role in (
         'admin', 'competition_manager', 'verification_officer', 'secretary_general'
-    )):
+    )
+    can_view = can_manage or user.role == 'kicosca_officer'
+
+    if not can_view:
         messages.error(request, 'Access denied.')
         return redirect('dashboard')
 
+    # Handle edition creation
+    if request.method == 'POST' and request.POST.get('action') == 'create_edition':
+        if can_manage:
+            name = request.POST.get('name', '').strip()
+            year = request.POST.get('year', '2026')
+            host = request.POST.get('host_county', '').strip()
+            if name and year:
+                KicoscaEdition.objects.update(is_active=False)
+                KicoscaEdition.objects.create(
+                    name=name, year=int(year), host_county=host, is_active=True
+                )
+                messages.success(request, f'Edition "{name}" created and set as active.')
+            return redirect('kicosca_verification')
+
     edition = KicoscaEdition.get_active()
-    players = KicoscaPlayer.objects.select_related(
-        'discipline__entry__county_registration'
-    ).filter(
-        discipline__entry__edition=edition
-    ).order_by('discipline__entry__county_registration__county', 'last_name') if edition else []
+
+    # For KICOSCA officers, only show their county
+    if user.role == 'kicosca_officer' and user.county:
+        base_qs = KicoscaPlayer.objects.select_related(
+            'discipline__entry__county_registration'
+        ).filter(
+            discipline__entry__edition=edition,
+            discipline__entry__county_registration__county=user.county,
+        ) if edition else KicoscaPlayer.objects.none()
+    else:
+        base_qs = KicoscaPlayer.objects.select_related(
+            'discipline__entry__county_registration'
+        ).filter(
+            discipline__entry__edition=edition
+        ) if edition else KicoscaPlayer.objects.none()
+
+    base_qs = base_qs.order_by(
+        'discipline__entry__county_registration__county', 'last_name'
+    )
 
     county_filter  = request.GET.get('county', '')
     sport_filter   = request.GET.get('sport', '')
     status_filter  = request.GET.get('status', '')
     search         = request.GET.get('q', '')
 
+    players = base_qs
     if county_filter:
         players = players.filter(
             discipline__entry__county_registration__county=county_filter
@@ -472,14 +504,21 @@ def kicosca_verification_dashboard(request):
             Q(national_id_number__icontains=search)
         )
 
+    players = list(players)
+
     return render(request, 'kicosca/verification_dashboard.html', {
-        'edition':       edition,
-        'players':       players,
-        'county_filter': county_filter,
-        'sport_filter':  sport_filter,
-        'status_filter': status_filter,
-        'search':        search,
-        'sport_choices': KicoscaSport.choices,
+        'edition':           edition,
+        'players':           players,
+        'county_filter':     county_filter,
+        'sport_filter':      sport_filter,
+        'status_filter':     status_filter,
+        'search':            search,
+        'sport_choices':     KicoscaSport.choices,
+        'can_manage':        can_manage,
+        'verified_count':    sum(1 for p in players if p.verification_status == 'verified'),
+        'pending_count':     sum(1 for p in players if p.verification_status == 'pending'),
+        'rejected_count':    sum(1 for p in players if p.verification_status == 'rejected'),
+        'kra_verified_count': sum(1 for p in players if p.kra_employment_status == 'verified'),
     })
 
 
@@ -570,3 +609,62 @@ def kicosca_api_test(request):
         'kra_pin_result':    kra_pin_result,
         'iprs_result':       iprs_result,
     })
+
+
+# ── Quick Verify from dashboard ───────────────────────────────────────────────
+
+@login_required(login_url='web_login')
+@require_POST
+def kicosca_quick_verify(request, player_pk):
+    """One-click verify a KICOSCA player directly from the verification dashboard."""
+    user = request.user
+    if not (user.is_superuser or user.role in (
+        'admin', 'competition_manager', 'verification_officer', 'secretary_general'
+    )):
+        messages.error(request, 'Access denied.')
+        return redirect('kicosca_verification')
+
+    player = get_object_or_404(KicoscaPlayer, pk=player_pk)
+
+    if player.kra_employment_status != EmploymentStatus.VERIFIED:
+        messages.error(request, 'KRA employment must be verified before approval.')
+        return redirect('kicosca_verification')
+
+    player.verification_status = 'verified'
+    player.verified_by  = user
+    player.verified_at  = timezone.now()
+    player.rejection_reason = ''
+    player.save(update_fields=['verification_status', 'verified_by', 'verified_at', 'rejection_reason'])
+    messages.success(request, f'✅ {player.full_name} verified for KICOSCA.')
+    return redirect('kicosca_verification')
+
+
+# ── Create Edition ─────────────────────────────────────────────────────────────
+
+@login_required(login_url='web_login')
+@require_POST
+def kicosca_create_edition(request):
+    """Admin creates a new KICOSCA edition and sets it as active."""
+    user = request.user
+    if not (user.is_superuser or user.role in ('admin', 'competition_manager', 'secretary_general')):
+        messages.error(request, 'Access denied.')
+        return redirect('kicosca_verification')
+
+    name = request.POST.get('name', '').strip()
+    year = request.POST.get('year', '2026')
+    host = request.POST.get('host_county', '').strip()
+
+    if not name:
+        messages.error(request, 'Edition name is required.')
+        return redirect('kicosca_verification')
+
+    # Deactivate all existing editions
+    KicoscaEdition.objects.update(is_active=False)
+    edition = KicoscaEdition.objects.create(
+        name=name,
+        year=int(year),
+        host_county=host,
+        is_active=True,
+    )
+    messages.success(request, f'✅ Edition "{edition.name}" created and set as active.')
+    return redirect('kicosca_verification')
