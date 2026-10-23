@@ -506,6 +506,44 @@ def kicosca_verification_dashboard(request):
 
     players = list(players)
 
+    # ── Inline API test ────────────────────────────────────────────────────────
+    kra_result  = None
+    iprs_result = None
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'test_kra':
+            kra_pin = request.POST.get('kra_pin', 'A011124346B').strip().upper()
+            county  = request.POST.get('county', 'Nairobi').strip()
+            from kicosca.kra_service import KRAGavaConnectService
+            svc = KRAGavaConnectService()
+            r   = svc.verify_county_employment(kra_pin, county)
+            kra_result = {
+                'pin': kra_pin, 'county': county,
+                'success': r.success, 'county_match': r.county_match,
+                'is_county_employee': r.is_county_employee,
+                'employer_name': r.employer_name,
+                'is_simulation': r.is_simulation,
+                'error_message': r.error_message,
+            }
+
+        elif action == 'test_iprs':
+            nid = request.POST.get('iprs_id', '10101010').strip()
+            from teams.prembly_service import PremblyService
+            svc = PremblyService()
+            r   = svc.lookup_by_national_id(nid)
+            iprs_result = {
+                'national_id': nid,
+                'success': r.success, 'person_found': r.person_found,
+                'full_name': r.full_name,
+                'date_of_birth': str(r.date_of_birth) if r.date_of_birth else None,
+                'serial_number': r.serial_number,
+                'has_photo': bool(r.photo),
+                'is_simulation': r.is_simulation,
+                'error_message': r.error_message,
+            }
+
     return render(request, 'kicosca/verification_dashboard.html', {
         'edition':           edition,
         'players':           players,
@@ -519,6 +557,8 @@ def kicosca_verification_dashboard(request):
         'pending_count':     sum(1 for p in players if p.verification_status == 'pending'),
         'rejected_count':    sum(1 for p in players if p.verification_status == 'rejected'),
         'kra_verified_count': sum(1 for p in players if p.kra_employment_status == 'verified'),
+        'kra_result':        kra_result,
+        'iprs_result':       iprs_result,
     })
 
 
