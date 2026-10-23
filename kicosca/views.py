@@ -24,35 +24,87 @@ from .forms import KicoscaPlayerForm
 
 # ── Role guard ────────────────────────────────────────────────────────────────
 def kicosca_required(view):
-    """Allow KICOSCA Sports Officers and admins/superusers to access KICOSCA portal."""
+    """Allow kicosca_officer, kicosca_sg, admins to access KICOSCA portal."""
     @wraps(view)
     @login_required(login_url='web_login')
     def wrapper(request, *args, **kwargs):
-        allowed = ('kicosca_officer', 'admin', 'competition_manager', 'secretary_general')
+        allowed = ('kicosca_officer', 'kicosca_sg', 'admin', 'competition_manager', 'secretary_general')
         if request.user.role not in allowed and not request.user.is_superuser:
             messages.error(request, 'You do not have access to the KICOSCA portal.')
             return redirect('dashboard')
         return view(request, *args, **kwargs)
     return wrapper
 
-# Keep old name as alias so existing decorators don't break during transition
-county_director_required = kicosca_required
+county_director_required = kicosca_required  # backward compat alias
+
+
+def _is_kicosca_sg(user):
+    """True if user can manage the whole KICOSCA programme."""
+    return user.is_superuser or user.role in ('kicosca_sg', 'admin', 'competition_manager', 'secretary_general')
 
 
 def _get_reg(request):
     """
-    For KICOSCA officers, return the CountyRegistration linked to their county field.
-    For county directors (legacy), return their own registration.
-    Falls back to None if not found.
+    Return the CountyRegistration for the logged-in user's county.
+    For kicosca_officer: match by county name on their user account (no KYISA reg needed).
+    For legacy county directors: their own KYISA registration.
+    Returns None if not found.
     """
     from teams.models import CountyRegistration
-    # KICOSCA officer — match by county name stored on their user account
-    if request.user.role == 'kicosca_officer' and request.user.county:
-        return CountyRegistration.objects.filter(
-            county=request.user.county, status='approved'
-        ).first()
-    # Legacy county director
-    return CountyRegistration.objects.filter(user=request.user).first()
+    user = request.user
+
+    if user.role in ('kicosca_officer', 'kicosca_sg'):
+        # Try to find a KYISA county registration for this county
+        if user.county:
+            return CountyRegistration.objects.filter(
+                county=user.county, status='approved'
+            ).first()
+        return None
+
+    return CountyRegistration.objects.filter(user=user).first()
+
+
+def _get_or_create_entry_for_officer(user, edition):
+    """
+    For kicosca_officer: create a KicoscaCountyEntry without requiring a KYISA registration.
+    Uses a synthetic county registration lookup or creates a bare entry via the county name.
+    """
+    from teams.models import CountyRegistration
+    # Try to find existing KYISA reg for this county
+    reg = CountyRegistration.objects.filter(
+        county=user.county, status='approved'
+    ).first()
+
+    if reg:
+        entry, _ = KicoscaCountyEntry.objects.get_or_create(
+            edition=edition, county_registration=reg
+        )
+        return entry, reg
+
+    # No KYISA registration — create entry using an auto-approved placeholder reg
+    # First check if there's already an entry for this county in this edition
+    existing = KicoscaCountyEntry.objects.filter(
+        edition=edition,
+        county_registration__county=user.county,
+    ).first()
+    if existing:
+        return existing, existing.county_registration
+
+    # Create a minimal approved county registration for this officer's county
+    reg, _ = CountyRegistration.objects.get_or_create(
+        county=user.county,
+        defaults={
+            'user': user,
+            'director_name': user.get_full_name(),
+            'director_phone': user.phone or '+254700000000',
+            'status': 'approved',
+        }
+    )
+    # If reg exists but belongs to someone else and is not approved, still proceed
+    entry, _ = KicoscaCountyEntry.objects.get_or_create(
+        edition=edition, county_registration=reg
+    )
+    return entry, reg
 
 
 def _get_or_create_entry(reg, edition):
@@ -68,38 +120,33 @@ def _get_or_create_entry(reg, edition):
 
 @kicosca_required
 def kicosca_dashboard(request):
-    """KICOSCA home for the KICOSCA Sports Officer (or county director)."""
-    reg = _get_reg(request)
-
-    # KICOSCA officer with no matching county registration — show setup message
-    # but don't redirect to KYISA county registration (wrong system)
-    if not reg and request.user.role == 'kicosca_officer':
-        edition = KicoscaEdition.get_active()
-        return render(request, 'kicosca/dashboard.html', {
-            'reg': None,
-            'edition': edition,
-            'entry': None,
-            'disciplines': [],
-            'total_players': 0,
-            'verified_count': 0,
-            'available_sports': list(KicoscaSport.choices),
-            'no_county_setup': True,
-        })
-
-    if not reg:
-        messages.info(request, 'Please complete your KYISA county registration first.')
-        return redirect('county_admin_complete_registration')
-
+    """KICOSCA home — works for kicosca_officer, kicosca_sg, and admins."""
+    user    = request.user
     edition = KicoscaEdition.get_active()
     entry   = None
     disciplines = []
+    reg     = None
 
-    if edition:
-        entry = KicoscaCountyEntry.objects.filter(
-            edition=edition, county_registration=reg
-        ).first()
-        if entry:
-            disciplines = entry.disciplines.prefetch_related('players').all()
+    if not edition:
+        return render(request, 'kicosca/dashboard.html', {
+            'reg': None, 'edition': None, 'entry': None,
+            'disciplines': [], 'total_players': 0, 'verified_count': 0,
+            'available_sports': list(KicoscaSport.choices),
+            'no_edition': True,
+            'is_sg': _is_kicosca_sg(user),
+        })
+
+    if user.role in ('kicosca_officer', 'kicosca_sg') and user.county:
+        entry, reg = _get_or_create_entry_for_officer(user, edition)
+    else:
+        reg = _get_reg(request)
+        if reg:
+            entry, _ = KicoscaCountyEntry.objects.get_or_create(
+                edition=edition, county_registration=reg
+            )
+
+    if entry:
+        disciplines = entry.disciplines.prefetch_related('players').all()
 
     total_players  = sum(d.player_count for d in disciplines)
     verified_count = sum(
@@ -115,6 +162,7 @@ def kicosca_dashboard(request):
         'total_players':  total_players,
         'verified_count': verified_count,
         'available_sports': list(KicoscaSport.choices),
+        'is_sg':          _is_kicosca_sg(user),
     })
 
 
@@ -122,19 +170,30 @@ def kicosca_dashboard(request):
 
 @kicosca_required
 def kicosca_join(request):
-    """County director registers their county into the active KICOSCA edition."""
-    reg = _get_reg(request)
-    if not reg or not reg.is_approved:
-        messages.error(request, 'Your KYISA county registration must be approved first.')
-        return redirect('kicosca_dashboard')
+    """Register this officer's county into the active KICOSCA edition."""
+    user = request.user
 
     edition = KicoscaEdition.get_active()
     if not edition:
-        messages.error(request, 'No active KICOSCA edition found. Contact the administrator.')
+        messages.error(request, 'No active KICOSCA edition. Contact the KICOSCA Secretary General.')
         return redirect('kicosca_dashboard')
 
-    entry = _get_or_create_entry(reg, edition)
-    messages.success(request, f'{reg.county} county registered for {edition.name}.')
+    if user.role in ('kicosca_officer', 'kicosca_sg'):
+        if not user.county:
+            messages.error(request, 'Your account has no county assigned. Contact the system administrator.')
+            return redirect('kicosca_dashboard')
+        entry, reg = _get_or_create_entry_for_officer(user, edition)
+        messages.success(request, f'{user.county} county registered for {edition.name}.')
+    else:
+        reg = _get_reg(request)
+        if not reg:
+            messages.error(request, 'No county registration found for your account.')
+            return redirect('kicosca_dashboard')
+        entry, _ = KicoscaCountyEntry.objects.get_or_create(
+            edition=edition, county_registration=reg
+        )
+        messages.success(request, f'{reg.county} county registered for {edition.name}.')
+
     return redirect('kicosca_dashboard')
 
 
@@ -142,18 +201,27 @@ def kicosca_join(request):
 
 @kicosca_required
 def kicosca_add_discipline(request):
-    """County director selects a sport to participate in."""
-    reg = _get_reg(request)
-    if not reg or not reg.is_approved:
-        messages.error(request, 'Your KYISA county registration must be approved first.')
-        return redirect('kicosca_dashboard')
+    """County officer selects a sport discipline for their county."""
+    user = request.user
 
     edition = KicoscaEdition.get_active()
     if not edition:
         messages.error(request, 'No active KICOSCA edition.')
         return redirect('kicosca_dashboard')
 
-    entry = _get_or_create_entry(reg, edition)
+    if user.role in ('kicosca_officer', 'kicosca_sg'):
+        if not user.county:
+            messages.error(request, 'Your account has no county assigned.')
+            return redirect('kicosca_dashboard')
+        entry, reg = _get_or_create_entry_for_officer(user, edition)
+    else:
+        reg = _get_reg(request)
+        if not reg:
+            messages.error(request, 'No county registration found.')
+            return redirect('kicosca_dashboard')
+        entry, _ = KicoscaCountyEntry.objects.get_or_create(
+            edition=edition, county_registration=reg
+        )
 
     if request.method == 'POST':
         sport = request.POST.get('sport', '').strip()
@@ -167,8 +235,7 @@ def kicosca_add_discipline(request):
             messages.success(request, f'{valid_sports[sport]} added.')
         return redirect('kicosca_dashboard')
 
-    # GET — show available sports not yet added
-    existing = set(entry.disciplines.values_list('sport', flat=True))
+    existing  = set(entry.disciplines.values_list('sport', flat=True))
     available = [(k, v) for k, v in KicoscaSport.choices if k not in existing]
 
     return render(request, 'kicosca/add_discipline.html', {
@@ -439,7 +506,7 @@ def kicosca_verification_dashboard(request):
     """Admin/VO/KICOSCA officer view of all KICOSCA players across counties."""
     user = request.user
     can_manage = user.is_superuser or user.role in (
-        'admin', 'competition_manager', 'verification_officer', 'secretary_general'
+        'admin', 'competition_manager', 'verification_officer', 'secretary_general', 'kicosca_sg'
     )
     can_view = can_manage or user.role == 'kicosca_officer'
 

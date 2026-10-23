@@ -31,6 +31,7 @@ class Migration(migrations.Migration):
                     ('scout', 'Scout'),
                     ('admin', 'System Admin'),
                     ('kicosca_officer', 'KICOSCA Sports Officer'),
+                    ('kicosca_sg',      'KICOSCA Secretary General'),
                 ],
                 default='team_manager',
                 max_length=30,

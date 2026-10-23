@@ -381,13 +381,29 @@
         <div class="sidebar-section-toggle"><h4>KICOSCA Games</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
         <div class="sidebar-section-body">
             <a href="{% url 'kicosca_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'kicosca_dashboard' %}active{% endif %}">
-                <span class="icon"><i class="bi bi-speedometer2"></i></span> Dashboard
+                <span class="icon"><i class="bi bi-speedometer2"></i></span> My County Dashboard
             </a>
             <a href="{% url 'kicosca_verification' %}" class="sidebar-link {% if request.resolver_match.url_name == 'kicosca_verification' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-shield-check"></i></span> Verification
             </a>
             <a href="{% url 'kicosca_add_discipline' %}" class="sidebar-link {% if request.resolver_match.url_name == 'kicosca_add_discipline' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-trophy"></i></span> Disciplines
+            </a>
+            <a href="{% url 'kicosca_api_test' %}" class="sidebar-link {% if request.resolver_match.url_name == 'kicosca_api_test' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-wrench-adjustable-circle"></i></span> API Test
+            </a>
+        </div>
+    </div>
+    {% elif user.role == 'kicosca_sg' %}
+    <!-- KICOSCA SECRETARY GENERAL SIDEBAR -->
+    <div class="sidebar-section">
+        <div class="sidebar-section-toggle"><h4>KICOSCA Secretary General</h4><span class="toggle-icon"><i class="bi bi-chevron-down"></i></span></div>
+        <div class="sidebar-section-body">
+            <a href="{% url 'kicosca_verification' %}" class="sidebar-link {% if request.resolver_match.url_name == 'kicosca_verification' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-shield-check"></i></span> Verification Dashboard
+            </a>
+            <a href="{% url 'kicosca_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'kicosca_dashboard' %}active{% endif %}">
+                <span class="icon"><i class="bi bi-speedometer2"></i></span> County View
             </a>
             <a href="{% url 'kicosca_api_test' %}" class="sidebar-link {% if request.resolver_match.url_name == 'kicosca_api_test' %}active{% endif %}">
                 <span class="icon"><i class="bi bi-wrench-adjustable-circle"></i></span> API Test

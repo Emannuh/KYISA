@@ -1097,6 +1097,9 @@ def dashboard_view(request):
     if user.role == 'kicosca_officer':
         return redirect('kicosca_dashboard')
 
+    if user.role == 'kicosca_sg':
+        return redirect('kicosca_verification')
+
     if user.role == 'scout':
         return redirect('scout_dashboard')
 
