@@ -1,0 +1,13 @@
+# ── GitHub Linguist overrides ────────────────────────────────────────────────
+# Tell GitHub to exclude static assets and templates from language detection
+# so Python shows as the primary language.
+
+# Static CSS/JS — vendored (not counted toward language stats)
+static/css/*.css    linguist-vendored=true
+static/js/*.js      linguist-vendored=true
+
+# HTML templates — documentation (not counted)
+templates/**        linguist-documentation=true
+
+# Migrations — generated code
+*/migrations/*.py   linguist-generated=true
