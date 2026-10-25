@@ -75,15 +75,15 @@ class KRAGavaConnectService:
     Falls back to simulation mode when credentials are not configured.
     """
 
-    TOKEN_URL_SANDBOX    = "https://developer.go.ke/oauth/client_credential/accesstoken?grant_type=client_credentials"
-    TOKEN_URL_PRODUCTION = "https://developer.go.ke/oauth/client_credential/accesstoken?grant_type=client_credentials"
+    TOKEN_URL_SANDBOX    = "https://sbx.kra.go.ke/v1/token/generate?grant_type=client_credentials"
+    TOKEN_URL_PRODUCTION = "https://api.kra.go.ke/v1/token/generate?grant_type=client_credentials"
 
-    # Fetch Taxpayer Obligations — TC001 endpoint
-    OBLIGATIONS_URL_SANDBOX    = "https://developer.go.ke/dtd/checker/v1/obligation"
-    OBLIGATIONS_URL_PRODUCTION = "https://developer.go.ke/dtd/checker/v1/obligation"
+    # TC001 confirmed endpoint
+    OBLIGATIONS_URL_SANDBOX    = "https://sbx.kra.go.ke/dtd/checker/v1/obligation"
+    OBLIGATIONS_URL_PRODUCTION = "https://api.kra.go.ke/dtd/checker/v1/obligation"
 
-    PIN_URL_SANDBOX    = "https://developer.go.ke/api/v1/taxpayer/pin"
-    PIN_URL_PRODUCTION = "https://developer.go.ke/api/v1/taxpayer/pin"
+    PIN_URL_SANDBOX    = "https://sbx.kra.go.ke/api/v1/taxpayer/pin"
+    PIN_URL_PRODUCTION = "https://api.kra.go.ke/api/v1/taxpayer/pin"
 
     def __init__(self):
         self.client_id     = getattr(settings, 'GAVACONNECT_CLIENT_ID',     '')
@@ -209,15 +209,15 @@ class KRAGavaConnectService:
                 f"{self.client_id}:{self.client_secret}".encode()
             ).decode()
 
-            resp = requests.post(
+            resp = requests.get(
                 self.token_url,
                 headers={
                     "Authorization": f"Basic {credentials}",
                     "Content-Type":  "application/x-www-form-urlencoded",
                 },
-                data={"grant_type": "client_credentials"},
+                params={"grant_type": "client_credentials"},
                 timeout=15,
-                verify=False,  # developer.go.ke has an expired cert
+                verify=False,
             )
             resp.raise_for_status()
             data = resp.json()
@@ -247,7 +247,7 @@ class KRAGavaConnectService:
         try:
             resp = requests.post(
                 self.obligations_url,
-                json={'pin': kra_pin},
+                json={'taxPayerPin': kra_pin},
                 headers={
                     'Authorization': f'Bearer {token}',
                     'Content-Type':  'application/json',
