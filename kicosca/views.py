@@ -136,8 +136,12 @@ def kicosca_dashboard(request):
             'is_sg': _is_kicosca_sg(user),
         })
 
-    if user.role in ('kicosca_officer', 'kicosca_sg') and user.county:
+    if user.role in ('kicosca_officer',) and user.county:
         entry, reg = _get_or_create_entry_for_officer(user, edition)
+    elif user.role == 'kicosca_sg':
+        # SG manages all counties — no personal county, just show overview
+        reg = None
+        entry = None
     else:
         reg = _get_reg(request)
         if reg:
@@ -178,12 +182,15 @@ def kicosca_join(request):
         messages.error(request, 'No active KICOSCA edition. Contact the KICOSCA Secretary General.')
         return redirect('kicosca_dashboard')
 
-    if user.role in ('kicosca_officer', 'kicosca_sg'):
+    if user.role in ('kicosca_officer',):
         if not user.county:
             messages.error(request, 'Your account has no county assigned. Contact the system administrator.')
             return redirect('kicosca_dashboard')
         entry, reg = _get_or_create_entry_for_officer(user, edition)
         messages.success(request, f'{user.county} county registered for {edition.name}.')
+    elif user.role == 'kicosca_sg':
+        messages.info(request, 'Secretary General manages all counties via the verification dashboard.')
+        return redirect('kicosca_verification')
     else:
         reg = _get_reg(request)
         if not reg:

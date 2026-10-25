@@ -8,7 +8,7 @@
     <div style="display:inline-flex;align-items:center;gap:.45rem;padding:.35rem .85rem;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#ddd6fe;margin-bottom:1rem">
       <i class="bi bi-trophy-fill"></i> KICOSCA Games
     </div>
-    <h1 style="font-size:clamp(1.5rem,2.5vw,2.1rem);font-weight:800;color:#fff;margin:0 0 .5rem">{{ reg.county }} County</h1>
+    <h1 style="font-size:clamp(1.5rem,2.5vw,2.1rem);font-weight:800;color:#fff;margin:0 0 .5rem">{% if reg %}{{ reg.county }}{% else %}{{ user.county }}{% endif %} County</h1>
     <p style="color:#c4b5fd;font-size:.9rem;margin:0">Kenya Inter-County Sports & Cultural Association County Government Employee Sports</p>
   </div>
 </div>
@@ -28,18 +28,12 @@
     {% if edition.host_county %}Hosted by {{ edition.host_county }} County{% endif %}
     {% if edition.start_date %} · {{ edition.start_date|date:"d M" }} – {{ edition.end_date|date:"d M Y" }}{% endif %}
   </p>
-  {% if reg.is_approved %}
   <form method="post" action="{% url 'kicosca_join' %}">
     {% csrf_token %}
     <button type="submit" style="padding:.75rem 2rem;background:#7c3aed;color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer">
-      <i class="bi bi-plus-circle"></i> Register {{ reg.county }} County for KICOSCA
+      <i class="bi bi-plus-circle"></i> Register {% if reg %}{{ reg.county }}{% elif user.county %}{{ user.county }}{% endif %} County for KICOSCA
     </button>
   </form>
-  {% else %}
-  <div style="background:#fce4ec;border-radius:8px;padding:.85rem 1rem;display:inline-block;font-size:.86rem;color:#C62828">
-    ⚠️ Your KYISA county registration must be <strong>approved</strong> before registering for KICOSCA.
-  </div>
-  {% endif %}
 </div>
 {% else %}
 <!-- Registered show disciplines -->
@@ -97,8 +91,4 @@
 {% endif %}
 {% endif %}
 
-<!-- Back to KYISA -->
-<a href="{% url 'county_admin_dashboard' %}" style="color:#6b7280;font-size:.88rem;text-decoration:none">
-  <i class="bi bi-arrow-left"></i> Back to KYISA County Dashboard
-</a>
 {% endblock %}
