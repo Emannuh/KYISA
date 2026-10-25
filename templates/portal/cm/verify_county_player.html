@@ -228,79 +228,71 @@
                 </span>
             </div>
             <div style="padding:.9rem 1rem">
-                <p style="margin:0 0 .85rem;font-size:.83rem;color:#777;line-height:1.5">
-                    Instantly checks this player's National ID against Kenya's IPRS government database .
-                    Result comes back in seconds no waiting.
-                </p>
 
-                <!-- Quick Lookup uses cache if already verified -->
-                <div style="margin-bottom:.85rem;padding:.8rem;background:#f0f4ff;border-radius:9px">
-                    <p style="margin:0 0 .45rem;font-size:.78rem;font-weight:700;color:#1565C0;text-transform:uppercase;letter-spacing:.04em">🔎 Quick IPRS Lookup</p>
-                    {% if player.prembly_status == 'verified' and player.prembly_notes %}
-                    <div style="padding:.5rem .75rem;background:#e8f5e9;border-radius:7px;font-size:.8rem;color:#1B5E20">
-                        <strong>✅ Cached result:</strong> {{ player.prembly_notes|truncatechars:100 }}
-                        <div style="font-size:.72rem;color:#555;margin-top:.2rem">No API call needed result stored from previous check.</div>
+                {% if player.prembly_status == 'not_checked' or player.prembly_status == 'failed' %}
+                <!-- Not checked or failed — show run button -->
+                <div style="display:flex;gap:.75rem;align-items:flex-start">
+                    <div style="flex:1">
+                        <p style="margin:0 0 .75rem;font-size:.83rem;color:#666;line-height:1.5">
+                            Checks this player's National ID against Kenya's IPRS government database.
+                            {% if player.prembly_status == 'failed' %}<strong style="color:#C62828"> Previous check failed.</strong>{% endif %}
+                        </p>
+                        <form method="post" action="{% url 'prembly_verify_county_player' player_pk=player.pk %}" style="margin:0">
+                            {% csrf_token %}<input type="hidden" name="action" value="submit">
+                            <button type="submit" style="padding:.55rem 1.25rem;background:#0D47A1;color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:.88rem;font-weight:700">
+                                🔍 Run IPRS Check
+                            </button>
+                        </form>
                     </div>
-                    {% else %}
+                </div>
+
+                {% elif player.prembly_status == 'verified' %}
+                <!-- Verified — show clean result card -->
+                <div style="display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:start">
+
+                    <!-- Result data -->
+                    <div>
+                        <div id="iprs-result-card" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:.85rem 1rem;margin-bottom:.75rem">
+                            <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#166534;margin-bottom:.55rem">IPRS Record</div>
+                            <div id="iprs-comparison-body"></div>
+                        </div>
+
+                        <!-- Re-check with billing warning -->
+                        <form method="post" action="{% url 'prembly_verify_county_player' player_pk=player.pk %}" style="margin:0"
+                              onsubmit="return confirm('⚠️ Running a new IPRS check will use a Prembly credit and will be billed. Only proceed if details have changed. Continue?')">
+                            {% csrf_token %}<input type="hidden" name="action" value="submit">
+                            <button type="submit" style="padding:.35rem .85rem;background:#fff;color:#666;border:1px solid #e0e0e0;border-radius:7px;cursor:pointer;font-size:.78rem">
+                                🔄 Re-check (uses credit)
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- IPRS Photo if available -->
+                    {% if player.iprs_photo %}
+                    <div style="text-align:center;flex-shrink:0">
+                        <img src="{{ player.iprs_photo.url }}" alt="IPRS Photo"
+                             style="width:72px;height:90px;object-fit:cover;border-radius:8px;border:2px solid #1B5E20">
+                        <div style="font-size:.65rem;color:#1B5E20;font-weight:700;margin-top:.25rem">IPRS Photo</div>
+                    </div>
+                    {% endif %}
+
+                </div>
+                {% endif %}
+
+                <!-- Quick lookup (only when not verified) -->
+                {% if player.prembly_status != 'verified' %}
+                <div style="margin-top:.85rem;padding:.75rem;background:#f8faff;border-radius:8px;border:1px solid #e8eaf6">
+                    <p style="margin:0 0 .4rem;font-size:.76rem;font-weight:700;color:#1565C0">🔎 Preview IPRS data before running full check</p>
                     <div style="display:flex;gap:.4rem">
                         <input type="text" id="vcp-iprs-input" value="{{ player.national_id_number|default:'' }}"
-                               placeholder="National ID…"
-                               style="flex:1;padding:.4rem .7rem;border:1px solid #c5cae9;border-radius:8px;font-size:.83rem;background:#fff">
-                        <button onclick="vcpLookup()" style="padding:.4rem 1rem;background:#1565C0;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:700">Lookup</button>
+                               placeholder="National ID…" style="flex:1;padding:.38rem .65rem;border:1px solid #c5cae9;border-radius:7px;font-size:.82rem;background:#fff">
+                        <button onclick="vcpLookup()" style="padding:.38rem .9rem;background:#1565C0;color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:.81rem;font-weight:600">Preview</button>
                     </div>
-                    <div id="vcp-iprs-result" style="display:none;margin-top:.6rem"></div>
-                    {% endif %}
-                </div>
-
-                <!-- Action buttons hide Run button if already verified -->
-                <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
-                    {% if player.prembly_status != 'verified' %}
-                    <form method="post" action="{% url 'prembly_verify_county_player' player_pk=player.pk %}" style="margin:0">
-                        {% csrf_token %}<input type="hidden" name="action" value="submit">
-                        <button type="submit" style="padding:.45rem 1.1rem;background:#0D47A1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.84rem;font-weight:700">
-                            🔍 Run IPRS Check
-                        </button>
-                    </form>
-                    {% else %}
-                    <span style="font-size:.8rem;color:#1B5E20;font-weight:600">✅ Verified no re-check needed</span>
-                    {% endif %}
-                    {% if player.prembly_status != 'not_checked' %}
-                    <form method="post" action="{% url 'prembly_verify_county_player' player_pk=player.pk %}" style="margin:0">
-                        {% csrf_token %}<input type="hidden" name="action" value="reset">
-                        <button type="submit" style="padding:.45rem .9rem;background:#f5f5f5;color:#666;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:.82rem" onclick="return confirm('This will clear the stored result and use a credit on next check. Continue?')">Reset</button>
-                    </form>
-                    {% endif %}
-                </div>
-
-                {% if player.prembly_notes %}
-                <div style="margin-top:.75rem;padding:.75rem .9rem;border-radius:9px;font-size:.82rem;line-height:1.6;
-                    {% if player.prembly_status == 'verified' %}background:#e8f5e9;color:#1B5E20
-                    {% elif player.prembly_status == 'failed' %}background:#fce4ec;color:#C62828
-                    {% else %}background:#f5f5f5;color:#555{% endif %}">
-                    <div style="font-weight:700;margin-bottom:.45rem">IPRS Record</div>
-                    <div style="display:grid;grid-template-columns:130px 1fr;gap:.25rem .65rem;font-size:.81rem">
-                        {% if player.prembly_verified_name %}
-                        <span style="opacity:.7">Official Name</span>
-                        <strong>{{ player.prembly_verified_name }}</strong>
-                        {% endif %}
-                        <span style="opacity:.7">Reference</span>
-                        <span style="font-family:monospace;font-size:.78rem">{{ player.prembly_reference }}</span>
-                        {% if player.prembly_checked_at %}
-                        <span style="opacity:.7">Checked</span>
-                        <span>{{ player.prembly_checked_at|date:"d M Y, H:i" }}</span>
-                        {% endif %}
-                    </div>
-                    {% if player.prembly_notes %}
-                    <div style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid rgba(0,0,0,.08);font-size:.78rem;opacity:.8">{{ player.prembly_notes }}</div>
-                    {% endif %}
+                    <div id="vcp-iprs-result" style="display:none;margin-top:.55rem"></div>
+                    <p style="margin:.4rem 0 0;font-size:.7rem;color:#aaa">Preview is free. Only "Run IPRS Check" uses a credit.</p>
                 </div>
                 {% endif %}
 
-                {% if player.prembly_status == 'verified' and player.prembly_notes %}
-                <div style="margin-top:.75rem" id="iprs-comparison-body">
-                    <div style="font-size:.75rem;color:#888;padding:.4rem 0">Loading comparison…</div>
-                </div>
-                {% endif %}
             </div>
         </div>
 
@@ -508,55 +500,52 @@
 
 {% block extra_js %}
 <script>
-/* ── IPRS Comparison Panel ─────────────────────────────────────────── */
-(function buildComparison() {
+/* ── IPRS Result Card ───────────────────────────────────────────────── */
+(function buildIPRSCard() {
     const body = document.getElementById('iprs-comparison-body');
     if (!body) return;
 
-    const notes = `{{ player.prembly_notes|escapejs }}`;
+    const notes   = `{{ player.prembly_notes|escapejs }}`;
     const regName = `{{ player.first_name }} {{ player.last_name }}`.trim();
     const regDob  = `{{ player.date_of_birth|date:"Y-m-d" }}`;
     const regAge  = {{ player.age }};
+    const checked = `{{ player.prembly_checked_at|date:"d M Y, H:i"|default:"" }}`;
+    const ref     = `{{ player.prembly_reference|escapejs }}`;
 
     function extract(key) {
         const m = notes.match(new RegExp(key + ':\\s*([^,\\.]+)'));
-        return m ? m[1].trim() : '—';
+        return m ? m[1].trim() : '';
     }
 
-    const iprsName   = extract('Name');
-    const iprsDob    = extract('DOB');
+    const iprsName   = extract('Name')   || '—';
+    const iprsDob    = extract('DOB')    || '—';
     const iprsAge    = parseInt(extract('Age')) || 0;
-    const iprsGender = extract('Gender');
+    const iprsGender = extract('Gender') || '—';
 
-    function row(label, reg, iprs) {
-        const match = reg.toLowerCase().replace(/\s+/g,'') === iprs.toLowerCase().replace(/\s+/g,'');
-        return `<div style="display:grid;grid-template-columns:80px 1fr 1fr 28px;gap:.3rem;padding:.4rem .5rem;border-radius:6px;background:${match?'#fafafa':'#fff8e1'};margin-bottom:.3rem;font-size:.78rem;align-items:center">
-            <span style="color:#888;font-size:.72rem;font-weight:600">${label}</span>
-            <span style="color:#555">${reg}</span>
-            <span style="color:#111;font-weight:600">${iprs}</span>
-            <span style="text-align:center">${match?'✅':'⚠️'}</span>
+    const nameMm = iprsName !== '—' && regName.toLowerCase() !== iprsName.toLowerCase();
+    const dobMm  = iprsDob  !== '—' && regDob  !== iprsDob;
+    const ageMm  = iprsAge  && iprsAge !== regAge;
+    const ageOk  = iprsAge >= 18 && iprsAge <= 23;
+
+    function field(label, val, warn) {
+        return `<div>
+            <div style="font-size:.62rem;color:#166534;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.12rem">${label}</div>
+            <div style="font-size:.88rem;font-weight:700;color:#0d1117">${val}</div>
+            ${warn ? `<div style="font-size:.68rem;color:#C62828;margin-top:.08rem">⚠️ ${warn}</div>` : ''}
         </div>`;
     }
 
-    const ageOk  = iprsAge >= 18 && iprsAge <= 23;
-    const ageMm  = iprsAge !== regAge;
-
     body.innerHTML = `
-    ${ageMm ? `<div style="padding:.55rem .75rem;background:#fce4ec;border-radius:7px;font-size:.78rem;color:#C62828;font-weight:600;margin-bottom:.65rem">
-        ⚠️ Age mismatch registered: ${regAge} yrs, IPRS: ${iprsAge} yrs ${!ageOk?'(outside 18–23 bracket!)':''}
-    </div>` : ''}
-    <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#888;display:grid;grid-template-columns:80px 1fr 1fr 28px;gap:.3rem;padding:.2rem .5rem;margin-bottom:.2rem">
-        <span>Field</span><span>Registered</span><span style="color:#1565C0">IPRS</span><span></span>
-    </div>
-    ${row('Name', regName, iprsName)}
-    ${row('DOB', regDob, iprsDob)}
-    ${row('Age', regAge+' yrs', iprsAge+' yrs')}
-    <div style="display:grid;grid-template-columns:80px 1fr 1fr 28px;gap:.3rem;padding:.4rem .5rem;border-radius:6px;background:#fafafa;font-size:.78rem;align-items:center">
-        <span style="color:#888;font-size:.72rem;font-weight:600">Gender</span>
-        <span style="color:#aaa">—</span>
-        <span style="color:#111;font-weight:600">${iprsGender}</span>
-        <span style="text-align:center;color:#888">ℹ️</span>
-    </div>`;
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.6rem">
+            ${field('Name', iprsName,   nameMm ? `Registered: ${regName}` : '')}
+            ${field('Date of Birth', iprsDob, dobMm ? `Registered: ${regDob}` : '')}
+            ${field('Age', iprsAge ? `${iprsAge} yrs ${ageOk ? '' : '⛔ outside 18–23'}` : '—', ageMm ? `Registered: ${regAge} yrs` : '')}
+            ${field('Gender', iprsGender, '')}
+        </div>
+        <div style="font-size:.68rem;color:#4ade80;display:flex;justify-content:space-between;padding-top:.45rem;border-top:1px solid #bbf7d0">
+            <span>Ref: <span style="font-family:monospace;letter-spacing:.02em">${ref.slice(0,18)}…</span></span>
+            ${checked ? `<span>${checked}</span>` : ''}
+        </div>`;
 })();
 
 function vcpLookup() {
