@@ -14,7 +14,7 @@ Configuration (Railway environment variables):
     GAVACONNECT_CLIENT_SECRET=your_client_secret
     GAVACONNECT_ENVIRONMENT=sandbox   # or 'production'
 
-GavaConnect sandbox: use PIN P051234567A for testing.
+GavaConnect sandbox: use PIN A011124346B for testing (TC001 test case PIN).
 """
 import logging
 import requests
@@ -73,8 +73,9 @@ class KRAGavaConnectService:
     TOKEN_URL_SANDBOX    = "https://sandbox.gavaconnect.co.ke/oauth/client_credential/accesstoken?grant_type=client_credentials"
     TOKEN_URL_PRODUCTION = "https://api.gavaconnect.co.ke/oauth/client_credential/accesstoken?grant_type=client_credentials"
 
-    OBLIGATIONS_URL_SANDBOX    = "https://sandbox.gavaconnect.co.ke/api/v1/taxpayer/obligations"
-    OBLIGATIONS_URL_PRODUCTION = "https://api.gavaconnect.co.ke/api/v1/taxpayer/obligations"
+    # Correct endpoint as confirmed in GavaConnect API test suite (TC001)
+    OBLIGATIONS_URL_SANDBOX    = "https://sandbox.gavaconnect.co.ke/dtd/checker/v1/obligation"
+    OBLIGATIONS_URL_PRODUCTION = "https://api.gavaconnect.co.ke/dtd/checker/v1/obligation"
 
     PIN_URL_SANDBOX    = "https://sandbox.gavaconnect.co.ke/api/v1/taxpayer/pin"
     PIN_URL_PRODUCTION = "https://api.gavaconnect.co.ke/api/v1/taxpayer/pin"
@@ -352,8 +353,8 @@ class KRAGavaConnectService:
         """
         logger.info("KRA SIMULATION mode — PIN: %s, county: %s", kra_pin, expected_county)
 
-        # Sandbox test PIN always passes
-        if kra_pin in ('P051234567A', 'A001234567B'):
+        # Sandbox test PINs always pass
+        if kra_pin in ('P051234567A', 'A001234567B', 'A011124346B'):
             employer = f"County Government of {expected_county or 'Nairobi'}"
             return KRAVerificationResult(
                 success=True,
