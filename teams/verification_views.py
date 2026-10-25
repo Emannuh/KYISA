@@ -1049,9 +1049,7 @@ def prembly_verify_county_player(request, player_pk):
                 if result.photo:
                     try:
                         from teams.utils import save_base64_photo
-                        photo_file = save_base64_photo(result.photo, f"prembly_{national_id}")
-                        if photo_file:
-                            player.iprs_photo = photo_file
+                        if save_base64_photo(player, result.photo):
                             player.save(update_fields=['iprs_photo'])
                     except Exception:
                         pass
