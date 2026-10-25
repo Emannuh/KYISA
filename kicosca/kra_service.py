@@ -17,7 +17,12 @@ Configuration (Railway environment variables):
 GavaConnect sandbox: use PIN A011124346B for testing (TC001 test case PIN).
 """
 import logging
+import warnings
 import requests
+import urllib3
+
+# developer.go.ke has an expired SSL cert — suppress the warning
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from dataclasses import dataclass, field
 from typing import Optional
 
@@ -70,15 +75,15 @@ class KRAGavaConnectService:
     Falls back to simulation mode when credentials are not configured.
     """
 
-    TOKEN_URL_SANDBOX    = "https://sandbox.gavaconnect.co.ke/oauth/client_credential/accesstoken?grant_type=client_credentials"
-    TOKEN_URL_PRODUCTION = "https://api.gavaconnect.co.ke/oauth/client_credential/accesstoken?grant_type=client_credentials"
+    TOKEN_URL_SANDBOX    = "https://developer.go.ke/oauth/client_credential/accesstoken?grant_type=client_credentials"
+    TOKEN_URL_PRODUCTION = "https://developer.go.ke/oauth/client_credential/accesstoken?grant_type=client_credentials"
 
-    # Correct endpoint as confirmed in GavaConnect API test suite (TC001)
-    OBLIGATIONS_URL_SANDBOX    = "https://sandbox.gavaconnect.co.ke/dtd/checker/v1/obligation"
-    OBLIGATIONS_URL_PRODUCTION = "https://api.gavaconnect.co.ke/dtd/checker/v1/obligation"
+    # Fetch Taxpayer Obligations — TC001 endpoint
+    OBLIGATIONS_URL_SANDBOX    = "https://developer.go.ke/dtd/checker/v1/obligation"
+    OBLIGATIONS_URL_PRODUCTION = "https://developer.go.ke/dtd/checker/v1/obligation"
 
-    PIN_URL_SANDBOX    = "https://sandbox.gavaconnect.co.ke/api/v1/taxpayer/pin"
-    PIN_URL_PRODUCTION = "https://api.gavaconnect.co.ke/api/v1/taxpayer/pin"
+    PIN_URL_SANDBOX    = "https://developer.go.ke/api/v1/taxpayer/pin"
+    PIN_URL_PRODUCTION = "https://developer.go.ke/api/v1/taxpayer/pin"
 
     def __init__(self):
         self.client_id     = getattr(settings, 'GAVACONNECT_CLIENT_ID',     '')
@@ -212,6 +217,7 @@ class KRAGavaConnectService:
                 },
                 data={"grant_type": "client_credentials"},
                 timeout=15,
+                verify=False,  # developer.go.ke has an expired cert
             )
             resp.raise_for_status()
             data = resp.json()
@@ -248,6 +254,7 @@ class KRAGavaConnectService:
                     'Accept':        'application/json',
                 },
                 timeout=self.timeout,
+                verify=False,  # developer.go.ke has an expired cert
             )
             resp.raise_for_status()
             raw = resp.json()
