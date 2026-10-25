@@ -592,7 +592,7 @@ function toggleCountyField() {
     var role  = document.getElementById('create-role').value;
     var wrap  = document.getElementById('county-field-wrap');
     var sel   = document.getElementById('create-county');
-    var needs = ['county_sports_admin', 'kicosca_officer', 'kicosca_sg'];
+    var needs = ['county_sports_admin', 'kicosca_officer'];
     var show  = needs.indexOf(role) !== -1;
     wrap.style.display = show ? '' : 'none';
     sel.required = show;

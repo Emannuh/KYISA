@@ -524,8 +524,8 @@ def create_user(request):
             messages.error(request, "Phone number must be in the format +254XXXXXXXXX (country code + 9 digits).")
             return redirect('manage_users')
 
-        # County required for county-based roles
-        roles_needing_county = ('county_sports_admin', 'kicosca_officer', 'kicosca_sg')
+        # County required only for county-based roles (not kicosca_sg who manages all counties)
+        roles_needing_county = ('county_sports_admin', 'kicosca_officer')
         if role in roles_needing_county and not county:
             messages.error(request, f"County is required for the {role.replace('_', ' ').title()} role.")
             return redirect('manage_users')
