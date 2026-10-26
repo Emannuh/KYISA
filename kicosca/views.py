@@ -422,6 +422,7 @@ def kicosca_kra_verify(request, player_pk):
     return redirect('kicosca_player_detail', player_pk=player_pk)
 
 
+
 # ── Player Detail (Verification View) ─────────────────────────────────────────
 
 @login_required(login_url='web_login')
