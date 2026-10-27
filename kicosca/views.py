@@ -593,15 +593,35 @@ def kicosca_verification_dashboard(request):
             county  = request.POST.get('county', 'Nairobi').strip()
             from kicosca.kra_service import KRAGavaConnectService
             svc = KRAGavaConnectService()
-            r   = svc.verify_county_employment(kra_pin, county)
-            kra_result = {
-                'pin': kra_pin, 'county': county,
-                'success': r.success, 'county_match': r.county_match,
-                'is_county_employee': r.is_county_employee,
-                'employer_name': r.employer_name,
-                'is_simulation': r.is_simulation,
-                'error_message': r.error_message,
-            }
+
+            # Try to get token first so we can show token error separately
+            token = svc._get_access_token()
+            if not token:
+                kra_result = {
+                    'pin': kra_pin, 'county': county,
+                    'success': False,
+                    'county_match': False,
+                    'is_county_employee': False,
+                    'employer_name': '',
+                    'is_simulation': False,
+                    'error_message': 'Authentication failed — could not get access token. Check GAVACONNECT_CLIENT_ID and GAVACONNECT_CLIENT_SECRET in Railway Variables.',
+                    'raw_response': {},
+                    'token_ok': False,
+                }
+            else:
+                r = svc.verify_county_employment(kra_pin, county)
+                kra_result = {
+                    'pin': kra_pin, 'county': county,
+                    'success': r.success, 'county_match': r.county_match,
+                    'is_county_employee': r.is_county_employee,
+                    'employer_name': r.employer_name,
+                    'employer_pin': r.employer_pin,
+                    'obligations': r.obligations,
+                    'is_simulation': r.is_simulation,
+                    'error_message': r.error_message,
+                    'raw_response': r.raw_response,
+                    'token_ok': True,
+                }
 
         elif action == 'test_iprs':
             nid = request.POST.get('iprs_id', '10101010').strip()
@@ -613,8 +633,12 @@ def kicosca_verification_dashboard(request):
                 'success': r.success, 'person_found': r.person_found,
                 'full_name': r.full_name,
                 'date_of_birth': str(r.date_of_birth) if r.date_of_birth else None,
+                'gender': r.gender,
                 'serial_number': r.serial_number,
+                'date_of_issue': r.date_of_issue,
+                'place_of_birth': r.place_of_birth,
                 'has_photo': bool(r.photo),
+                'reference': r.reference_number,
                 'is_simulation': r.is_simulation,
                 'error_message': r.error_message,
             }

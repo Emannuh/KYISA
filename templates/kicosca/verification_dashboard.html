@@ -225,14 +225,29 @@
           </button>
         </form>
         {% if kra_result %}
-        <div style="padding:.75rem;border-radius:8px;font-size:.8rem;margin-top:.5rem;
-          {% if kra_result.county_match %}background:#f0fdf4;border:1px solid #bbf7d0{% elif kra_result.success %}background:#fffbeb;border:1px solid #fde68a{% else %}background:#fef2f2;border:1px solid #fecaca{% endif %}">
-          <strong>{% if kra_result.county_match %}✅ County Match{% elif kra_result.is_county_employee %}⚠ Wrong County{% elif kra_result.success %}❌ Not County Employee{% else %}❌ Failed{% endif %}</strong>
-          {% if kra_result.is_simulation %}<span style="font-size:.68rem;background:#e5e7eb;border-radius:4px;padding:.1rem .3rem;margin-left:.3rem">SIMULATION</span>{% endif %}
-          <div style="margin-top:.4rem;display:grid;grid-template-columns:90px 1fr;gap:.2rem .4rem;color:#374151">
-            <span style="color:#9ca3af">Employer</span><span>{{ kra_result.employer_name|default:"—" }}</span>
-            <span style="color:#9ca3af">Error</span><span style="color:#c2410c">{{ kra_result.error_message|default:"None" }}</span>
+        <div style="margin-top:.75rem;padding:.85rem;border-radius:8px;font-size:.8rem;
+          {% if kra_result.county_match %}background:#f0fdf4;border:1px solid #bbf7d0{% elif kra_result.token_ok == False %}background:#fef2f2;border:1px solid #fecaca{% elif kra_result.success %}background:#fffbeb;border:1px solid #fde68a{% else %}background:#fef2f2;border:1px solid #fecaca{% endif %}">
+          <div style="font-weight:700;margin-bottom:.5rem">
+            {% if not kra_result.token_ok %}🔐 Auth Failed
+            {% elif kra_result.county_match %}✅ County Employee Confirmed
+            {% elif kra_result.is_county_employee %}⚠ County Employee — Wrong County
+            {% elif kra_result.success %}❌ Not a County Employee
+            {% else %}❌ Failed{% endif %}
+            {% if kra_result.is_simulation %}<span style="font-size:.68rem;background:#e5e7eb;border-radius:4px;padding:.1rem .3rem;margin-left:.3rem">SIMULATION</span>{% endif %}
           </div>
+          <div style="display:grid;grid-template-columns:110px 1fr;gap:.25rem .5rem;color:#374151;margin-bottom:.5rem">
+            <span style="color:#9ca3af">PIN</span><span style="font-family:monospace">{{ kra_result.pin }}</span>
+            <span style="color:#9ca3af">County</span><span>{{ kra_result.county }}</span>
+            {% if kra_result.employer_name %}<span style="color:#9ca3af">Employer</span><span style="font-weight:600">{{ kra_result.employer_name }}</span>{% endif %}
+            {% if kra_result.employer_pin %}<span style="color:#9ca3af">Employer PIN</span><span style="font-family:monospace">{{ kra_result.employer_pin }}</span>{% endif %}
+            {% if kra_result.error_message %}<span style="color:#9ca3af">Error</span><span style="color:#c2410c">{{ kra_result.error_message }}</span>{% endif %}
+          </div>
+          {% if kra_result.raw_response %}
+          <details style="margin-top:.35rem">
+            <summary style="font-size:.72rem;color:#6b7280;cursor:pointer;font-weight:600">Raw Response</summary>
+            <pre style="font-size:.68rem;background:#0f172a;color:#86efac;padding:.75rem;border-radius:6px;margin-top:.4rem;overflow-x:auto;white-space:pre-wrap">{{ kra_result.raw_response }}</pre>
+          </details>
+          {% endif %}
         </div>
         {% endif %}
       </div>
@@ -258,13 +273,21 @@
         {% if iprs_result %}
         <div style="padding:.75rem;border-radius:8px;font-size:.8rem;margin-top:.5rem;
           {% if iprs_result.person_found %}background:#f0fdf4;border:1px solid #bbf7d0{% else %}background:#fef2f2;border:1px solid #fecaca{% endif %}">
-          <strong>{% if iprs_result.person_found %}✅ Found{% else %}❌ Not Found{% endif %}</strong>
-          {% if iprs_result.is_simulation %}<span style="font-size:.68rem;background:#e5e7eb;border-radius:4px;padding:.1rem .3rem;margin-left:.3rem">SIMULATION</span>{% endif %}
-          <div style="margin-top:.4rem;display:grid;grid-template-columns:90px 1fr;gap:.2rem .4rem;color:#374151">
-            <span style="color:#9ca3af">Name</span><strong>{{ iprs_result.full_name|default:"—" }}</strong>
+          <div style="font-weight:700;margin-bottom:.5rem">
+            {% if iprs_result.person_found %}✅ Person Found in IPRS{% else %}❌ Not Found{% endif %}
+            {% if iprs_result.is_simulation %}<span style="font-size:.68rem;background:#e5e7eb;border-radius:4px;padding:.1rem .3rem;margin-left:.3rem">SIMULATION</span>{% endif %}
+          </div>
+          <div style="display:grid;grid-template-columns:100px 1fr;gap:.25rem .5rem;color:#374151">
+            <span style="color:#9ca3af">National ID</span><span style="font-family:monospace">{{ iprs_result.national_id }}</span>
+            <span style="color:#9ca3af">Full Name</span><strong>{{ iprs_result.full_name|default:"—" }}</strong>
             <span style="color:#9ca3af">DOB</span><span>{{ iprs_result.date_of_birth|default:"—" }}</span>
-            <span style="color:#9ca3af">Serial</span><span style="font-family:monospace">{{ iprs_result.serial_number|default:"—" }}</span>
-            <span style="color:#9ca3af">Photo</span><span>{% if iprs_result.has_photo %}✅{% else %}❌ Not in IPRS{% endif %}</span>
+            <span style="color:#9ca3af">Gender</span><span>{{ iprs_result.gender|default:"—" }}</span>
+            <span style="color:#9ca3af">Serial No.</span><span style="font-family:monospace">{{ iprs_result.serial_number|default:"Not returned" }}</span>
+            <span style="color:#9ca3af">Place of Birth</span><span>{{ iprs_result.place_of_birth|default:"—" }}</span>
+            <span style="color:#9ca3af">Date of Issue</span><span>{{ iprs_result.date_of_issue|default:"—" }}</span>
+            <span style="color:#9ca3af">Reference</span><span style="font-family:monospace;font-size:.72rem">{{ iprs_result.reference|default:"—" }}</span>
+            <span style="color:#9ca3af">Photo</span><span>{% if iprs_result.has_photo %}✅ Returned{% else %}❌ Not in API response (use SDK){% endif %}</span>
+            {% if iprs_result.error_message %}<span style="color:#9ca3af">Error</span><span style="color:#c2410c">{{ iprs_result.error_message }}</span>{% endif %}
           </div>
         </div>
         {% endif %}
