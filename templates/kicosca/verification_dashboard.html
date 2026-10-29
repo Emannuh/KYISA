@@ -199,7 +199,8 @@
     <span style="font-size:.68rem;color:#9ca3af">Test KRA and IPRS integrations</span>
   </div>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.85rem">
+    <!-- KRA Employment Test only — KICOSCA uses KRA, not IPRS -->
+    <div style="display:grid;grid-template-columns:1fr;gap:.85rem">
 
     <!-- KRA Employment Test -->
     <div class="dash-panel">
@@ -253,46 +254,7 @@
       </div>
     </div>
 
-    <!-- IPRS Test -->
-    <div class="dash-panel">
-      <div class="dash-panel-head"><h3><i class="bi bi-fingerprint"></i> IPRS Identity Check</h3></div>
-      <div class="dash-panel-body">
-        <form method="post" action="{% url 'kicosca_api_test' %}" style="margin-bottom:.75rem">
-          {% csrf_token %}
-          <input type="hidden" name="action" value="test_iprs">
-          <div style="margin-bottom:.5rem">
-            <label style="font-size:.72rem;font-weight:700;display:block;margin-bottom:.2rem;color:#374151">National ID</label>
-            <input type="text" name="iprs_id" value="10101010"
-                   style="width:100%;padding:.42rem .65rem;border:1.5px solid #e5e7eb;border-radius:8px;font-family:monospace;font-size:.82rem;box-sizing:border-box">
-            <div style="font-size:.68rem;color:#9ca3af;margin-top:.15rem">Sandbox test: 10101010</div>
-          </div>
-          <button type="submit" class="pbtn pbtn-primary pbtn-sm" style="width:100%">
-            <i class="bi bi-play-circle"></i> Run IPRS Check
-          </button>
-        </form>
-        {% if iprs_result %}
-        <div style="padding:.75rem;border-radius:8px;font-size:.8rem;margin-top:.5rem;
-          {% if iprs_result.person_found %}background:#f0fdf4;border:1px solid #bbf7d0{% else %}background:#fef2f2;border:1px solid #fecaca{% endif %}">
-          <div style="font-weight:700;margin-bottom:.5rem">
-            {% if iprs_result.person_found %}✅ Person Found in IPRS{% else %}❌ Not Found{% endif %}
-            {% if iprs_result.is_simulation %}<span style="font-size:.68rem;background:#e5e7eb;border-radius:4px;padding:.1rem .3rem;margin-left:.3rem">SIMULATION</span>{% endif %}
-          </div>
-          <div style="display:grid;grid-template-columns:100px 1fr;gap:.25rem .5rem;color:#374151">
-            <span style="color:#9ca3af">National ID</span><span style="font-family:monospace">{{ iprs_result.national_id }}</span>
-            <span style="color:#9ca3af">Full Name</span><strong>{{ iprs_result.full_name|default:"—" }}</strong>
-            <span style="color:#9ca3af">DOB</span><span>{{ iprs_result.date_of_birth|default:"—" }}</span>
-            <span style="color:#9ca3af">Gender</span><span>{{ iprs_result.gender|default:"—" }}</span>
-            <span style="color:#9ca3af">Serial No.</span><span style="font-family:monospace">{{ iprs_result.serial_number|default:"Not returned" }}</span>
-            <span style="color:#9ca3af">Place of Birth</span><span>{{ iprs_result.place_of_birth|default:"—" }}</span>
-            <span style="color:#9ca3af">Date of Issue</span><span>{{ iprs_result.date_of_issue|default:"—" }}</span>
-            <span style="color:#9ca3af">Reference</span><span style="font-family:monospace;font-size:.72rem">{{ iprs_result.reference|default:"—" }}</span>
-            <span style="color:#9ca3af">Photo</span><span>{% if iprs_result.has_photo %}✅ Returned{% else %}❌ Not in API response (use SDK){% endif %}</span>
-            {% if iprs_result.error_message %}<span style="color:#9ca3af">Error</span><span style="color:#c2410c">{{ iprs_result.error_message }}</span>{% endif %}
-          </div>
-        </div>
-        {% endif %}
-      </div>
-    </div>
+    <!-- IPRS not used in KICOSCA -->
 
   </div>
 </div>

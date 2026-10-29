@@ -45,7 +45,6 @@ class PremblyService:
 
     ENDPOINTS = [
         "/verification/ke/national_id",
-        "/verification/ke/national_id_advance",
     ]
 
     def __init__(self):

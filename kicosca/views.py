@@ -624,24 +624,7 @@ def kicosca_verification_dashboard(request):
                 }
 
         elif action == 'test_iprs':
-            nid = request.POST.get('iprs_id', '10101010').strip()
-            from teams.prembly_service import PremblyService
-            svc = PremblyService()
-            r   = svc.lookup_by_national_id(nid)
-            iprs_result = {
-                'national_id': nid,
-                'success': r.success, 'person_found': r.person_found,
-                'full_name': r.full_name,
-                'date_of_birth': str(r.date_of_birth) if r.date_of_birth else None,
-                'gender': r.gender,
-                'serial_number': r.serial_number,
-                'date_of_issue': r.date_of_issue,
-                'place_of_birth': r.place_of_birth,
-                'has_photo': bool(r.photo),
-                'reference': r.reference_number,
-                'is_simulation': r.is_simulation,
-                'error_message': r.error_message,
-            }
+            pass  # IPRS not used in KICOSCA
 
     return render(request, 'kicosca/verification_dashboard.html', {
         'edition':           edition,
