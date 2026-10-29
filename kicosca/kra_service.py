@@ -215,7 +215,6 @@ class KRAGavaConnectService:
                     "Authorization": f"Basic {credentials}",
                     "Content-Type":  "application/x-www-form-urlencoded",
                 },
-                params={"grant_type": "client_credentials"},
                 timeout=15,
                 verify=False,
             )
