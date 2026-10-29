@@ -82,8 +82,8 @@ class KRAGavaConnectService:
     OBLIGATIONS_URL_SANDBOX    = "https://sbx.kra.go.ke/dtd/checker/v1/obligation"
     OBLIGATIONS_URL_PRODUCTION = "https://api.kra.go.ke/dtd/checker/v1/obligation"
 
-    PIN_URL_SANDBOX    = "https://sbx.kra.go.ke/api/v1/taxpayer/pin"
-    PIN_URL_PRODUCTION = "https://api.kra.go.ke/api/v1/taxpayer/pin"
+    PIN_URL_SANDBOX    = "https://sbx.kra.go.ke/dtd/checker/v1/pin"
+    PIN_URL_PRODUCTION = "https://api.kra.go.ke/dtd/checker/v1/pin"
 
     def __init__(self):
         self.client_id     = getattr(settings, 'GAVACONNECT_CLIENT_ID',     '')
@@ -168,28 +168,47 @@ class KRAGavaConnectService:
 
             resp = requests.post(
                 self.pin_url,
-                json={'id_number': national_id, 'id_type': 'NATIONAL_ID'},
+                json={'TaxpayerType': 'KE', 'TaxpayerID': national_id},
                 headers={
                     'Authorization': f'Bearer {token}',
                     'Content-Type': 'application/json',
+                    'Accept':        'application/json',
                 },
                 timeout=self.timeout,
+                verify=False,
             )
             resp.raise_for_status()
             data = resp.json()
 
-            if data.get('status') or data.get('success'):
+            # GavaConnect PIN Checker response: Status OK/NOK, ResponseCode 20000/20001
+            status = data.get('Status', data.get('status', ''))
+            code   = data.get('ResponseCode', '')
+
+            if status == 'OK' or code == '20000':
                 result = data.get('data', data)
                 return {
                     'success': True,
-                    'kra_pin': result.get('pin', result.get('kra_pin', '')),
-                    'name':    result.get('name', result.get('taxpayer_name', '')),
+                    'kra_pin': (
+                        result.get('TaxpayerPIN')
+                        or result.get('pin')
+                        or result.get('kra_pin', '')
+                    ),
+                    'name': (
+                        result.get('TaxpayerName')
+                        or result.get('name')
+                        or result.get('taxpayer_name', '')
+                    ),
                 }
             else:
+                msg = (
+                    data.get('ResponseMsg')
+                    or data.get('message')
+                    or 'PIN not found.'
+                )
                 return {
                     'success': False,
                     'kra_pin': '',
-                    'error_message': data.get('message', 'PIN not found.'),
+                    'error_message': msg,
                 }
         except Exception as exc:
             return {'success': False, 'kra_pin': '', 'error_message': str(exc)}
