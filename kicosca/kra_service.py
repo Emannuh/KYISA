@@ -228,12 +228,13 @@ class KRAGavaConnectService:
                 f"{self.client_id}:{self.client_secret}".encode()
             ).decode()
 
-            resp = requests.get(
+            resp = requests.post(
                 self.token_url,
                 headers={
                     "Authorization": f"Basic {credentials}",
                     "Content-Type":  "application/x-www-form-urlencoded",
                 },
+                data={"grant_type": "client_credentials"},
                 timeout=15,
                 verify=False,
             )
@@ -249,6 +250,14 @@ class KRAGavaConnectService:
             logger.info("GavaConnect token obtained (expires in %ds)", expires_in)
             return token
 
+        except requests.exceptions.HTTPError as exc:
+            body = ''
+            try:
+                body = exc.response.text[:300]
+            except Exception:
+                pass
+            logger.error("GavaConnect token error: %s | response body: %s", exc, body)
+            return None
         except Exception as exc:
             logger.error("GavaConnect token error: %s", exc)
             return None
