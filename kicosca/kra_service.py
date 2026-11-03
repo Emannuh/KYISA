@@ -238,6 +238,12 @@ class KRAGavaConnectService:
                 timeout=15,
                 verify=False,
             )
+            logger.info(
+                "GavaConnect token response: status=%s content-type=%s body=%r",
+                resp.status_code,
+                resp.headers.get("Content-Type", ""),
+                resp.text[:300],
+            )
             resp.raise_for_status()
             data = resp.json()
             token = data.get('access_token', '')
