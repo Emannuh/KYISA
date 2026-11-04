@@ -3406,7 +3406,11 @@ def coordinator_match_reports_view(request):
         'reports': reports,
         'status_filter': status_filter,
         'status_choices': MatchReportStatus.choices,
-        'discipline_label': 'All Disciplines' if request.user.role == 'media_manager' else dict(SportType.choices).get(discipline, discipline or 'Not Assigned'),
+        'discipline_label': (
+            'All Disciplines' if request.user.role in ('media_manager', 'competition_manager', 'admin')
+            else " & ".join(dict(SportType.choices).get(d, d) for d in disciplines) if disciplines
+            else 'Not Assigned'
+        ),
     })
 
 
@@ -3434,7 +3438,10 @@ def coordinator_squads_view(request):
         'squads': squads,
         'status_filter': status_filter,
         'status_choices': SquadStatus.choices,
-        'discipline_label': dict(SportType.choices).get(discipline, discipline or 'Not Assigned'),
+        'discipline_label': (
+            " & ".join(dict(SportType.choices).get(d, d) for d in disciplines)
+            if disciplines else 'Not Assigned'
+        ),
     })
 
 
@@ -3594,7 +3601,10 @@ def coordinator_appointments_view(request):
         'total_needing': total_needing,
         'total_fully': total_fully,
         'approved_referees_count': RefereeProfile.objects.filter(is_approved=True).count(),
-        'discipline_label': dict(SportType.choices).get(discipline, discipline or 'Not Assigned'),
+        'discipline_label': (
+            " & ".join(dict(SportType.choices).get(d, d) for d in disciplines)
+            if disciplines else 'Not Assigned'
+        ),
     })
 
 
