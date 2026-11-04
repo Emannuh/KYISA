@@ -238,13 +238,16 @@ class KRAGavaConnectService:
                 timeout=15,
                 verify=False,
             )
-            logger.info(
+            logger.warning(
                 "GavaConnect token response: status=%s content-type=%s body=%r",
                 resp.status_code,
                 resp.headers.get("Content-Type", ""),
-                resp.text[:300],
+                resp.text[:500],
             )
             resp.raise_for_status()
+            if not resp.text.strip():
+                logger.error("GavaConnect token response body is empty (status %s)", resp.status_code)
+                return None
             data = resp.json()
             token = data.get('access_token', '')
             expires_in = int(data.get('expires_in', 3600))

@@ -285,6 +285,38 @@
 .dash-hero--indigo::after { background: linear-gradient(90deg, #6366f1, transparent 55%); }
 .dash-hero--slate::after  { background: linear-gradient(90deg, #64748b, transparent 55%); }
 
+/* Richer colour-tint backgrounds for specific role heroes */
+.dash-hero--teal {
+    background: linear-gradient(135deg, #062d29 0%, #0d3b36 45%, #0f766e22 100%),
+                var(--p-hero-bg);
+    background-blend-mode: screen, normal;
+}
+.dash-hero--green {
+    background: linear-gradient(135deg, #052e16 0%, #14532d 50%, #16a34a18 100%),
+                var(--p-hero-bg);
+    background-blend-mode: screen, normal;
+}
+.dash-hero--blue {
+    background: linear-gradient(135deg, #0a1628 0%, #1e3a5f 50%, #3b82f618 100%),
+                var(--p-hero-bg);
+    background-blend-mode: screen, normal;
+}
+.dash-hero--purple {
+    background: linear-gradient(135deg, #1a0a2e 0%, #3b1f6e 50%, #8b5cf618 100%),
+                var(--p-hero-bg);
+    background-blend-mode: screen, normal;
+}
+.dash-hero--amber {
+    background: linear-gradient(135deg, #1c1001 0%, #431407 50%, #f59e0b18 100%),
+                var(--p-hero-bg);
+    background-blend-mode: screen, normal;
+}
+.dash-hero--indigo {
+    background: linear-gradient(135deg, #0d0f2b 0%, #1e2060 50%, #6366f118 100%),
+                var(--p-hero-bg);
+    background-blend-mode: screen, normal;
+}
+
 /* Legacy support — map old variant names to new style */
 /* (templates using dash-hero--amber for referee still work, just look better) */
 

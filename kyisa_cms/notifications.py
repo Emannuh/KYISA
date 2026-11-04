@@ -27,23 +27,121 @@ SITE_URL = getattr(settings, "SITE_URL", "https://kyisa.ke")
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def notify_account_created(user, temporary_password=None):
-    """Send welcome email with login credentials to a newly created user."""
+    """
+    Send welcome email with login credentials and a magic OTP login link
+    to a newly created user.
+    """
+    import secrets
+    from django.utils import timezone as tz
+    from datetime import timedelta
+    from accounts.models import LoginToken
+
+    role_display = user.get_role_display() if hasattr(user, 'get_role_display') else user.role
+    login_url = f"{SITE_URL}/portal/login/"
+
+    # ── Generate a fresh single-use magic login token (72 h) ──────────────
+    raw_token = secrets.token_urlsafe(48)
+    LoginToken.objects.create(
+        user=user,
+        token=raw_token,
+        expires_at=tz.now() + timedelta(hours=72),
+    )
+    magic_url = f"{SITE_URL}/portal/magic/{raw_token}/"
+
+    # Temp password display with copy button
+    if temporary_password:
+        pw_display = f"""<span style="display:inline-flex;align-items:center;gap:8px;vertical-align:middle;">
+  <code id="pw-val" style="background:#f1f5f9;color:#0f172a;font-family:monospace;
+        font-size:15px;font-weight:700;padding:5px 12px;border-radius:6px;
+        letter-spacing:.08em;border:1px solid #cbd5e1;">{temporary_password}</code>
+  <a href="#" onclick="(function(){{
+       var t=document.getElementById('pw-val');
+       if(navigator.clipboard){{navigator.clipboard.writeText(t.textContent);}}
+       else{{var r=document.createRange();r.selectNode(t);window.getSelection().removeAllRanges();window.getSelection().addRange(r);document.execCommand('copy');window.getSelection().removeAllRanges();}}
+       this.textContent='Copied!';this.style.background='#16a34a';
+       setTimeout(function(){{this.textContent='Copy';this.style.background='#0f172a';}}.bind(this),1800);
+       return false;}}).call(this);return false;"
+     style="display:inline-block;background:#0f172a;color:#f0fdf4;text-decoration:none;
+            font-size:11px;font-weight:700;padding:5px 11px;border-radius:6px;
+            letter-spacing:.3px;cursor:pointer;transition:background .2s;">Copy</a>
+</span>"""
+    else:
+        pw_display = "<em style='color:#6b7280;'>Set by administrator</em>"
+
     body = f"""
-    <p>Dear <strong>{user.get_full_name()}</strong>,</p>
-    <p>Welcome to the Kenya Youth Intercounty Sports Association (KYISA) system.
-    Your account has been created with the following details:</p>
+    <p style="margin:0 0 16px;font-size:15px;color:#1f2937;">
+      Dear <strong>{user.get_full_name()}</strong>,
+    </p>
+    <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.65;">
+      Welcome to the <strong>KYISA Competition Management System</strong>. Your account has been
+      created by the <strong>KYISA Systems Admin Team</strong>. Use either option below to
+      access your portal.
+    </p>
+
+    <!-- ── CREDENTIALS ── -->
+    <p style="margin:0 0 8px;font-size:11px;font-weight:700;text-transform:uppercase;
+              letter-spacing:.08em;color:#6b7280;">Option 1 — Login with credentials</p>
     {_info_box([
         ("Email", user.email),
-        ("Role", user.get_role_display() if hasattr(user, 'get_role_display') else user.role),
-        ("Temporary Password", f"<code>{temporary_password}</code>" if temporary_password else "<em>Set by administrator</em>"),
+        ("Role", role_display),
+        ("Temporary Password", pw_display),
     ])}
-    <p>Please log in and change your password immediately.</p>
-    {_action_button(f"{SITE_URL}/portal/login/", "Log In to KYISA")}
-    <p style="color:#888; font-size:12px;">If you did not expect this email, please contact KYISA administration.</p>
+    <div style="text-align:center;margin:4px 0 28px;">
+      <a href="{login_url}"
+         style="display:inline-block;background:#004D1A;color:#ffffff;text-decoration:none;
+                font-size:13px;font-weight:700;padding:10px 24px;border-radius:8px;
+                letter-spacing:.3px;">
+        Go to Login Page &rarr;
+      </a>
+    </div>
+
+    <!-- ── MAGIC OTP LINK ── -->
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%"
+           style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;
+                  margin-bottom:28px;overflow:hidden;">
+      <tr>
+        <td style="padding:20px 24px;">
+          <p style="margin:0 0 4px;font-size:11px;font-weight:700;text-transform:uppercase;
+                    letter-spacing:.08em;color:#1d4ed8;">
+            &#9889; Option 2 — Magic Login Link (no password needed)
+          </p>
+          <p style="margin:6px 0 18px;font-size:13px;color:#374151;line-height:1.6;">
+            Skip the password entirely — click the button below to log in instantly.
+            Works great on mobile.<br>
+            <strong>Valid for 72 hours &middot; One use only.</strong>
+          </p>
+          <div style="text-align:center;margin-bottom:14px;">
+            <a href="{magic_url}"
+               style="display:inline-block;background:#0a66c2;color:#ffffff;text-decoration:none;
+                      font-size:14px;font-weight:800;padding:13px 32px;border-radius:9px;
+                      letter-spacing:.3px;box-shadow:0 2px 8px rgba(10,102,194,.30);">
+              &#10024; Click to Log In Instantly
+            </a>
+          </div>
+          <p style="margin:0;font-size:10px;color:#6b7280;word-break:break-all;text-align:center;">
+            Or copy this link: <a href="{magic_url}" style="color:#1d4ed8;">{magic_url}</a>
+          </p>
+        </td>
+      </tr>
+    </table>
+
+    <!-- ── IMPORTANT NOTE ── -->
+    <div style="background:#fff7ed;border-left:4px solid #f59e0b;border-radius:0 8px 8px 0;
+                padding:14px 18px;margin-bottom:8px;">
+      <p style="margin:0;font-size:13px;color:#92400e;line-height:1.6;">
+        &#9888; <strong>Important:</strong> You will be required to set a new password on your
+        first login. Your temporary password will expire once changed. Keep your credentials
+        secure and do not share them with anyone.
+      </p>
+    </div>
+    <p style="font-size:12px;color:#9ca3af;margin-top:20px;">
+      If you did not expect this email, please contact the KYISA administration at
+      <a href="mailto:it@kyisa.org" style="color:#0b5d4b;">it@kyisa.org</a>.
+    </p>
     """
-    html = _base_html(f"Welcome to KYISA — {user.get_role_display() if hasattr(user, 'get_role_display') else user.role}", body)
+    html = _base_html(f"Welcome to KYISA CMS — Your {role_display} Account", body)
     _send(
-        subject=f"Welcome to KYISA — {user.get_role_display() if hasattr(user, 'get_role_display') else user.role}",
+        subject=f"Welcome to KYISA CMS — Your {role_display} Account",
         html_body=html,
         recipients=[user.email],
     )

@@ -28,30 +28,120 @@ def superadmin_required(user):
 
 
 def send_welcome_email(user_obj, password, role):
-    """Send branded HTML welcome email to newly created user with login credentials."""
-    from kyisa_cms.email_utils import _base_html, _info_box, _action_button, _send
+    """
+    Send branded HTML welcome email to newly created user.
+    Includes:
+      - Updated narration: account created by the KYISA Systems Admin Team
+      - Credentials table (email, temp password, role)
+      - One-click magic OTP login link (valid 72 h, single-use)
+    """
+    import secrets
+    from django.utils import timezone
+    from datetime import timedelta
+    from kyisa_cms.email_utils import _base_html, _info_box, _send
+    from accounts.models import LoginToken
 
     role_display = dict(UserRole.choices).get(role, role)
-    login_url = "https://kyisa.org/portal/login/"
+    site_url = "https://kyisa.org"
+    login_url = f"{site_url}/portal/login/"
+
+    # ── Generate a fresh single-use magic login token (72 h) ──────────────
+    raw_token = secrets.token_urlsafe(48)
+    LoginToken.objects.create(
+        user=user_obj,
+        token=raw_token,
+        expires_at=timezone.now() + timedelta(hours=72),
+    )
+    magic_url = f"{site_url}/portal/magic/{raw_token}/"
+
+    # ── Copy-to-clipboard button: inline JS works in modern email clients
+    # (Gmail web, Apple Mail, Outlook on Mac). In clients that block scripts
+    # the password is still visible in plain text so the user can copy manually.
+    pw_copy_block = f"""<span style="display:inline-flex;align-items:center;gap:8px;vertical-align:middle;">
+  <code id="pw-val" style="background:#f1f5f9;color:#0f172a;font-family:monospace;
+        font-size:15px;font-weight:700;padding:5px 12px;border-radius:6px;
+        letter-spacing:.08em;border:1px solid #cbd5e1;">{password}</code>
+  <a href="#" onclick="(function(){{
+       var t=document.getElementById('pw-val');
+       if(navigator.clipboard){{navigator.clipboard.writeText(t.textContent);}}
+       else{{var r=document.createRange();r.selectNode(t);window.getSelection().removeAllRanges();window.getSelection().addRange(r);document.execCommand('copy');window.getSelection().removeAllRanges();}}
+       this.textContent='Copied!';this.style.background='#16a34a';
+       setTimeout(function(){{this.textContent='Copy';this.style.background='#0f172a';}}.bind(this),1800);
+       return false;}}).call(this);return false;"
+     style="display:inline-block;background:#0f172a;color:#f0fdf4;text-decoration:none;
+            font-size:11px;font-weight:700;padding:5px 11px;border-radius:6px;
+            letter-spacing:.3px;cursor:pointer;transition:background .2s;">Copy</a>
+</span>"""
 
     body = f"""
-    <p>Dear <strong>{user_obj.first_name} {user_obj.last_name}</strong>,</p>
-    <p>Welcome to the <strong>KYISA Competition Management System</strong>! Your account has been
-    created by the KYISA administration team.</p>
+    <p style="margin:0 0 16px;font-size:15px;color:#1f2937;">
+      Dear <strong>{user_obj.first_name} {user_obj.last_name}</strong>,
+    </p>
+    <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.65;">
+      Welcome to the <strong>KYISA Competition Management System</strong>. Your account has been
+      created by the <strong>KYISA Systems Admin Team</strong>. Use either option below to
+      access your portal.
+    </p>
+
+    <!-- ── CREDENTIALS ── -->
+    <p style="margin:0 0 8px;font-size:11px;font-weight:700;text-transform:uppercase;
+              letter-spacing:.08em;color:#6b7280;">Option 1 — Login with credentials</p>
     {_info_box([
         ("Email", user_obj.email),
-        ("Temporary Password", f"<code style='background:#f0f0f0;padding:2px 8px;border-radius:4px;font-size:15px;letter-spacing:1px;'>{password}</code>"),
+        ("Temporary Password", pw_copy_block),
         ("Role", role_display),
     ])}
-    <div style="background:#FFF3E0;border-left:4px solid #E65100;padding:12px 16px;border-radius:4px;margin:16px 0;">
-      <strong style="color:#E65100;">&#9888; Important:</strong> You will be required to change your
-      password on first login. Your temporary password will expire once changed.
+    <div style="text-align:center;margin:4px 0 28px;">
+      <a href="{login_url}"
+         style="display:inline-block;background:#004D1A;color:#ffffff;text-decoration:none;
+                font-size:13px;font-weight:700;padding:10px 24px;border-radius:8px;
+                letter-spacing:.3px;">
+        Go to Login Page &rarr;
+      </a>
     </div>
-    {_action_button(login_url, "Login to KYISA CMS")}
-    <p style="font-size:13px;color:#666;">If the button above doesn't work, copy and paste this URL
-    into your browser:<br><a href="{login_url}">{login_url}</a></p>
+
+    <!-- ── MAGIC OTP LINK ── -->
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%"
+           style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;
+                  margin-bottom:28px;overflow:hidden;">
+      <tr>
+        <td style="padding:20px 24px;">
+          <p style="margin:0 0 4px;font-size:11px;font-weight:700;text-transform:uppercase;
+                    letter-spacing:.08em;color:#1d4ed8;">
+            &#9889; Option 2 — Magic Login Link (no password needed)
+          </p>
+          <p style="margin:6px 0 18px;font-size:13px;color:#374151;line-height:1.6;">
+            Skip the password entirely — click the button below to log in instantly.
+            Works great on mobile.<br>
+            <strong>Valid for 72 hours &middot; One use only.</strong>
+          </p>
+          <div style="text-align:center;margin-bottom:14px;">
+            <a href="{magic_url}"
+               style="display:inline-block;background:#0a66c2;color:#ffffff;text-decoration:none;
+                      font-size:14px;font-weight:800;padding:13px 32px;border-radius:9px;
+                      letter-spacing:.3px;box-shadow:0 2px 8px rgba(10,102,194,.30);">
+              &#10024; Click to Log In Instantly
+            </a>
+          </div>
+          <p style="margin:0;font-size:10px;color:#6b7280;word-break:break-all;text-align:center;">
+            Or copy this link: <a href="{magic_url}" style="color:#1d4ed8;">{magic_url}</a>
+          </p>
+        </td>
+      </tr>
+    </table>
+
+    <!-- ── IMPORTANT NOTE ── -->
+    <div style="background:#fff7ed;border-left:4px solid #f59e0b;border-radius:0 8px 8px 0;
+                padding:14px 18px;margin-bottom:8px;">
+      <p style="margin:0;font-size:13px;color:#92400e;line-height:1.6;">
+        &#9888; <strong>Important:</strong> You will be required to set a new password on your
+        first login. Your temporary password will expire once changed. Keep your credentials
+        secure and do not share them with anyone.
+      </p>
+    </div>
     """
-    html = _base_html("Welcome to KYISA CMS", body)
+
+    html = _base_html(f"Welcome to KYISA CMS — Your {role_display} Account", body)
     _send(
         subject=f"Welcome to KYISA CMS — Your {role_display} Account",
         html_body=html,

@@ -7,9 +7,35 @@
 <!-- Hero -->
 <div class="dash-hero dash-hero--teal">
     <div class="hero-decor"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-    <span class="hero-badge"><span class="pulse-dot" style="background:#80CBC4"></span> Discipline Coordinator</span>
-    <h1><i class="bi bi-clipboard2-pulse"></i> {{ discipline_label }} Coordinator: {{ coordinator_name }}</h1>
-    <p>Manage competitions, fixtures, pools, referees, match reports and statistics for your discipline</p>
+    <span class="hero-badge" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#e0f2f1;">
+        <span class="pulse-dot" style="background:#4dd0c4"></span>
+        Discipline Coordinator
+        {% if disciplines|length > 1 %}
+        <span style="margin-left:6px;background:rgba(255,255,255,.15);border-radius:999px;padding:1px 8px;font-size:.6rem;letter-spacing:.05em;">Both Genders</span>
+        {% endif %}
+    </span>
+    <h1 style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+        <i class="bi bi-clipboard2-pulse"></i>
+        {{ coordinator_name }}
+        <span style="font-size:.75em;font-weight:500;opacity:.7;">— {{ discipline_label }}</span>
+    </h1>
+    <p>
+        Manage competitions, fixtures, pools, referees, match reports and statistics
+        {% if disciplines|length > 1 %}
+        for <strong>{{ discipline_label }}</strong>
+        {% else %}
+        for your discipline
+        {% endif %}
+    </p>
+    {% if disciplines|length > 1 %}
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem;">
+        {% for d in disciplines %}
+        <span style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:.22rem .75rem;font-size:.72rem;font-weight:600;letter-spacing:.03em;">
+            {{ d|title }}
+        </span>
+        {% endfor %}
+    </div>
+    {% endif %}
 </div>
 
 <!-- Stats -->
