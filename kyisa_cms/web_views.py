@@ -3432,7 +3432,7 @@ def coordinator_squads_view(request):
     squads = squads.select_related(
         'fixture__competition', 'fixture__home_team', 'fixture__away_team',
         'team',
-    ).order_by('-created_at')
+    ).order_by('-submitted_at')
 
     return render(request, 'portal/coordinator/squads.html', {
         'squads': squads,
