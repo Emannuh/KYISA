@@ -237,6 +237,26 @@ class CountyPlayer(models.Model):
     prembly_notes         = models.TextField(blank=True, default="",
                                              help_text="Full Prembly response summary for audit trail")
     prembly_checked_at    = models.DateTimeField(null=True, blank=True)
+    # ── Prembly Face Comparison (photo vs IPRS photo) ─────────────────────
+    face_match_status = models.CharField(
+        max_length=20,
+        choices=[
+            ("not_checked", "Not Checked"),
+            ("match",       "Face Match"),
+            ("no_match",    "Face No Match"),
+            ("failed",      "Check Failed"),
+        ],
+        default="not_checked",
+        help_text="Prembly face comparison result: submitted photo vs IPRS photo",
+    )
+    face_match_confidence = models.FloatField(
+        null=True, blank=True,
+        help_text="Prembly face similarity score (0–100)",
+    )
+    face_match_checked_at = models.DateTimeField(
+        null=True, blank=True,
+        help_text="When the face comparison was last run",
+    )
 
     # ── Age Eligibility (computed from DOB — not stored) ─────────────────
     # ── Higher League / National Team Check (non-football disciplines) ────

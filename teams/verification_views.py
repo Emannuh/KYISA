@@ -986,14 +986,27 @@ def verifisha_poll_county_player(request, player_pk):
 #   PREMBLY IPRS — COUNTY PLAYER (primary live check)
 # ══════════════════════════════════════════════════════════════════════════════
 
+def _save_face_result(player, face_result: dict):
+    """
+    Write Prembly face comparison result onto a CountyPlayer in-memory.
+    Caller is responsible for calling player.save(...) with the relevant fields.
+    """
+    player.face_match_confidence = face_result.get('confidence')
+    player.face_match_checked_at = timezone.now()
+    if face_result.get('success'):
+        player.face_match_status = 'match' if face_result.get('match') else 'no_match'
+    else:
+        player.face_match_status = 'failed'
+
+
 @clearance_role_required
 def prembly_verify_county_player(request, player_pk):
     """
     Run a live Prembly Kenya IPRS lookup for a CountyPlayer.
     Synchronous — returns result immediately, saves to prembly_* fields.
-    POST action=submit  → calls Prembly API with the player's National ID,
+    POST action=submit  — calls Prembly API with the player's National ID,
                           does name/DOB matching, sets verified/mismatch/failed
-    POST action=reset   → clears the stored result
+    POST action=reset   — clears the stored result
     """
     from teams.models import CountyPlayer
     from teams.prembly_service import PremblyService
@@ -1054,6 +1067,42 @@ def prembly_verify_county_player(request, player_pk):
                     except Exception:
                         pass
 
+                # ── Auto face comparison: submitted photo vs IPRS photo ──────────
+                # Run immediately after IPRS if both photos are now available.
+                # If iprs_photo was just saved above it is already on player.
+                if player.photo and player.iprs_photo:
+                    try:
+                        import base64
+                        from teams.prembly_service import PremblyService as _PS
+
+                        def _to_b64(image_field):
+                            image_field.seek(0)
+                            return base64.b64encode(image_field.read()).decode('utf-8')
+
+                        img_submitted = _to_b64(player.photo)
+                        img_iprs      = _to_b64(player.iprs_photo)
+
+                        face_result = _PS().compare_faces(img_submitted, img_iprs)
+                        _save_face_result(player, face_result)
+                        player.save(update_fields=[
+                            'face_match_status', 'face_match_confidence', 'face_match_checked_at',
+                        ])
+
+                        if face_result.get('success'):
+                            conf = face_result.get('confidence', 0)
+                            if face_result.get('match'):
+                                messages.success(
+                                    request,
+                                    f'✅ Face comparison: Match ({conf:.0f}% confidence).'
+                                )
+                            else:
+                                messages.warning(
+                                    request,
+                                    f'⚠️ Face comparison: No match ({conf:.0f}% confidence). Manual photo review required.'
+                                )
+                    except Exception as _face_exc:
+                        logger.warning("Face comparison failed after IPRS for player %s: %s", player.pk, _face_exc)
+
                 if player.prembly_status == 'verified':
                     messages.success(
                         request,
@@ -1090,6 +1139,78 @@ def prembly_verify_county_player(request, player_pk):
                 'prembly_notes', 'prembly_checked_at',
             ])
             messages.info(request, f'🔄 Prembly IPRS cleared for {player.first_name} {player.last_name}.')
+
+    return redirect('verify_county_player', player_pk=player.pk)
+
+
+@clearance_role_required
+def prembly_face_compare_county_player(request, player_pk):
+    """
+    POST — Run a standalone Prembly face comparison for a CountyPlayer.
+
+    Compares the player's uploaded passport photo (player.photo) against the
+    IPRS photo returned by a previous Prembly IPRS lookup (player.iprs_photo).
+
+    Both photos must exist. Results are saved to:
+        face_match_status, face_match_confidence, face_match_checked_at
+    """
+    from teams.models import CountyPlayer
+    from teams.prembly_service import PremblyService
+
+    player = get_object_or_404(CountyPlayer, pk=player_pk)
+
+    if request.method != 'POST':
+        return redirect('verify_county_player', player_pk=player.pk)
+
+    if not player.photo:
+        messages.error(request, '❌ No passport photo uploaded for this player.')
+        return redirect('verify_county_player', player_pk=player.pk)
+
+    if not player.iprs_photo:
+        messages.error(
+            request,
+            '❌ No IPRS photo on file. Run a Prembly IPRS lookup first to retrieve it.'
+        )
+        return redirect('verify_county_player', player_pk=player.pk)
+
+    try:
+        import base64
+
+        def _to_b64(image_field):
+            image_field.seek(0)
+            return base64.b64encode(image_field.read()).decode('utf-8')
+
+        img_submitted = _to_b64(player.photo)
+        img_iprs      = _to_b64(player.iprs_photo)
+
+        face_result = PremblyService().compare_faces(img_submitted, img_iprs)
+        _save_face_result(player, face_result)
+        player.save(update_fields=[
+            'face_match_status', 'face_match_confidence', 'face_match_checked_at',
+        ])
+
+        conf = face_result.get('confidence', 0) or 0
+        sim  = ' (sandbox)' if face_result.get('is_simulation') else ''
+
+        if not face_result.get('success'):
+            messages.error(
+                request,
+                f'❌ Face comparison failed: {face_result.get("message", "Unknown error")}'
+            )
+        elif face_result.get('match'):
+            messages.success(
+                request,
+                f'✅ Face comparison: Match{sim} — {conf:.0f}% confidence.'
+            )
+        else:
+            messages.warning(
+                request,
+                f'⚠️ Face comparison: No match{sim} — {conf:.0f}% confidence. Manual review required.'
+            )
+
+    except Exception as exc:
+        logger.exception("Standalone face comparison failed for player %s", player.pk)
+        messages.error(request, f'❌ Face comparison error: {exc}')
 
     return redirect('verify_county_player', player_pk=player.pk)
 

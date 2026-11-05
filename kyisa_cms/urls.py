@@ -30,6 +30,7 @@ from teams.verification_views import (
     # ── Prembly IPRS — County Player (primary live check) ──────────────────
     prembly_verify_county_player as _prembly_verify_county,
     prembly_iprs_lookup as _prembly_iprs_lookup,
+    prembly_face_compare_county_player as _prembly_face_compare,
 )
 from teams.verifisha_webhook import verifisha_webhook_view as _verifisha_webhook
 
@@ -270,8 +271,9 @@ urlpatterns = [
     path("portal/cm/county-players/<int:player_pk>/verifisha-verify/", _verifisha_verify_county,  name="verifisha_verify_county_player"),
     path("portal/cm/county-players/<int:player_pk>/verifisha-poll/",   _verifisha_poll_county,    name="verifisha_poll_county_player"),
     # ── PREMBLY IPRS — COUNTY PLAYER (primary live check) ────────────────────
-    path("portal/cm/county-players/<int:player_pk>/prembly-verify/",  _prembly_verify_county,    name="prembly_verify_county_player"),
-    path("api/v1/prembly/iprs-lookup/",                               _prembly_iprs_lookup,      name="prembly_iprs_lookup"),
+    path("portal/cm/county-players/<int:player_pk>/prembly-verify/",        _prembly_verify_county,    name="prembly_verify_county_player"),
+    path("portal/cm/county-players/<int:player_pk>/prembly-face-compare/",  _prembly_face_compare,     name="prembly_face_compare_county_player"),
+    path("api/v1/prembly/iprs-lookup/",                                     _prembly_iprs_lookup,      name="prembly_iprs_lookup"),
     # Webhook — single endpoint handles both Player and CountyPlayer
     # Register in Verifisha dashboard → API → Webhooks
     # Full URL: https://kyisa.org/api/v1/verifisha/webhook/

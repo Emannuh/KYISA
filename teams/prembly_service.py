@@ -234,6 +234,81 @@ class PremblyService:
             is_simulation=False,
         )
 
+    # ── Face Comparison ────────────────────────────────────────────────────────
+
+    def compare_faces(self, image_one: str, image_two: str) -> dict:
+        """
+        Compare two face images using Prembly Face Comparison API.
+
+        Both images can be:
+          - Base64-encoded strings (with or without data URI prefix)
+          - Public image URLs (https://...)
+
+        Returns:
+            {
+                "success": bool,
+                "match": bool,           # True if confidence >= threshold
+                "confidence": float,     # 0–100
+                "message": str,
+                "is_simulation": bool,
+            }
+
+        Endpoint: POST /api/v1/verification/api/image_comparison/
+        Auth:      X-API-Key header
+        """
+        if not image_one or not image_two:
+            return {"success": False, "match": False, "confidence": 0,
+                    "message": "Two images are required for face comparison.", "is_simulation": False}
+
+        if not self.api_key:
+            logger.warning("PREMBLY_API_KEY not set — face comparison simulation.")
+            return {"success": True, "match": True, "confidence": 91.5,
+                    "message": "Simulation: Face Match (no API key configured).", "is_simulation": True}
+
+        url = f"{self._base}/api/v1/verification/api/image_comparison/"
+        headers = {
+            "X-API-Key":    self.api_key,
+            "Content-Type": "application/json",
+            "Accept":       "application/json",
+        }
+        payload = {"image_one": image_one, "image_two": image_two}
+
+        try:
+            resp = requests.post(url, json=payload, headers=headers, timeout=self.timeout)
+            resp.raise_for_status()
+            data = resp.json()
+
+            logger.debug("Prembly face compare → status=%s", data.get("status"))
+
+            if not data.get("status", False):
+                msg = data.get("message") or data.get("detail") or "Face comparison failed."
+                return {"success": False, "match": False, "confidence": 0,
+                        "message": msg, "is_simulation": False}
+
+            inner      = data.get("data", {})
+            confidence = float(inner.get("confidence", 0))
+            message    = inner.get("message") or inner.get("detail") or ""
+
+            # Prembly returns "Fatch Match" (sic) or "No Match"
+            match = confidence >= 70.0
+
+            return {
+                "success":       True,
+                "match":         match,
+                "confidence":    confidence,
+                "message":       message,
+                "is_simulation": False,
+            }
+
+        except requests.HTTPError as exc:
+            logger.error("Prembly face comparison HTTP error: %s — %s", exc, exc.response.text if exc.response else '')
+            return {"success": False, "match": False, "confidence": 0,
+                    "message": f"API error: {exc}", "is_simulation": False}
+        except Exception as exc:
+            logger.error("Prembly face comparison unexpected error: %s", exc)
+            return {"success": False, "match": False, "confidence": 0,
+                    "message": str(exc), "is_simulation": False}
+
     # ── Simulation ─────────────────────────────────────────────────────────────
 
     def _simulate(self, national_id: str) -> IPRSLookupResult:
