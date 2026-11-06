@@ -68,6 +68,8 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "django_ratelimit",
+    "cloudinary_storage",   # must be before django.contrib.staticfiles
+    "cloudinary",
 
     # KYISA Apps
     "accounts",
@@ -229,11 +231,37 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 WHITENOISE_ROOT = BASE_DIR / "static"
 
 # ── CLOUD MEDIA STORAGE (production) ──────────────────────────────────────────
-# Set STORAGE_BACKEND to "s3", "azure", or "gcs" to enable cloud storage.
-# Leave empty or unset for local file storage (development).
+# Set STORAGE_BACKEND to "cloudinary", "s3", "azure", or "gcs".
+# Leave empty for local filesystem (development).
 STORAGE_BACKEND = env("STORAGE_BACKEND", default="")
 
-if STORAGE_BACKEND == "azure":
+if STORAGE_BACKEND == "cloudinary":
+    import cloudinary
+    cloudinary.config(
+        cloud_name = env("CLOUDINARY_CLOUD_NAME"),
+        api_key    = env("CLOUDINARY_API_KEY"),
+        api_secret = env("CLOUDINARY_API_SECRET"),
+        secure     = True,
+    )
+    CLOUDINARY_STORAGE = {
+        "CLOUD_NAME": env("CLOUDINARY_CLOUD_NAME"),
+        "API_KEY":    env("CLOUDINARY_API_KEY"),
+        "API_SECRET": env("CLOUDINARY_API_SECRET"),
+        # Store all uploaded files under a project folder for easy management
+        "MEDIA_TAG":  "kyisa",
+        "STATIC_TAG": "kyisa_static",
+    }
+    MEDIA_URL = f"https://res.cloudinary.com/{env('CLOUDINARY_CLOUD_NAME')}/raw/upload/"
+    STORAGES = {
+        "default": {
+            "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
+
+elif STORAGE_BACKEND == "azure":
     AZURE_ACCOUNT_NAME  = env("AZURE_ACCOUNT_NAME")
     AZURE_ACCOUNT_KEY   = env("AZURE_ACCOUNT_KEY")
     AZURE_CONTAINER     = env("AZURE_CONTAINER", default="media")
