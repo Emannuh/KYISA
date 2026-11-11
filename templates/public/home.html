@@ -2,866 +2,624 @@
 {% load static %}
 
 {% block title %}Home{% endblock %}
-{% block meta_description %}KYISA official website live match scores, fixtures, results, news, and gallery from Kenya Youth Intercounty Sports Association competitions.{% endblock %}
+{% block meta_description %}KYISA — 11 editions of youth intercounty sport across all 47 counties of Kenya. Live scores, fixtures, results, standings and news.{% endblock %}
 {% block canonical_url %}https://kyisa.org/{% endblock %}
-{% block og_title %}KYISA Kenya Youth Intercounty Sports Association{% endblock %}
-{% block og_description %}Live match scores, fixtures, results, news, and gallery from KYISA competitions across Kenya's counties.{% endblock %}
+{% block og_title %}KYISA — Kenya Youth Intercounty Sports Association{% endblock %}
+{% block og_description %}11 editions of youth intercounty sport across all 47 counties. Live scores, fixtures, results and news.{% endblock %}
+{% block og_image %}https://kyisa.org{% static 'img/kyisa_champions.jpg' %}{% endblock %}
 {% block og_url %}https://kyisa.org/{% endblock %}
+
+{% block hero_preload %}
+<link rel="preload" as="image" href="{% static 'img/kyisa_champions.jpg' %}" fetchpriority="high">
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── Standings tabs ── */
+.standings-tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+.standings-tab{padding:.38rem .9rem;border-radius:var(--k-r-pill);border:1.5px solid var(--k-border);background:var(--k-surface);font-size:var(--k-text-sm);font-weight:600;cursor:pointer;color:var(--k-muted);transition:background var(--k-dur-fast),color var(--k-dur-fast),border-color var(--k-dur-fast);}
+.standings-tab.active{background:var(--k-green-700);color:#fff;border-color:var(--k-green-700);}
+.standings-panel{display:none;}.standings-panel.active{display:block;}
+/* ── Fixture card scroll snap ── */
+.pub-fx-scroll{display:flex;gap:1rem;overflow-x:auto;padding-bottom:.75rem;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.pub-fx-scroll::-webkit-scrollbar{display:none;}
+.pub-fx-scroll .pub-fx-card{scroll-snap-align:start;}
+/* ── Gallery strip ── */
+.gallery-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem;}
+.gallery-tile{aspect-ratio:4/3;border-radius:var(--k-r-lg);overflow:hidden;position:relative;background:var(--k-n-100);}
+.gallery-tile img{width:100%;height:100%;object-fit:cover;transition:transform var(--k-dur-slow) var(--k-ease);}
+.gallery-tile:hover img{transform:scale(1.05);}
+.gallery-tile__overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55) 0%,transparent 55%);display:flex;align-items:flex-end;padding:.75rem;}
+.gallery-tile__count{font-size:var(--k-text-xs);color:#fff;font-weight:700;display:flex;align-items:center;gap:.3rem;}
+/* ── Standings table ── */
+.pub-standings-table{width:100%;border-collapse:collapse;font-size:var(--k-text-sm);}
+.pub-standings-table th{padding:.5rem .6rem;text-align:left;font-weight:700;color:var(--k-muted);font-size:var(--k-text-xs);text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid var(--k-border);}
+.pub-standings-table th:not(:first-child){text-align:center;}
+.pub-standings-table td{padding:.5rem .6rem;border-bottom:1px solid var(--k-border);color:var(--k-ink);}
+.pub-standings-table td:not(:first-child){text-align:center;}
+.pub-standings-table tr:last-child td{border-bottom:none;}
+.pub-standings-table tr:nth-child(-n+2) td{background:rgba(21,128,61,.04);}
+.pub-standings-pos{display:inline-block;width:20px;text-align:center;color:var(--k-muted);font-size:var(--k-text-xs);margin-right:.35rem;}
+.pub-standings-pts{font-weight:800;color:var(--k-green-700);}
+/* ── Video modal ── */
+.vid-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:99999;align-items:center;justify-content:center;padding:2rem;}
+.vid-modal.open{display:flex;}
+.vid-modal__close{position:absolute;top:1.25rem;right:1.25rem;background:rgba(255,255,255,.12);border:none;color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.vid-modal__inner{width:100%;max-width:900px;}
+.vid-modal__embed{position:relative;padding-bottom:56.25%;height:0;border-radius:var(--k-r-lg);overflow:hidden;}
+.vid-modal__title{color:#fff;text-align:center;margin-top:1rem;font-size:1rem;font-weight:600;}
+/* ── Knockout card ── */
+.knockout-grid{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;}
+.ko-card{background:var(--k-surface);border-radius:var(--k-r-lg);box-shadow:var(--k-shadow-sm);overflow:hidden;min-width:260px;max-width:300px;flex:1;}
+.ko-card__head{background:linear-gradient(135deg,#4a148c,#7b1fa2);padding:.5rem 1rem;display:flex;justify-content:space-between;align-items:center;}
+.ko-card__round{color:#fff;font-size:var(--k-text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
+.ko-card__status{font-size:var(--k-text-xs);color:rgba(255,255,255,.7);}
+.ko-card__body{padding:1rem;}
+.ko-card__team-row{display:flex;align-items:center;justify-content:space-between;padding:.35rem 0;}
+.ko-card__team-row--winner{font-weight:800;color:var(--k-green-700);}
+.ko-card__score{font-weight:800;font-size:1rem;color:var(--k-ink);}
+.ko-card__pens{text-align:center;font-size:var(--k-text-xs);color:#7b1fa2;font-weight:600;margin-top:.4rem;padding-top:.4rem;border-top:1px dashed #e1bee7;}
+</style>
+{% endblock %}
+
+{% block extra_jsonld %}
+{# SportsEvent JSON-LD for the active competition if data is available #}
+{% if standings_data %}
+{% with comp=standings_data.0.competition %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SportsEvent",
+  "name": "{{ comp.name }}",
+  "organizer": {
+    "@type": "SportsOrganization",
+    "name": "Kenya Youth Intercounty Sports Association",
+    "url": "https://kyisa.org"
+  },
+  "location": {
+    "@type": "Place",
+    "name": "Kenya",
+    "address": { "@type": "PostalAddress", "addressCountry": "KE" }
+  },
+  "sport": "{{ comp.sport_type }}"
+}
+</script>
+{% endwith %}
+{% endif %}
+{% endblock %}
 
 {% block content %}
 
-<!-- ══════════════════════════════════════════════════════════════════════════
-     HERO DARK CINEMATIC WITH INTEGRATED COUNTDOWN
-     ══════════════════════════════════════════════════════════════════════════ -->
-<section class="hero hero--dark" id="hero">
-    <!-- Background image slideshow -->
-    <div class="hero-bg-slideshow" id="heroBgSlideshow">
-        <div class="hero-bg-slide hero-bg-slide--active hero-bg-slide--zoom" style="background-image:url('{% static 'img/photo_410.png' %}')"></div>
-        <div class="hero-bg-slide" style="background-image:url('{% static 'img/photo_432.png' %}')"></div>
-        <div class="hero-bg-slide" style="background-image:url('{% static 'img/photo_438.png' %}')"></div>
-        <div class="hero-bg-slide" style="background-image:url('{% static 'img/photo_448.png' %}')"></div>
-        <div class="hero-bg-slide" style="background-image:url('{% static 'img/IMG-20260416-WA0305.jpg' %}')"></div>
+{# ════════════════════════════════════════════════════════════════
+   1. HERO — single headline, one photo, two CTAs
+   ════════════════════════════════════════════════════════════════ #}
+<section class="pub-hero" aria-label="Hero">
+  <img
+    class="pub-hero__img"
+    src="{% static 'img/kyisa_champions.jpg' %}"
+    alt="KYISA champions lifting the trophy after winning the 11th edition"
+    width="1536" height="1025"
+    fetchpriority="high">
+  <div class="pub-hero__overlay" aria-hidden="true"></div>
+
+  <div class="pub-hero__inner">
+    <div class="pub-hero__edition reveal">
+      <i class="bi bi-trophy-fill" aria-hidden="true"></i>
+      11th Edition — KYISA Games 2026
     </div>
 
-    <div class="hero-bg hero-bg--dark">
-        <canvas class="hero-canvas" id="heroCanvas"></canvas>
+    <h1 class="pub-hero__h1 reveal">
+      Kenya's Stage for<br><em>Youth Sport Excellence</em>
+    </h1>
+
+    <p class="pub-hero__sub reveal">
+      47 counties. 6 disciplines. One national competition built for
+      young Kenyans aged 18&ndash;23 who deserve a stage.
+    </p>
+
+    <div class="pub-hero__actions reveal">
+      <a href="{% url 'public_competitions' %}" class="btn-k btn-k--primary btn-k--lg">
+        <i class="bi bi-trophy" aria-hidden="true"></i>
+        View Competitions
+      </a>
+      <a href="{% url 'county_admin_register' %}" class="btn-k btn-k--outline btn-k--lg">
+        Register Your County
+      </a>
     </div>
-
-    <div class="hero-split">
-        <!-- LEFT: Cycling hero phases -->
-        <div class="hero-left">
-            <!-- Phase A (text) -->
-            <div class="hero-phase hero-phase--active" id="heroPhaseA">
-                <div class="hero-logo-wrap anim-zoom">
-                    <div class="hero-logo-ring"></div>
-                    <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="KYISA" class="hero-logo-img">
-                </div>
-                <h1 class="hero-title hero-title--alternate">
-                    <span class="hero-line hero-line--alt hero-line--alt-1">Kenya Youth</span>
-                    <span class="hero-line hero-line--alt hero-line--alt-2">Intercounty Sports</span>
-                    <span class="hero-line hero-line--alt hero-line--alt-3">Association <span class="hero-line--accent">(KYISA)</span></span>
-                </h1>
-                <p class="hero-tagline anim-up" style="--delay:.85s">THE HOME OF KENYAN YOUTH SPORTS</p>
-                <p class="hero-quote anim-up" style="--delay:1s">
-                    &ldquo;Let me win,But If I Cannot Win, Let Me Be Brave In The Attempt- Special Olympics.&rdquo;
-                </p>
-                <div class="hero-actions anim-up" style="--delay:1.15s">
-                    <a href="{% url 'public_competitions' %}" class="btn btn--gold btn--lg">
-                        View Competitions
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    </a>
-                    <a href="{% url 'about' %}" class="btn btn--outline-light btn--lg">Learn More</a>
-                </div>
-            </div>
-
-
-
-            <!-- Phase C (Kenyan flag) -->
-            <div class="hero-phase" id="heroPhaseC">
-                <div class="kenya-flag-wrap">
-                    <div class="flag-pole"><div class="flag-pole-cap"></div></div>
-                    <div class="kenya-flag">
-                        <img src="{% static 'img/kenya_flag.png' %}" alt="Flag of Kenya" class="flag-img">
-                    </div>
-                </div>
-                <div class="flag-text-block">
-                    <p class="flag-quote">&ldquo;Our children may learn about heroes of the past. Our task is to make ourselves architects of the future.&rdquo;</p>
-                    <span class="flag-author">  Mzee Jomo Kenyatta, <em>First President of Kenya</em></span>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- RIGHT: Live Match Center -->
-        <div class="hero-right">
-            <!-- Live Match Center -->
-            <div class="cd-card-entrance hero-card-slot" id="liveMatchCard">
-                <div class="cd-card cd-card--mini cd-card--show" style="width:340px;border:2px solid rgba(229,57,53,.45);cursor:pointer;border-radius:22px;overflow:hidden;" onclick="document.getElementById('fixtures').scrollIntoView({behavior:'smooth'})">
-                    <div class="cd-card__glow" style="background:radial-gradient(circle,rgba(229,57,53,.12),transparent 70%)"></div>
-                    <div class="cd-card__inner" style="padding:1.4rem 1.2rem;border-radius:22px;">
-
-                        {% if live_matches %}
-                        <!-- Header -->
-                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem;">
-                            <div style="display:flex;align-items:center;gap:.45rem;">
-                                <span style="width:9px;height:9px;border-radius:50%;background:#E53935;box-shadow:0 0 8px rgba(229,57,53,.6);animation:livePulse 1.5s infinite;"></span>
-                                <span style="font-size:.72rem;font-weight:700;color:#E53935;text-transform:uppercase;letter-spacing:1.5px;">Live</span>
-                            </div>
-                            <span style="font-size:.68rem;font-weight:600;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;">Match Center</span>
-                        </div>
-
-                        <div class="live-hero-matches">
-                            {% for m in live_matches %}
-                            <div class="live-hero-match{% if forloop.first %} live-hero-match--active{% endif %}" data-idx="{{ forloop.counter0 }}">
-                                <!-- Competition & Round -->
-                                <div style="text-align:center;margin-bottom:.6rem;">
-                                    <span style="font-size:.62rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.8px;">{{ m.competition.name }}{% if m.is_knockout and m.knockout_round %} · {{ m.get_knockout_round_display }}{% endif %}</span>
-                                </div>
-
-                                <!-- Teams & Score -->
-                                <div style="display:flex;align-items:center;gap:.5rem;">
-                                    <!-- Home -->
-                                    <div style="flex:1;text-align:center;">
-                                        <div style="font-size:.95rem;font-weight:700;color:#fff;line-height:1.2;">{{ m.home_team.name|truncatewords:2 }}</div>
-                                    </div>
-
-                                    <!-- Score -->
-                                    <div style="background:linear-gradient(135deg,rgba(229,57,53,.25),rgba(229,57,53,.12));border:1px solid rgba(229,57,53,.3);border-radius:12px;padding:.45rem .8rem;min-width:72px;text-align:center;">
-                                        <div style="font-size:1.6rem;font-weight:900;color:#fff;letter-spacing:2px;">{{ m.home_score|default:"0" }} – {{ m.away_score|default:"0" }}</div>
-                                    </div>
-
-                                    <!-- Away -->
-                                    <div style="flex:1;text-align:center;">
-                                        <div style="font-size:.95rem;font-weight:700;color:#fff;line-height:1.2;">{{ m.away_team.name|truncatewords:2 }}</div>
-                                    </div>
-                                </div>
-
-                                <!-- Status row -->
-                                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.6rem;padding-top:.5rem;border-top:1px solid rgba(255,255,255,.06);">
-                                    <span style="font-size:.68rem;font-weight:700;color:#E53935;text-transform:uppercase;">
-                                        {% if m.live_half == 1 %}1st Half{% elif m.live_half == 2 %}2nd Half{% elif m.live_half == 3 %}Extra Time 1{% elif m.live_half == 4 %}Extra Time 2{% elif m.live_half == 99 %}Penalties{% elif m.live_half == 0 %}HT{% else %}LIVE{% endif %}
-                                    </span>
-                                    <span style="font-size:.62rem;color:rgba(255,255,255,.35);">
-                                        <i class="bi bi-geo-alt" style="font-size:.58rem;"></i> {{ m.venue.name|default:"TBD" }}
-                                    </span>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-
-                        {% elif recent_finals %}
-                        <!-- Finals / latest results per competition -->
-                        <div style="display:flex;align-items:center;gap:.45rem;margin-bottom:.75rem;">
-                            <i class="bi bi-trophy-fill" style="font-size:.75rem;color:#F9A825;"></i>
-                            <span style="font-size:.72rem;font-weight:700;color:#F9A825;text-transform:uppercase;letter-spacing:1.5px;">Final Results</span>
-                        </div>
-
-                        <div style="margin-top:.3rem;">
-                            {% for match in recent_finals %}
-                            <div style="padding:.55rem 0;{% if not forloop.last %}border-bottom:1px solid rgba(255,255,255,.06);{% endif %}">
-                                <div style="font-size:.58rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.6px;margin-bottom:.3rem;">{{ match.competition.name }}{% if match.is_knockout and match.knockout_round %} · {{ match.get_knockout_round_display }}{% endif %}</div>
-                                <div style="display:flex;align-items:center;gap:.5rem;">
-                                    <span style="font-size:.82rem;font-weight:{% if match.home_score > match.away_score %}700{% else %}500{% endif %};color:{% if match.home_score > match.away_score %}#fff{% else %}rgba(255,255,255,.6){% endif %};flex:1;text-align:left;">{{ match.home_team.name|truncatewords:2 }}</span>
-                                    <div style="background:rgba(76,175,80,.12);border:1px solid rgba(76,175,80,.25);border-radius:8px;padding:.2rem .55rem;text-align:center;min-width:52px;">
-                                        <span style="font-size:.82rem;font-weight:800;color:#fff;letter-spacing:1px;">{{ match.home_score|default:"0" }} – {{ match.away_score|default:"0" }}</span>
-                                    </div>
-                                    <span style="font-size:.82rem;font-weight:{% if match.away_score > match.home_score %}700{% else %}500{% endif %};color:{% if match.away_score > match.home_score %}#fff{% else %}rgba(255,255,255,.6){% endif %};flex:1;text-align:right;">{{ match.away_team.name|truncatewords:2 }}</span>
-                                </div>
-                                <div style="text-align:center;font-size:.58rem;color:rgba(255,255,255,.3);margin-top:.25rem;">
-                                    FT · {{ match.match_date|date:"d M" }}
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-
-                        {% elif upcoming_fixtures %}
-                        <!-- No finals yet show upcoming -->
-                        <div style="display:flex;align-items:center;gap:.45rem;margin-bottom:.75rem;">
-                            <i class="bi bi-calendar-event" style="font-size:.75rem;color:#F9A825;"></i>
-                            <span style="font-size:.72rem;font-weight:700;color:#F9A825;text-transform:uppercase;letter-spacing:1.5px;">Upcoming</span>
-                        </div>
-
-                        <div style="margin-top:.3rem;">
-                            {% for match in upcoming_fixtures|slice:":3" %}
-                            <div style="padding:.55rem 0;{% if not forloop.last %}border-bottom:1px solid rgba(255,255,255,.06);{% endif %}">
-                                <div style="font-size:.58rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.6px;margin-bottom:.3rem;">{{ match.competition.name }}{% if match.is_knockout and match.knockout_round %} · {{ match.get_knockout_round_display }}{% endif %}</div>
-                                <div style="display:flex;align-items:center;gap:.5rem;">
-                                    <span style="font-size:.82rem;font-weight:600;color:#fff;flex:1;text-align:left;">{{ match.home_team.name|truncatewords:2 }}</span>
-                                    <div style="background:rgba(249,168,37,.12);border:1px solid rgba(249,168,37,.25);border-radius:8px;padding:.2rem .55rem;text-align:center;">
-                                        <span style="font-size:.66rem;font-weight:700;color:#F9A825;">{{ match.match_date|date:"d M" }} · {{ match.kickoff_time|time:"H:i" }}</span>
-                                    </div>
-                                    <span style="font-size:.82rem;font-weight:600;color:#fff;flex:1;text-align:right;">{{ match.away_team.name|truncatewords:2 }}</span>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        {% else %}
-                        <div style="text-align:center;padding:1.5rem 0;color:rgba(255,255,255,.4);font-size:.82rem;">
-                            <i class="bi bi-calendar3" style="font-size:1.8rem;display:block;margin-bottom:.5rem;opacity:.35;"></i>
-                            No matches scheduled yet
-                        </div>
-                        {% endif %}
-
-                        <div style="text-align:center;margin-top:.85rem;">
-                            <a href="#fixtures" style="display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;font-weight:700;color:#fff;background:linear-gradient(135deg,rgba(229,57,53,.35),rgba(229,57,53,.18));border:1px solid rgba(229,57,53,.3);padding:.45rem 1rem;border-radius:10px;text-decoration:none;transition:all .2s;">
-                                {% if live_matches %}
-                                <span style="width:6px;height:6px;border-radius:50%;background:#E53935;animation:livePulse 1.5s infinite;"></span>
-                                View All Live →
-                                {% elif recent_finals %}
-                                View All Results →
-                                {% else %}
-                                View Fixtures →
-                                {% endif %}
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="kenya-stripe" style="position:absolute;bottom:0;left:0;right:0;z-index:5"></div>
+  </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════════════════════
-     MEDIA HIGHLIGHTS PHOTOS, NEWS, VIDEOS FROM MEDIA MANAGER
-     ══════════════════════════════════════════════════════════════════════════ -->
+{# ════════════════════════════════════════════════════════════════
+   2. STATS STRIP — real numbers only, zeros hidden via CSS + JS
+   ════════════════════════════════════════════════════════════════ #}
+<div class="pub-stats" aria-label="At a glance">
+  <div class="pub-stats__inner">
 
-<!-- ══════════════════════════════════════════════════════════════════════════
-     GROUP STANDINGS
-     ══════════════════════════════════════════════════════════════════════════ -->
-{% if standings_data %}
-<section class="sec" id="standings" style="background:#f8f9fa;padding:3rem 0;">
-    <div class="container">
-        <div class="reveal" style="text-align:center;margin-bottom:2rem;">
-            <span style="display:inline-block;background:#1B5E20;color:#fff;padding:.3rem .8rem;border-radius:20px;font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:.5rem;"><i class="bi bi-table"></i> Standings</span>
-            <h2 style="font-family:'Outfit',sans-serif;font-size:1.6rem;font-weight:700;color:#1a1a1a;margin:0;">Group Tables</h2>
-            <p style="color:#888;font-size:.88rem;margin-top:.3rem;">Live standings updated after each match</p>
-        </div>
-
-        {% for comp_data in standings_data %}
-        <div class="reveal" style="margin-bottom:2.5rem;">
-            <h3 style="font-family:'Outfit',sans-serif;font-size:1.15rem;font-weight:700;color:#1B5E20;margin-bottom:1rem;padding-left:.5rem;border-left:3px solid #F9A825;">
-                <i class="bi bi-trophy"></i> {{ comp_data.competition.name }}
-            </h3>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.25rem;">
-                {% for pool_info in comp_data.pools %}
-                <div class="card" style="border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);">
-                    <div style="background:linear-gradient(135deg,#003311,#006B23);padding:.6rem 1rem;">
-                        <h4 style="margin:0;color:#fff;font-size:.9rem;font-weight:700;letter-spacing:.5px;">{{ pool_info.pool.name }}</h4>
-                    </div>
-                    <div style="overflow-x:auto;">
-                        <table style="width:100%;border-collapse:collapse;font-size:.8rem;">
-                            <thead>
-                                <tr style="background:#f0f2f5;">
-                                    <th style="padding:.5rem .6rem;text-align:left;font-weight:700;color:#555;width:40%;">Team</th>
-                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:700;color:#555;">P</th>
-                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:700;color:#555;">W</th>
-                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:700;color:#555;">D</th>
-                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:700;color:#555;">L</th>
-                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:700;color:#555;">GF</th>
-                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:700;color:#555;">GA</th>
-                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:700;color:#555;">GD</th>
-                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:800;color:#1B5E20;">Pts</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for pt in pool_info.teams %}
-                                <tr style="border-bottom:1px solid #eee;{% if forloop.counter <= 2 %}background:rgba(27,94,32,.04);{% endif %}">
-                                    <td style="padding:.5rem .6rem;font-weight:600;color:#1a1a1a;white-space:nowrap;">
-                                        <span style="display:inline-block;width:18px;text-align:center;color:#888;font-size:.75rem;margin-right:.25rem;">{{ forloop.counter }}</span>
-                                        {{ pt.team.name }}
-                                    </td>
-                                    <td style="padding:.5rem .4rem;text-align:center;color:#555;">{{ pt.played }}</td>
-                                    <td style="padding:.5rem .4rem;text-align:center;color:#555;">{{ pt.won }}</td>
-                                    <td style="padding:.5rem .4rem;text-align:center;color:#555;">{{ pt.drawn }}</td>
-                                    <td style="padding:.5rem .4rem;text-align:center;color:#555;">{{ pt.lost }}</td>
-                                    <td style="padding:.5rem .4rem;text-align:center;color:#555;">{{ pt.goals_for }}</td>
-                                    <td style="padding:.5rem .4rem;text-align:center;color:#555;">{{ pt.goals_against }}</td>
-                                    <td style="padding:.5rem .4rem;text-align:center;color:#555;">{{ pt.goal_difference }}</td>
-                                    <td style="padding:.5rem .4rem;text-align:center;font-weight:800;color:#1B5E20;">{{ pt.points }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endfor %}
+    {# Editions: always 11 — verified historical figure #}
+    <div class="pub-stat" data-value="11">
+      <span class="pub-stat__num" data-count="11">11</span>
+      <span class="pub-stat__label">Editions Completed</span>
     </div>
+
+    {# Participants: verified historical estimate — not from DB #}
+    <div class="pub-stat" data-value="30000">
+      <span class="pub-stat__num" data-count="30000" data-suffix="+">30,000+</span>
+      <span class="pub-stat__label">Participants</span>
+    </div>
+
+    {# Counties: always 47 — constitutional fact #}
+    <div class="pub-stat" data-value="47">
+      <span class="pub-stat__num" data-count="47">47</span>
+      <span class="pub-stat__label">Counties</span>
+    </div>
+
+    {# Competitions: from DB — hide if 0 #}
+    <div class="pub-stat" data-value="{{ stats.competitions|default:0 }}">
+      <span class="pub-stat__num" data-count="{{ stats.competitions|default:0 }}">{{ stats.competitions|default:0 }}</span>
+      <span class="pub-stat__label">Competitions</span>
+    </div>
+
+  </div>
+</div>
+
+{# ════════════════════════════════════════════════════════════════
+   3. LIVE / UPCOMING STRIP — only shown when data exists
+   ════════════════════════════════════════════════════════════════ #}
+{% if live_matches or upcoming_fixtures %}
+<section class="pub-sec" id="fixtures" aria-labelledby="fixtures-heading">
+  <div class="pub-sec__inner">
+    <div class="pub-sec__head">
+      <span class="pub-sec__badge">
+        {% if live_matches %}
+          <span class="pub-fx-card__live-dot" aria-hidden="true"></span>
+          Live Now
+        {% else %}
+          <i class="bi bi-calendar-event" aria-hidden="true"></i>
+          Upcoming
+        {% endif %}
+      </span>
+      <h2 class="pub-sec__title" id="fixtures-heading">
+        {% if live_matches %}Live Matches{% else %}Upcoming Fixtures{% endif %}
+      </h2>
+    </div>
+
+    <div class="pub-fx-scroll" role="list">
+      {% for match in live_matches %}
+      <div class="pub-fx-card" role="listitem">
+        <div class="pub-fx-card__head">
+          <span>{{ match.competition.name|truncatechars:28 }}</span>
+          <span class="pub-fx-card__status pub-fx-card__status--live">
+            <span class="pub-fx-card__live-dot" aria-hidden="true"></span>
+            {% if match.live_half == 1 %}1st Half
+            {% elif match.live_half == 2 %}2nd Half
+            {% elif match.live_half == 0 %}HT
+            {% else %}Live{% endif %}
+          </span>
+        </div>
+        <div class="pub-fx-card__body">
+          <div class="pub-fx-card__team">{{ match.home_team.name }}</div>
+          <div class="pub-fx-card__score">
+            <span class="pub-fx-card__scoreline">{{ match.home_score|default:"0" }}&ndash;{{ match.away_score|default:"0" }}</span>
+            <span class="pub-fx-card__status pub-fx-card__status--live">Live</span>
+          </div>
+          <div class="pub-fx-card__team">{{ match.away_team.name }}</div>
+        </div>
+        {% if match.venue %}<div class="pub-fx-card__foot"><i class="bi bi-geo-alt" aria-hidden="true"></i> {{ match.venue.name }}</div>{% endif %}
+      </div>
+      {% endfor %}
+
+      {% for match in upcoming_fixtures %}
+      <div class="pub-fx-card" role="listitem">
+        <div class="pub-fx-card__head">
+          <span>{{ match.competition.name|truncatechars:28 }}</span>
+          <span class="pub-fx-card__status pub-fx-card__status--up">Upcoming</span>
+        </div>
+        <div class="pub-fx-card__body">
+          <div class="pub-fx-card__team">{{ match.home_team.name }}</div>
+          <div class="pub-fx-card__score">
+            <span style="font-size:var(--k-text-xs);font-weight:700;color:var(--k-muted);">{{ match.match_date|date:"d M" }}</span>
+            <span style="font-size:var(--k-text-xs);color:var(--k-muted);">{{ match.kickoff_time|time:"H:i" }}</span>
+          </div>
+          <div class="pub-fx-card__team">{{ match.away_team.name }}</div>
+        </div>
+        {% if match.venue %}<div class="pub-fx-card__foot"><i class="bi bi-geo-alt" aria-hidden="true"></i> {{ match.venue.name }}</div>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
 </section>
 {% endif %}
 
-<!-- ══════════════════════════════════════════════════════════════════════════
-     KNOCKOUT BRACKET Auto-shows when knockout matches exist
-     ══════════════════════════════════════════════════════════════════════════ -->
+{# ════════════════════════════════════════════════════════════════
+   4. LATEST RESULTS — only shown when completed matches exist
+   ════════════════════════════════════════════════════════════════ #}
+{% if recent_results %}
+<section class="pub-sec pub-sec--alt" id="results" aria-labelledby="results-heading">
+  <div class="pub-sec__inner">
+    <div class="pub-sec__head" style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+      <div>
+        <span class="pub-sec__badge"><i class="bi bi-check-circle" aria-hidden="true"></i> Full Time</span>
+        <h2 class="pub-sec__title" id="results-heading">Latest Results</h2>
+      </div>
+      <a href="{% url 'public_results' %}" class="btn-k btn-k--primary" style="font-size:var(--k-text-sm);padding:.5rem 1.1rem;">
+        All Results <i class="bi bi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+
+    <div class="pub-fx-scroll" role="list">
+      {% for match in recent_results %}
+      <div class="pub-fx-card" role="listitem">
+        <div class="pub-fx-card__head">
+          <span>{{ match.competition.name|truncatechars:28 }}</span>
+          <span class="pub-fx-card__status pub-fx-card__status--ft">
+            {% if match.home_penalties is not None and match.away_penalties is not None %}Pens
+            {% elif match.home_score_et is not None and match.away_score_et is not None %}AET
+            {% else %}FT{% endif %}
+          </span>
+        </div>
+        <div class="pub-fx-card__body">
+          <div class="pub-fx-card__team {% if match.home_score > match.away_score %}pub-fx-card__team--winner{% endif %}">{{ match.home_team.name }}</div>
+          <div class="pub-fx-card__score">
+            <span class="pub-fx-card__scoreline">{{ match.home_score|default:"0" }}&ndash;{{ match.away_score|default:"0" }}</span>
+            <span class="pub-fx-card__status pub-fx-card__status--ft">FT</span>
+          </div>
+          <div class="pub-fx-card__team {% if match.away_score > match.home_score %}pub-fx-card__team--winner{% endif %}">{{ match.away_team.name }}</div>
+        </div>
+        <div class="pub-fx-card__foot"><i class="bi bi-calendar3" aria-hidden="true"></i> {{ match.match_date|date:"d M Y" }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+{% endif %}
+
+{# ════════════════════════════════════════════════════════════════
+   5. KNOCKOUT BRACKET — only shown when knockout fixtures exist
+   ════════════════════════════════════════════════════════════════ #}
 {% if knockout_fixtures %}
-<section class="sec" id="knockout" style="background:#fff;padding:3rem 0;">
-    <div class="container">
-        <div class="reveal" style="text-align:center;margin-bottom:2rem;">
-            <span style="display:inline-block;background:#6A1B9A;color:#fff;padding:.3rem .8rem;border-radius:20px;font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:.5rem;"><i class="bi bi-trophy"></i> Knockout Stage</span>
-            <h2 style="font-family:'Outfit',sans-serif;font-size:1.6rem;font-weight:700;color:#1a1a1a;margin:0;">Elimination Rounds</h2>
-            <p style="color:#888;font-size:.88rem;margin-top:.3rem;">KNOCK OUT STAGE RESULTS</p>
-        </div>
-
-        <div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;">
-            {% for fx in knockout_fixtures %}
-            <div class="reveal" style="--delay:{{ forloop.counter0 }}0ms;background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.08);overflow:hidden;min-width:280px;max-width:320px;flex:1;">
-                <div style="background:linear-gradient(135deg,#4A148C,#7B1FA2);padding:.5rem 1rem;display:flex;justify-content:space-between;align-items:center;">
-                    <span style="color:#fff;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">{{ fx.get_knockout_round_display }}</span>
-                    {% if fx.status == 'live' %}
-                    <span style="display:flex;align-items:center;gap:.25rem;font-size:.7rem;font-weight:700;color:#FF5252;">
-                        <span style="width:6px;height:6px;border-radius:50%;background:#FF5252;animation:livePulse 1.5s infinite;"></span> LIVE
-                    </span>
-                    {% elif fx.status == 'completed' %}
-                    <span style="font-size:.7rem;font-weight:600;color:rgba(255,255,255,.7);">FT{% if fx.home_penalties is not None and fx.away_penalties is not None %} · Pens{% elif fx.home_score_et is not None and fx.away_score_et is not None %} · AET{% endif %}</span>
-                    {% else %}
-                    <span style="font-size:.7rem;color:rgba(255,255,255,.6);">{{ fx.match_date|date:"d M" }}{% if fx.kickoff_time %} · {{ fx.kickoff_time|time:"H:i" }}{% endif %}</span>
-                    {% endif %}
-                </div>
-                <div style="padding:1rem;">
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;">
-                        <span style="font-weight:{% if fx.winner == fx.home_team %}800{% else %}600{% endif %};font-size:.88rem;color:{% if fx.winner == fx.home_team %}#1B5E20{% else %}#333{% endif %};">{{ fx.home_team.name|default:"TBA" }}</span>
-                        {% if fx.home_score is not None %}
-                        <span style="font-weight:800;font-size:1.1rem;color:{% if fx.winner == fx.home_team %}#1B5E20{% else %}#333{% endif %};">{{ fx.home_score }}</span>
-                        {% endif %}
-                    </div>
-                    <div style="display:flex;align-items:center;justify-content:space-between;">
-                        <span style="font-weight:{% if fx.winner == fx.away_team %}800{% else %}600{% endif %};font-size:.88rem;color:{% if fx.winner == fx.away_team %}#1B5E20{% else %}#333{% endif %};">{{ fx.away_team.name|default:"TBA" }}</span>
-                        {% if fx.away_score is not None %}
-                        <span style="font-weight:800;font-size:1.1rem;color:{% if fx.winner == fx.away_team %}#1B5E20{% else %}#333{% endif %};">{{ fx.away_score }}</span>
-                        {% endif %}
-                    </div>
-                    {% if fx.home_penalties is not None and fx.away_penalties is not None %}
-                    <div style="text-align:center;font-size:.75rem;color:#6A1B9A;font-weight:600;margin-top:.5rem;padding-top:.5rem;border-top:1px dashed #E1BEE7;">
-                        Penalties: {{ fx.home_penalties }} – {{ fx.away_penalties }}
-                    </div>
-                    {% endif %}
-                    {% if fx.venue %}
-                    <div style="font-size:.72rem;color:#999;margin-top:.4rem;">
-                        <i class="bi bi-geo-alt" style="font-size:.65rem;"></i> {{ fx.venue.name }}
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-            {% endfor %}
-        </div>
+<section class="pub-sec" id="knockout" aria-labelledby="knockout-heading">
+  <div class="pub-sec__inner">
+    <div class="pub-sec__head">
+      <span class="pub-sec__badge" style="background:#f3e5f5;border-color:#e1bee7;color:#7b1fa2;"><i class="bi bi-trophy" aria-hidden="true"></i> Knockout</span>
+      <h2 class="pub-sec__title" id="knockout-heading">Elimination Rounds</h2>
     </div>
+    <div class="knockout-grid">
+      {% for fx in knockout_fixtures %}
+      <div class="ko-card reveal">
+        <div class="ko-card__head">
+          <span class="ko-card__round">{{ fx.get_knockout_round_display }}</span>
+          <span class="ko-card__status">
+            {% if fx.status == 'live' %}<span style="color:#ff5252;">LIVE</span>
+            {% elif fx.status == 'completed' %}FT{% if fx.home_score_et is not None %} AET{% endif %}{% if fx.home_penalties is not None %} Pens{% endif %}
+            {% else %}{{ fx.match_date|date:"d M" }}{% if fx.kickoff_time %} · {{ fx.kickoff_time|time:"H:i" }}{% endif %}{% endif %}
+          </span>
+        </div>
+        <div class="ko-card__body">
+          <div class="ko-card__team-row {% if fx.winner == fx.home_team %}ko-card__team-row--winner{% endif %}">
+            <span>{{ fx.home_team.name|default:"TBA" }}</span>
+            {% if fx.home_score is not None %}<span class="ko-card__score">{{ fx.home_score }}</span>{% endif %}
+          </div>
+          <div class="ko-card__team-row {% if fx.winner == fx.away_team %}ko-card__team-row--winner{% endif %}">
+            <span>{{ fx.away_team.name|default:"TBA" }}</span>
+            {% if fx.away_score is not None %}<span class="ko-card__score">{{ fx.away_score }}</span>{% endif %}
+          </div>
+          {% if fx.home_penalties is not None and fx.away_penalties is not None %}
+          <div class="ko-card__pens">Penalties: {{ fx.home_penalties }}&ndash;{{ fx.away_penalties }}</div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 </section>
 {% endif %}
 
-<section class="sec media-highlights" id="news">
-    <div class="container">
-
-        <!-- Section hero intro -->
-        <div class="mh-hero reveal">
-            <span class="mh-hero__badge"><i class="bi bi-broadcast"></i> News & Media</span>
-            <h2 class="mh-hero__title">Latest from <span class="text-gold">KYISA</span></h2>
-            <p class="mh-hero__sub">Photos, news highlights, featured stories, and videos from KYISA's 11th edition.</p>
-        </div>
-
-        <!-- ── Photo Albums ──────────────────────────────────────────── -->
-        {% if latest_albums %}
-        <div class="mh-block">
-            <div class="mh-header">
-                <h2 class="sec-title"><i class="bi bi-images"></i> Photo Gallery</h2>
-                <a href="{% url 'news_media:gallery_list' %}" class="mh-view-all">View All <i class="bi bi-arrow-right"></i></a>
-            </div>
-            <div class="mh-grid mh-grid--albums">
-                {% for album in latest_albums %}
-                <a href="{% url 'news_media:gallery_detail' album.slug %}" class="mh-album-card">
-                    <div class="mh-album-card__img">
-                        {% if album.display_cover %}
-                        <img src="{{ album.display_cover }}" alt="{{ album.title }}" loading="lazy">
-                        {% else %}
-                        <div class="mh-album-card__placeholder"><i class="bi bi-camera"></i></div>
-                        {% endif %}
-                        <div class="mh-album-card__overlay">
-                            <span class="mh-album-card__count"><i class="bi bi-image"></i> {{ album.photo_count }}</span>
-                        </div>
-                    </div>
-                    <div class="mh-album-card__body">
-                        <h4 class="mh-album-card__title">{{ album.title }}</h4>
-                        {% if album.event_date %}
-                        <span class="mh-album-card__date"><i class="bi bi-calendar3"></i> {{ album.event_date|date:"M d, Y" }}</span>
-                        {% endif %}
-                    </div>
-                </a>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- ── Latest News ───────────────────────────────────────────── -->
-        {% if latest_articles %}
-        <div class="mh-block">
-            <div class="mh-header">
-                <h2 class="sec-title"><i class="bi bi-newspaper"></i> Latest News</h2>
-                <a href="{% url 'news_media:news_list' %}" class="mh-view-all">View All <i class="bi bi-arrow-right"></i></a>
-            </div>
-            <div class="mh-grid mh-grid--news">
-                {% for article in latest_articles %}
-                <a href="{% url 'news_media:news_detail' article.slug %}" class="mh-news-card">
-                    <div class="mh-news-card__img">
-                        {% if article.featured_image %}
-                        <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" loading="lazy">
-                        {% else %}
-                        <div class="mh-news-card__placeholder"><i class="bi bi-newspaper"></i></div>
-                        {% endif %}
-                        {% if article.category %}
-                        <span class="mh-news-card__cat">{{ article.category.name }}</span>
-                        {% endif %}
-                    </div>
-                    <div class="mh-news-card__body">
-                        <h4 class="mh-news-card__title">{{ article.title }}</h4>
-                        {% if article.excerpt %}
-                        <p class="mh-news-card__excerpt">{{ article.excerpt|truncatewords:18 }}</p>
-                        {% endif %}
-                        <div class="mh-news-card__meta">
-                            <span><i class="bi bi-clock"></i> {{ article.published_at|timesince }} ago</span>
-                            {% if article.reading_time %}
-                            <span><i class="bi bi-book"></i> {{ article.reading_time }} min read</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                </a>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- ── Featured News ─────────────────────────────────────────── -->
-        {% if featured_articles %}
-        <div class="mh-block">
-            <div class="mh-header">
-                <h2 class="sec-title"><i class="bi bi-star"></i> Featured Stories</h2>
-            </div>
-            <div class="mh-grid mh-grid--featured">
-                {% for article in featured_articles %}
-                <a href="{% url 'news_media:news_detail' article.slug %}" class="mh-featured-card">
-                    <div class="mh-featured-card__img">
-                        {% if article.featured_image %}
-                        <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" loading="lazy">
-                        {% else %}
-                        <div class="mh-featured-card__placeholder"><i class="bi bi-star"></i></div>
-                        {% endif %}
-                    </div>
-                    <div class="mh-featured-card__body">
-                        {% if article.category %}
-                        <span class="mh-featured-card__cat">{{ article.category.name }}</span>
-                        {% endif %}
-                        <h3 class="mh-featured-card__title">{{ article.title }}</h3>
-                        {% if article.excerpt %}
-                        <p class="mh-featured-card__excerpt">{{ article.excerpt|truncatewords:25 }}</p>
-                        {% endif %}
-                        <div class="mh-featured-card__meta">
-                            <span><i class="bi bi-calendar3"></i> {{ article.published_at|date:"M d, Y" }}</span>
-                            {% if article.author %}
-                            <span><i class="bi bi-person"></i> {{ article.author.get_full_name|default:article.author.email|default:"Author" }}</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                </a>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- ── Videos ────────────────────────────────────────────────── -->
-        {% if latest_videos %}
-        <div class="mh-block">
-            <div class="mh-header">
-                <h2 class="sec-title"><i class="bi bi-play-circle"></i> Videos</h2>
-                <a href="{% url 'news_media:videos_list' %}" class="mh-view-all">View All <i class="bi bi-arrow-right"></i></a>
-            </div>
-            <div class="mh-grid mh-grid--videos">
-                {% for video in latest_videos %}
-                <div class="mh-video-card"
-                     data-source="{{ video.source }}"
-                     data-embed="{{ video.embed_url }}"
-                     {% if video.source == 'upload' and video.video_file %}data-file="{{ video.video_file.url }}"{% endif %}
-                     data-title="{{ video.title }}"
-                     onclick="kyisaOpenVideo(this)"
-                     style="cursor:pointer">
-                    <div class="mh-video-card__thumb">
-                        {% if video.thumbnail %}
-                        <img src="{{ video.thumbnail.url }}" alt="{{ video.title }}" loading="lazy">
-                        {% elif video.youtube_id %}
-                        <img src="https://img.youtube.com/vi/{{ video.youtube_id }}/hqdefault.jpg" alt="{{ video.title }}" loading="lazy">
-                        {% else %}
-                        <div class="mh-video-card__placeholder"><i class="bi bi-play-circle"></i></div>
-                        {% endif %}
-                        <div class="mh-video-card__play"><i class="bi bi-play-fill"></i></div>
-                        {% if video.duration %}
-                        <span class="mh-video-card__dur">{{ video.duration }}</span>
-                        {% endif %}
-                    </div>
-                    <div class="mh-video-card__body">
-                        <h4 class="mh-video-card__title">{{ video.title }}</h4>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- Video Modal -->
-        <div class="mh-vid-modal" id="mhVidModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:99999;align-items:center;justify-content:center;padding:2rem;">
-            <button onclick="kyisaCloseVideo()" style="position:absolute;top:1.5rem;right:1.5rem;background:rgba(255,255,255,.15);border:none;color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.4rem;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="bi bi-x-lg"></i></button>
-            <div style="width:100%;max-width:900px;">
-                <div id="mhVidEmbed" style="position:relative;padding-bottom:56.25%;height:0;border-radius:12px;overflow:hidden;"></div>
-                <div id="mhVidTitle" style="color:#fff;text-align:center;margin-top:1rem;font-size:1rem;font-weight:600;"></div>
-            </div>
-        </div>
-
-        <!-- Empty state when no media content -->
-        {% if not latest_albums and not latest_articles and not latest_videos %}
-        <div class="mh-empty">
-            <i class="bi bi-camera-reels"></i>
-            <h3>Media Highlights Coming Soon</h3>
-            <p>Photos, news, and videos from KYISA events will appear here.</p>
-        </div>
-        {% endif %}
-
+{# ════════════════════════════════════════════════════════════════
+   6. STANDINGS — discipline tabs
+   ════════════════════════════════════════════════════════════════ #}
+{% if standings_data %}
+<section class="pub-sec pub-sec--alt" id="standings" aria-labelledby="standings-heading">
+  <div class="pub-sec__inner">
+    <div class="pub-sec__head">
+      <span class="pub-sec__badge"><i class="bi bi-table" aria-hidden="true"></i> Standings</span>
+      <h2 class="pub-sec__title" id="standings-heading">Group Tables</h2>
+      <p class="pub-sec__sub">Updated after every match</p>
     </div>
+
+    {# Tabs #}
+    <div class="standings-tabs" role="tablist" aria-label="Competition standings">
+      {% for comp_data in standings_data %}
+      <button class="standings-tab {% if forloop.first %}active{% endif %}"
+              role="tab"
+              aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+              aria-controls="standings-panel-{{ forloop.counter }}"
+              id="standings-tab-{{ forloop.counter }}"
+              data-panel="standings-panel-{{ forloop.counter }}">
+        {{ comp_data.competition.name|truncatechars:30 }}
+      </button>
+      {% endfor %}
+    </div>
+
+    {# Panels #}
+    {% for comp_data in standings_data %}
+    <div class="standings-panel {% if forloop.first %}active{% endif %}"
+         id="standings-panel-{{ forloop.counter }}"
+         role="tabpanel"
+         aria-labelledby="standings-tab-{{ forloop.counter }}">
+      {% for pool_info in comp_data.pools %}
+      <div style="margin-bottom:2rem;">
+        <h3 style="font-family:var(--k-font-heading);font-size:var(--k-text-lg);font-weight:700;color:var(--k-green-800);margin-bottom:.75rem;padding-left:.5rem;border-left:3px solid var(--k-gold-500);">
+          {{ pool_info.pool.name }}
+        </h3>
+        <div style="overflow-x:auto;">
+          <table class="pub-standings-table">
+            <thead>
+              <tr>
+                <th scope="col">Team</th>
+                <th scope="col">P</th>
+                <th scope="col">W</th>
+                <th scope="col">D</th>
+                <th scope="col">L</th>
+                <th scope="col">GF</th>
+                <th scope="col">GA</th>
+                <th scope="col">GD</th>
+                <th scope="col">Pts</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for pt in pool_info.teams %}
+              <tr>
+                <td>
+                  <span class="pub-standings-pos">{{ forloop.counter }}</span>
+                  {{ pt.team.name }}
+                </td>
+                <td>{{ pt.played }}</td>
+                <td>{{ pt.won }}</td>
+                <td>{{ pt.drawn }}</td>
+                <td>{{ pt.lost }}</td>
+                <td>{{ pt.goals_for }}</td>
+                <td>{{ pt.goals_against }}</td>
+                <td>{{ pt.goal_difference }}</td>
+                <td class="pub-standings-pts">{{ pt.points }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{# ════════════════════════════════════════════════════════════════
+   7. NEWS & MEDIA — max one empty state on the whole page
+   ════════════════════════════════════════════════════════════════ #}
+{% if latest_articles or latest_albums or latest_videos %}
+<section class="pub-sec" id="news" aria-labelledby="news-heading">
+  <div class="pub-sec__inner">
+    <div class="pub-sec__head">
+      <span class="pub-sec__badge"><i class="bi bi-newspaper" aria-hidden="true"></i> News & Media</span>
+      <h2 class="pub-sec__title" id="news-heading">Latest from KYISA</h2>
+      <p class="pub-sec__sub">Stories, photos and videos from the 11th edition.</p>
+    </div>
+
+    {# News grid #}
+    {% if latest_articles %}
+    <div class="pub-news-grid" style="margin-bottom:3rem;">
+      {% for article in latest_articles|slice:":3" %}
+      <a href="{% url 'news_media:news_detail' article.slug %}" class="pub-news-card">
+        <div class="pub-news-card__img">
+          {% if article.featured_image %}
+          <img src="{{ article.featured_image.url }}"
+               alt="{{ article.title }}"
+               width="400" height="225"
+               loading="lazy">
+          {% endif %}
+        </div>
+        <div class="pub-news-card__body">
+          {% if article.category %}<div class="pub-news-card__cat">{{ article.category.name }}</div>{% endif %}
+          <h3 class="pub-news-card__title">{{ article.title }}</h3>
+          {% if article.excerpt %}<p class="pub-news-card__excerpt">{{ article.excerpt|truncatewords:20 }}</p>{% endif %}
+          <div class="pub-news-card__meta">
+            <span><i class="bi bi-clock" aria-hidden="true"></i> {{ article.published_at|timesince }} ago</span>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    <div style="text-align:center;margin-top:-1.5rem;margin-bottom:3rem;">
+      <a href="{% url 'news_media:news_list' %}" class="btn-k btn-k--outline">View All News</a>
+    </div>
+    {% endif %}
+
+    {# Gallery strip #}
+    {% if latest_albums %}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem;">
+      <h3 style="font-family:var(--k-font-heading);font-size:var(--k-text-xl);font-weight:700;color:var(--k-ink);margin:0;">
+        <i class="bi bi-images" aria-hidden="true"></i> Photo Gallery
+      </h3>
+      <a href="{% url 'news_media:gallery_list' %}" style="font-size:var(--k-text-sm);color:var(--k-green-700);font-weight:600;text-decoration:none;">
+        View All <i class="bi bi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+    <div class="gallery-strip" style="margin-bottom:3rem;">
+      {% for album in latest_albums|slice:":4" %}
+      <a href="{% url 'news_media:gallery_detail' album.slug %}" class="gallery-tile">
+        {% if album.display_cover %}
+        <img src="{{ album.display_cover }}" alt="{{ album.title }}" width="300" height="225" loading="lazy">
+        {% endif %}
+        <div class="gallery-tile__overlay">
+          <span class="gallery-tile__count">
+            <i class="bi bi-image" aria-hidden="true"></i> {{ album.photo_count }} photos
+          </span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {# Videos #}
+    {% if latest_videos %}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem;">
+      <h3 style="font-family:var(--k-font-heading);font-size:var(--k-text-xl);font-weight:700;color:var(--k-ink);margin:0;">
+        <i class="bi bi-play-circle" aria-hidden="true"></i> Videos
+      </h3>
+      <a href="{% url 'news_media:videos_list' %}" style="font-size:var(--k-text-sm);color:var(--k-green-700);font-weight:600;text-decoration:none;">
+        View All <i class="bi bi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;">
+      {% for video in latest_videos|slice:":4" %}
+      <div class="gallery-tile"
+           style="cursor:pointer;"
+           role="button"
+           tabindex="0"
+           aria-label="Play {{ video.title }}"
+           data-source="{{ video.source }}"
+           data-embed="{{ video.embed_url }}"
+           {% if video.source == 'upload' and video.video_file %}data-file="{{ video.video_file.url }}"{% endif %}
+           data-title="{{ video.title }}"
+           data-open-video>
+        {% if video.thumbnail %}
+        <img src="{{ video.thumbnail.url }}" alt="{{ video.title }}" width="300" height="225" loading="lazy">
+        {% elif video.youtube_id %}
+        <img src="https://img.youtube.com/vi/{{ video.youtube_id }}/mqdefault.jpg" alt="{{ video.title }}" width="300" height="225" loading="lazy">
+        {% endif %}
+        <div class="gallery-tile__overlay" style="align-items:center;justify-content:center;">
+          <span style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;">
+            <i class="bi bi-play-fill" style="color:#fff;font-size:1.3rem;margin-left:3px;" aria-hidden="true"></i>
+          </span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+  </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════════════════════
-     MATCH CENTER FIXTURES + STATS + RESULTS
-     ══════════════════════════════════════════════════════════════════════════ -->
-<section class="match-center" id="fixtures">
-    <!-- Results & Statistics strip -->
-    <div class="mc-stats">
-        <div class="container">
-            <div class="mc-stats__header reveal" style="text-align:center;padding-bottom:.5rem;">
-                <h2 style="color:#fff;font-family:'Outfit',sans-serif;font-size:1.6rem;font-weight:700;letter-spacing:1px;margin:0;">Results &amp; Statistics</h2>
-                <p style="color:rgba(255,255,255,.7);font-size:.85rem;margin-top:.25rem;">A decade of youth sports excellence across Kenya</p>
-            </div>
-            <div class="mc-stats__row">
-                <div class="mc-stat reveal">
-                    <span class="mc-stat__num" data-count="11">0</span>
-                    <span class="mc-stat__label">Editions Completed</span>
-                </div>
-                <div class="mc-stat reveal" style="--delay:.06s">
-                    <span class="mc-stat__num" data-count="30000" data-suffix="+">0</span>
-                    <span class="mc-stat__label">Participants</span>
-                </div>
-                <div class="mc-stat reveal" style="--delay:.12s">
-                    <span class="mc-stat__num" data-count="47">0</span>
-                    <span class="mc-stat__label">Counties Represented</span>
-                </div>
-                <div class="mc-stat reveal" style="--delay:.18s">
-                    <span class="mc-stat__num" data-count="{{ stats.competitions|default:'0' }}">0</span>
-                    <span class="mc-stat__label">Competitions</span>
-                </div>
-            </div>
-        </div>
+{# Single empty state — only shown if NO media content at all #}
+{% else %}
+{# Empty media: replace with register CTA so homepage never shows blank space #}
+<section class="pub-sec pub-sec--alt" aria-label="Registration">
+  <div class="pub-sec__inner" style="text-align:center;max-width:600px;margin:0 auto;padding:var(--k-sp-16) 1.25rem;">
+    <span class="pub-sec__badge"><i class="bi bi-trophy" aria-hidden="true"></i> 11th Edition</span>
+    <h2 class="pub-sec__title" style="margin-bottom:var(--k-sp-4);">Ready to compete?</h2>
+    <p class="pub-sec__sub" style="margin:0 auto var(--k-sp-8);">
+      County registrations for the KYISA Games are open. Register your county today and secure your place on the national stage.
+    </p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <a href="{% url 'county_admin_register' %}" class="btn-k btn-k--primary btn-k--lg">Register Your County</a>
+      <a href="{% url 'about' %}" class="btn-k btn-k--outline btn-k--lg">Learn More</a>
     </div>
-
-    <!-- Fixtures + Results grid -->
-    <div class="mc-content">
-        <div class="container">
-
-            <!-- ── LIVE MATCHES STRIP ── -->
-            {% if live_matches %}
-            <div class="mc-live-strip reveal">
-                <div class="mc-live-strip__header">
-                    <span class="mc-badge mc-badge--red" style="animation:livePulse 1.5s infinite;">
-                        <span style="width:6px;height:6px;border-radius:50%;background:#fff;display:inline-block;margin-right:.25rem;"></span>
-                        LIVE
-                    </span>
-                    <h3 style="color:#fff;font-size:1rem;font-weight:700;margin:0;">Live Matches</h3>
-                </div>
-                <div class="mc-live-cards">
-                    {% for m in live_matches %}
-                    <div class="mc-live-card" data-fixture-id="{{ m.id }}">
-                        <div class="mc-live-card__comp">{{ m.competition.name }}{% if m.is_knockout and m.knockout_round %} · {{ m.get_knockout_round_display }}{% endif %}</div>
-                        <div class="mc-live-card__body">
-                            <div class="mc-live-card__team">{{ m.home_team.name }}</div>
-                            <div class="mc-live-card__score">
-                                <span class="mc-live-card__num">{{ m.home_score|default:"0" }}</span>
-                                <span class="mc-live-card__sep">–</span>
-                                <span class="mc-live-card__num">{{ m.away_score|default:"0" }}</span>
-                            </div>
-                            <div class="mc-live-card__team">{{ m.away_team.name }}</div>
-                        </div>
-                        <div class="mc-live-card__meta">
-                            <span class="mc-live-card__half">
-                                {% if m.live_half == 1 %}1st Half{% elif m.live_half == 2 %}2nd Half{% elif m.live_half == 3 %}Extra Time 1{% elif m.live_half == 4 %}Extra Time 2{% elif m.live_half == 99 %}Penalties{% elif m.live_half == 0 %}HT{% else %}LIVE{% endif %}
-                            </span>
-                            <span>{{ m.venue.name|default:"TBD" }}</span>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-
-            <div class="mc-grid">
-                <!-- Fixtures column -->
-                <div class="mc-col">
-                    <div class="mc-col__head reveal">
-                        <span class="mc-badge mc-badge--red">Live</span>
-                        <h3 class="mc-col__title">Upcoming Fixtures</h3>
-                    </div>
-                    {% if upcoming_fixtures %}
-                    <div class="mc-cards">
-                        {% for match in upcoming_fixtures %}
-                        <div class="mc-card reveal" style="--delay:{{ forloop.counter0 }}0ms">
-                            <div class="mc-card__comp">{{ match.competition.name }}{% if match.is_knockout and match.knockout_round %} · {{ match.get_knockout_round_display }}{% endif %}</div>
-                            <div class="mc-card__body">
-                                <span class="mc-card__team">{{ match.home_team.name }}</span>
-                                <div class="mc-card__vs">
-                                    <strong>VS</strong>
-                                    <small>{{ match.match_date|date:"d M" }} · {{ match.kickoff_time|time:"H:i" }}</small>
-                                </div>
-                                <span class="mc-card__team">{{ match.away_team.name }}</span>
-                            </div>
-                            <div class="mc-card__foot">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                                {{ match.venue.name|default:"TBD" }}
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% else %}
-                    <div class="mc-empty reveal">
-                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(249,168,37,.3)" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                        <p>No upcoming fixtures</p>
-                    </div>
-                    {% endif %}
-                </div>
-
-                <!-- Results column -->
-                <div class="mc-col">
-                    <div class="mc-col__head reveal">
-                        <span class="mc-badge">Results</span>
-                        <h3 class="mc-col__title">Recent Scores</h3>
-                    </div>
-                    {% if recent_results %}
-                    <div class="mc-cards">
-                        {% for match in recent_results %}
-                        <div class="mc-result reveal" style="--delay:{{ forloop.counter0 }}0ms">
-                            <div class="mc-result__head">
-                                <span>{{ match.competition.name }}{% if match.is_knockout and match.knockout_round %} · {{ match.get_knockout_round_display }}{% endif %}</span>
-                                <span>{{ match.match_date|date:"d M" }}</span>
-                            </div>
-                            <div class="mc-result__body">
-                                <span>{{ match.home_team.name }}</span>
-                                <div class="mc-result__score">
-                                    <strong>{{ match.home_score|default:"0" }}</strong>
-                                    <em>–</em>
-                                    <strong>{{ match.away_score|default:"0" }}</strong>
-                                </div>
-                                <span>{{ match.away_team.name }}</span>
-                            </div>
-                            <div class="mc-result__ft">
-                                {% if match.home_penalties is not None and match.away_penalties is not None %}
-                                    FT · Pens {{ match.home_penalties }}-{{ match.away_penalties }}
-                                {% elif match.home_score_et is not None and match.away_score_et is not None %}
-                                    AET
-                                {% else %}
-                                    FT
-                                {% endif %}
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    <div style="text-align:center;margin-top:1rem" class="reveal">
-                        <a href="{% url 'public_results' %}" class="btn btn--outline btn--sm">All Results →</a>
-                    </div>
-                    {% else %}
-                    <div class="mc-empty reveal">
-                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(249,168,37,.3)" stroke-width="1.5"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-                        <p>No results yet</p>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
+  </div>
 </section>
+{% endif %}
+
+{# ════════════════════════════════════════════════════════════════
+   8. COUNTIES — 47 counties, one stage
+   ════════════════════════════════════════════════════════════════ #}
+<section class="pub-counties" aria-labelledby="counties-heading">
+  <div class="pub-counties__inner">
+    <div class="pub-counties__head">
+      <span class="pub-sec__badge" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18);color:rgba(255,255,255,.7);">
+        <i class="bi bi-geo-alt-fill" aria-hidden="true"></i> All Counties
+      </span>
+      <h2 class="pub-sec__title" id="counties-heading">47 Counties, One Stage</h2>
+      <p class="pub-sec__sub">Every county in Kenya competes at the KYISA Games.</p>
+    </div>
+    <div class="pub-counties__grid">
+      {% for value, label in counties %}
+      <span class="pub-county-chip">
+        <i class="bi bi-geo-alt" aria-hidden="true"></i>
+        {{ label }}
+      </span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ════════════════════════════════════════════════════════════════
+   VIDEO MODAL
+   ════════════════════════════════════════════════════════════════ #}
+<div class="vid-modal" id="vidModal" role="dialog" aria-modal="true" aria-label="Video player" aria-hidden="true">
+  <button class="vid-modal__close" id="vidModalClose" type="button" aria-label="Close video">
+    <i class="bi bi-x-lg" aria-hidden="true"></i>
+  </button>
+  <div class="vid-modal__inner">
+    <div class="vid-modal__embed" id="vidModalEmbed"></div>
+    <div class="vid-modal__title" id="vidModalTitle"></div>
+  </div>
+</div>
 
 {% endblock %}
 
 {% block extra_js %}
 <script>
-/* ── Homepage video modal ─────────────────────────────────────── */
+/* ── Standings tabs ── */
 (function(){
-    var mhModal = document.getElementById('mhVidModal');
-    var mhEmbed = document.getElementById('mhVidEmbed');
-    var mhTitle = document.getElementById('mhVidTitle');
-    if (!mhModal) return;
-    mhModal.addEventListener('click', function(e){ if(e.target === mhModal) window.kyisaCloseVideo(); });
-    document.addEventListener('keydown', function(e){ if(e.key==='Escape' && mhModal.style.display==='flex') window.kyisaCloseVideo(); });
-    window.kyisaOpenVideo = function(card) {
-        var source = card.dataset.source;
-        var embedUrl = card.dataset.embed;
-        var fileUrl = card.dataset.file;
-        var vidTitle = card.dataset.title;
-        var html = '';
-        if (source === 'youtube' && embedUrl) {
-            html = '<iframe src="' + embedUrl + '?autoplay=1" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"></iframe>';
-        } else if (source === 'upload' && fileUrl) {
-            html = '<video controls autoplay style="position:absolute;top:0;left:0;width:100%;height:100%;"><source src="' + fileUrl + '" type="video/mp4"></video>';
-        } else if (embedUrl) {
-            html = '<iframe src="' + embedUrl + '" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"></iframe>';
-        } else {
-            html = '<div style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.7);"><div style="text-align:center;color:#fff;"><i class="bi bi-exclamation-circle" style="font-size:3rem;margin-bottom:1rem;"></i><p>Video source not available</p></div></div>';
-        }
-        if (!html) return;
-        mhEmbed.innerHTML = html;
-        mhTitle.textContent = vidTitle;
-        mhModal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    };
-    window.kyisaCloseVideo = function() {
-        mhModal.style.display = 'none';
-        mhEmbed.innerHTML = '';
-        document.body.style.overflow = '';
-    };
+  var tabs   = document.querySelectorAll('.standings-tab');
+  var panels = document.querySelectorAll('.standings-panel');
+  if (!tabs.length) return;
+  tabs.forEach(function(tab){
+    tab.addEventListener('click', function(){
+      tabs.forEach(function(t){ t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+      panels.forEach(function(p){ p.classList.remove('active'); });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected','true');
+      var panelId = tab.dataset.panel;
+      var panel = document.getElementById(panelId);
+      if (panel) panel.classList.add('active');
+    });
+  });
 })();
 
+/* ── Video modal (no inline handlers) ── */
 (function(){
-    /* ── Live Match Card Cycle through live matches ─────────────── */
-    var liveCard = document.getElementById('liveMatchCard');
-    if (liveCard) {
-        var heroMatches = liveCard.querySelectorAll('.live-hero-match');
-        if (heroMatches.length > 1) {
-            var hmIdx = 0;
-            setInterval(function(){
-                heroMatches[hmIdx].classList.remove('live-hero-match--active');
-                hmIdx = (hmIdx + 1) % heroMatches.length;
-                heroMatches[hmIdx].classList.add('live-hero-match--active');
-            }, 5000);
-        }
-        /* Show match center card immediately */
-        setTimeout(function(){
-            var card = liveCard.querySelector('.cd-card');
-            if (card) {
-                card.classList.add('cd-card--show');
-                card.style.opacity = '1';
-                card.style.pointerEvents = 'auto';
-                card.style.transform = 'none';
-            }
-        }, 800);
-    }
+  var modal  = document.getElementById('vidModal');
+  var embed  = document.getElementById('vidModalEmbed');
+  var title  = document.getElementById('vidModalTitle');
+  var close  = document.getElementById('vidModalClose');
+  if (!modal) return;
 
-    /* ── Live Score Auto-Refresh ───────────────────────────────────── */
-    var liveCards = document.querySelectorAll('.mc-live-card[data-fixture-id]');
-    if (liveCards.length > 0) {
-        setInterval(function(){
-            liveCards.forEach(function(card){
-                var fid = card.getAttribute('data-fixture-id');
-                fetch('/api/v1/matches/live/' + fid + '/scoreboard/')
-                    .then(function(r){ return r.ok ? r.json() : null; })
-                    .then(function(d){
-                        if (!d) return;
-                        var scoreEl = card.querySelector('.mc-live-card__score');
-                        if (scoreEl) {
-                            var nums = scoreEl.querySelectorAll('.mc-live-card__num');
-                            if (nums[0]) nums[0].textContent = d.home_score || '0';
-                            if (nums[1]) nums[1].textContent = d.away_score || '0';
-                        }
-                        var halfEl = card.querySelector('.mc-live-card__half');
-                        if (halfEl && d.live_half) {
-                            var labels = {1:'1st Half', 2:'2nd Half', 3:'ET'};
-                            halfEl.textContent = labels[d.live_half] || 'HT';
-                        }
-                    })
-                    .catch(function(){});
-            });
-        }, 30000);
-    }
+  function openVid(card){
+    var src    = card.dataset.source;
+    var eUrl   = card.dataset.embed;
+    var fUrl   = card.dataset.file;
+    var t      = card.dataset.title || '';
+    var html   = '';
+    if (src === 'youtube' && eUrl)         html = '<iframe src="' + eUrl + '?autoplay=1" allowfullscreen allow="autoplay" style="position:absolute;inset:0;width:100%;height:100%;border:none;"></iframe>';
+    else if (src === 'upload' && fUrl)      html = '<video controls autoplay style="position:absolute;inset:0;width:100%;height:100%;"><source src="' + fUrl + '" type="video/mp4"></video>';
+    else if (eUrl)                          html = '<iframe src="' + eUrl + '" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none;"></iframe>';
+    if (!html) return;
+    embed.innerHTML = html;
+    title.textContent = t;
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+    close.focus();
+  }
 
-    /* ── Hero phase switcher (A ↔ C only) ─────────────────────────── */
-    var phaseA = document.getElementById('heroPhaseA');
-    var phaseC = document.getElementById('heroPhaseC');
-    if (phaseA && phaseC) {
-        var heroPhases = [phaseA, phaseC];
-        var phaseDurations = [5000, 4000];
-        var activePhase = 0;
+  function closeVid(){
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden','true');
+    embed.innerHTML = '';
+    document.body.style.overflow = '';
+  }
 
-        /* ── Background image slideshow ── */
-        var bgSlides = document.querySelectorAll('.hero-bg-slide');
-        var activeBg = 0;
-        var bgCount = bgSlides.length;
-        function nextBgSlide() {
-            bgSlides[activeBg].classList.remove('hero-bg-slide--active', 'hero-bg-slide--zoom');
-            activeBg = (activeBg + 1) % bgCount;
-            bgSlides[activeBg].classList.add('hero-bg-slide--active');
-            requestAnimationFrame(function(){
-                bgSlides[activeBg].classList.add('hero-bg-slide--zoom');
-            });
-        }
-        if (bgCount > 1) {
-            setInterval(nextBgSlide, 6000);
-        }
+  document.querySelectorAll('[data-open-video]').forEach(function(card){
+    card.addEventListener('click', function(){ openVid(card); });
+    card.addEventListener('keydown', function(e){ if (e.key==='Enter'||e.key===' '){ e.preventDefault(); openVid(card); } });
+  });
 
-        function switchHeroPhase() {
-            heroPhases[activePhase].classList.remove('hero-phase--active');
-            activePhase = (activePhase + 1) % heroPhases.length;
-            heroPhases[activePhase].classList.add('hero-phase--active');
-            setTimeout(switchHeroPhase, phaseDurations[activePhase]);
-        }
-        setTimeout(function(){
-            setTimeout(switchHeroPhase, phaseDurations[activePhase]);
-        }, 4500);
-    }
-
-    /* ── Scroll reveals ─────────────────────────────────────────────── */
-    var revealEls = document.querySelectorAll('.reveal, .anim-up, .anim-zoom');
-    var revealObs = new IntersectionObserver(function(entries){
-        entries.forEach(function(e){
-            if(e.isIntersecting){
-                e.target.classList.add('in-view');
-                revealObs.unobserve(e.target);
-            }
-        });
-    }, {threshold: 0.1, rootMargin: '0px 0px -40px 0px'});
-    revealEls.forEach(function(el){ revealObs.observe(el); });
-
-    /* ── Counter animation ──────────────────────────────────────────── */
-    var counterObs = new IntersectionObserver(function(entries){
-        entries.forEach(function(e){
-            if(e.isIntersecting){
-                var el = e.target;
-                var target = parseInt(el.getAttribute('data-count')) || 0;
-                var suffix = el.getAttribute('data-suffix') || '';
-                if(!target){ el.textContent='0'; counterObs.unobserve(el); return; }
-                var cur = 0;
-                var step = Math.max(1, Math.ceil(target / 50));
-                var t = setInterval(function(){
-                    cur += step;
-                    if(cur >= target){ cur = target; clearInterval(t); }
-                    el.textContent = cur.toLocaleString() + suffix;
-                }, 35);
-                counterObs.unobserve(el);
-            }
-        });
-    }, {threshold: 0.5});
-    document.querySelectorAll('.mc-stat__num').forEach(function(el){ counterObs.observe(el); });
-
-    /* Navbar scroll + mobile toggle now in base.html */
-
-    /* ── Canvas particles ───────────────────────────────────────────── */
-    var canvas = document.getElementById('heroCanvas');
-    if(canvas && canvas.getContext){
-        var ctx = canvas.getContext('2d');
-        var w, h, particles = [];
-        function resize(){
-            w = canvas.width = canvas.parentElement.offsetWidth;
-            h = canvas.height = canvas.parentElement.offsetHeight;
-        }
-        resize();
-        window.addEventListener('resize', resize);
-        for(var i=0; i<50; i++){
-            particles.push({
-                x: Math.random()*w, y: Math.random()*h,
-                r: Math.random()*1.8+0.5,
-                dx: (Math.random()-0.5)*0.3,
-                dy: (Math.random()-0.5)*0.3,
-                o: Math.random()*0.35+0.08
-            });
-        }
-        function draw(){
-            ctx.clearRect(0,0,w,h);
-            for(var i=0;i<particles.length;i++){
-                var d = particles[i];
-                d.x += d.dx; d.y += d.dy;
-                if(d.x<0||d.x>w) d.dx*=-1;
-                if(d.y<0||d.y>h) d.dy*=-1;
-                ctx.beginPath();
-                ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
-                ctx.fillStyle='rgba(76,175,80,'+d.o+')';
-                ctx.fill();
-            }
-            requestAnimationFrame(draw);
-        }
-        draw();
-    }
+  close.addEventListener('click', closeVid);
+  modal.addEventListener('click', function(e){ if(e.target === modal) closeVid(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape' && modal.classList.contains('open')) closeVid(); });
 })();
 </script>
 {% endblock %}

@@ -487,6 +487,7 @@ def home_view(request):
         'latest_videos': latest_videos,
         'standings_data': standings_data,
         'knockout_fixtures': knockout_fixtures,
+        'counties': KenyaCounty.choices,
     })
 
 

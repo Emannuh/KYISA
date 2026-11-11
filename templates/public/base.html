@@ -2,282 +2,422 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}KYISA{% endblock %} Kenya Youth Intercounty Sports Association</title>
-    <meta name="description" content="{% block meta_description %}Kenya Youth Intercounty Sports Association (KYISA) enhancing the spirit of devolution through sports. Live scores, fixtures, results, and news from KYISA competitions.{% endblock %}">
-    <link rel="canonical" href="{% block canonical_url %}https://kyisa.org/{% endblock %}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}KYISA{% endblock %} — Kenya Youth Intercounty Sports Association</title>
+  <meta name="description" content="{% block meta_description %}Kenya Youth Intercounty Sports Association (KYISA) — 11 editions of youth intercounty sport across all 47 counties. Live scores, fixtures, results and news.{% endblock %}">
+  <link rel="canonical" href="{% block canonical_url %}https://kyisa.org/{% endblock %}">
 
-    <!-- Open Graph -->
-    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
-    <meta property="og:site_name" content="KYISA Kenya Youth Intercounty Sports Association">
-    <meta property="og:title" content="{% block og_title %}KYISA Kenya Youth Intercounty Sports Association{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}Kenya Youth Intercounty Sports Association enhancing the spirit of devolution through sports. Live scores, fixtures, results, and news.{% endblock %}">
-    <meta property="og:image" content="{% block og_image %}https://kyisa.org{% static 'img/kyisa_logo_official.jpg' %}{% endblock %}">
-    <meta property="og:url" content="{% block og_url %}https://kyisa.org/{% endblock %}">
+  <!-- Open Graph -->
+  <meta property="og:type"        content="{% block og_type %}website{% endblock %}">
+  <meta property="og:site_name"   content="KYISA — Kenya Youth Intercounty Sports Association">
+  <meta property="og:title"       content="{% block og_title %}KYISA — Kenya Youth Intercounty Sports Association{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}11 editions of youth intercounty sport across all 47 counties of Kenya.{% endblock %}">
+  <meta property="og:image"       content="{% block og_image %}https://kyisa.org{% static 'img/kyisa_champions.jpg' %}{% endblock %}">
+  <meta property="og:url"         content="{% block og_url %}https://kyisa.org/{% endblock %}">
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{% block twitter_title %}KYISA Kenya Youth Intercounty Sports Association{% endblock %}">
-    <meta name="twitter:description" content="{% block twitter_description %}Kenya Youth Intercounty Sports Association enhancing the spirit of devolution through sports.{% endblock %}">
-    <meta name="twitter:image" content="{% block twitter_image %}https://kyisa.org{% static 'img/kyisa_logo_official.jpg' %}{% endblock %}">
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="{% block twitter_title %}KYISA — Kenya Youth Intercounty Sports Association{% endblock %}">
+  <meta name="twitter:description" content="{% block twitter_description %}11 editions of youth intercounty sport across all 47 counties of Kenya.{% endblock %}">
+  <meta name="twitter:image"       content="{% block twitter_image %}https://kyisa.org{% static 'img/kyisa_champions.jpg' %}{% endblock %}">
 
-    <link rel="icon" href="{% static 'img/kyisa_logo_official.jpg' %}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=20260413b">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="icon" href="{% static 'img/kyisa_logo_official.jpg' %}" type="image/jpeg">
 
-    <!-- Structured Data (JSON-LD) -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "SportsOrganization",
-        "name": "Kenya Youth Intercounty Sports Association",
-        "alternateName": "KYISA",
-        "url": "https://kyisa.org",
-        "logo": "https://kyisa.org{% static 'img/kyisa_logo_official.jpg' %}",
-        "description": "Kenya Youth Intercounty Sports Association enhancing the spirit of devolution through sports.",
-        "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "P.O BOX 20655-00200",
-            "addressLocality": "Nairobi",
-            "addressCountry": "KE"
-        },
-        "email": "info@kyisa.org",
-        "sport": ["Football", "Volleyball", "Basketball", "Handball"]
-    }
-    </script>
-    {% block extra_jsonld %}{% endblock %}
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <!-- Critical inline CSS so above-the-fold always renders correctly -->
-    <style>
-    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{font-family:'Inter','Outfit',-apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#1a1a1a;overflow-x:hidden;line-height:1.6}
-    a{text-decoration:none;color:inherit}
-    ul{list-style:none}
-    img{max-width:100%;display:block}
-    .container{max-width:1200px;margin:0 auto;padding:0 1.5rem}
-    /* Preloader */
-    .preloader{position:fixed;inset:0;background:#fff;z-index:99999;display:flex;align-items:center;justify-content:center;transition:opacity .5s,visibility .5s}
-    .preloader--done{opacity:0;visibility:hidden;pointer-events:none}
-    .preloader-inner{text-align:center}
-    .preloader-logo{width:90px;height:90px;border-radius:50%;background:#fff;border:3px solid rgba(27,94,32,.15);margin:0 auto 1.5rem;object-fit:cover;box-shadow:0 4px 20px rgba(27,94,32,.12)}
-    .preloader-name{display:block;font-family:'Outfit',sans-serif;font-size:1.6rem;font-weight:800;color:#1B5E20;letter-spacing:5px}
-    .preloader-tagline{display:block;font-size:.75rem;color:#757575;letter-spacing:3px;text-transform:uppercase;margin-top:.25rem}
-    .preloader-bar{width:180px;height:2px;background:rgba(27,94,32,.1);border-radius:2px;margin:1.5rem auto 0;overflow:hidden}
-    .preloader-bar-fill{height:100%;width:0;background:linear-gradient(90deg,#1B5E20,#4CAF50);border-radius:2px;transition:width .12s}
-    /* Navbar */
-    .fkf-nav{position:fixed;top:0;left:0;right:0;z-index:10000;padding:0 2rem;height:70px;display:flex;align-items:center;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none;transition:background .4s ease,box-shadow .4s ease,backdrop-filter .4s ease}
-    .fkf-nav--solid{background:linear-gradient(135deg,rgba(10,26,13,.97),rgba(13,40,16,.95));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 2px 24px rgba(0,0,0,.35)}
-    </style>
-    {% block extra_css %}{% endblock %}
+  <!-- Hero image preload (pages that have one should override this) -->
+  {% block hero_preload %}{% endblock %}
+
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=20261105">
+
+  <!-- JSON-LD: SportsOrganization -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SportsOrganization",
+    "name": "Kenya Youth Intercounty Sports Association",
+    "alternateName": "KYISA",
+    "url": "https://kyisa.org",
+    "logo": "https://kyisa.org{% static 'img/kyisa_logo_official.jpg' %}",
+    "description": "KYISA organises annual intercounty youth sport competitions across all 47 counties of Kenya.",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "P.O BOX 20655-00200",
+      "addressLocality": "Nairobi",
+      "addressCountry": "KE"
+    },
+    "email": "info@kyisa.org",
+    "sport": ["Football", "Volleyball", "Basketball", "Handball"]
+  }
+  </script>
+  {% block extra_jsonld %}{% endblock %}
+
+  {% block extra_css %}{% endblock %}
 </head>
 <body>
 
-<!-- ── PRELOADER ───────────────────────────────────────────────────────────── -->
-<div id="preloader" class="preloader">
-    <div class="preloader-inner">
-        <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="KYISA" class="preloader-logo">
-        <div class="preloader-text">
-            <span class="preloader-name">KYISA</span>
-            <span class="preloader-tagline">Kenya Youth Intercounty Sports Association</span>
-        </div>
-        <div class="preloader-bar">
-            <div class="preloader-bar-fill" id="preloaderBar"></div>
-        </div>
+{# ── SKIP LINK ────────────────────────────────────────────────────────── #}
+<a href="#main-content" class="pub-skip-link">Skip to main content</a>
+
+{# ── PRELOADER ────────────────────────────────────────────────────────── #}
+<div id="preloader" class="preloader" aria-hidden="true">
+  <div class="preloader-inner">
+    <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="" class="preloader-logo" width="90" height="90">
+    <div class="preloader-text">
+      <span class="preloader-name">KYISA</span>
+      <span class="preloader-tagline">Kenya Youth Intercounty Sports Association</span>
     </div>
+    <div class="preloader-bar"><div class="preloader-bar-fill" id="preloaderBar"></div></div>
+  </div>
 </div>
 
-<!-- ── NAVBAR ──────────────────────────────────────────────────────────────── -->
-<nav class="fkf-nav" id="fkfNav">
-    <div class="fkf-nav-inner">
-        <a href="{% url 'home' %}" class="fkf-nav-brand">
-            <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="KYISA">
-            <div class="fkf-nav-brand-text">
-                <span class="brand-name">KYISA</span>
-                <span class="brand-sub">Official</span>
-            </div>
-        </a>
+{# ── NAVBAR ───────────────────────────────────────────────────────────── #}
+<header role="banner">
+<nav class="pub-nav" id="pubNav" aria-label="Main navigation">
+  <div class="pub-nav__inner">
 
-        <button class="fkf-nav-toggle" id="navToggle" aria-label="Menu">
-            <span></span><span></span><span></span>
+    {# Brand #}
+    <a href="{% url 'home' %}" class="pub-nav__brand" aria-label="KYISA home">
+      <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="" class="pub-nav__logo" width="36" height="36" aria-hidden="true">
+      <div>
+        <span class="pub-nav__brand-name">KYISA</span>
+        <span class="pub-nav__brand-sub">Official</span>
+      </div>
+    </a>
+
+    {# Hamburger (mobile) #}
+    <button class="pub-nav__toggle" id="pubNavToggle"
+            type="button"
+            aria-label="Open navigation menu"
+            aria-expanded="false"
+            aria-controls="pubNavLinks">
+      <span></span><span></span><span></span>
+    </button>
+
+    {# Nav links #}
+    <ul class="pub-nav__links" id="pubNavLinks" role="list">
+      {# Mobile-only login — hidden on desktop via CSS, shown at bottom of mobile menu #}
+      <li class="pub-nav__mobile-login-item" aria-hidden="true">
+        {% if user.is_authenticated %}
+          <a href="{% url 'dashboard' %}" class="pub-nav__login-mobile">
+            <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Portal
+          </a>
+        {% else %}
+          <a href="{% url 'web_login' %}" class="pub-nav__login-mobile">
+            <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Login
+          </a>
+        {% endif %}
+      </li>
+
+      <li><a href="{% url 'home' %}"              class="{% if active_page == 'home'         %}active{% endif %}">Home</a></li>
+      <li><a href="{% url 'about' %}"             class="{% if active_page == 'about'        %}active{% endif %}">About</a></li>
+      <li><a href="{% url 'leadership' %}"        class="{% if active_page == 'leadership'   %}active{% endif %}">Leadership</a></li>
+      <li><a href="{% url 'public_competitions' %}" class="{% if active_page == 'competitions' %}active{% endif %}">Competitions</a></li>
+      <li><a href="{% url 'public_results' %}"   class="{% if active_page == 'results'      %}active{% endif %}">Results</a></li>
+
+      <li class="pub-nav__dd" id="navDdMedia">
+        <button class="pub-nav__dd-trigger"
+                type="button"
+                aria-haspopup="true"
+                aria-expanded="false"
+                aria-controls="ddMediaMenu">
+          News &amp; Media
+          <i class="bi bi-chevron-down pub-nav__chevron" aria-hidden="true"></i>
         </button>
-
-        <ul class="fkf-nav-links" id="navLinks">
-            <!-- Login link visible only in mobile hamburger menu -->
-            <li class="nav-mobile-login">
-                {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard' %}"><i class="bi bi-box-arrow-in-right"></i> Portal</a>
-                {% else %}
-                    <a href="{% url 'web_login' %}"><i class="bi bi-box-arrow-in-right"></i> Portal Login</a>
-                {% endif %}
-            </li>
-            <li><a href="{% url 'home' %}" class="{% if active_page == 'home' %}active{% endif %}">Home</a></li>
-            <li><a href="{% url 'about' %}" class="{% if active_page == 'about' %}active{% endif %}">About</a></li>
-            <li><a href="{% url 'leadership' %}" class="{% if active_page == 'leadership' %}active{% endif %}">Leadership</a></li>
-            <li><a href="{% url 'public_competitions' %}" class="{% if active_page == 'competitions' %}active{% endif %}">Competitions</a></li>
-            <li><a href="{% url 'public_results' %}" class="{% if active_page == 'results' %}active{% endif %}">Results</a></li>
-            <li class="nav-dropdown">
-                <a href="#" class="{% if active_page == 'news_media' %}active{% endif %}" onclick="this.parentElement.classList.toggle('open');return false;">News & Media ▾</a>
-                <ul class="dropdown-menu">
-                    <li><a href="{% url 'news_media:news_list' %}">📰 News & Highlights</a></li>
-                    <li><a href="{% url 'news_media:gallery_list' %}">📸 Gallery</a></li>
-                    <li><a href="{% url 'news_media:videos_list' %}">🎬 Videos</a></li>
-                </ul>
-            </li>
-            <li><a href="{% url 'contact' %}" class="{% if active_page == 'contact' %}active{% endif %}">Contact</a></li>
-            <li class="nav-dropdown">
-                <a href="#" class="{% if active_page == 'register' %}active{% endif %}" onclick="this.parentElement.classList.toggle('open');return false;">Register ▾</a>
-                <ul class="dropdown-menu">
-                    <li><a href="{% url 'county_admin_register' %}">🏛️ County Registration</a></li>
-                </ul>
-            </li>
+        <ul class="pub-nav__dd-menu" id="ddMediaMenu" role="menu">
+          <li role="none"><a href="{% url 'news_media:news_list' %}"    role="menuitem"><i class="bi bi-newspaper" aria-hidden="true"></i> News</a></li>
+          <li role="none"><a href="{% url 'news_media:gallery_list' %}" role="menuitem"><i class="bi bi-images" aria-hidden="true"></i> Gallery</a></li>
+          <li role="none"><a href="{% url 'news_media:videos_list' %}"  role="menuitem"><i class="bi bi-play-circle" aria-hidden="true"></i> Videos</a></li>
         </ul>
+      </li>
 
-        <div class="fkf-nav-actions">
-            {% if user.is_authenticated %}
-                <a href="{% url 'dashboard' %}" class="fkf-nav-btn">Portal</a>
-            {% else %}
-                <a href="{% url 'web_login' %}" class="fkf-nav-btn">Staff Login</a>
-            {% endif %}
-        </div>
-    </div>
+      <li><a href="{% url 'contact' %}" class="{% if active_page == 'contact' %}active{% endif %}">Contact</a></li>
+      <li><a href="{% url 'county_admin_register' %}">Register</a></li>
+    </ul>
+
+    {# Desktop login CTA #}
+    {% if user.is_authenticated %}
+      <a href="{% url 'dashboard' %}" class="pub-nav__login">
+        <i class="bi bi-grid-fill" aria-hidden="true"></i> Portal
+      </a>
+    {% else %}
+      <a href="{% url 'web_login' %}" class="pub-nav__login">
+        <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Login
+      </a>
+    {% endif %}
+
+  </div>
 </nav>
+</header>
 
-<!-- ── MESSAGES ────────────────────────────────────────────────────────────── -->
+{# ── MESSAGES ─────────────────────────────────────────────────────────── #}
 {% if messages %}
-<div class="container" style="margin-top:5rem;position:relative;z-index:10;">
-    {% for message in messages %}
-    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-    {% endfor %}
+<div style="max-width:1200px;margin:calc(var(--k-nav-height) + 1rem) auto 0;padding:0 1.25rem;position:relative;z-index:10;">
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
+  {% endfor %}
 </div>
 {% endif %}
 
-{% block content %}{% endblock %}
+{# ── MAIN CONTENT ─────────────────────────────────────────────────────── #}
+<main id="main-content" tabindex="-1">
+  {% block content %}{% endblock %}
+</main>
 
-<!-- ── FOOTER ─────────────────────────────────────────────────────────────── -->
-<footer class="fkf-footer">
-    <div class="kenya-stripe"></div>
-    <div class="fkf-footer-main">
-        <div class="container">
-            <div class="fkf-footer-grid">
-                <div class="fkf-footer-brand">
-                    <div class="fkf-footer-brand-top">
-                        <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="KYISA">
-                        <h3>KYISA</h3>
-                    </div>
-                    <p>Kenya Youth Intercounty Sports Association enhancing the spirit of devolution through sports.</p>
-                    <div class="fkf-social">
-                        <a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
-                        <a href="#" aria-label="X"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
-                        <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg></a>
-                        <a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0C.488 3.45.029 5.804 0 12c.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0C23.512 20.55 23.971 18.196 24 12c-.029-6.185-.484-8.549-4.385-8.816zM9 16V8l8 4-8 4z"/></svg></a>
-                    </div>
-                </div>
-                <div>
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="{% url 'home' %}">Home</a></li>
-                        <li><a href="{% url 'about' %}">About KYISA</a></li>
-                        <li><a href="{% url 'public_competitions' %}">Competitions</a></li>
-                        <li><a href="{% url 'public_results' %}">Results</a></li>
-                        <li><a href="{% url 'contact' %}">Contact Us</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4>Resources</h4>
-                    <ul>
-                            <li><a href="{% url 'county_admin_register' %}">County Registration</a></li>
-                        <li><a href="{% url 'web_login' %}">Staff Portal</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4>Contact</h4>
-                    <ul>
-                        <li>P.O BOX 20655-00200, Nairobi</li>
-                        <li>info@kyisa.org</li>
-                        <li>Info.kyisa@gmail.com</li>
-                        <li>+254 700 000 000</li>
-                    </ul>
-                </div>
-            </div>
-            <!-- Affiliations strip -->
-            <div class="footer-affil-strip">
-                <span class="footer-affil-label">Affiliated to:</span>
-                <div class="footer-affil-logos">
-                    <img src="{% static 'img/fkf_logo.png' %}" alt="FKF" title="Football Kenya Federation">
-                    <img src="{% static 'img/kbf_logo.jpg' %}" alt="KBF" title="Kenya Basketball Federation">
-                    <img src="{% static 'img/kvf_logo.png' %}" alt="KVF" title="Kenya Volleyball Federation">
-                    <img src="{% static 'img/khf_logo.png' %}" alt="KHF" title="Kenya Handball Federation">
-                </div>
-            </div>
-        </div>
+{# ── PARTNERS STRIP ───────────────────────────────────────────────────── #}
+<section class="pub-partners" aria-label="Partners and affiliates">
+  <div class="pub-partners__inner">
+    <span class="pub-partners__label">Affiliated to</span>
+    <div class="pub-partners__logos">
+      <img src="{% static 'img/fkf_logo.png' %}" alt="Football Kenya Federation" width="auto" height="36" loading="lazy">
+      <img src="{% static 'img/kbf_logo.jpg' %}" alt="Kenya Basketball Federation" width="auto" height="36" loading="lazy">
+      <img src="{% static 'img/kvf_logo.png' %}" alt="Kenya Volleyball Federation" width="auto" height="36" loading="lazy">
+      <img src="{% static 'img/khf_logo.png' %}" alt="Kenya Handball Federation" width="auto" height="36" loading="lazy">
     </div>
-    <div class="fkf-footer-bottom">
-        <div class="container">
-            &copy; {{ current_year|default:"2026" }} Kenya Youth Intercounty Sports Association. All rights reserved.
+  </div>
+</section>
+
+{# ── FOOTER ───────────────────────────────────────────────────────────── #}
+<footer class="pub-footer" role="contentinfo">
+  <div class="pub-footer__top-stripe" aria-hidden="true"></div>
+
+  <div class="pub-footer__main">
+    <div class="pub-footer__grid">
+
+      {# Brand col #}
+      <div class="pub-footer__brand">
+        <div class="pub-footer__brand-top">
+          <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="KYISA" class="pub-footer__logo" width="48" height="48" loading="lazy">
+          <span class="pub-footer__brand-name">KYISA</span>
         </div>
+        <p class="pub-footer__tagline">
+          Kenya Youth Intercounty Sports Association — 11 editions of competitive youth sport across all 47 counties.
+        </p>
+        {# Social links — items with href="#" are hidden via CSS #}
+        <div class="pub-footer__social" aria-label="Social media">
+          <a href="#" class="pub-footer__social-link" aria-label="Facebook">
+            <i class="bi bi-facebook" aria-hidden="true"></i>
+          </a>
+          <a href="#" class="pub-footer__social-link" aria-label="X (Twitter)">
+            <i class="bi bi-twitter-x" aria-hidden="true"></i>
+          </a>
+          <a href="#" class="pub-footer__social-link" aria-label="Instagram">
+            <i class="bi bi-instagram" aria-hidden="true"></i>
+          </a>
+          <a href="#" class="pub-footer__social-link" aria-label="YouTube">
+            <i class="bi bi-youtube" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+
+      {# Quick links #}
+      <div class="pub-footer__col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="{% url 'home' %}">Home</a></li>
+          <li><a href="{% url 'about' %}">About KYISA</a></li>
+          <li><a href="{% url 'leadership' %}">Leadership</a></li>
+          <li><a href="{% url 'public_competitions' %}">Competitions</a></li>
+          <li><a href="{% url 'public_results' %}">Results</a></li>
+          <li><a href="{% url 'contact' %}">Contact</a></li>
+        </ul>
+      </div>
+
+      {# Resources #}
+      <div class="pub-footer__col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="{% url 'county_admin_register' %}">County Registration</a></li>
+          <li><a href="{% url 'news_media:news_list' %}">News</a></li>
+          <li><a href="{% url 'news_media:gallery_list' %}">Gallery</a></li>
+          <li><a href="{% url 'web_login' %}">Staff Portal</a></li>
+        </ul>
+      </div>
+
+      {# Contact — real values only; placeholder phone/email hidden by omission #}
+      <div class="pub-footer__col">
+        <h4>Contact</h4>
+        <div class="pub-footer__contact-item">
+          <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+          <span>P.O Box 20655-00200, Nairobi, Kenya</span>
+        </div>
+        <div class="pub-footer__contact-item">
+          <i class="bi bi-envelope-fill" aria-hidden="true"></i>
+          <a href="mailto:info@kyisa.org">info@kyisa.org</a>
+        </div>
+        {# Phone intentionally omitted until confirmed number is available #}
+      </div>
+
     </div>
+
+    {# Affiliation logos #}
+    <div class="pub-footer__affil">
+      <span class="pub-footer__affil-label">Affiliated to</span>
+      <div class="pub-footer__affil-logos">
+        <img src="{% static 'img/fkf_logo.png' %}" alt="FKF" title="Football Kenya Federation" width="auto" height="32" loading="lazy">
+        <img src="{% static 'img/kbf_logo.jpg' %}" alt="KBF" title="Kenya Basketball Federation" width="auto" height="32" loading="lazy">
+        <img src="{% static 'img/kvf_logo.png' %}" alt="KVF" title="Kenya Volleyball Federation" width="auto" height="32" loading="lazy">
+        <img src="{% static 'img/khf_logo.png' %}" alt="KHF" title="Kenya Handball Federation" width="auto" height="32" loading="lazy">
+      </div>
+    </div>
+  </div>
+
+  <div class="pub-footer__bottom">
+    <div class="pub-footer__bottom-inner">
+      <span>&copy; {{ current_year|default:"2026" }} Kenya Youth Intercounty Sports Association. All rights reserved.</span>
+      <div class="pub-footer__bottom-links">
+        <a href="{% url 'about' %}">About</a>
+        <a href="{% url 'contact' %}">Contact</a>
+        <a href="{% url 'web_login' %}">Staff Login</a>
+      </div>
+    </div>
+  </div>
 </footer>
 
 <script src="{% static 'js/main.js' %}"></script>
 <script>
-/* Preloader: fill bar then hide */
+/* ── Preloader ── */
 (function(){
-    var bar = document.getElementById('preloaderBar');
-    var pre = document.getElementById('preloader');
-    if (!bar || !pre) return;
-    var w = 0;
-    var iv = setInterval(function(){
-        w += 5;
-        bar.style.width = Math.min(w, 100) + '%';
-        if (w >= 100) {
-            clearInterval(iv);
-            setTimeout(function(){
-                pre.classList.add('preloader--done');
-            }, 200);
-        }
-    }, 30);
-    /* Fallback: hide after 2s no matter what */
-    setTimeout(function(){ pre.classList.add('preloader--done'); }, 2000);
-})();
-
-/* Navbar: solid on scroll all pages */
-(function(){
-    var nav = document.getElementById('fkfNav');
-    if (!nav) return;
-    function checkScroll(){
-        if(window.scrollY > 60) nav.classList.add('fkf-nav--solid');
-        else nav.classList.remove('fkf-nav--solid');
+  var bar = document.getElementById('preloaderBar');
+  var pre = document.getElementById('preloader');
+  if (!bar || !pre) return;
+  var w = 0;
+  var iv = setInterval(function(){
+    w += 8;
+    bar.style.width = Math.min(w, 100) + '%';
+    if (w >= 100) {
+      clearInterval(iv);
+      setTimeout(function(){ pre.classList.add('preloader--done'); }, 150);
     }
-    window.addEventListener('scroll', checkScroll);
-    checkScroll();
+  }, 25);
+  setTimeout(function(){ pre.classList.add('preloader--done'); }, 1800);
 })();
 
-/* Mobile nav toggle all pages */
+/* ── Navbar solid on scroll ── */
 (function(){
-    var toggle = document.getElementById('navToggle');
-    var links = document.getElementById('navLinks');
-    if(!toggle || !links) return;
-    toggle.addEventListener('click', function(){
-        toggle.classList.toggle('open');
-        links.classList.toggle('open');
+  var nav = document.getElementById('pubNav');
+  if (!nav) return;
+  function chk() {
+    nav.classList.toggle('pub-nav--solid', window.scrollY > 60);
+  }
+  window.addEventListener('scroll', chk, { passive: true });
+  chk();
+})();
+
+/* ── Hamburger toggle ── */
+(function(){
+  var toggle = document.getElementById('pubNavToggle');
+  var links  = document.getElementById('pubNavLinks');
+  if (!toggle || !links) return;
+
+  toggle.addEventListener('click', function(){
+    var isOpen = links.classList.toggle('open');
+    toggle.classList.toggle('open', isOpen);
+    toggle.setAttribute('aria-expanded', isOpen);
+  });
+
+  /* Close on nav link click (mobile) */
+  links.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){
+      links.classList.remove('open');
+      toggle.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
     });
-    links.querySelectorAll('a').forEach(function(a){
-        a.addEventListener('click', function(){
-            toggle.classList.remove('open');
-            links.classList.remove('open');
-        });
+  });
+
+  /* Close on outside click */
+  document.addEventListener('click', function(e){
+    if (!e.target.closest('#pubNav')) {
+      links.classList.remove('open');
+      toggle.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
+
+/* ── Dropdown toggles (mobile tap + keyboard) ── */
+(function(){
+  document.querySelectorAll('.pub-nav__dd-trigger').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var dd = this.closest('.pub-nav__dd');
+      var isOpen = dd.classList.toggle('open');
+      this.setAttribute('aria-expanded', isOpen);
     });
-    /* Close dropdowns when clicking outside */
-    document.addEventListener('click', function(e){
-        if(!e.target.closest('.nav-dropdown')){
-            document.querySelectorAll('.nav-dropdown.open').forEach(function(d){ d.classList.remove('open'); });
-        }
+  });
+  /* Close all dropdowns when clicking outside */
+  document.addEventListener('click', function(){
+    document.querySelectorAll('.pub-nav__dd.open').forEach(function(dd){
+      dd.classList.remove('open');
+      var btn = dd.querySelector('.pub-nav__dd-trigger');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
     });
+  });
+  /* Escape closes dropdown */
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape'){
+      document.querySelectorAll('.pub-nav__dd.open').forEach(function(dd){
+        dd.classList.remove('open');
+        var btn = dd.querySelector('.pub-nav__dd-trigger');
+        if (btn) { btn.setAttribute('aria-expanded', 'false'); btn.focus(); }
+      });
+    }
+  });
+})();
+
+/* ── Stat counters: skip if value is 0, animate if > 0 ── */
+(function(){
+  if (!window.IntersectionObserver) return;
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if (!entry.isIntersecting) return;
+      var el = entry.target;
+      var target = parseInt(el.dataset.count || '0', 10);
+      if (target === 0) return;
+      var suffix = el.dataset.suffix || '';
+      var dur = 1600;
+      var step = Math.ceil(target / (dur / 16));
+      var current = 0;
+      var timer = setInterval(function(){
+        current = Math.min(current + step, target);
+        el.textContent = current.toLocaleString() + suffix;
+        if (current >= target) clearInterval(timer);
+      }, 16);
+      obs.unobserve(el);
+    });
+  }, { threshold: .3 });
+  document.querySelectorAll('[data-count]').forEach(function(el){
+    var v = parseInt(el.dataset.count || '0', 10);
+    if (v === 0) {
+      /* hide the entire stat block */
+      var block = el.closest('.pub-stat, .mc-stat');
+      if (block) block.style.display = 'none';
+    } else {
+      obs.observe(el);
+    }
+  });
+})();
+
+/* ── Scroll reveal ── */
+(function(){
+  if (!window.IntersectionObserver) {
+    document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('revealed'); });
+    return;
+  }
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) {
+        e.target.classList.add('revealed');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: .12 });
+  document.querySelectorAll('.reveal').forEach(function(el){ obs.observe(el); });
 })();
 </script>
 {% block extra_js %}{% endblock %}
