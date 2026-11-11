@@ -999,6 +999,17 @@ def web_logout_view(request):
     return redirect('home')
 
 
+@login_required(login_url='web_login')
+def session_ping_view(request):
+    """
+    Lightweight keep-alive endpoint for the client-side idle timer.
+    Reading this view is enough to touch the session (SESSION_SAVE_EVERY_REQUEST=True),
+    so the 15-minute server timeout resets.  Returns 204 No Content.
+    No CSRF required — this is a safe GET; the session cookie itself authenticates it.
+    """
+    return HttpResponse(status=204)
+
+
 def magic_login_view(request, token):
     """
     Single-use magic login link — logs the user in without a password.
