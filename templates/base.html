@@ -2,183 +2,270 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}KYISA CMS{% endblock %}</title>
-  <link rel="icon" href="{% static 'img/kyisa_logo_official.jpg' %}" type="image/jpeg">
-
-  {# Fonts — self-hosted or preconnect; swap to local files if CSP blocks external #}
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
-
-  {# Bootstrap Icons — CDN; replace with self-hosted /static/fonts/bi/ to remove external dep #}
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
-  <link rel="stylesheet" href="{% static 'css/portal.css' %}">
-
-  {% block extra_css %}{% endblock %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}KYISA CMS{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/portal.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="icon" href="{% static 'img/kyisa_logo_official.jpg' %}" type="image/jpeg">
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
-{% block body %}
+    {% block body %}
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="{% url 'dashboard' %}" class="navbar-brand">
+            <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="KYISA">
+            <span>KYISA</span>
+        </a>
+        <button class="nav-toggle" onclick="document.querySelector('.navbar-nav').classList.toggle('show')"><i class="bi bi-list"></i></button>
+        <button class="sidebar-toggle-mobile" onclick="toggleMobileSidebar()" title="Menu"><i class="bi bi-layout-sidebar"></i></button>
+        <ul class="navbar-nav">
+            <li><a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"><i class="bi bi-house-door"></i> Dashboard</a></li>
+            {% if user.role == 'admin' or user.role == 'competition_manager' %}
+            <li>
+                <a href="{% url 'competitions_list' %}" class="{% if 'competition' in request.resolver_match.url_name %}active{% endif %}"><i class="bi bi-trophy"></i> Competitions <i class="bi bi-chevron-down" style="font-size:.6rem;margin-left:.1rem"></i></a>
+                <div class="nav-dropdown-menu">
+                    <a href="{% url 'competitions_list' %}"><i class="bi bi-list-ul"></i> All Competitions</a>
+                    {% if user.role == 'competition_manager' or user.role == 'admin' %}
+                    <a href="{% url 'cm_create_competition' %}"><i class="bi bi-plus-circle"></i> Create New</a>
+                    {% endif %}
+                </div>
+            </li>
+            {% endif %}
+            {% if user.role == 'admin' or user.role == 'competition_manager' or user.role == 'verification_officer' or user.role == 'team_manager' %}
+            <li>
+                <a href="{% url 'teams_list' %}" class="{% if 'team' in request.resolver_match.url_name %}active{% endif %}"><i class="bi bi-people"></i> Teams <i class="bi bi-chevron-down" style="font-size:.6rem;margin-left:.1rem"></i></a>
+                <div class="nav-dropdown-menu">
+                    <a href="{% url 'teams_list' %}"><i class="bi bi-people"></i> All Teams</a>
+                    {% if user.role == 'admin' or user.role == 'competition_manager' or user.role == 'verification_officer' %}
+                    <a href="{% url 'pending_teams' %}"><i class="bi bi-clock"></i> County Registrations</a>
+                    <a href="{% url 'county_player_verification_list' %}"><i class="bi bi-person-vcard"></i> Player Verification</a>
+                    <a href="{% url 'player_clearance_dashboard' %}"><i class="bi bi-shield-check"></i> Player Clearance</a>
+                    {% endif %}
+                </div>
+            </li>
+            {% endif %}
+            {% if user.role == 'treasurer' %}
+            <li><a href="{% url 'treasurer_dashboard' %}" class="{% if 'treasurer' in request.resolver_match.url_name %}active{% endif %}"><i class="bi bi-cash-stack"></i> Treasurer</a></li>
+            {% endif %}
+            {% if user.role == 'county_sports_admin' %}
+            <li><a href="{% url 'county_admin_dashboard' %}" class="{% if 'county_admin' in request.resolver_match.url_name %}active{% endif %}"><i class="bi bi-building"></i> My County</a></li>
+            {% endif %}
+            {% if user.role == 'team_manager' %}
+            <li><a href="{% url 'team_manager_dashboard' %}" class="{% if 'team_manager' in request.resolver_match.url_name %}active{% endif %}"><i class="bi bi-people"></i> My Team</a></li>
+            {% endif %}
+            {% if user.role == 'admin' or user.role == 'coordinator' or user.role == 'soccer_coordinator' or user.role == 'handball_coordinator' or user.role == 'basketball_coordinator' or user.role == 'volleyball_coordinator' or user.role == 'referee' %}
+            <li>
+                <a href="{% url 'referees_list' %}" class="{% if 'referee' in request.resolver_match.url_name %}active{% endif %}"><i class="bi bi-flag"></i> Referees <i class="bi bi-chevron-down" style="font-size:.6rem;margin-left:.1rem"></i></a>
+                <div class="nav-dropdown-menu">
+                    <a href="{% url 'referees_list' %}"><i class="bi bi-flag"></i> All Referees</a>
+                    {% if user.role == 'admin' or user.role == 'coordinator' or user.role == 'soccer_coordinator' or user.role == 'handball_coordinator' or user.role == 'basketball_coordinator' or user.role == 'volleyball_coordinator' %}
+                    <a href="{% url 'pending_referees' %}"><i class="bi bi-clock"></i> Pending Approval</a>
+                    <a href="{% url 'referee_appointments' %}"><i class="bi bi-calendar-event"></i> Appointments</a>
+                    {% endif %}
+                </div>
+            </li>
+            {% endif %}
+            <li><a href="{% url 'matches_list' %}" class="{% if 'match' in request.resolver_match.url_name %}active{% endif %}"><i class="bi bi-clipboard-data"></i> Matches</a></li>
+        </ul>
+        <div class="navbar-user">
+            <a href="{% url 'home' %}" style="color:rgba(255,255,255,.65);font-size:.72rem;margin-right:.25rem;"><i class="bi bi-globe"></i></a>
+            <span class="role-badge">{{ user.get_role_display }}</span>
+            <span style="font-size:.82rem">{{ user.first_name }}</span>
+            <form method="post" action="{% url 'web_logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-logout"><i class="bi bi-box-arrow-right"></i></button>
+            </form>
+        </div>
+    </nav>
 
-{# ── SKIP LINK ────────────────────────────────────────────────────────── #}
-<a href="#main-content" class="skip-link">Skip to main content</a>
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
 
-{# ── ROLE PREVIEW BANNER ─────────────────────────────────────────────── #}
-{% if request.session.role_preview_display %}
-<div class="preview-banner" role="status" aria-label="Role preview active">
-  <div class="preview-banner__inner">
-    <span class="preview-banner__icon" aria-hidden="true">👁</span>
-    <strong class="preview-banner__label">Preview Mode</strong>
-    <span class="preview-banner__meta">
-      Viewing portal as
-      <span class="preview-banner__role">{{ request.session.role_preview_display|title }}</span>
-      — your admin role is unchanged
-    </span>
-  </div>
-  <a href="{% url 'role_preview' 'exit' %}" class="preview-banner__exit">
-    Exit Preview
-  </a>
-</div>
-{% endif %}
-
-{# ── TOP BAR ─────────────────────────────────────────────────────────── #}
-<header class="topbar" role="banner">
-
-  {# Brand #}
-  <a href="{% url 'dashboard' %}" class="topbar__brand" aria-label="KYISA home">
-    <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="" class="topbar__logo" aria-hidden="true">
-    <span class="topbar__name">KYISA</span>
-  </a>
-
-  {# Mobile sidebar toggle — desktop sidebar is always visible #}
-  <button class="topbar__sidebar-toggle"
-          type="button"
-          data-action="toggle-sidebar"
-          aria-label="Open navigation menu"
-          aria-controls="portal-sidebar"
-          aria-expanded="false">
-    <i class="bi bi-layout-sidebar" aria-hidden="true"></i>
-  </button>
-
-  {# Breadcrumb / page title slot #}
-  <div class="topbar__breadcrumb">
-    {% block breadcrumb %}{% endblock %}
-  </div>
-
-  {# User menu #}
-  <div class="topbar__user">
-    <span class="topbar__role-badge">{{ user.get_role_display }}</span>
-    <div class="topbar__user-menu" role="navigation" aria-label="User menu">
-      <button class="topbar__user-btn"
-              type="button"
-              data-action="toggle-user-menu"
-              aria-haspopup="true"
-              aria-expanded="false"
-              aria-label="{{ user.get_full_name }} — open user menu">
-        <span class="topbar__user-name">{{ user.first_name }}</span>
-        <i class="bi bi-chevron-down topbar__chevron" aria-hidden="true"></i>
-      </button>
-      <ul class="topbar__dropdown" role="menu" id="user-dropdown" hidden>
-        <li role="none">
-          <a href="{% url 'web_profile' %}" class="topbar__dropdown-item" role="menuitem">
-            <i class="bi bi-person-circle" aria-hidden="true"></i>
-            My Profile
-          </a>
-        </li>
-        <li role="none">
-          <a href="{% url 'web_change_password' %}" class="topbar__dropdown-item" role="menuitem">
-            <i class="bi bi-key" aria-hidden="true"></i>
-            Change Password
-          </a>
-        </li>
-        <li role="separator" class="topbar__dropdown-sep" aria-hidden="true"></li>
-        <li role="none">
-          <a href="{% url 'home' %}" class="topbar__dropdown-item" role="menuitem" target="_blank" rel="noopener">
-            <i class="bi bi-globe" aria-hidden="true"></i>
-            Public Website
-          </a>
-        </li>
-        <li role="separator" class="topbar__dropdown-sep" aria-hidden="true"></li>
-        <li role="none">
-          <form method="post" action="{% url 'web_logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="topbar__dropdown-item topbar__dropdown-item--danger" role="menuitem">
-              <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
-              Sign Out
-            </button>
-          </form>
-        </li>
-      </ul>
+    <!-- Layout -->
+    <div class="layout">
+        {% include 'includes/sidebar.html' %}
+        <main class="main-content">
+            {% if request.session.role_preview_display %}
+            <div style="position:sticky;top:0;z-index:999;background:linear-gradient(90deg,#0d47a1,#1565c0);color:#fff;padding:.55rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;font-size:.85rem;box-shadow:0 2px 8px rgba(0,0,0,.25)">
+                <div style="display:flex;align-items:center;gap:.65rem">
+                    <span style="font-size:1.1rem">👁️</span>
+                    <strong>Preview Mode</strong>
+                    <span style="opacity:.8">— viewing portal as</span>
+                    <span style="background:rgba(255,255,255,.2);padding:.15rem .65rem;border-radius:20px;font-weight:700;letter-spacing:.02em">{{ request.session.role_preview_display|title }}</span>
+                    <span style="opacity:.7;font-size:.78rem">Your admin role is unchanged</span>
+                </div>
+                <a href="{% url 'role_preview' 'exit' %}"
+                   style="background:#fff;color:#0d47a1;padding:.3rem .9rem;border-radius:20px;font-weight:700;font-size:.8rem;text-decoration:none;white-space:nowrap;transition:opacity .15s"
+                   onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+                    ✕ Exit Preview
+                </a>
+            </div>
+            {% endif %}
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% block content %}{% endblock %}
+            {% block extra_js_content %}{% endblock %}
+        </main>
     </div>
-  </div>
 
-</header>
+    <!-- Footer -->
+    <footer class="footer">
+        &copy; 2026 Kenya Youth Intercounty Sports Association (KYISA). All rights reserved.
+    </footer>
+    {% endblock %}
 
-{# ── SIDEBAR OVERLAY (mobile) ─────────────────────────────────────────── #}
-<div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="{% url 'dashboard' %}" class="mobile-bottom-nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <i class="bi bi-house-door"></i><span>Home</span>
+        </a>
+        {% if user.role == 'admin' or user.role == 'competition_manager' %}
+        <a href="{% url 'competitions_list' %}" class="mobile-bottom-nav-item {% if 'competition' in request.resolver_match.url_name %}active{% endif %}">
+            <i class="bi bi-trophy"></i><span>Comps</span>
+        </a>
+        {% endif %}
+        <button class="mobile-bottom-nav-item" onclick="toggleMobileSidebar()">
+            <i class="bi bi-grid"></i><span>Menu</span>
+        </button>
+        <a href="{% url 'matches_list' %}" class="mobile-bottom-nav-item {% if 'match' in request.resolver_match.url_name %}active{% endif %}">
+            <i class="bi bi-clipboard-data"></i><span>Matches</span>
+        </a>
+        <a href="{% url 'dashboard' %}" class="mobile-bottom-nav-item">
+            <i class="bi bi-person"></i><span>Profile</span>
+        </a>
+    </nav>
 
-{# ── PAGE LAYOUT ─────────────────────────────────────────────────────── #}
-<div class="layout">
+    <script src="{% static 'js/main.js' %}"></script>
+    <script>
+    /* Mobile sidebar drawer */
+    function toggleMobileSidebar() {
+        var sidebar = document.querySelector('.sidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        if (sidebar && overlay) {
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+            document.body.classList.toggle('sidebar-open');
+        }
+    }
+    function closeMobileSidebar() {
+        var sidebar = document.querySelector('.sidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        if (sidebar && overlay) {
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+            document.body.classList.remove('sidebar-open');
+        }
+    }
+    /* Close sidebar on link click (mobile) */
+    document.querySelectorAll('.sidebar-link').forEach(function(link) {
+        link.addEventListener('click', function() {
+            if (window.innerWidth <= 768) closeMobileSidebar();
+        });
+    });
 
-  {# Sidebar — driven by context processor portal_nav #}
-  {% include 'includes/sidebar.html' %}
+    /* ── Auto-logout after inactivity ──────────────────────────────── */
+    (function(){
+        var IDLE_MS     = 14 * 60 * 1000;  // 14 min idle → show warning
+        var WARNING_SEC = 60;               // 60-second countdown before logout
+        var idleTimer, countdownTimer;
+        var warningActive = false;
 
-  {# Main content #}
-  <main class="main-content" id="main-content" tabindex="-1">
-    {% if messages %}
-      {% for message in messages %}
-      <div class="alert alert-{{ message.tags }}" role="alert">
-        {{ message }}
-      </div>
-      {% endfor %}
-    {% endif %}
+        /* Build warning dialog (injected once) */
+        var overlay = document.createElement('div');
+        overlay.id  = 'idle-overlay';
+        overlay.innerHTML = [
+            '<div style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;',
+                'display:flex;align-items:center;justify-content:center;font-family:inherit">',
+              '<div style="background:#fff;border-radius:16px;padding:2rem 2.25rem;max-width:380px;',
+                  'width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center">',
+                '<div style="font-size:2.5rem;margin-bottom:.75rem">🔒</div>',
+                '<h3 style="margin:0 0 .5rem;font-size:1.1rem;color:#111;font-weight:800">',
+                  'Session Expiring Soon</h3>',
+                '<p style="margin:0 0 1.25rem;color:#666;font-size:.9rem;line-height:1.5">',
+                  'You\'ve been inactive. You\'ll be logged out in</p>',
+                '<div id="idle-count" style="font-size:2.8rem;font-weight:900;color:#C62828;',
+                  'line-height:1;margin-bottom:1.25rem">60</div>',
+                '<div style="font-size:.8rem;color:#aaa;margin-bottom:1.5rem">seconds</div>',
+                '<div style="display:flex;gap:.75rem;justify-content:center">',
+                  '<button id="idle-stay" style="padding:.65rem 1.5rem;background:linear-gradient(135deg,#1B5E20,#2E7D32);',
+                    'color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:.92rem;font-weight:700">',
+                    '✅ Stay Logged In</button>',
+                  '<button id="idle-logout" style="padding:.65rem 1.25rem;background:#f5f5f5;color:#555;',
+                    'border:1px solid #e0e0e0;border-radius:9px;cursor:pointer;font-size:.9rem">',
+                    'Log Out Now</button>',
+                '</div>',
+              '</div>',
+            '</div>'
+        ].join('');
+        overlay.style.display = 'none';
+        document.body.appendChild(overlay);
 
-    {% block content %}{% endblock %}
-    {% block extra_js_content %}{% endblock %}
-  </main>
+        function showWarning(){
+            warningActive = true;
+            var secs = WARNING_SEC;
+            overlay.style.display = 'block';
+            document.getElementById('idle-count').textContent = secs;
+            countdownTimer = setInterval(function(){
+                secs--;
+                var el = document.getElementById('idle-count');
+                if (el) el.textContent = secs;
+                if (secs <= 10 && el) el.style.color = '#B71C1C';
+                if (secs <= 0) doLogout();
+            }, 1000);
+        }
 
-</div>
+        function hideWarning(){
+            warningActive = false;
+            overlay.style.display = 'none';
+            clearInterval(countdownTimer);
+        }
 
-{# ── FOOTER ───────────────────────────────────────────────────────────── #}
-<footer class="footer">
-  &copy; 2026 Kenya Youth Intercounty Sports Association (KYISA). All rights reserved.
-</footer>
+        function doLogout(){
+            clearInterval(countdownTimer);
+            /* POST to logout URL to properly invalidate the session */
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = "{% url 'web_logout' %}";
+            var csrf = document.createElement('input');
+            csrf.type  = 'hidden';
+            csrf.name  = 'csrfmiddlewaretoken';
+            csrf.value = (document.cookie.match(/csrftoken=([^;]+)/)||[])[1]||'';
+            form.appendChild(csrf);
+            document.body.appendChild(form);
+            form.submit();
+        }
 
-{# ── MOBILE BOTTOM NAV ───────────────────────────────────────────────── #}
-<nav class="mobile-bottom-nav" aria-label="Mobile navigation">
-  {% for item in portal_bottom_nav %}
-    {% if item.url_name %}
-      <a href="{% url item.url_name %}"
-         class="mobile-bottom-nav-item{% if item.is_active(current_url_name) %} active{% endif %}"
-         aria-label="{{ item.label }}">
-        <i class="{{ item.icon }}" aria-hidden="true"></i>
-        <span>{{ item.label }}</span>
-      </a>
-    {% else %}
-      {# Menu button opens sidebar drawer #}
-      <button type="button"
-              class="mobile-bottom-nav-item"
-              data-action="toggle-sidebar"
-              aria-label="Open menu"
-              aria-controls="portal-sidebar"
-              aria-expanded="false">
-        <i class="{{ item.icon }}" aria-hidden="true"></i>
-        <span>{{ item.label }}</span>
-      </button>
-    {% endif %}
-  {% endfor %}
-</nav>
+        function resetTimer(){
+            if (warningActive) return;  /* Don't reset while warning is showing */
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(showWarning, IDLE_MS);
+        }
 
-{# ── SESSION WARNING DIALOG ──────────────────────────────────────────── #}
-{% include 'includes/session_warning_dialog.html' %}
+        document.getElementById('idle-stay').addEventListener('click', function(){
+            hideWarning();
+            resetTimer();
+            /* Ping the server to refresh the session */
+            fetch(window.location.href, {method:'HEAD',credentials:'same-origin'}).catch(function(){});
+        });
 
-{% endblock %}
+        document.getElementById('idle-logout').addEventListener('click', doLogout);
 
-{# Portal JS — no inline scripts #}
-<script src="{% static 'js/portal.js' %}"></script>
-{% block extra_js %}{% endblock %}
+        ['mousemove','mousedown','keypress','scroll','touchstart','click'].forEach(function(evt){
+            document.addEventListener(evt, resetTimer, {passive:true});
+        });
+
+        resetTimer();
+    })();
+    </script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
