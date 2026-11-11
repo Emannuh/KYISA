@@ -43,7 +43,3 @@ nul
 .do/
 DIGITALOCEAN_DEPLOY.md
 *.bak
-
-# Desktop junk files
-*.pptx
-*.lnk
