@@ -13,18 +13,8 @@ class IsCompetitionManager(BasePermission):
                     request.user.role == UserRole.COMPETITION_MANAGER)
 
 
-class IsCoordinator(BasePermission):
-    """Only a Discipline Coordinator can access."""
-    message = "You must be a Discipline Coordinator to perform this action."
-    def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated and
-                    request.user.role == UserRole.COORDINATOR)
-
-IsRefereeManager = IsCoordinator  # backwards compat
-
-
 class IsSportCoordinator(BasePermission):
-    """Only a Sport Coordinator (Soccer, Handball, Basketball, Volleyball) can access."""
+    """Any sport-specific coordinator (Soccer, Handball, Basketball, Volleyball)."""
     message = "You must be a Sport Coordinator to perform this action."
     def has_permission(self, request, view):
         return bool(
@@ -121,15 +111,25 @@ class IsAdminOrCompetitionManager(BasePermission):
         )
 
 
-class IsCoordinatorOrAdmin(BasePermission):
-    """Discipline Coordinator or Admin."""
+class IsAnyCoordinatorOrAdmin(BasePermission):
+    """Any sport coordinator or admin."""
     def has_permission(self, request, view):
         return bool(
             request.user and request.user.is_authenticated and
-            (request.user.is_staff or request.user.role == UserRole.COORDINATOR)
+            (request.user.is_staff or request.user.role in [
+                UserRole.SOCCER_COORDINATOR,
+                UserRole.HANDBALL_COORDINATOR,
+                UserRole.BASKETBALL_COORDINATOR,
+                UserRole.VOLLEYBALL_COORDINATOR,
+                UserRole.ADMIN,
+            ])
         )
 
-IsRefereeManagerOrAdmin = IsCoordinatorOrAdmin  # backwards compat
+# Backwards-compat aliases — point to the sport-coordinator versions
+IsCoordinator          = IsSportCoordinator
+IsRefereeManager       = IsSportCoordinator
+IsCoordinatorOrAdmin   = IsAnyCoordinatorOrAdmin
+IsRefereeManagerOrAdmin = IsAnyCoordinatorOrAdmin
 
 
 class IsAnyStaff(BasePermission):
@@ -172,5 +172,7 @@ class ReadOnly(BasePermission):
         if request.method in ("GET", "HEAD", "OPTIONS"):
             return True
         return request.user.is_staff or request.user.role in [
-            UserRole.COMPETITION_MANAGER, UserRole.COORDINATOR
+            UserRole.COMPETITION_MANAGER, UserRole.SOCCER_COORDINATOR,
+            UserRole.HANDBALL_COORDINATOR, UserRole.BASKETBALL_COORDINATOR,
+            UserRole.VOLLEYBALL_COORDINATOR,
         ]

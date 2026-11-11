@@ -66,7 +66,6 @@ class ActivityLoggingMiddleware(MiddlewareMixin):
 
         # Public registration
         '/register/team/': 'TEAM_CREATE',
-        '/register/referee/': 'REFEREE_REGISTER',
 
         # Squad review (referee)
         '/portal/squads/': 'SQUAD_APPROVE',

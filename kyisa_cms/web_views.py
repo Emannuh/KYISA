@@ -1482,61 +1482,9 @@ def team_register_success_view(request):
     return redirect('county_admin_register')
 
 
-def referee_register_view(request):
-    """Public referee registration — creates User + RefereeProfile (pending)."""
-    if request.method == 'POST':
-        form = RefereeRegistrationForm(request.POST, request.FILES)
-        if form.is_valid():
-            cd = form.cleaned_data
-            # Create user account (inactive until approved)
-            random_pw = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
-            user = User.objects.create_user(
-                email=cd['email'],
-                password=random_pw,
-                first_name=cd['first_name'],
-                last_name=cd['last_name'],
-                phone=cd.get('phone', ''),
-                county=cd.get('county', ''),
-                role=UserRole.REFEREE,
-                is_active=False,
-            )
-            # Create referee profile
-            profile = RefereeProfile.objects.create(
-                user=user,
-                license_number=cd['license_number'],
-                level=cd.get('level') or 'County',
-                county=cd.get('county', ''),
-                id_number=cd.get('id_number', ''),
-                years_experience=cd.get('years_experience') or 0,
-                is_approved=False,
-            )
-            # Save profile picture if uploaded
-            if cd.get('profile_picture'):
-                profile.profile_picture = cd['profile_picture']
-                profile.save(update_fields=['profile_picture'])
-            messages.success(request, mark_safe(
-                f'<strong>Registration Successful!</strong><br>'
-                f'Thank you, <strong>{cd["first_name"]} {cd["last_name"]}</strong>!<br>'
-                f'License: <code>{cd["license_number"]}</code><br><br>'
-                f'<strong>Next Steps:</strong><br>'
-                f'1. Wait for admin approval<br>'
-                f'2. You will receive login credentials via email<br>'
-                f'3. Log in and change your password'
-            ))
-            return redirect('referee_register_success')
-    else:
-        form = RefereeRegistrationForm()
-    return render(request, 'public/referee_register.html', {
-        'form': form,
-        'active_page': 'register',
-    })
-
-
 def referee_register_success_view(request):
-    """Success page after referee registration."""
-    return render(request, 'public/referee_register_success.html', {
-        'active_page': 'register',
-    })
+    """Redirect to home — public referee registration is handled via admin portal."""
+    return redirect('home')
 
 
 # ══════════════════════════════════════════════════════════════════════════════

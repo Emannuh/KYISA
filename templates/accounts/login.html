@@ -12,801 +12,613 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <style>
     :root {
-      --g0: #010b04;
-      --g3: #074d1c;
-      --g4: #0e7a2e;
-      --g5: #18a845;
-      --g6: #22cc55;
-      --g7: #5de082;
-      --gold:    #e8b800;
-      --gold-lt: #fdd835;
+      --g3: #074d1c; --g4: #0e7a2e; --g5: #18a845; --g6: #22cc55; --g7: #5de082;
+      --gold: #e8b800; --gold-lt: #fdd835;
       --ease: cubic-bezier(.4,0,.2,1);
     }
-
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html, body { height:100%; }
     body {
       font-family: 'Inter', system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
-      background: #000;
       min-height: 100vh;
+      overflow-x: hidden;
     }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+
+    /* ── FULLSCREEN BACKGROUND ── */
+    .bg {
+      position: fixed; inset: 0; z-index: 0;
+    }
+    .bg__img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center 20%;
+      filter: brightness(.45) saturate(.9);
+    }
+    /* multi-layer overlay — vignette + green tint at bottom */
+    .bg__overlay {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,0,0,.55) 0%, transparent 70%),
+        radial-gradient(ellipse 100% 55% at 50% 100%, rgba(4,30,10,.85) 0%, transparent 65%),
+        linear-gradient(170deg, rgba(0,0,0,.35) 0%, rgba(2,20,8,.55) 100%);
+    }
+    /* animated green shimmer line at bottom */
+    .bg__line {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, var(--g5) 40%, var(--g6) 60%, transparent 100%);
+      animation: lineShimmer 4s ease-in-out infinite;
+    }
+    @keyframes lineShimmer {
+      0%,100% { opacity:.4; transform:scaleX(.6); }
+      50%      { opacity:1;  transform:scaleX(1); }
     }
 
-    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-       PAGE GRID — form LEFT, photo RIGHT
-    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    /* ── PAGE ── */
     .page {
-      display: grid;
-      grid-template-columns: 440px 1fr;
+      position: relative; z-index: 1;
       min-height: 100vh;
-    }
-
-    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-       LEFT — FORM COLUMN
-    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-    .form-col {
-      background: linear-gradient(175deg, #0c0e12 0%, #0a0d0b 100%);
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
-      border-right: 1px solid rgba(255,255,255,.05);
-      position: relative;
-      overflow: hidden;
     }
 
-    /* subtle green glow bottom-left */
-    .form-col::before {
-      content: '';
-      position: absolute;
-      width: 380px; height: 380px;
-      background: radial-gradient(circle, rgba(24,168,69,.07) 0%, transparent 65%);
-      border-radius: 50%;
-      bottom: -120px; left: -80px;
-      pointer-events: none;
-    }
-
-    /* scrollable inner */
-    .form-scroll {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 2rem 2.25rem;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* ── top bar ── */
-    .form-topbar {
+    /* ── TOP NAV BAR ── */
+    .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 2rem;
+      padding: 1.4rem 2.5rem;
     }
-
-    /* logos row */
-    .form-logos {
-      display: flex;
-      align-items: center;
-      gap: .75rem;
+    .topbar-brand {
+      display: flex; align-items: center; gap: .9rem;
     }
-    .form-logo {
-      width: 38px; height: 38px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: #fff;
-      border: 2px solid rgba(255,255,255,.14);
-      box-shadow: 0 0 0 3px rgba(24,168,69,.1), 0 4px 12px rgba(0,0,0,.4);
+    .topbar-logo {
+      width: 42px; height: 42px; border-radius: 50%;
+      object-fit: cover; background: #fff;
+      border: 2px solid rgba(255,255,255,.2);
+      box-shadow: 0 0 0 4px rgba(24,168,69,.18), 0 4px 16px rgba(0,0,0,.5);
     }
-    .form-logo-sep {
-      width: 1px; height: 22px;
-      background: rgba(255,255,255,.12);
-      flex-shrink: 0;
+    .topbar-sep {
+      width: 1px; height: 26px;
+      background: rgba(255,255,255,.18);
     }
-
+    .topbar-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem; font-weight: 900;
+      color: #fff; letter-spacing: 2px;
+    }
+    .topbar-sub {
+      font-size: .58rem; font-weight: 600;
+      color: rgba(255,255,255,.38);
+      letter-spacing: 1.5px; text-transform: uppercase;
+      margin-top: 1px;
+    }
+    .topbar-right {
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .back-link {
+      display: inline-flex; align-items: center; gap: .4rem;
+      font-size: .75rem; color: rgba(255,255,255,.45);
+      text-decoration: none; font-weight: 500;
+      transition: color .2s;
+    }
+    .back-link:hover { color: var(--g7); }
     .status-pill {
-      display: inline-flex; align-items: center; gap: .32rem;
-      padding: .2rem .6rem;
-      background: rgba(24,168,69,.07);
-      border: 1px solid rgba(24,168,69,.16);
+      display: inline-flex; align-items: center; gap: .35rem;
+      padding: .22rem .7rem;
+      background: rgba(24,168,69,.12);
+      border: 1px solid rgba(24,168,69,.25);
       border-radius: 50px;
       font-size: .61rem; font-weight: 700;
       color: var(--g7); letter-spacing: .8px; text-transform: uppercase;
     }
-    .status-pill__dot {
+    .status-dot {
       width: 5px; height: 5px; border-radius: 50%;
       background: var(--g6);
       animation: pulse 2s ease infinite;
-      flex-shrink: 0;
     }
     @keyframes pulse {
-      0%   { box-shadow: 0 0 0 0   rgba(34,204,85,.65); }
-      70%  { box-shadow: 0 0 0 5px rgba(34,204,85,0); }
-      100% { box-shadow: 0 0 0 0   rgba(34,204,85,0); }
+      0%  { box-shadow: 0 0 0 0   rgba(34,204,85,.7); }
+      70% { box-shadow: 0 0 0 5px rgba(34,204,85,0); }
+      100%{ box-shadow: 0 0 0 0   rgba(34,204,85,0); }
     }
 
-    /* ── form body ── */
-    .form-body {
+    /* ── MAIN — card + caption ── */
+    .main {
       flex: 1;
       display: flex;
-      flex-direction: column;
+      align-items: center;
       justify-content: center;
-      padding: 1rem 0 1.5rem;
+      gap: 4rem;
+      padding: 1rem 2.5rem 2rem;
     }
 
-    .back-link {
-      display: inline-flex; align-items: center; gap: .32rem;
-      font-size: .73rem; color: rgba(255,255,255,.28);
-      text-decoration: none; font-weight: 500;
-      margin-bottom: 2rem;
-      transition: color .2s;
+    /* ── CAPTION (left of card on desktop) ── */
+    .caption {
+      max-width: 400px;
+      flex-shrink: 0;
+      animation: fadeUp .7s var(--ease) .1s both;
     }
-    .back-link:hover { color: var(--g7); }
-
-    .form-heading {
+    .caption__season {
+      display: inline-flex; align-items: center; gap: .45rem;
+      padding: .28rem .8rem;
+      background: rgba(24,168,69,.14);
+      border: 1px solid rgba(24,168,69,.28);
+      border-radius: 50px;
+      font-size: .65rem; font-weight: 700;
+      color: var(--g7); letter-spacing: .8px; text-transform: uppercase;
+      margin-bottom: 1.1rem;
+    }
+    .caption__title {
       font-family: 'Outfit', sans-serif;
-      font-size: 1.9rem; font-weight: 900;
-      color: #fff; letter-spacing: -.4px;
-      line-height: 1.15;
-      margin-bottom: .25rem;
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.1;
+      letter-spacing: -.5px;
+      margin-bottom: .9rem;
+      text-shadow: 0 2px 20px rgba(0,0,0,.5);
     }
-    .form-heading span {
-      color: var(--g5);
-    }
-    .form-sub {
-      font-size: .82rem;
-      color: rgba(255,255,255,.3);
+    .caption__title em { font-style: normal; color: var(--gold); }
+    .caption__sub {
+      font-size: .9rem; font-weight: 400;
+      color: rgba(255,255,255,.5);
+      line-height: 1.65;
       margin-bottom: 1.75rem;
+    }
+    .caption__stats {
+      display: flex; gap: .6rem;
+    }
+    .caption__stat {
+      display: flex; align-items: center; gap: .55rem;
+      padding: .55rem 1rem;
+      background: rgba(0,0,0,.35);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 12px;
+      backdrop-filter: blur(12px);
+    }
+    .caption__stat-num {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem; font-weight: 900;
+      color: var(--gold); line-height: 1;
+    }
+    .caption__stat-lbl {
+      font-size: .58rem; font-weight: 700;
+      color: rgba(255,255,255,.35);
+      text-transform: uppercase; letter-spacing: 1px;
+      line-height: 1.4;
+    }
+
+    /* ── CARD ── */
+    .card {
+      width: 100%; max-width: 390px;
+      background: rgba(10,14,12,.82);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 24px;
+      padding: 2.25rem 2.25rem 2rem;
+      backdrop-filter: blur(28px) saturate(1.4);
+      box-shadow:
+        0 0 0 1px rgba(24,168,69,.08),
+        0 32px 64px rgba(0,0,0,.55),
+        0 8px 24px rgba(0,0,0,.35);
+      animation: fadeUp .6s var(--ease) both;
+      flex-shrink: 0;
+    }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* green top accent */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--g5), transparent);
+      border-radius: 1px;
+    }
+    .card { position: relative; }
+
+    .card-heading {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.75rem; font-weight: 900;
+      color: #fff; letter-spacing: -.4px;
+      line-height: 1.15; margin-bottom: .2rem;
+    }
+    .card-heading span { color: var(--g5); }
+    .card-sub {
+      font-size: .82rem; color: rgba(255,255,255,.32);
+      margin-bottom: 1.6rem;
     }
 
     /* alerts */
     .alert {
-      padding: .65rem .85rem;
-      border-radius: 9px;
+      padding: .65rem .85rem; border-radius: 9px;
       font-size: .79rem; font-weight: 500;
       margin-bottom: .9rem;
       display: flex; align-items: flex-start; gap: .4rem;
-      line-height: 1.5;
-      animation: slideIn .3s var(--ease);
+      line-height: 1.5; animation: slideIn .3s var(--ease);
     }
-    @keyframes slideIn { from { opacity:0; transform:translateY(-5px); } }
-    .alert--error, .alert--danger { background: rgba(239,68,68,.07);  border: 1px solid rgba(239,68,68,.15);  color: #fca5a5; }
-    .alert--success               { background: rgba(34,197,94,.07);  border: 1px solid rgba(34,197,94,.15);  color: #86efac; }
-    .alert--warning               { background: rgba(245,158,11,.07); border: 1px solid rgba(245,158,11,.15); color: #fcd34d; }
-    .alert--info                  { background: rgba(59,130,246,.07); border: 1px solid rgba(59,130,246,.15); color: #93c5fd; }
+    @keyframes slideIn { from{opacity:0;transform:translateY(-5px)} }
+    .alert--error,.alert--danger{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.18);color:#fca5a5;}
+    .alert--success{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.18);color:#86efac;}
+    .alert--warning{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.18);color:#fcd34d;}
+    .alert--info{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.18);color:#93c5fd;}
 
     /* fields */
-    .fields { display: flex; flex-direction: column; gap: 1rem; }
-
-    .field { display: flex; flex-direction: column; gap: .3rem; }
+    .fields { display:flex; flex-direction:column; gap:.95rem; }
+    .field { display:flex; flex-direction:column; gap:.3rem; }
     .field__label {
       font-size: .71rem; font-weight: 600;
-      color: rgba(255,255,255,.42); letter-spacing: .2px;
+      color: rgba(255,255,255,.4); letter-spacing: .2px;
       transition: color .2s;
     }
     .field.focused .field__label { color: var(--g7); }
-
-    .field__wrap { position: relative; display: flex; align-items: center; }
+    .field__wrap { position:relative; display:flex; align-items:center; }
     .field__ico {
-      position: absolute; left: .82rem;
-      color: rgba(255,255,255,.16);
-      pointer-events: none; display: flex;
-      transition: color .2s;
+      position:absolute; left:.85rem;
+      color:rgba(255,255,255,.18); pointer-events:none; display:flex;
+      transition:color .2s;
     }
-    .field__ico svg { width: 15px; height: 15px; }
-    .field.focused .field__ico { color: var(--g5); }
-
+    .field__ico svg { width:15px; height:15px; }
+    .field.focused .field__ico { color:var(--g5); }
     .field__input {
-      width: 100%;
-      padding: .78rem .9rem .78rem 2.55rem;
-      background: rgba(255,255,255,.05);
-      border: 1.5px solid rgba(255,255,255,.08);
-      border-radius: 10px;
-      color: #fff;
-      font-size: .85rem; font-family: inherit; font-weight: 500;
-      outline: none;
-      transition: border-color .2s, background .2s, box-shadow .2s;
+      width:100%;
+      padding:.8rem .9rem .8rem 2.6rem;
+      background:rgba(255,255,255,.06);
+      border:1.5px solid rgba(255,255,255,.1);
+      border-radius:11px; color:#fff;
+      font-size:.86rem; font-family:inherit; font-weight:500; outline:none;
+      transition:border-color .2s, background .2s, box-shadow .2s;
     }
-    .field__input::placeholder { color: rgba(255,255,255,.16); font-weight: 400; }
-    .field__input:hover  { border-color: rgba(255,255,255,.13); background: rgba(255,255,255,.07); }
-    .field__input:focus  {
-      border-color: rgba(24,168,69,.55);
-      background: rgba(255,255,255,.07);
-      box-shadow: 0 0 0 3px rgba(24,168,69,.09);
+    .field__input::placeholder{color:rgba(255,255,255,.18);font-weight:400;}
+    .field__input:hover{border-color:rgba(255,255,255,.16);background:rgba(255,255,255,.08);}
+    .field__input:focus{
+      border-color:rgba(24,168,69,.6);
+      background:rgba(255,255,255,.08);
+      box-shadow:0 0 0 3px rgba(24,168,69,.1);
     }
-
-    .eye-btn {
-      position: absolute; right: .58rem;
-      background: none; border: none; cursor: pointer;
-      color: rgba(255,255,255,.16);
-      padding: 5px; border-radius: 7px; display: flex;
-      transition: color .2s, background .2s;
+    .eye-btn{
+      position:absolute; right:.6rem;
+      background:none; border:none; cursor:pointer;
+      color:rgba(255,255,255,.18); padding:5px; border-radius:7px; display:flex;
+      transition:color .2s, background .2s;
     }
-    .eye-btn:hover { color: rgba(255,255,255,.42); background: rgba(255,255,255,.05); }
-    .eye-btn svg { width: 15px; height: 15px; }
+    .eye-btn:hover{color:rgba(255,255,255,.45);background:rgba(255,255,255,.06);}
+    .eye-btn svg{width:15px;height:15px;}
 
     /* options */
-    .options {
-      display: flex; align-items: center;
-      justify-content: space-between;
-      margin-top: .05rem;
+    .options{display:flex;align-items:center;justify-content:space-between;margin-top:.05rem;}
+    .check-label{
+      display:flex;align-items:center;gap:.35rem;
+      font-size:.72rem;color:rgba(255,255,255,.32);
+      cursor:pointer;user-select:none;
     }
-    .check-label {
-      display: flex; align-items: center; gap: .35rem;
-      font-size: .72rem; color: rgba(255,255,255,.3);
-      cursor: pointer; user-select: none;
+    .check-label input[type="checkbox"]{
+      width:13px;height:13px;border-radius:3px;
+      cursor:pointer;accent-color:var(--g5);flex-shrink:0;
     }
-    .check-label input[type="checkbox"] {
-      width: 13px; height: 13px; border-radius: 3px;
-      cursor: pointer; accent-color: var(--g5); flex-shrink: 0;
+    .forgot-btn{
+      font-size:.72rem;color:var(--gold);font-weight:600;
+      background:none;border:none;cursor:pointer;
+      font-family:inherit;transition:color .2s;
     }
-    .forgot-btn {
-      font-size: .72rem; color: var(--gold); font-weight: 600;
-      background: none; border: none; cursor: pointer;
-      font-family: inherit; transition: color .2s;
-    }
-    .forgot-btn:hover { color: var(--gold-lt); }
+    .forgot-btn:hover{color:var(--gold-lt);}
 
     /* CTA */
-    .submit-btn {
-      width: 100%; margin-top: 1.1rem;
-      padding: .9rem;
-      border: none; border-radius: 10px;
-      font-family: 'Outfit', sans-serif;
-      font-size: .97rem; font-weight: 800;
-      color: #fff; cursor: pointer; letter-spacing: .35px;
-      background: linear-gradient(135deg, var(--g3) 0%, var(--g4) 40%, var(--g5) 100%);
-      box-shadow: 0 4px 24px rgba(14,122,46,.38), 0 0 0 1px rgba(24,168,69,.2);
-      transition: transform .17s var(--ease), box-shadow .17s var(--ease), background .2s;
-      position: relative; overflow: hidden;
+    .submit-btn{
+      width:100%;margin-top:1.1rem;
+      padding:.88rem;border:none;border-radius:11px;
+      font-family:'Outfit',sans-serif;
+      font-size:.97rem;font-weight:800;
+      color:#fff;cursor:pointer;letter-spacing:.35px;
+      background:linear-gradient(135deg,var(--g3) 0%,var(--g4) 40%,var(--g5) 100%);
+      box-shadow:0 4px 24px rgba(14,122,46,.4),0 0 0 1px rgba(24,168,69,.22);
+      transition:transform .17s var(--ease),box-shadow .17s var(--ease),background .2s;
+      position:relative; overflow:hidden;
     }
-    .submit-btn::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent);
-      transform: translateX(-100%);
-      transition: transform .55s;
+    .submit-btn::before{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
+      transform:translateX(-100%);transition:transform .55s;
     }
-    .submit-btn:hover {
-      transform: translateY(-2px);
-      background: linear-gradient(135deg, var(--g4) 0%, var(--g5) 40%, var(--g6) 100%);
-      box-shadow: 0 8px 32px rgba(24,168,69,.48), 0 0 0 1px rgba(34,204,85,.24);
+    .submit-btn:hover{
+      transform:translateY(-2px);
+      background:linear-gradient(135deg,var(--g4) 0%,var(--g5) 40%,var(--g6) 100%);
+      box-shadow:0 8px 32px rgba(24,168,69,.5),0 0 0 1px rgba(34,204,85,.26);
     }
-    .submit-btn:hover::before { transform: translateX(100%); }
-    .submit-btn:active { transform: translateY(0); }
-    .submit-btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
-    .submit-btn .lbl { transition: opacity .2s; }
-    .submit-btn.loading .lbl { opacity: 0; }
-    .submit-btn .spin {
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%,-50%);
-      width: 19px; height: 19px;
-      border: 2.5px solid rgba(255,255,255,.2);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin .6s linear infinite;
-      opacity: 0;
+    .submit-btn:hover::before{transform:translateX(100%);}
+    .submit-btn:active{transform:translateY(0);}
+    .submit-btn:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+    .submit-btn .lbl{transition:opacity .2s;}
+    .submit-btn.loading .lbl{opacity:0;}
+    .submit-btn .spin{
+      position:absolute;top:50%;left:50%;
+      transform:translate(-50%,-50%);
+      width:19px;height:19px;
+      border:2.5px solid rgba(255,255,255,.2);
+      border-top-color:#fff;border-radius:50%;
+      animation:spin .6s linear infinite;opacity:0;
     }
-    .submit-btn.loading .spin { opacity: 1; }
-    @keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+    .submit-btn.loading .spin{opacity:1;}
+    @keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
 
     /* hint + help */
-    .enter-hint {
-      font-size: .63rem; color: rgba(255,255,255,.16);
-      text-align: center; margin-top: .5rem;
+    .enter-hint{font-size:.63rem;color:rgba(255,255,255,.18);text-align:center;margin-top:.5rem;}
+    .enter-hint kbd{
+      display:inline-block;padding:.07rem .3rem;
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:4px;font-size:.6rem;font-family:inherit;
     }
-    .enter-hint kbd {
-      display: inline-block; padding: .07rem .28rem;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.09);
-      border-radius: 4px; font-size: .6rem; font-family: inherit;
-    }
-    .divider {
-      display: flex; align-items: center; gap: .55rem;
-      margin: 1.2rem 0 .65rem;
-    }
-    .divider::before, .divider::after {
-      content: ''; flex: 1; height: 1px;
-      background: rgba(255,255,255,.06);
-    }
-    .divider span {
-      font-size: .59rem; font-weight: 700;
-      color: rgba(255,255,255,.17);
-      text-transform: uppercase; letter-spacing: 1.5px;
-    }
-    .help-text {
-      text-align: center;
-      font-size: .75rem; color: rgba(255,255,255,.24);
-    }
-    .help-text a {
-      color: var(--gold); font-weight: 600;
-      text-decoration: none; transition: color .2s;
-    }
-    .help-text a:hover { color: var(--gold-lt); }
+    .divider{display:flex;align-items:center;gap:.55rem;margin:1.2rem 0 .65rem;}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.07);}
+    .divider span{font-size:.59rem;font-weight:700;color:rgba(255,255,255,.18);text-transform:uppercase;letter-spacing:1.5px;}
+    .help-text{text-align:center;font-size:.75rem;color:rgba(255,255,255,.26);}
+    .help-text a{color:var(--gold);font-weight:600;text-decoration:none;transition:color .2s;}
+    .help-text a:hover{color:var(--gold-lt);}
 
-    /* ── partners strip at bottom of form col ── */
-    .partners {
-      padding: 1rem 2.25rem 1.25rem;
-      border-top: 1px solid rgba(255,255,255,.05);
+    /* ── PARTNERS FOOTER ── */
+    .footer {
+      padding: .9rem 2.5rem 1.1rem;
+      border-top: 1px solid rgba(255,255,255,.06);
       position: relative; z-index: 1;
     }
-    .partners__lbl {
-      font-size: .5rem; font-weight: 700;
-      color: rgba(255,255,255,.18);
-      text-transform: uppercase; letter-spacing: 2.5px;
-      text-align: center; margin-bottom: .6rem;
+    .partners__lbl{
+      font-size:.5rem;font-weight:700;
+      color:rgba(255,255,255,.2);
+      text-transform:uppercase;letter-spacing:2.5px;
+      text-align:center;margin-bottom:.6rem;
     }
-    .partners__row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: .35rem;
+    .partners__row{
+      display:flex;flex-wrap:wrap;
+      justify-content:center;align-items:center;
+      gap:.4rem;
     }
-    .partner {
-      display: flex; align-items: center; gap: .35rem;
-      padding: .3rem .4rem;
-      background: rgba(255,255,255,.035);
-      border: 1px solid rgba(255,255,255,.06);
-      border-radius: 8px; min-width: 0;
-      transition: all .2s var(--ease);
+    .partner{
+      display:flex;align-items:center;gap:.35rem;
+      padding:.28rem .5rem;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.07);
+      border-radius:8px;
+      transition:all .2s var(--ease);
     }
-    .partner:hover {
-      background: rgba(232,184,0,.055);
-      border-color: rgba(232,184,0,.15);
-      transform: translateY(-1px);
-    }
-    .partner img {
-      width: 22px; height: 22px; flex-shrink: 0;
-      border-radius: 50%; object-fit: cover;
-      background: #fff; border: 1px solid rgba(255,255,255,.12);
-    }
-    .partner__info { line-height: 1.2; min-width: 0; overflow: hidden; }
-    .partner__abbr { font-size: .6rem; font-weight: 700; color: var(--gold); white-space: nowrap; }
-    .partner__name { font-size: .48rem; color: rgba(255,255,255,.26); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .partners__copy {
-      text-align: center;
-      font-size: .48rem; color: rgba(255,255,255,.1);
-      text-transform: uppercase; letter-spacing: 1px;
-      margin-top: .6rem;
-    }
+    .partner:hover{background:rgba(232,184,0,.07);border-color:rgba(232,184,0,.18);transform:translateY(-1px);}
+    .partner img{width:22px;height:22px;flex-shrink:0;border-radius:50%;object-fit:cover;background:#fff;border:1px solid rgba(255,255,255,.12);}
+    .partner__info{line-height:1.2;min-width:0;}
+    .partner__abbr{font-size:.6rem;font-weight:700;color:var(--gold);white-space:nowrap;}
+    .partner__name{font-size:.48rem;color:rgba(255,255,255,.26);white-space:nowrap;}
+    .partners__copy{text-align:center;font-size:.48rem;color:rgba(255,255,255,.12);text-transform:uppercase;letter-spacing:1px;margin-top:.6rem;}
 
-    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-       RIGHT — PHOTO PANEL
-    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-    .photo-col {
-      position: relative;
-      overflow: hidden;
-    }
+    /* ── MODAL ── */
+    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;z-index:999;}
+    .modal-bg.open{display:flex;}
+    .modal{background:rgba(14,18,16,.95);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:2rem;max-width:380px;width:90%;box-shadow:0 32px 64px rgba(0,0,0,.6);animation:modalIn .28s var(--ease);position:relative;backdrop-filter:blur(24px);}
+    @keyframes modalIn{from{opacity:0;transform:translateY(10px) scale(.97)}}
+    .modal__close{position:absolute;top:.85rem;right:.85rem;background:none;border:none;cursor:pointer;color:rgba(255,255,255,.22);padding:.4rem;border-radius:7px;transition:all .2s;}
+    .modal__close:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);}
+    .modal__icon{width:48px;height:48px;background:rgba(24,168,69,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;color:var(--g5);}
+    .modal h3{font-family:'Outfit',sans-serif;font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:.4rem;text-align:center;}
+    .modal p{color:rgba(255,255,255,.36);font-size:.83rem;line-height:1.6;margin-bottom:1.25rem;text-align:center;}
+    .modal-btns{display:flex;gap:.6rem;}
+    .modal-btn{flex:1;padding:.65rem;border-radius:9px;font-weight:600;font-size:.81rem;cursor:pointer;transition:all .2s;border:none;text-align:center;text-decoration:none;display:block;font-family:inherit;}
+    .modal-btn--primary{background:var(--g4);color:#fff;}
+    .modal-btn--primary:hover{background:var(--g5);}
+    .modal-btn--ghost{background:rgba(255,255,255,.06);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.08);}
+    .modal-btn--ghost:hover{background:rgba(255,255,255,.1);}
 
-    /* the actual photo */
-    .photo-col__img {
-      position: absolute; inset: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      object-position: center 25%;  /* keep trophy + faces in frame */
+    /* ── RESPONSIVE ── */
+    @media(max-width:1024px){
+      .main{flex-direction:column;gap:1.75rem;padding:1.5rem 1.5rem 2rem;align-items:center;}
+      .caption{max-width:600px;text-align:center;}
+      .caption__stats{justify-content:center;}
+      .caption__title{font-size:clamp(1.6rem,5vw,2.4rem);}
+      .card{max-width:480px;}
+      .topbar{padding:1.2rem 1.5rem;}
     }
-
-    /* dark gradient — heavier at top and bottom, lighter in the middle */
-    .photo-col__overlay {
-      position: absolute; inset: 0;
-      background:
-        linear-gradient(to bottom,
-          rgba(0,0,0,.55) 0%,
-          rgba(0,0,0,.1)  30%,
-          rgba(0,0,0,.1)  60%,
-          rgba(0,0,0,.72) 100%
-        );
-    }
-
-    /* thin green accent line on the left edge (separator) */
-    .photo-col::before {
-      content: '';
-      position: absolute; top: 0; left: 0; bottom: 0;
-      width: 2px;
-      background: linear-gradient(to bottom, transparent, var(--g5), transparent);
-      z-index: 2;
-      opacity: .6;
-    }
-
-    /* top-left logos */
-    .photo-logos {
-      position: absolute; top: 1.75rem; left: 2rem;
-      display: flex; align-items: center; gap: .85rem;
-      z-index: 3;
-    }
-    .photo-logo-wrap {
-      display: flex; flex-direction: column; align-items: center; gap: .3rem;
-    }
-    .photo-logo {
-      width: 56px; height: 56px;
-      border-radius: 50%; object-fit: cover;
-      background: #fff;
-      border: 2.5px solid rgba(255,255,255,.22);
-      box-shadow: 0 0 0 5px rgba(24,168,69,.15), 0 8px 28px rgba(0,0,0,.55);
-      transition: transform .3s var(--ease), box-shadow .3s var(--ease);
-    }
-    .photo-logo:hover {
-      transform: scale(1.08);
-      box-shadow: 0 0 0 7px rgba(24,168,69,.25), 0 10px 34px rgba(0,0,0,.6);
-    }
-    .photo-logo-name {
-      font-size: .52rem; font-weight: 700;
-      letter-spacing: 1.4px; text-transform: uppercase;
-      color: rgba(255,255,255,.5);
-    }
-    .photo-logo-sep {
-      width: 1px; height: 34px; align-self: center; margin-bottom: .65rem;
-      background: linear-gradient(to bottom, transparent, rgba(255,255,255,.22), transparent);
-    }
-
-    /* bottom caption */
-    .photo-caption {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      padding: 2.5rem 2.5rem 2rem;
-      z-index: 3;
-    }
-
-    .photo-caption__badge {
-      display: inline-flex; align-items: center; gap: .4rem;
-      padding: .22rem .7rem;
-      background: rgba(24,168,69,.15);
-      border: 1px solid rgba(24,168,69,.3);
-      border-radius: 50px;
-      font-size: .63rem; font-weight: 700;
-      color: var(--g7); letter-spacing: .8px;
-      text-transform: uppercase;
-      margin-bottom: .75rem;
-    }
-
-    .photo-caption__title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 2.4rem; font-weight: 900;
-      color: #fff; line-height: 1.1;
-      letter-spacing: -.5px;
-      margin-bottom: .6rem;
-      text-shadow: 0 2px 16px rgba(0,0,0,.5);
-    }
-    .photo-caption__title span { color: var(--gold); }
-
-    .photo-caption__sub {
-      font-size: .88rem; font-weight: 400;
-      color: rgba(255,255,255,.58);
-      line-height: 1.6;
-      margin-bottom: 1.25rem;
-      max-width: 480px;
-    }
-
-    /* stats row over photo */
-    .photo-stats {
-      display: flex; gap: .5rem; flex-wrap: wrap;
-    }
-    .photo-stat {
-      display: flex; align-items: center; gap: .5rem;
-      padding: .45rem .9rem;
-      background: rgba(0,0,0,.38);
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 10px;
-      backdrop-filter: blur(8px);
-    }
-    .photo-stat__num {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.3rem; font-weight: 900;
-      color: var(--gold); line-height: 1;
-    }
-    .photo-stat__lbl {
-      font-size: .6rem; font-weight: 700;
-      color: rgba(255,255,255,.38);
-      text-transform: uppercase; letter-spacing: 1.2px;
-      line-height: 1.3;
-    }
-
-    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-       MODAL
-    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-    .modal-bg {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,.6);
-      backdrop-filter: blur(8px);
-      display: none; align-items: center; justify-content: center;
-      z-index: 999;
-    }
-    .modal-bg.open { display: flex; }
-    .modal {
-      background: #131313;
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 18px; padding: 2rem;
-      max-width: 380px; width: 90%;
-      box-shadow: 0 28px 60px rgba(0,0,0,.55);
-      animation: modalIn .28s var(--ease);
-      position: relative;
-    }
-    @keyframes modalIn { from { opacity:0; transform:translateY(10px) scale(.97); } }
-    .modal__close {
-      position: absolute; top: .85rem; right: .85rem;
-      background: none; border: none; cursor: pointer;
-      color: rgba(255,255,255,.2); padding: .4rem; border-radius: 7px;
-      transition: all .2s;
-    }
-    .modal__close:hover { background: rgba(255,255,255,.05); color: rgba(255,255,255,.45); }
-    .modal__icon {
-      width: 48px; height: 48px;
-      background: rgba(24,168,69,.08); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 1rem; color: var(--g5);
-    }
-    .modal h3 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.2rem; font-weight: 800;
-      color: #fff; margin-bottom: .4rem; text-align: center;
-    }
-    .modal p {
-      color: rgba(255,255,255,.36); font-size: .83rem;
-      line-height: 1.6; margin-bottom: 1.25rem; text-align: center;
-    }
-    .modal-btns { display: flex; gap: .6rem; }
-    .modal-btn {
-      flex: 1; padding: .65rem; border-radius: 9px;
-      font-weight: 600; font-size: .81rem; cursor: pointer;
-      transition: all .2s; border: none;
-      text-align: center; text-decoration: none;
-      display: block; font-family: inherit;
-    }
-    .modal-btn--primary { background: var(--g4); color: #fff; }
-    .modal-btn--primary:hover { background: var(--g5); }
-    .modal-btn--ghost {
-      background: rgba(255,255,255,.05); color: rgba(255,255,255,.45);
-      border: 1px solid rgba(255,255,255,.07);
-    }
-    .modal-btn--ghost:hover { background: rgba(255,255,255,.08); }
-
-    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-       RESPONSIVE
-    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-    @media (max-width: 1024px) {
-      .page { grid-template-columns: 1fr; }
-      .photo-col {
-        order: -1;          /* photo goes above form */
-        height: 45vw;
-        min-height: 260px;
-        max-height: 380px;
-      }
-      .photo-col::before { display: none; }
-      .photo-caption__title { font-size: 1.7rem; }
-      .photo-caption { padding: 1.5rem 1.5rem 1.25rem; }
-      .photo-logos { top: 1.25rem; left: 1.5rem; }
-      .photo-logo { width: 44px; height: 44px; }
-      .form-col { border-right: none; border-top: 1px solid rgba(255,255,255,.05); }
-      .partners__row { grid-template-columns: repeat(4, 1fr); }
-    }
-
-    @media (max-width: 640px) {
-      .photo-col { height: 55vw; }
-      .photo-caption__title { font-size: 1.35rem; }
-      .photo-caption__sub { display: none; }
-      .photo-stats { display: none; }
-      .photo-logos { top: 1rem; left: 1rem; }
-      .photo-logo { width: 36px; height: 36px; }
-      .form-scroll { padding: 1.5rem 1.25rem; }
-      .partners { padding: .85rem 1.25rem 1rem; }
-      .partners__row { grid-template-columns: repeat(4, 1fr); }
+    @media(max-width:640px){
+      .topbar{padding:1rem 1.25rem;}
+      .topbar-name{font-size:.95rem;}
+      .topbar-sub{display:none;}
+      .caption{display:none;}
+      .main{padding:1rem 1.25rem 1.5rem;justify-content:flex-start;}
+      .card{max-width:100%;border-radius:18px;padding:1.75rem 1.5rem 1.5rem;}
+      .footer{padding:.75rem 1.25rem .9rem;}
+      .partners__row{gap:.35rem;}
     }
   </style>
 </head>
 <body>
+
+<!-- FULLSCREEN BACKGROUND -->
+<div class="bg">
+  <img class="bg__img" src="{% static 'img/kyisa_champions.jpg' %}" alt="" aria-hidden="true">
+  <div class="bg__overlay"></div>
+  <div class="bg__line"></div>
+</div>
+
 <div class="page">
 
-  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-       LEFT — FORM COLUMN
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-  <div class="form-col">
-
-    <div class="form-scroll">
-      <!-- top bar -->
-      <div class="form-topbar">
-        <div class="form-logos">
-          <img class="form-logo" src="{% static 'img/kyisa_logo_official.jpg' %}" alt="KYISA">
-          <div class="form-logo-sep"></div>
-          <img class="form-logo" src="{% static 'img/COG.jpg' %}" alt="Council of Governors">
-        </div>
-        <div class="status-pill">
-          <span class="status-pill__dot"></span>
-          Online
-        </div>
-      </div>
-
-      <!-- form body -->
-      <div class="form-body">
-        <a href="{% url 'home' %}" class="back-link">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-            <path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/>
-          </svg>
-          Back to Home
-        </a>
-
-        <h2 class="form-heading">Welcome<br><span>back.</span></h2>
-        <p class="form-sub">Sign in to your KYISA portal</p>
-
-        {% if messages %}
-          {% for message in messages %}
-          <div class="alert alert--{{ message.tags }}" role="alert">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            <span>{{ message }}</span>
-          </div>
-          {% endfor %}
-        {% endif %}
-
-        {% if error %}
-        <div class="alert alert--error" role="alert">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-          <span>{{ error }}</span>
-        </div>
-        {% endif %}
-
-        <form method="post" action="{% url 'web_login' %}" class="fields" id="loginForm" novalidate>
-          {% csrf_token %}
-
-          <div class="field" id="emailField">
-            <label for="email" class="field__label">Email Address</label>
-            <div class="field__wrap">
-              <span class="field__ico" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
-              </span>
-              <input type="email" id="email" name="email" class="field__input"
-                placeholder="you@example.com" required autofocus autocomplete="email"
-                value="{{ email|default:'' }}" aria-label="Email address">
-            </div>
-          </div>
-
-          <div class="field" id="pwField">
-            <label for="password" class="field__label">Password</label>
-            <div class="field__wrap">
-              <span class="field__ico" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2"/>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
-              </span>
-              <input type="password" id="password" name="password" class="field__input"
-                placeholder="Enter your password" required autocomplete="current-password"
-                aria-label="Password">
-              <button type="button" class="eye-btn" id="eyeBtn" aria-label="Show password">
-                <svg id="eyeIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          <div class="options">
-            <label class="check-label">
-              <input type="checkbox" name="remember" value="1">
-              Remember me
-            </label>
-            <button type="button" class="forgot-btn" id="forgotBtn">Forgot password?</button>
-          </div>
-
-          <button type="submit" class="submit-btn" id="submitBtn">
-            <span class="lbl">Sign In</span>
-            <span class="spin" aria-hidden="true"></span>
-          </button>
-        </form>
-
-        <p class="enter-hint">Press <kbd>Enter</kbd> to sign in</p>
-
-        <div class="divider"><span>Need help?</span></div>
-        <p class="help-text">
-          Contact your <a href="{% url 'contact' %}">KYISA administrator</a> for account access.
-        </p>
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      <img class="topbar-logo" src="{% static 'img/kyisa_logo_official.jpg' %}" alt="KYISA">
+      <div class="topbar-sep"></div>
+      <img class="topbar-logo" src="{% static 'img/COG.jpg' %}" alt="COG">
+      <div style="margin-left:.35rem">
+        <div class="topbar-name">KYISA</div>
+        <div class="topbar-sub">Competition Management System</div>
       </div>
     </div>
-
-    <!-- partners strip -->
-    <footer class="partners">
-      <p class="partners__lbl">Official Partners &amp; Stakeholders</p>
-      <div class="partners__row">
-        <div class="partner">
-          <img src="{% static 'img/GOK.png' %}" alt="GOK" loading="lazy">
-          <div class="partner__info"><div class="partner__abbr">GOK</div><div class="partner__name">Govt of Kenya</div></div>
-        </div>
-        <div class="partner">
-          <img src="{% static 'img/COG.jpg' %}" alt="COG" loading="lazy">
-          <div class="partner__info"><div class="partner__abbr">COG</div><div class="partner__name">Council of Govs</div></div>
-        </div>
-        <div class="partner">
-          <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="KYISA" loading="lazy">
-          <div class="partner__info"><div class="partner__abbr">KYISA</div><div class="partner__name">Youth Sports</div></div>
-        </div>
-        <div class="partner">
-          <img src="{% static 'img/fkf_logo.png' %}" alt="FKF" loading="lazy">
-          <div class="partner__info"><div class="partner__abbr">FKF</div><div class="partner__name">Football Kenya</div></div>
-        </div>
-        <div class="partner">
-          <img src="{% static 'img/kbf_logo.jpg' %}" alt="KBF" loading="lazy">
-          <div class="partner__info"><div class="partner__abbr">KBF</div><div class="partner__name">Basketball Fed.</div></div>
-        </div>
-        <div class="partner">
-          <img src="{% static 'img/khf_logo.png' %}" alt="KHF" loading="lazy">
-          <div class="partner__info"><div class="partner__abbr">KHF</div><div class="partner__name">Handball Fed.</div></div>
-        </div>
-        <div class="partner">
-          <img src="{% static 'img/kvf_logo.png' %}" alt="KVF" loading="lazy">
-          <div class="partner__info"><div class="partner__abbr">KVF</div><div class="partner__name">Volleyball Fed.</div></div>
-        </div>
-      </div>
-      <p class="partners__copy">&copy; 2026 Kenya Youth Intercounty Sports Association</p>
-    </footer>
-
-  </div>
-  <!-- /form-col -->
-
-
-  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-       RIGHT — PHOTO PANEL
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-  <div class="photo-col" aria-hidden="true">
-
-    <img
-      class="photo-col__img"
-      src="{% static 'img/kyisa_champions.jpg' %}"
-      alt="KYISA champions lifting the trophy"
-      loading="eager">
-
-    <div class="photo-col__overlay"></div>
-
-    <!-- logos top-left -->
-    <div class="photo-logos">
-      <div class="photo-logo-wrap">
-        <img class="photo-logo" src="{% static 'img/kyisa_logo_official.jpg' %}" alt="KYISA">
-        <span class="photo-logo-name">KYISA</span>
-      </div>
-      <div class="photo-logo-sep"></div>
-      <div class="photo-logo-wrap">
-        <img class="photo-logo" src="{% static 'img/COG.jpg' %}" alt="COG">
-        <span class="photo-logo-name">COG</span>
+    <div class="topbar-right">
+      <a href="{% url 'home' %}" class="back-link">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back to Home
+      </a>
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        Online
       </div>
     </div>
+  </header>
 
-    <!-- caption bottom -->
-    <div class="photo-caption">
-      <div class="photo-caption__badge">
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- CAPTION -->
+    <div class="caption" aria-hidden="true">
+      <div class="caption__season">
         <i class="bi bi-trophy-fill"></i>
         2026 Season
       </div>
-      <h1 class="photo-caption__title">
-        Kenya's Premier<br><span>Youth Sports</span> Competition
+      <h1 class="caption__title">
+        Kenya's Premier<br><em>Youth Sports</em><br>Competition
       </h1>
-      <p class="photo-caption__sub">
+      <p class="caption__sub">
         Bringing together all 47 counties to compete, develop and excel across six disciplines.
       </p>
-      <div class="photo-stats">
-        <div class="photo-stat">
-          <div class="photo-stat__num">47</div>
-          <div class="photo-stat__lbl">Counties<br>Competing</div>
+      <div class="caption__stats">
+        <div class="caption__stat">
+          <div class="caption__stat-num">47</div>
+          <div class="caption__stat-lbl">Counties<br>Competing</div>
         </div>
-        <div class="photo-stat">
-          <div class="photo-stat__num">6+</div>
-          <div class="photo-stat__lbl">Sports<br>Disciplines</div>
+        <div class="caption__stat">
+          <div class="caption__stat-num">6+</div>
+          <div class="caption__stat-lbl">Sports<br>Disciplines</div>
         </div>
-        <div class="photo-stat">
-          <div class="photo-stat__num">2026</div>
-          <div class="photo-stat__lbl">Current<br>Season</div>
+        <div class="caption__stat">
+          <div class="caption__stat-num">2026</div>
+          <div class="caption__stat-lbl">Current<br>Season</div>
         </div>
       </div>
     </div>
 
-  </div>
-  <!-- /photo-col -->
+    <!-- FORM CARD -->
+    <div class="card">
+      <h2 class="card-heading">Welcome<br><span>back.</span></h2>
+      <p class="card-sub">Sign in to your KYISA portal</p>
+
+      {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert--{{ message.tags }}" role="alert">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>{{ message }}</span>
+        </div>
+        {% endfor %}
+      {% endif %}
+
+      {% if error %}
+      <div class="alert alert--error" role="alert">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        <span>{{ error }}</span>
+      </div>
+      {% endif %}
+
+      <form method="post" action="{% url 'web_login' %}" class="fields" id="loginForm" novalidate>
+        {% csrf_token %}
+
+        <div class="field" id="emailField">
+          <label for="email" class="field__label">Email Address</label>
+          <div class="field__wrap">
+            <span class="field__ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+            </span>
+            <input type="email" id="email" name="email" class="field__input"
+              placeholder="you@example.com" required autofocus autocomplete="email"
+              value="{{ email|default:'' }}" aria-label="Email address">
+          </div>
+        </div>
+
+        <div class="field" id="pwField">
+          <label for="password" class="field__label">Password</label>
+          <div class="field__wrap">
+            <span class="field__ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </span>
+            <input type="password" id="password" name="password" class="field__input"
+              placeholder="Enter your password" required autocomplete="current-password"
+              aria-label="Password">
+            <button type="button" class="eye-btn" id="eyeBtn" aria-label="Show password">
+              <svg id="eyeIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="options">
+          <label class="check-label">
+            <input type="checkbox" name="remember" value="1">
+            Remember me
+          </label>
+          <button type="button" class="forgot-btn" id="forgotBtn">Forgot password?</button>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <span class="lbl">Sign In</span>
+          <span class="spin" aria-hidden="true"></span>
+        </button>
+      </form>
+
+      <p class="enter-hint">Press <kbd>Enter</kbd> to sign in</p>
+
+      <div class="divider"><span>Need help?</span></div>
+      <p class="help-text">
+        Contact your <a href="{% url 'contact' %}">KYISA administrator</a> for account access.
+      </p>
+    </div>
+
+  </main>
+
+  <!-- PARTNERS FOOTER -->
+  <footer class="footer">
+    <p class="partners__lbl">Official Partners &amp; Stakeholders</p>
+    <div class="partners__row">
+      <div class="partner">
+        <img src="{% static 'img/GOK.png' %}" alt="GOK" loading="lazy">
+        <div class="partner__info"><div class="partner__abbr">GOK</div><div class="partner__name">Govt of Kenya</div></div>
+      </div>
+      <div class="partner">
+        <img src="{% static 'img/COG.jpg' %}" alt="COG" loading="lazy">
+        <div class="partner__info"><div class="partner__abbr">COG</div><div class="partner__name">Council of Govs</div></div>
+      </div>
+      <div class="partner">
+        <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="KYISA" loading="lazy">
+        <div class="partner__info"><div class="partner__abbr">KYISA</div><div class="partner__name">Youth Sports</div></div>
+      </div>
+      <div class="partner">
+        <img src="{% static 'img/fkf_logo.png' %}" alt="FKF" loading="lazy">
+        <div class="partner__info"><div class="partner__abbr">FKF</div><div class="partner__name">Football Kenya</div></div>
+      </div>
+      <div class="partner">
+        <img src="{% static 'img/kbf_logo.jpg' %}" alt="KBF" loading="lazy">
+        <div class="partner__info"><div class="partner__abbr">KBF</div><div class="partner__name">Basketball Fed.</div></div>
+      </div>
+      <div class="partner">
+        <img src="{% static 'img/khf_logo.png' %}" alt="KHF" loading="lazy">
+        <div class="partner__info"><div class="partner__abbr">KHF</div><div class="partner__name">Handball Fed.</div></div>
+      </div>
+      <div class="partner">
+        <img src="{% static 'img/kvf_logo.png' %}" alt="KVF" loading="lazy">
+        <div class="partner__info"><div class="partner__abbr">KVF</div><div class="partner__name">Volleyball Fed.</div></div>
+      </div>
+    </div>
+    <p class="partners__copy">&copy; 2026 Kenya Youth Intercounty Sports Association</p>
+  </footer>
 
 </div>
-<!-- /page -->
 
-
-<!-- Forgot Password Modal -->
+<!-- FORGOT PASSWORD MODAL -->
 <div class="modal-bg" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal">
     <button class="modal__close" id="modalClose" aria-label="Close">
@@ -829,52 +641,43 @@
 </div>
 
 <script>
-(function () {
+(function(){
   /* forgot modal */
-  const modal     = document.getElementById('modal');
-  const forgotBtn = document.getElementById('forgotBtn');
-  const closeBtns = [document.getElementById('modalClose'), document.getElementById('modalCancel')];
-  forgotBtn  && forgotBtn.addEventListener('click',  () => modal.classList.add('open'));
-  closeBtns.forEach(el => el && el.addEventListener('click', () => modal.classList.remove('open')));
-  modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') modal.classList.remove('open'); });
+  const modal=document.getElementById('modal');
+  document.getElementById('forgotBtn').addEventListener('click',()=>modal.classList.add('open'));
+  [document.getElementById('modalClose'),document.getElementById('modalCancel')].forEach(el=>el&&el.addEventListener('click',()=>modal.classList.remove('open')));
+  modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open');});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remove('open');});
 
   /* password toggle */
-  const pwInput   = document.getElementById('password');
-  const eyeBtn    = document.getElementById('eyeBtn');
-  const eyeIco    = document.getElementById('eyeIco');
-  const eyeOpen   = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
-  const eyeClosed = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
-  eyeBtn && eyeBtn.addEventListener('click', () => {
-    const show    = pwInput.type === 'password';
-    pwInput.type  = show ? 'text' : 'password';
-    eyeBtn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
-    eyeIco.innerHTML = show ? eyeClosed : eyeOpen;
+  const pw=document.getElementById('password'),eyeBtn=document.getElementById('eyeBtn'),eyeIco=document.getElementById('eyeIco');
+  const eyeOpen='<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  const eyeClosed='<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  eyeBtn&&eyeBtn.addEventListener('click',()=>{
+    const show=pw.type==='password';
+    pw.type=show?'text':'password';
+    eyeBtn.setAttribute('aria-label',show?'Hide password':'Show password');
+    eyeIco.innerHTML=show?eyeClosed:eyeOpen;
   });
 
   /* submit loading */
-  const form      = document.getElementById('loginForm');
-  const submitBtn = document.getElementById('submitBtn');
-  form && form.addEventListener('submit', () => {
-    submitBtn.classList.add('loading');
-    submitBtn.disabled = true;
-  });
+  const form=document.getElementById('loginForm'),submitBtn=document.getElementById('submitBtn');
+  form&&form.addEventListener('submit',()=>{submitBtn.classList.add('loading');submitBtn.disabled=true;});
 
-  /* field focus class */
-  document.querySelectorAll('.field__input').forEach(input => {
-    const field = input.closest('.field');
-    input.addEventListener('focus', () => field.classList.add('focused'));
-    input.addEventListener('blur',  () => field.classList.remove('focused'));
+  /* field focus */
+  document.querySelectorAll('.field__input').forEach(input=>{
+    const field=input.closest('.field');
+    input.addEventListener('focus',()=>field.classList.add('focused'));
+    input.addEventListener('blur',()=>field.classList.remove('focused'));
   });
 
   /* auto-dismiss alerts */
-  document.querySelectorAll('.alert').forEach(el => {
-    setTimeout(() => {
-      el.style.transition = 'opacity .3s, transform .3s';
-      el.style.opacity    = '0';
-      el.style.transform  = 'translateY(-5px)';
-      setTimeout(() => el.remove(), 300);
-    }, 5000);
+  document.querySelectorAll('.alert').forEach(el=>{
+    setTimeout(()=>{
+      el.style.transition='opacity .3s, transform .3s';
+      el.style.opacity='0';el.style.transform='translateY(-5px)';
+      setTimeout(()=>el.remove(),300);
+    },5000);
   });
 })();
 </script>
