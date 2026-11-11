@@ -9,7 +9,7 @@ Official platform for managing national youth intercounty sports competitions ac
 
 ## Overview
 
-KYISA CMS is a full-stack competition management platform built for Kenya's official youth intercounty sports body. It handles the full lifecycle of national sports competitions — from county registration and player identity verification through to fixture scheduling, match reporting, referee management and results publication.
+KYISA CMS is a full-stack competition management platform built for Kenya's official youth intercounty sports body. It handles the full lifecycle of national sports competitions: from county registration and player identity verification through to fixture scheduling, match reporting, referee management and results publication.
 
 The system serves a multi-role internal portal for ~300 staff users across 47 counties, alongside a public-facing website for news, results and standings.
 
@@ -19,15 +19,15 @@ The system serves a multi-role internal portal for ~300 staff users across 47 co
 
 ### County Registration & Payments
 - County Sports Directors register their county and select sport disciplines
-- M-Pesa STK push (Daraja API) for registration fee payment — funds sent directly to phone
+- M-Pesa STK push (Daraja API) for registration fee payment: funds sent directly to phone
 - Bank slip upload as alternate payment path
 - Treasurer reviews and approves county registrations
 
 ### Player Identity Verification (3-layer pipeline)
-- **Prembly Kenya IPRS** — live lookup against Kenya's national ID database (dual concurrent endpoints merged for maximum data)
-- **Prembly Face Comparison** — biometric check: uploaded passport photo vs government IPRS photo, 70% confidence threshold
-- **Verifisha** — async IPRS verification via webhook callback
-- **Huduma Kenya** — manual verification workflow
+- **Prembly Kenya IPRS**: live lookup against Kenya's national ID database (dual concurrent endpoints merged for maximum data)
+- **Prembly Face Comparison**: biometric check: uploaded passport photo vs government IPRS photo, 70% confidence threshold
+- **Verifisha**: async IPRS verification via webhook callback
+- **Huduma Kenya**: manual verification workflow
 - Age eligibility auto-computed from date of birth
 - Full audit trail per player per check
 
@@ -118,7 +118,7 @@ Endpoints cover: auth, competitions, fixtures, pools, venues, referees, teams, p
 ### Prerequisites
 - Python 3.12+
 - PostgreSQL
-- Redis (optional — DummyCache used in dev)
+- Redis (optional: DummyCache used in dev)
 
 ### Setup
 
@@ -132,7 +132,7 @@ source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 cp .env.example .env
-# Edit .env — set SECRET_KEY, DATABASE_URL at minimum
+# Edit .env: set SECRET_KEY, DATABASE_URL at minimum
 
 python manage.py migrate
 python manage.py createsuperuser
@@ -187,7 +187,7 @@ The project deploys automatically via GitHub Actions on push to `main`.
 ## Project Structure
 
 ```
-kyisa_cms/          # Django project — settings, urls, main views, email utils
+kyisa_cms/          # Django project: settings, urls, main views, email utils
 accounts/           # Custom user model, 18 roles, JWT auth, permissions
 competitions/       # Competitions, pools, fixtures, venues, standings
 teams/              # County registration, player management, M-Pesa, Prembly
@@ -211,7 +211,7 @@ Football (Men & Women) · Volleyball (Men & Women) · Basketball 5x5 (Men & Wome
 
 ## License
 
-Private — Kenya Youth Intercounty Sports Association. All rights reserved.
+Private: Kenya Youth Intercounty Sports Association. All rights reserved.
 
 ---
 
