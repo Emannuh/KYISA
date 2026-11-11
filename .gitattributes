@@ -1,13 +1,24 @@
 # ── GitHub Linguist overrides ────────────────────────────────────────────────
-# Tell GitHub to exclude static assets and templates from language detection
-# so Python shows as the primary language.
+# Ensure Python shows as the primary language on GitHub.
 
-# Static CSS/JS — vendored (not counted toward language stats)
+# HTML templates — mark as non-detectable so CSS inside them is not counted
+templates/**        linguist-detectable=false
+
+# Static CSS/JS — vendored (excluded from language stats)
 static/css/*.css    linguist-vendored=true
 static/js/*.js      linguist-vendored=true
+staticfiles/**      linguist-vendored=true
 
-# HTML templates — documentation (not counted)
-templates/**        linguist-documentation=true
-
-# Migrations — generated code
+# Migrations — generated code (excluded)
 */migrations/*.py   linguist-generated=true
+
+# Frontend scaffold — not built out yet, exclude from stats
+frontend/**         linguist-detectable=false
+
+# Misc files at root that are not source code
+*.bat               linguist-detectable=false
+*.md                linguist-detectable=false
+*.toml              linguist-detectable=false
+*.pptx              linguist-detectable=false
+*.lnk               linguist-detectable=false
+Procfile            linguist-detectable=false
