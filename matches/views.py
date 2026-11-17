@@ -13,7 +13,7 @@ from .serializers import (
     SquadSubmissionSerializer, SquadApprovalSerializer,
     MatchReportSerializer, MatchReportApprovalSerializer,
 )
-from accounts.permissions import IsReferee, IsRefereeManagerOrAdmin, IsCoordinatorOrAdmin
+from accounts.permissions import IsReferee, IsTeamManager, IsRefereeManagerOrAdmin, IsCoordinatorOrAdmin
 
 
 # ══════════════════════════════════════════════════════════════════════════════
