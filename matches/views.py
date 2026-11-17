@@ -13,7 +13,7 @@ from .serializers import (
     SquadSubmissionSerializer, SquadApprovalSerializer,
     MatchReportSerializer, MatchReportApprovalSerializer,
 )
-from accounts.permissions import IsReferee, IsTeamManager, IsRefereeManagerOrAdmin, IsCoordinatorOrAdmin
+from accounts.permissions import IsReferee, IsRefereeManagerOrAdmin, IsCoordinatorOrAdmin
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -190,12 +190,3 @@ class MatchReportApproveView(APIView):
             notify_match_report_returned(report)
 
         return Response({"detail": f"Match report {action}d.", "status": report.status})
-
-
-def _update_standings(fixture):
-    """
-    Legacy helper — delegates to stats_engine.
-    Kept for backward compatibility with web_views.py calls.
-    """
-    from matches.stats_engine import update_pool_standings
-    update_pool_standings(fixture)

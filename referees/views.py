@@ -14,7 +14,7 @@ from .serializers import (
     RefereeAppointmentSerializer, RefereeAvailabilitySerializer,
     RefereeReviewSerializer,
 )
-from accounts.permissions import IsRefereeManager, IsReferee, IsRefereeManagerOrAdmin
+from accounts.permissions import IsReferee, IsRefereeManagerOrAdmin
 
 
 class RefereeListView(generics.ListAPIView):
@@ -76,7 +76,6 @@ class RefereeApproveView(APIView):
         referee.approved_at  = timezone.now() if approved else None
         referee.save()
 
-        # TODO: send email notification to referee
         action = "approved" if approved else "rejected"
         return Response({"detail": f"Referee registration {action}.", "is_approved": approved})
 

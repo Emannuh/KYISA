@@ -5,18 +5,18 @@ from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.throttling import AnonRateThrottle
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenBlacklistView
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import extend_schema
 
 from .serializers import (
     KYISATokenObtainSerializer, UserProfileSerializer,
     UserRegisterSerializer, ChangePasswordSerializer,
 )
 from .permissions import (
-    IsCompetitionManager, IsRefereeManager, IsReferee,
-    IsTeamManager, IsAdminOrCompetitionManager,
+    IsReferee,
+    IsAdminOrCompetitionManager,
 )
 
 User = get_user_model()
