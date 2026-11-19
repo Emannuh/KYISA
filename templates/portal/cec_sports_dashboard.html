@@ -10,9 +10,9 @@
     <p>View-only access for CEC Members and Chief Officers Caucus.</p>
 </div>
 
-<div style="margin-bottom:1.25rem;padding:1rem 1.2rem;border-radius:12px;background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-left:4px solid #1565C0;">
-    <strong style="color:#0D47A1;"><i class="bi bi-eye"></i> Read-only mode:</strong>
-    <span style="color:#555;"> this portal is for oversight and monitoring only.</span>
+<div class="s-ca26d81">
+    <strong class="s-1c54ff6"><i class="bi bi-eye"></i> Read-only mode:</strong>
+    <span class="s-56b6bda"> this portal is for oversight and monitoring only.</span>
 </div>
 
 <!-- Stats -->
@@ -62,7 +62,7 @@
                     <tr>
                         <td><strong>{{ comp.name }}</strong></td>
                         <td>{{ comp.get_sport_type_display }}</td>
-                        <td><span class="dash-badge" style="background:#E8F5E9;color:#1B5E20;">{{ comp.get_status_display }}</span></td>
+                        <td><span class="dash-badge s-02f0f8b">{{ comp.get_status_display }}</span></td>
                         <td>{{ comp.start_date|date:"d M Y" }} - {{ comp.end_date|date:"d M Y" }}</td>
                     </tr>
                     {% endfor %}
@@ -71,7 +71,7 @@
         </div>
         {% else %}
         <div class="dash-empty">
-            <i class="bi bi-calendar-x" style="font-size:2.5rem;color:#BBDEFB;"></i>
+            <i class="bi bi-calendar-x s-a5c2fb0"></i>
             <p>No competitions available yet.</p>
         </div>
         {% endif %}

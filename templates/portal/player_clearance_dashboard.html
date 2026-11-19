@@ -41,53 +41,53 @@
 </div>
 
 <!-- Verification Pipeline -->
-<div class="dash-panel" style="margin-bottom:1.5rem">
+<div class="dash-panel s-92cb257">
     <div class="dash-panel-head">
         <span><i class="bi bi-bar-chart-steps"></i> Verification Pipeline</span>
     </div>
     <div class="dash-panel-body">
         <div class="pc-pipeline">
             <!-- Step 1 -->
-            <div class="pc-step" style="border-left:4px solid #FF9800;">
-                <h4 style="margin:0 0 .5rem;color:#E65100;font-size:.88rem;"><i class="bi bi-1-circle-fill"></i> Document Verification</h4>
-                <div style="display:flex;justify-content:space-between;font-size:.85rem;flex-wrap:wrap;gap:.25rem;">
-                    <span><i class="bi bi-check-circle" style="color:#1B5E20"></i> Verified: <strong>{{ stats.docs_verified }}</strong></span>
-                    <span><i class="bi bi-clock" style="color:#E65100"></i> Pending: <strong>{{ stats.docs_pending }}</strong></span>
+            <div class="pc-step s-1fbcdc6">
+                <h4 class="s-925fb30"><i class="bi bi-1-circle-fill"></i> Document Verification</h4>
+                <div class="s-d5c6559">
+                    <span><i class="bi bi-check-circle s-a24cb3b"></i> Verified: <strong>{{ stats.docs_verified }}</strong></span>
+                    <span><i class="bi bi-clock s-687040b"></i> Pending: <strong>{{ stats.docs_pending }}</strong></span>
                 </div>
                 {% if stats.total > 0 %}
-                <div style="margin-top:.5rem;background:#e0e0e0;border-radius:4px;height:6px;overflow:hidden">
+                <div class="s-02bab3e">
                     <div style="width:{% widthratio stats.docs_verified stats.total 100 %}%;height:100%;background:linear-gradient(90deg,#4CAF50,#66BB6A);border-radius:4px;transition:width .5s ease"></div>
                 </div>
                 {% endif %}
             </div>
             <!-- Step 2 -->
-            <div class="pc-step" style="border-left:4px solid #1565C0;">
-                <h4 style="margin:0 0 .5rem;color:#0D47A1;font-size:.88rem;"><i class="bi bi-2-circle-fill"></i> Huduma Kenya (Age)</h4>
-                <div style="display:flex;justify-content:space-between;font-size:.85rem;flex-wrap:wrap;gap:.25rem;">
-                    <span><i class="bi bi-check-circle" style="color:#1B5E20"></i> Verified: <strong>{{ stats.huduma_verified }}</strong></span>
-                    <span><i class="bi bi-clock" style="color:#E65100"></i> Not Checked: <strong>{{ stats.huduma_not_checked }}</strong></span>
+            <div class="pc-step s-598db67">
+                <h4 class="s-2422d9d"><i class="bi bi-2-circle-fill"></i> Huduma Kenya (Age)</h4>
+                <div class="s-d5c6559">
+                    <span><i class="bi bi-check-circle s-a24cb3b"></i> Verified: <strong>{{ stats.huduma_verified }}</strong></span>
+                    <span><i class="bi bi-clock s-687040b"></i> Not Checked: <strong>{{ stats.huduma_not_checked }}</strong></span>
                 </div>
-                <div style="font-size:.8rem;color:#888;margin-top:.25rem">
-                    <i class="bi bi-x-circle" style="color:#C62828"></i> Failed: {{ stats.huduma_failed }}
+                <div class="s-2f851b2">
+                    <i class="bi bi-x-circle s-767a43b"></i> Failed: {{ stats.huduma_failed }}
                 </div>
                 {% if stats.total > 0 %}
-                <div style="margin-top:.5rem;background:#e0e0e0;border-radius:4px;height:6px;overflow:hidden">
+                <div class="s-02bab3e">
                     <div style="width:{% widthratio stats.huduma_verified stats.total 100 %}%;height:100%;background:linear-gradient(90deg,#1565C0,#42A5F5);border-radius:4px;transition:width .5s ease"></div>
                 </div>
                 {% endif %}
             </div>
             <!-- Step 3 -->
-            <div class="pc-step" style="border-left:4px solid #1B5E20;">
-                <h4 style="margin:0 0 .5rem;color:#1B5E20;font-size:.88rem;"><i class="bi bi-3-circle-fill"></i> FIFA Connect (League)</h4>
-                <div style="display:flex;justify-content:space-between;font-size:.85rem;flex-wrap:wrap;gap:.25rem;">
-                    <span><i class="bi bi-check-circle" style="color:#1B5E20"></i> Clear: <strong>{{ stats.fifa_clear }}</strong></span>
-                    <span><i class="bi bi-clock" style="color:#E65100"></i> Not Checked: <strong>{{ stats.fifa_not_checked }}</strong></span>
+            <div class="pc-step s-8c32bc8">
+                <h4 class="s-da95604"><i class="bi bi-3-circle-fill"></i> FIFA Connect (League)</h4>
+                <div class="s-d5c6559">
+                    <span><i class="bi bi-check-circle s-a24cb3b"></i> Clear: <strong>{{ stats.fifa_clear }}</strong></span>
+                    <span><i class="bi bi-clock s-687040b"></i> Not Checked: <strong>{{ stats.fifa_not_checked }}</strong></span>
                 </div>
-                <div style="font-size:.8rem;color:#888;margin-top:.25rem">
-                    <i class="bi bi-flag-fill" style="color:#C62828"></i> Flagged: <strong style="color:#C62828">{{ stats.fifa_flagged }}</strong>
+                <div class="s-2f851b2">
+                    <i class="bi bi-flag-fill s-767a43b"></i> Flagged: <strong class="s-767a43b">{{ stats.fifa_flagged }}</strong>
                 </div>
                 {% if stats.total > 0 %}
-                <div style="margin-top:.5rem;background:#e0e0e0;border-radius:4px;height:6px;overflow:hidden">
+                <div class="s-02bab3e">
                     <div style="width:{% widthratio stats.fifa_clear stats.total 100 %}%;height:100%;background:linear-gradient(90deg,#1B5E20,#4CAF50);border-radius:4px;transition:width .5s ease"></div>
                 </div>
                 {% endif %}
@@ -97,7 +97,7 @@
 </div>
 
 <!-- Bulk Operations -->
-<div class="dash-panel" style="margin-bottom:1.5rem">
+<div class="dash-panel s-92cb257">
     <div class="dash-panel-head">
         <span><i class="bi bi-lightning-charge"></i> Bulk Operations</span>
     </div>
@@ -105,28 +105,28 @@
         <div class="pc-bulk-grid">
             <form method="post" action="{% url 'bulk_huduma_check' %}">
                 {% csrf_token %}
-                <div style="display:flex;gap:.75rem;align-items:end;flex-wrap:wrap">
-                    <div style="flex:1;min-width:180px;">
-                        <label style="font-size:.82rem;font-weight:600;color:#333;display:flex;align-items:center;gap:.35rem"><i class="bi bi-person-vcard" style="color:#1565C0"></i> Bulk Huduma Kenya Check</label>
-                        <select name="team_id" required style="width:100%;padding:.5rem;border:1px solid #ddd;border-radius:8px;margin-top:.25rem;font-size:.85rem">
+                <div class="s-9d01b31">
+                    <div class="s-733c234">
+                        <label class="s-7f76e80"><i class="bi bi-person-vcard s-06bcaaa"></i> Bulk Huduma Kenya Check</label>
+                        <select name="team_id" required class="s-ff6dd97">
                             <option value="">Select Team...</option>
                             {% for t in teams %}<option value="{{ t.pk }}">{{ t.name }}</option>{% endfor %}
                         </select>
                     </div>
-                    <button type="submit" style="padding:.5rem 1.25rem;background:linear-gradient(135deg,#1565C0,#1E88E5);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;white-space:nowrap;font-size:.85rem">Run Check</button>
+                    <button type="submit" class="s-ec99bd3">Run Check</button>
                 </div>
             </form>
             <form method="post" action="{% url 'bulk_fifa_connect_check' %}">
                 {% csrf_token %}
-                <div style="display:flex;gap:.75rem;align-items:end;flex-wrap:wrap">
-                    <div style="flex:1;min-width:180px;">
-                        <label style="font-size:.82rem;font-weight:600;color:#333;display:flex;align-items:center;gap:.35rem"><i class="bi bi-globe2" style="color:#1B5E20"></i> Bulk FIFA Connect Check</label>
-                        <select name="team_id" required style="width:100%;padding:.5rem;border:1px solid #ddd;border-radius:8px;margin-top:.25rem;font-size:.85rem">
+                <div class="s-9d01b31">
+                    <div class="s-733c234">
+                        <label class="s-7f76e80"><i class="bi bi-globe2 s-a24cb3b"></i> Bulk FIFA Connect Check</label>
+                        <select name="team_id" required class="s-ff6dd97">
                             <option value="">Select Team...</option>
                             {% for t in teams %}<option value="{{ t.pk }}">{{ t.name }}</option>{% endfor %}
                         </select>
                     </div>
-                    <button type="submit" style="padding:.5rem 1.25rem;background:linear-gradient(135deg,#1B5E20,#2E7D32);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;white-space:nowrap;font-size:.85rem">Run Check</button>
+                    <button type="submit" class="s-6b411e1">Run Check</button>
                 </div>
             </form>
         </div>
@@ -134,23 +134,23 @@
 </div>
 
 <!-- Filters & Search -->
-<div class="dash-panel" style="margin-bottom:1.5rem">
-    <div class="dash-panel-body" style="padding:.85rem 1.25rem">
-        <form method="get" style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap">
-            <input type="text" name="q" value="{{ search }}" placeholder="Search player name, ID..." style="padding:.5rem .75rem;border:1px solid #ddd;border-radius:8px;flex:1;min-width:180px;font-size:.85rem">
-            <select name="team" style="padding:.5rem;border:1px solid #ddd;border-radius:8px;font-size:.85rem">
+<div class="dash-panel s-92cb257">
+    <div class="dash-panel-body s-07f8823">
+        <form method="get" class="s-083149a">
+            <input type="text" name="q" value="{{ search }}" placeholder="Search player name, ID..." class="s-7660938">
+            <select name="team" class="s-18d91ff">
                 <option value="">All Teams</option>
                 {% for t in teams %}<option value="{{ t.pk }}" {% if team_filter == t.pk|stringformat:"d" %}selected{% endif %}>{{ t.name }}</option>{% endfor %}
             </select>
-            <select name="status" style="padding:.5rem;border:1px solid #ddd;border-radius:8px;font-size:.85rem">
+            <select name="status" class="s-18d91ff">
                 <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Statuses</option>
                 <option value="cleared" {% if status_filter == 'cleared' %}selected{% endif %}>Fully Cleared</option>
                 <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending Steps</option>
                 <option value="flagged" {% if status_filter == 'flagged' %}selected{% endif %}>Flagged / Failed</option>
             </select>
-            <button type="submit" style="padding:.5rem 1rem;background:linear-gradient(135deg,#1B5E20,#2E7D32);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:.85rem"><i class="bi bi-funnel"></i> Filter</button>
+            <button type="submit" class="s-a630e95"><i class="bi bi-funnel"></i> Filter</button>
             {% if search or team_filter or status_filter != 'all' %}
-            <a href="{% url 'player_clearance_dashboard' %}" style="color:#888;font-size:.82rem;text-decoration:none"><i class="bi bi-x-circle"></i> Clear</a>
+            <a href="{% url 'player_clearance_dashboard' %}" class="s-08d6610"><i class="bi bi-x-circle"></i> Clear</a>
             {% endif %}
         </form>
     </div>
@@ -161,7 +161,7 @@
     <div class="dash-panel-head">
         <span><i class="bi bi-table"></i> Player Clearance Status</span>
     </div>
-    <div class="dash-panel-body" style="padding:0">
+    <div class="dash-panel-body s-ac0d4af">
         {% if players %}
         <div class="table-responsive">
             <table>
@@ -179,62 +179,62 @@
                 </thead>
                 <tbody>
                     {% for p in players %}
-                    <tr{% if p.fifa_connect_status == 'flagged' %} style="background:#fce4ec"{% elif p.is_fully_cleared %} style="background:#f1f8e9"{% endif %}>
+                    <tr{% if p.fifa_connect_status == 'flagged' %} class="s-aeee1b7"{% elif p.is_fully_cleared %} style="background:#f1f8e9"{% endif %}>
                         <td>
                             <strong>{{ p.first_name }} {{ p.last_name }}</strong>
-                            <br><small style="color:#888">#{{ p.shirt_number }} &middot; {{ p.get_position_display }}</small>
-                            {% if p.fifa_connect_id %}<br><small style="color:#1565C0">FIFA: {{ p.fifa_connect_id }}</small>{% endif %}
+                            <br><small class="s-9dae231">#{{ p.shirt_number }} &middot; {{ p.get_position_display }}</small>
+                            {% if p.fifa_connect_id %}<br><small class="s-06bcaaa">FIFA: {{ p.fifa_connect_id }}</small>{% endif %}
                         </td>
-                        <td>{{ p.team.name }}<br><small style="color:#888">{{ p.team.county }}</small></td>
+                        <td>{{ p.team.name }}<br><small class="s-9dae231">{{ p.team.county }}</small></td>
                         <td>
                             {% if p.is_age_eligible %}
-                            <span style="color:#1B5E20;font-weight:600">{{ p.age }}</span>
+                            <span class="s-35363a4">{{ p.age }}</span>
                             {% else %}
-                            <span style="color:#C62828;font-weight:700">{{ p.age }} <i class="bi bi-exclamation-octagon-fill"></i></span>
+                            <span class="s-8a3f6f6">{{ p.age }} <i class="bi bi-exclamation-octagon-fill"></i></span>
                             {% endif %}
                         </td>
-                        <td style="text-align:center">
+                        <td class="s-65f9d5a">
                             {% if p.verification_status == 'verified' %}
-                            <span class="dash-badge" style="background:#E8F5E9;color:#1B5E20;"><i class="bi bi-check-circle-fill"></i> Verified</span>
+                            <span class="dash-badge s-02f0f8b"><i class="bi bi-check-circle-fill"></i> Verified</span>
                             {% elif p.verification_status == 'rejected' %}
-                            <span class="dash-badge" style="background:#FFEBEE;color:#C62828;"><i class="bi bi-x-circle-fill"></i> Rejected</span>
+                            <span class="dash-badge s-7e92160"><i class="bi bi-x-circle-fill"></i> Rejected</span>
                             {% else %}
-                            <span class="dash-badge" style="background:#FFF3E0;color:#E65100;"><i class="bi bi-clock"></i> Pending</span>
+                            <span class="dash-badge s-013065e"><i class="bi bi-clock"></i> Pending</span>
                             {% endif %}
                         </td>
-                        <td style="text-align:center">
+                        <td class="s-65f9d5a">
                             {% if p.huduma_status == 'verified' %}
-                            <span class="dash-badge" style="background:#E8F5E9;color:#1B5E20;"><i class="bi bi-check-circle-fill"></i> Verified</span>
+                            <span class="dash-badge s-02f0f8b"><i class="bi bi-check-circle-fill"></i> Verified</span>
                             {% elif p.huduma_status == 'failed' %}
-                            <span class="dash-badge" style="background:#FFEBEE;color:#C62828;"><i class="bi bi-x-circle-fill"></i> Failed</span>
+                            <span class="dash-badge s-7e92160"><i class="bi bi-x-circle-fill"></i> Failed</span>
                             {% elif p.huduma_status == 'pending' %}
-                            <span class="dash-badge" style="background:#FFF3E0;color:#E65100;"><i class="bi bi-clock"></i> Pending</span>
+                            <span class="dash-badge s-013065e"><i class="bi bi-clock"></i> Pending</span>
                             {% else %}
-                            <span class="dash-badge" style="background:#F5F5F5;color:#888;">— Not Checked</span>
+                            <span class="dash-badge s-962d9b7">— Not Checked</span>
                             {% endif %}
                         </td>
-                        <td style="text-align:center">
+                        <td class="s-65f9d5a">
                             {% if p.fifa_connect_status == 'clear' %}
-                            <span class="dash-badge" style="background:#E8F5E9;color:#1B5E20;"><i class="bi bi-check-circle-fill"></i> Clear</span>
+                            <span class="dash-badge s-02f0f8b"><i class="bi bi-check-circle-fill"></i> Clear</span>
                             {% elif p.fifa_connect_status == 'flagged' %}
-                            <span class="dash-badge" style="background:#FFEBEE;color:#C62828;"><i class="bi bi-flag-fill"></i> Flagged</span>
+                            <span class="dash-badge s-7e92160"><i class="bi bi-flag-fill"></i> Flagged</span>
                             {% elif p.fifa_connect_status == 'error' %}
-                            <span class="dash-badge" style="background:#FFF3E0;color:#E65100;"><i class="bi bi-exclamation-triangle"></i> Error</span>
+                            <span class="dash-badge s-013065e"><i class="bi bi-exclamation-triangle"></i> Error</span>
                             {% else %}
-                            <span class="dash-badge" style="background:#F5F5F5;color:#888;">— Not Checked</span>
+                            <span class="dash-badge s-962d9b7">— Not Checked</span>
                             {% endif %}
                         </td>
-                        <td style="text-align:center">
+                        <td class="s-65f9d5a">
                             {% if p.is_fully_cleared and p.status == 'eligible' %}
-                            <span class="dash-badge" style="background:#1B5E20;color:#fff;padding:.3rem .75rem;border-radius:20px;font-weight:700"><i class="bi bi-shield-fill-check"></i> CLEARED</span>
+                            <span class="dash-badge s-ef497ef"><i class="bi bi-shield-fill-check"></i> CLEARED</span>
                             {% elif p.is_fully_cleared %}
-                            <span class="dash-badge" style="background:#FF9800;color:#fff;padding:.3rem .75rem;border-radius:20px;">Awaiting</span>
+                            <span class="dash-badge s-f763b3b">Awaiting</span>
                             {% else %}
-                            <span class="dash-badge" style="background:#F5F5F5;color:#888;padding:.3rem .75rem;border-radius:20px;">Incomplete</span>
+                            <span class="dash-badge s-4d5b2e0">Incomplete</span>
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{% url 'player_clearance_detail' player_pk=p.pk %}" class="dash-badge" style="background:linear-gradient(135deg,#1B5E20,#2E7D32);color:#fff;text-decoration:none;padding:.3rem .75rem;border-radius:6px;font-weight:600">Review</a>
+                            <a href="{% url 'player_clearance_detail' player_pk=p.pk %}" class="dash-badge s-1d5c50a">Review</a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -242,9 +242,9 @@
             </table>
         </div>
         {% else %}
-        <div class="dash-empty" style="padding:3rem">
-            <i class="bi bi-search" style="font-size:2.5rem;color:#C8E6C9;"></i>
-            <h3 style="color:#666;margin:.75rem 0 .25rem;">No players found</h3>
+        <div class="dash-empty s-d3c6bef">
+            <i class="bi bi-search s-1201a9b"></i>
+            <h3 class="s-e2e8109">No players found</h3>
             <p>Adjust your filters or search criteria.</p>
         </div>
         {% endif %}

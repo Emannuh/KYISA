@@ -12,10 +12,10 @@
 </div>
 
 <!-- Filters -->
-<div class="card p-3 mb-3" style="background:#f9f9f9;">
+<div class="card p-3 mb-3 s-fcb358b">
     <form method="get" class="d-flex gap-3 align-items-end flex-wrap">
         <div>
-            <label class="form-label mb-1" style="font-size:.82rem;font-weight:600;">Discipline</label>
+            <label class="form-label mb-1 s-a78eb9c">Discipline</label>
             <select name="discipline" class="form-select form-select-sm" onchange="this.form.submit()">
                 <option value="">All Disciplines</option>
                 {% for val, label in disciplines %}
@@ -24,7 +24,7 @@
             </select>
         </div>
         <div>
-            <label class="form-label mb-1" style="font-size:.82rem;font-weight:600;">Status</label>
+            <label class="form-label mb-1 s-a78eb9c">Status</label>
             <select name="tab" class="form-select form-select-sm" onchange="this.form.submit()">
                 <option value="verified" {% if tab == 'verified' %}selected{% endif %}>Verified ({{ stats.verified }})</option>
                 <option value="pending" {% if tab == 'pending' %}selected{% endif %}>Pending ({{ stats.pending }})</option>
@@ -38,17 +38,17 @@
 <div class="row g-2 mb-3">
     <div class="col-md-4">
         <div class="card p-2 text-center {% if tab == 'verified' %}border-success{% endif %}">
-            <strong style="color:#4CAF50;">{{ stats.verified }}</strong> <span class="text-muted" style="font-size:.82rem;">Verified</span>
+            <strong class="s-8340246">{{ stats.verified }}</strong> <span class="text-muted s-9dd65a4">Verified</span>
         </div>
     </div>
     <div class="col-md-4">
         <div class="card p-2 text-center {% if tab == 'pending' %}border-warning{% endif %}">
-            <strong style="color:#FF9800;">{{ stats.pending }}</strong> <span class="text-muted" style="font-size:.82rem;">Pending</span>
+            <strong class="s-bdc4df6">{{ stats.pending }}</strong> <span class="text-muted s-9dd65a4">Pending</span>
         </div>
     </div>
     <div class="col-md-4">
         <div class="card p-2 text-center {% if tab == 'rejected' %}border-danger{% endif %}">
-            <strong style="color:#F44336;">{{ stats.rejected }}</strong> <span class="text-muted" style="font-size:.82rem;">Rejected</span>
+            <strong class="s-7fc6835">{{ stats.rejected }}</strong> <span class="text-muted s-9dd65a4">Rejected</span>
         </div>
     </div>
 </div>
@@ -57,7 +57,7 @@
 <div class="card p-3">
     <div class="table-responsive">
         <table class="table table-sm table-hover mb-0">
-            <thead style="background:#f5f5f5;">
+            <thead class="s-05b35f1">
                 <tr>
                     <th>Player Name</th>
                     <th>County</th>

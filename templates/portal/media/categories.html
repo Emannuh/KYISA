@@ -12,7 +12,7 @@
     <p>Manage categories for news articles.</p>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 340px;gap:2rem;align-items:start">
+<div class="s-abcc2b7">
     <!-- Categories list -->
     <div class="portal-table-wrap">
         <div class="portal-table-head">
@@ -33,12 +33,12 @@
                 <tbody>
                     {% for cat in categories %}
                     <tr>
-                        <td><i class="bi {{ cat.icon }}" style="font-size:1.2rem"></i></td>
-                        <td style="font-weight:600">{{ cat.name }}</td>
-                        <td style="color:#888">{{ cat.slug }}</td>
+                        <td><i class="bi {{ cat.icon }} s-8ed6849"></i></td>
+                        <td class="s-21a1be8">{{ cat.name }}</td>
+                        <td class="s-9dae231">{{ cat.slug }}</td>
                         <td>{{ cat.articles.count }}</td>
                         <td>
-                            <form method="post" action="{% url 'media_category_delete' cat.pk %}" style="display:inline"
+                            <form method="post" action="{% url 'media_category_delete' cat.pk %}" class="s-2f8710b"
                                   onsubmit="return confirm('Delete category &quot;{{ cat.name }}&quot;? Articles in this category will be uncategorised.')">
                                 {% csrf_token %}
                                 <button type="submit" class="pbtn pbtn-sm pbtn-outline-danger"><i class="bi bi-trash"></i> Delete</button>
@@ -83,7 +83,7 @@
                 </div>
                 {% endfor %}
 
-                <button type="submit" class="pbtn pbtn-primary" style="width:100%">
+                <button type="submit" class="pbtn pbtn-primary s-16000cc">
                     <i class="bi bi-plus-circle"></i> Create Category
                 </button>
             </form>

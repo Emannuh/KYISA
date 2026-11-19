@@ -1,25 +1,15 @@
 {% extends 'base.html' %}
+{% block body_class %}pg-portal-coordinator-statistics{% endblock %}
 {% block title %}Statistics   {{ competition.name }}   KYISA CMS{% endblock %}
 
 {% block extra_css %}
-<style>
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
-    .stat-card { background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.06); overflow: hidden; }
-    .stat-card .card-header { padding: .75rem 1rem; border-bottom: 1px solid #eee; }
-    .stat-card .card-header h3 { margin: 0; font-size: 1rem; font-weight: 600; }
-    .stat-card .card-body { padding: 1rem; }
-    .tbl { width: 100%; border-collapse: collapse; font-size: .85rem; }
-    .tbl th { background: #f5f5f5; padding: .5rem .75rem; font-weight: 600; text-align: left; }
-    .tbl td { padding: .5rem .75rem; border-bottom: 1px solid #f0f0f0; }
-    @media (max-width: 768px) { .stats-grid { grid-template-columns: 1fr; } }
-</style>
 {% endblock %}
 
 {% block content %}
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+<div class="s-aa0ee9a">
     <div>
-        <h2 style="font-size:1.3rem;font-weight:700;"><i class="bi bi-bar-chart-line"></i> Competition Statistics</h2>
-        <div style="font-size:.85rem;color:#757575;">{{ competition.name }}</div>
+        <h2 class="s-99083dd"><i class="bi bi-bar-chart-line"></i> Competition Statistics</h2>
+        <div class="s-c9be501">{{ competition.name }}</div>
     </div>
     <a href="{% url 'coordinator_competition_manage' pk=competition.pk %}" class="btn btn-outline-secondary btn-sm">&larr; Back</a>
 </div>
@@ -39,7 +29,7 @@
                 </tbody>
             </table>
             {% else %}
-            <div style="text-align:center;padding:1rem;color:#999;">No goals recorded yet.</div>
+            <div class="s-8079dbe">No goals recorded yet.</div>
             {% endif %}
         </div>
     </div>
@@ -58,7 +48,7 @@
                 </tbody>
             </table>
             {% else %}
-            <div style="text-align:center;padding:1rem;color:#999;">No assists recorded yet.</div>
+            <div class="s-8079dbe">No assists recorded yet.</div>
             {% endif %}
         </div>
     </div>
@@ -78,7 +68,7 @@
             </tbody>
         </table>
         {% else %}
-        <div style="text-align:center;padding:1rem;color:#999;">No disciplinary records yet.</div>
+        <div class="s-8079dbe">No disciplinary records yet.</div>
         {% endif %}
     </div>
 </div>
@@ -103,18 +93,18 @@
             </tbody>
         </table>
         {% else %}
-        <div style="text-align:center;padding:1rem;color:#999;">No fair play entries yet.</div>
+        <div class="s-8079dbe">No fair play entries yet.</div>
         {% endif %}
     </div>
 </div>
 
 <!-- Pool Standings -->
 {% if pool_data %}
-<h3 style="font-size:1.1rem;font-weight:600;margin-bottom:1rem;">Pool Standings</h3>
+<h3 class="s-cdcf426">Pool Standings</h3>
 {% for pd in pool_data %}
 <div class="stat-card mb-3">
     <div class="card-header"><h3>{{ pd.pool.name }}</h3></div>
-    <div class="card-body" style="overflow-x:auto;">
+    <div class="card-body s-987eb2a">
         <table class="tbl">
             <thead><tr><th>#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead>
             <tbody>

@@ -1,0 +1,1152 @@
+/* Generated from inline template styles by inline_to_css.py.
+   .s-<hash>:not(#_) = an inline style moved here; :not(#_) keeps inline-level
+   precedence (beats stylesheet classes, loses to styles set by JavaScript).
+   Page styles below are scoped with :where(.pg-<template>). Prefer replacing
+   these with shared component classes over time. */
+/* portal/county_admin/verification_status.html, portal/media/dashboard.html */
+.s-0079b0b:not(#_) {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #C62828;
+}
+
+/* admin_dashboard/admin_edit_fixture.html, admin_dashboard/competition_fixtures.html */
+.s-013065e:not(#_) {
+    background: #FFF3E0;
+    color: #E65100;
+}
+
+/* appeals/appeal_detail.html, portal/media/album_list.html */
+.s-02159f4:not(#_) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+/* portal/verify_player.html, public/competition_detail.html */
+.s-02b1ff7:not(#_) {
+    font-weight: 600;
+    width: 40%;
+}
+
+/* portal/add_player.html, portal/team_manager/match_squad.html */
+.s-02c9dfc:not(#_) {
+    color: #e65100;
+}
+
+/* admin_dashboard/admin_edit_fixture.html, admin_dashboard/user_detail.html */
+.s-02f0f8b:not(#_) {
+    background: #E8F5E9;
+    color: #1B5E20;
+}
+
+/* admin_dashboard/audit_report.html, portal/cm/allocate_venues.html */
+.s-03375b4:not(#_) {
+    width: 8%;
+}
+
+/* appeals/finalize_appeal.html, appeals/pay_fee.html */
+.s-048ebd1:not(#_) {
+    padding: 2rem;
+    max-width: 600px;
+}
+
+/* kicosca/add_player.html, portal/county_admin/add_player.html */
+.s-052a031:not(#_) {
+    display: none;
+    margin-top: .4rem;
+    font-size: .78rem;
+    color: #dc2626;
+    font-weight: 600;
+}
+
+/* admin_dashboard/dashboard.html, appeals/jury_dashboard.html */
+.s-0530c51:not(#_) {
+    background: linear-gradient(135deg,#E3F2FD,#BBDEFB);
+    color: #1565C0;
+}
+
+/* portal/referee_appoint.html, portal/coordinator/manage_competition.html */
+.s-05b35f1:not(#_) {
+    background: #f5f5f5;
+}
+
+/* admin_dashboard/audit_report.html, portal/player_clearance_dashboard.html */
+.s-06bcaaa:not(#_) {
+    color: #1565C0;
+}
+
+/* portal/cm/verify_county_player.html, portal/county_admin/dashboard.html */
+.s-0916813:not(#_) {
+    display: flex;
+    gap: .4rem;
+}
+
+/* kicosca/player_detail.html, portal/cm/verify_county_player.html */
+.s-0a9eb3d:not(#_) {
+    padding: .9rem 1rem;
+}
+
+/* portal/treasurer/dashboard.html, portal/verification/discipline_delegation.html */
+.s-0c1b5a4:not(#_) {
+    font-size: .85rem;
+    color: #1B5E20;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* portal/player_verification_logs.html, portal/scout/players.html */
+.s-0c1b9d7:not(#_) {
+    padding: 3rem;
+    text-align: center;
+}
+
+/* appeals/jury_decision.html, appeals/pay_fee.html */
+.s-0ce45ac:not(#_) {
+    color: #666;
+}
+
+/* dashboard/email_inbox.html, dashboard/email_logs.html */
+.s-0ef737a:not(#_) {
+    margin-bottom: 1.2rem;
+}
+
+/* kicosca/player_detail.html, portal/match_report_review.html */
+.s-11a63a3:not(#_) {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* admin_dashboard/manage_users.html, kicosca/player_detail.html */
+.s-12e7917:not(#_) {
+    color: #fff;
+}
+
+/* appeals/appeal_detail.html, kicosca/dashboard.html */
+.s-132128b:not(#_) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+/* dashboard/email_inbox.html, dashboard/email_logs.html */
+.s-16000cc:not(#_) {
+    width: 100%;
+}
+
+/* dashboard/email_logs.html, kicosca/discipline_players.html */
+.s-1614b55:not(#_) {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: .5rem;
+}
+
+/* portal/competition_report_approve.html, portal/delete_player.html */
+.s-1671690:not(#_) {
+    text-align: center;
+    padding: 2rem;
+}
+
+/* portal/competition_reports.html, portal/competition_report_approve.html */
+.s-1889d5d:not(#_) {
+    font-size: .82rem;
+    color: #888;
+}
+
+/* portal/county_admin/discipline_players.html, portal/verification/_player_table.html */
+.s-189a9bc:not(#_) {
+    background: #f5f5f5;
+    color: #888;
+    padding: .15rem .5rem;
+    border-radius: 10px;
+    font-size: .75rem;
+    font-weight: 600;
+}
+
+/* portal/county_admin/add_bench_member.html, portal/team_manager/file_appeal.html */
+.s-1ba1214:not(#_) {
+    display: block;
+    font-weight: 600;
+    font-size: .88rem;
+    color: #333;
+    margin-bottom: .3rem;
+}
+
+/* portal/competition_reports.html, portal/county_admin/verification_status.html */
+.s-1c3d0f9:not(#_) {
+    color: #888;
+    font-size: .82rem;
+}
+
+/* portal/pending_referees.html, portal/referee_appointments.html */
+.s-1cd2eeb:not(#_) {
+    white-space: nowrap;
+}
+
+/* appeals/cancel_hearing.html, competitions/detail.html */
+.s-1d30ad4:not(#_) {
+    margin-top: 1.5rem;
+}
+
+/* kicosca/discipline_players.html, portal/county_admin/discipline_players.html */
+.s-1e0ff0a:not(#_) {
+    padding: .6rem 1rem;
+    font-weight: 600;
+}
+
+/* portal/delete_player.html, portal/media/confirm_delete.html */
+.s-21418d5:not(#_) {
+    max-width: 500px;
+}
+
+/* admin_dashboard/knockout_hub.html, portal/squad_select.html */
+.s-217cce0:not(#_) {
+    color: #6A1B9A;
+    font-weight: 600;
+}
+
+/* admin_dashboard/user_detail.html, appeals/appeals_list.html */
+.s-21a1be8:not(#_) {
+    font-weight: 600;
+}
+
+/* kicosca/add_discipline.html, portal/cm/manage_competition.html */
+.s-2259230:not(#_) {
+    display: flex;
+    gap: .75rem;
+}
+
+/* admin_dashboard/dashboard.html, portal/cm/dashboard.html */
+.s-227b4b9:not(#_) {
+    background: linear-gradient(135deg,#E8F5E9,#C8E6C9);
+    color: #1B5E20;
+}
+
+/* admin_dashboard/dashboard.html, appeals/jury_dashboard.html */
+.s-22d0a87:not(#_) {
+    background: linear-gradient(135deg,#E8F5E9,#C8E6C9);
+    color: #2E7D32;
+}
+
+/* portal/county_admin/discipline_players.html, portal/verification/_player_table.html */
+.s-22e915c:not(#_) {
+    background: #FFF8E1;
+    color: #E65100;
+    padding: .15rem .5rem;
+    border-radius: 10px;
+    font-size: .75rem;
+    font-weight: 600;
+}
+
+/* portal/match_report_form.html, portal/referee_edit_profile.html */
+.s-2414d3c:not(#_) {
+    margin-bottom: .5rem;
+}
+
+/* portal/player_profile.html, portal/team_manager/match_squad.html */
+.s-25e69f0:not(#_) {
+    background: #e3f2fd;
+    color: #1565c0;
+    padding: .3rem .8rem;
+    border-radius: 20px;
+    font-size: .82rem;
+    font-weight: 600;
+}
+
+/* portal/county_admin/verification_status.html, portal/team_manager/opponent_view.html */
+.s-278b61e:not(#_) {
+    background: #e8f5e9;
+    text-align: left;
+}
+
+/* portal/admin/dashboard.html, portal/secretary_general/system_overview.html */
+.s-2817b5d:not(#_) {
+    background: #f5f3ff;
+    color: #6d28d9;
+}
+
+/* kicosca/player_detail.html, portal/cm/verify_county_player.html */
+.s-28fffd7:not(#_) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .75rem;
+}
+
+/* kicosca/discipline_players.html, portal/county_admin/discipline_players.html */
+.s-29057bb:not(#_) {
+    padding: .6rem 1rem;
+}
+
+/* appeals/appeal_detail.html, appeals/cancel_hearing.html */
+.s-2a0ca83:not(#_) {
+    margin: 0;
+}
+
+/* dashboard/email_logs.html, portal/coordinator/edit_standings.html */
+.s-2ac322a:not(#_) {
+    width: 50px;
+}
+
+/* admin_dashboard/admin_edit_fixture.html, admin_dashboard/create_knockout_fixture.html */
+.s-2ae4b1e:not(#_) {
+    background: #F3E5F5;
+    color: #6A1B9A;
+}
+
+/* competitions/detail.html, kicosca/discipline_players.html */
+.s-2be0ccd:not(#_) {
+    display: flex;
+    gap: .75rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+/* portal/player_clearance_detail.html, portal/scout/shortlist.html */
+.s-2c955dd:not(#_) {
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+/* kicosca/api_test.html, portal/match_report_form.html */
+.s-2cfd5e5:not(#_) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+@media (max-width: 767px) { .app-main .s-2cfd5e5:not(#_) { grid-template-columns: 1fr; } }
+
+/* portal/edit_player.html, portal/county_admin/add_bench_member.html */
+.s-2e56d29:not(#_) {
+    max-width: 600px;
+}
+
+/* admin_dashboard/knockout_hub.html, dashboard/email_inbox.html */
+.s-2f8710b:not(#_) {
+    display: inline;
+}
+
+/* admin_dashboard/knockout_hub.html, appeals/appeal_detail.html */
+.s-30489cb:not(#_) {
+    text-align: right;
+}
+
+/* kicosca/player_detail.html, portal/cm/verify_county_player.html */
+.s-314df02:not(#_) {
+    margin: 0 0 .75rem;
+    font-size: .83rem;
+    color: #666;
+    line-height: 1.5;
+}
+
+/* jury/squad_detail.html, portal/county_admin/delegation_members.html */
+.s-316b71b:not(#_) {
+    padding: 1.25rem;
+}
+
+/* portal/player_clearance_dashboard.html, portal/squad_select.html */
+.s-35363a4:not(#_) {
+    color: #1B5E20;
+    font-weight: 600;
+}
+
+/* admin_dashboard/user_detail.html, admin_dashboard/user_edit_profile.html */
+.s-35552ee:not(#_) {
+    background: #E8F5E9;
+}
+
+/* portal/add_player.html, teams/detail.html */
+.s-355e22a:not(#_) {
+    font-size: 2rem;
+}
+
+/* portal/player_clearance_detail.html, portal/player_profile.html */
+.s-36945e4:not(#_) {
+    font-size: .85rem;
+    color: #888;
+}
+
+/* kicosca/discipline_players.html, portal/county_admin/discipline_players.html */
+.s-397399d:not(#_) {
+    padding: .7rem 1rem;
+}
+
+/* appeals/jury_dashboard.html, portal/coordinator/dashboard.html */
+.s-3d73108:not(#_) {
+    background: linear-gradient(135deg,#E0F2F1,#B2DFDB);
+    color: #00695C;
+}
+
+/* admin_dashboard/audit_report.html, appeals/appeals_list.html */
+.s-3dc1f6c:not(#_) {
+    font-size: .85rem;
+}
+
+/* portal/add_player.html, portal/edit_player.html */
+.s-3dc9ffe:not(#_) {
+    color: #888;
+    font-size: .8rem;
+}
+
+/* portal/county_admin/add_bench_member.html, portal/team_manager/file_appeal.html */
+.s-3ee9947:not(#_) {
+    padding: .5rem 1.2rem;
+    font-size: .9rem;
+    background: #e0e0e0;
+    color: #333;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* admin_dashboard/edit_user_roles.html, admin_dashboard/manage_users.html */
+.s-41879a5:not(#_) {
+    background: #FFF3E0;
+}
+
+/* portal/county_admin/discipline_players.html, portal/verification/_player_table.html */
+.s-41c3092:not(#_) {
+    background: #E8F5E9;
+    color: #1B5E20;
+    padding: .15rem .5rem;
+    border-radius: 10px;
+    font-size: .75rem;
+    font-weight: 600;
+}
+
+/* portal/county_admin/discipline_players.html, portal/verification/_player_table.html */
+.s-429e957:not(#_) {
+    background: #E3F2FD;
+    color: #0d47a1;
+    padding: .15rem .5rem;
+    border-radius: 10px;
+    font-size: .75rem;
+    font-weight: 600;
+}
+
+/* admin_dashboard/dashboard.html, portal/cm/dashboard.html */
+.s-454eb2e:not(#_) {
+    background: linear-gradient(135deg,#ECEFF1,#CFD8DC);
+    color: #455A64;
+}
+
+/* portal/county_admin/add_bench_member.html, portal/team_manager/file_appeal.html */
+.s-47afe51:not(#_) {
+    color: #888;
+    font-size: .8rem;
+    margin-top: .2rem;
+}
+
+/* jury/disciplinary.html, jury/fixtures.html */
+.s-499aa75:not(#_) {
+    padding: 1rem;
+}
+
+/* portal/player_verification_logs.html, portal/media/dashboard.html */
+.s-4ad1a64:not(#_) {
+    background: #e8f5e9;
+    color: #1B5E20;
+    padding: .2rem .5rem;
+    border-radius: 4px;
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+/* portal/referee_dashboard.html, portal/admin/dashboard.html */
+.s-50435ff:not(#_) {
+    margin-bottom: 0;
+}
+
+/* appeals/appeal_detail.html, portal/verification/_player_table.html */
+.s-5057ba9:not(#_) {
+    margin: .5rem 0;
+}
+
+/* portal/county_admin/add_bench_member.html, portal/team_manager/file_appeal.html */
+.s-516edfa:not(#_) {
+    color: #C62828;
+    font-size: .82rem;
+    margin-top: .2rem;
+}
+
+/* portal/scout/players.html, portal/verification/discipline_players.html */
+.s-519641f:not(#_) {
+    font-size: .8rem;
+    font-weight: 600;
+    display: block;
+    margin-bottom: .25rem;
+}
+
+/* portal/competition_report_approve.html, portal/county_admin/add_player.html */
+.s-51f478e:not(#_) {
+    display: flex;
+    gap: 1rem;
+}
+
+/* dashboard/email_detail.html, dashboard/email_logs.html */
+.s-5283a0d:not(#_) {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+}
+
+/* portal/appointment_action.html, portal/match_report_form.html */
+.s-53b7c24:not(#_) {
+    font-size: .85rem;
+    color: #666;
+}
+
+/* kicosca/player_detail.html, kicosca/verification_dashboard.html */
+.s-5401ea9:not(#_) {
+    color: #9ca3af;
+}
+
+/* admin_dashboard/manage_users.html, portal/competition_standings.html */
+.s-5790ffb:not(#_) {
+    display: none;
+}
+
+/* appeals/appeal_detail.html, appeals/cancel_hearing.html */
+.s-5cd47cb:not(#_) {
+    display: flex;
+    gap: .5rem;
+}
+
+/* kicosca/api_test.html, portal/squad_select.html */
+.s-5db75d4:not(#_) {
+    font-weight: 700;
+}
+
+/* portal/add_player.html, portal/referee_dashboard.html */
+.s-634a28b:not(#_) {
+    flex: 1;
+}
+
+/* admin_dashboard/manage_fixtures_select.html, portal/coordinator/appointments.html */
+.s-63ede09:not(#_) {
+    font-size: 3rem;
+    opacity: .3;
+}
+
+/* portal/player_verification_logs.html, portal/referee_appointments.html */
+.s-64a35c0:not(#_) {
+    font-size: 3rem;
+}
+
+/* portal/scout/shortlist.html, portal/team_manager/match_squad.html */
+.s-6529466:not(#_) {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+/* admin_dashboard/manage_users.html, jury/disciplinary.html */
+.s-65f9d5a:not(#_) {
+    text-align: center;
+}
+
+/* portal/county_admin/add_bench_member.html, portal/county_admin/verification_status.html */
+.s-673cd69:not(#_) {
+    padding: .5rem .8rem;
+    font-weight: 600;
+}
+
+/* portal/add_player.html, portal/county_admin/add_player.html */
+.s-67488b3:not(#_) {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+/* appeals/jury_dashboard.html, competitions/detail.html */
+.s-6823804:not(#_) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* portal/player_clearance_dashboard.html, portal/cm/edit_fixture.html */
+.s-687040b:not(#_) {
+    color: #E65100;
+}
+
+/* portal/player_profile.html, portal/team_manager/match_squad.html */
+.s-689abbc:not(#_) {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: .3rem .8rem;
+    border-radius: 20px;
+    font-size: .82rem;
+    font-weight: 600;
+}
+
+/* admin_dashboard/user_detail.html, jury/disciplinary.html */
+.s-6a7567b:not(#_) {
+    height: 38px;
+}
+
+/* appeals/pay_fee.html, portal/competition_report_approve.html */
+.s-6cf5fc8:not(#_) {
+    color: #1565c0;
+}
+
+/* portal/edit_player.html, teams/detail.html */
+.s-71078af:not(#_) {
+    color: #C62828;
+    font-size: .85rem;
+}
+
+/* portal/competition_standings.html, portal/media/dashboard.html */
+.s-7167656:not(#_) {
+    color: #888;
+    font-size: .85rem;
+}
+
+/* admin_dashboard/user_edit_profile.html, portal/team_manager/file_appeal.html */
+.s-7228731:not(#_) {
+    display: flex;
+    gap: .8rem;
+    margin-top: 1.5rem;
+}
+
+/* portal/scout/players.html, portal/scout/shortlist.html */
+.s-72f46c5:not(#_) {
+    font-size: .85rem;
+    color: #C62828;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* admin_dashboard/delete_knockout_fixture.html, portal/verification/county_disciplines.html */
+.s-72fa390:not(#_) {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+/* dashboard/email_inbox.html, dashboard/email_logs.html */
+.s-733c234:not(#_) {
+    flex: 1;
+    min-width: 180px;
+}
+
+/* portal/add_player.html, portal/player_profile.html */
+.s-73e4b91:not(#_) {
+    color: #C62828;
+    font-weight: 600;
+}
+
+/* admin_dashboard/user_detail.html, admin_dashboard/user_edit_profile.html */
+.s-744c8ec:not(#_) {
+    background: #E3F2FD;
+    color: #1565C0;
+}
+
+/* admin_dashboard/statistics.html, portal/squad_review.html */
+.s-7463f71:not(#_) {
+    font-size: 1.1rem;
+}
+
+/* dashboard/email_inbox.html, portal/cm/manage_competition.html */
+.s-74fa97c:not(#_) {
+    cursor: pointer;
+}
+
+/* admin_dashboard/audit_report.html, admin_dashboard/dashboard.html */
+.s-767a43b:not(#_) {
+    color: #C62828;
+}
+
+/* admin_dashboard/manage_fixtures_select.html, portal/coordinator/appointments.html */
+.s-773433b:not(#_) {
+    text-align: center;
+    padding: 3rem;
+    color: #999;
+}
+
+/* portal/player_profile.html, portal/team_manager/opponent_view.html */
+.s-7955fb6:not(#_) {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+/* portal/add_player.html, teams/detail.html */
+.s-799bcfd:not(#_) {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+/* portal/admin/dashboard.html, portal/secretary_general/system_overview.html */
+.s-7aec8eb:not(#_) {
+    background: #f0fdf4;
+    color: #166534;
+}
+
+/* portal/competition_standings.html, portal/county_admin/add_bench_member.html */
+.s-7bbacec:not(#_) {
+    padding: 2rem;
+    text-align: center;
+    color: #888;
+}
+
+/* portal/cm/verify_county_player.html, portal/verification/discipline_delegation.html */
+.s-7bea975:not(#_) {
+    color: #1B5E20;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* portal/county_admin/add_bench_member.html, portal/county_admin/discipline_players.html */
+.s-81ba29f:not(#_) {
+    background: #f5f5f5;
+    text-align: left;
+}
+
+/* portal/county_admin/verification_status.html, portal/media/dashboard.html */
+.s-81f59ad:not(#_) {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #f57c00;
+}
+
+/* portal/admin/dashboard.html, portal/secretary_general/system_overview.html */
+.s-829c38b:not(#_) {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+/* admin_dashboard/user_detail.html, portal/referee_appointments.html */
+.s-82ecb98:not(#_) {
+    display: flex;
+    gap: .3rem;
+    flex-wrap: wrap;
+}
+
+/* admin_dashboard/competition_fixtures.html, admin_dashboard/knockout_hub.html */
+.s-83ee465:not(#_) {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+/* portal/player_clearance_detail.html, portal/squad_select.html */
+.s-84a8648:not(#_) {
+    color: #1565C0;
+    font-weight: 600;
+}
+
+/* portal/team_manager/dashboard.html, portal/treasurer/dashboard.html */
+.s-8730eb6:not(#_) {
+    padding: .4rem 1rem;
+    font-size: .85rem;
+    border-radius: 8px;
+}
+
+/* portal/player_clearance_dashboard.html, portal/verify_player.html */
+.s-8a3f6f6:not(#_) {
+    color: #C62828;
+    font-weight: 700;
+}
+
+/* admin_dashboard/user_detail.html, portal/competition_report_approve.html */
+.s-8ae5f8c:not(#_) {
+    font-size: .9rem;
+}
+
+/* portal/media/categories.html, portal/team_manager/match_squad.html */
+.s-8ed6849:not(#_) {
+    font-size: 1.2rem;
+}
+
+/* portal/player_profile.html, portal/team_manager/match_squad.html */
+.s-8f1d362:not(#_) {
+    background: #fce4ec;
+    color: #C62828;
+    padding: .3rem .8rem;
+    border-radius: 20px;
+    font-size: .82rem;
+    font-weight: 600;
+}
+
+/* portal/referee_appoint.html, portal/referee_appointments.html */
+.s-900f755:not(#_) {
+    color: #999;
+}
+
+/* portal/referee_appoint.html, portal/county_admin/add_bench_member.html */
+.s-9168a07:not(#_) {
+    padding: .5rem .8rem;
+}
+
+/* admin_dashboard/activity_logs.html, admin_dashboard/audit_report.html */
+.s-91cb782:not(#_) {
+    min-width: 160px;
+}
+
+/* admin_dashboard/manage_users.html, admin_dashboard/user_detail.html */
+.s-92cb257:not(#_) {
+    margin-bottom: 1.5rem;
+}
+
+/* portal/county_admin/add_discipline.html, portal/team_manager/file_appeal.html */
+.s-95c3774:not(#_) {
+    max-width: 700px;
+}
+
+/* admin_dashboard/competition_fixtures.html, appeals/appeal_detail.html */
+.s-98176a3:not(#_) {
+    margin-top: .5rem;
+}
+
+/* admin_dashboard/knockout_hub.html, admin_dashboard/manage_users.html */
+.s-987eb2a:not(#_) {
+    overflow-x: auto;
+}
+
+/* portal/match_report_form.html, portal/player_profile.html */
+.s-9accc0a:not(#_) {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* appeals/appeal_detail.html, jury/squad_detail.html */
+.s-9dae231:not(#_) {
+    color: #888;
+}
+
+/* dashboard/email_inbox.html, kicosca/verification_dashboard.html */
+.s-9dd65a4:not(#_) {
+    font-size: .82rem;
+}
+
+/* portal/county_admin/discipline_players.html, portal/verification/_player_table.html */
+.s-9ea9419:not(#_) {
+    background: #FFEBEE;
+    color: #C62828;
+    padding: .15rem .5rem;
+    border-radius: 10px;
+    font-size: .75rem;
+    font-weight: 600;
+}
+
+/* kicosca/add_player.html, portal/county_admin/add_player.html */
+.s-9fd8fb7:not(#_) {
+    margin: 0 0 .85rem;
+    font-size: .82rem;
+    color: #374151;
+    line-height: 1.5;
+}
+
+/* admin_dashboard/audit_report.html, admin_dashboard/user_detail.html */
+.s-a24cb3b:not(#_) {
+    color: #1B5E20;
+}
+
+/* admin_dashboard/user_detail.html, public/results.html */
+.s-a32fcc7:not(#_) {
+    padding-bottom: 0;
+}
+
+/* admin_dashboard/competition_fixtures.html, portal/coordinator/manage_pools.html */
+.s-a3b877f:not(#_) {
+    font-size: 2rem;
+    opacity: .3;
+}
+
+/* admin_dashboard/manage_fixtures_select.html, appeals/appeals_list.html */
+.s-a6cb65c:not(#_) {
+    margin-top: 1rem;
+}
+
+/* admin_dashboard/user_detail.html, portal/referee_appoint.html */
+.s-a734ded:not(#_) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+/* admin_dashboard/delete_knockout_fixture.html, appeals/cancel_hearing.html */
+.s-a97308a:not(#_) {
+    padding: 1.5rem;
+}
+
+/* admin_dashboard/edit_user_roles.html, admin_dashboard/manage_users.html */
+.s-aa4949f:not(#_) {
+    background: #E3F2FD;
+}
+
+/* admin_dashboard/user_detail.html, dashboard/email_detail.html */
+.s-ac0d4af:not(#_) {
+    padding: 0;
+}
+
+/* competitions/detail.html, portal/delete_player.html */
+.s-ac59137:not(#_) {
+    padding: .6rem 1.5rem;
+}
+
+/* portal/county_admin/verification_status.html, portal/team_manager/dashboard.html */
+.s-ace70c1:not(#_) {
+    padding: .5rem .8rem;
+    color: #888;
+}
+
+/* portal/player_clearance_dashboard.html, teams/detail.html */
+.s-aeee1b7:not(#_) {
+    background: #fce4ec;
+}
+
+/* portal/pending_referees.html, portal/county_admin/add_player.html */
+.s-af1a41b:not(#_) {
+    margin-bottom: 1.75rem;
+}
+
+/* portal/coordinator/appointments.html, public/competition_standings.html */
+.s-b07cf6d:not(#_) {
+    color: #00695C;
+}
+
+/* portal/county_admin/add_bench_member.html, portal/team_manager/file_appeal.html */
+.s-b3c8c9d:not(#_) {
+    padding: .5rem 1.5rem;
+    font-size: .9rem;
+}
+
+/* kicosca/api_test.html, portal/referee_dashboard.html */
+.s-b407bc0:not(#_) {
+    font-size: 1rem;
+}
+
+/* appeals/appeal_detail.html, portal/referee_appoint.html */
+.s-b47f69f:not(#_) {
+    font-size: .75rem;
+}
+
+/* kicosca/player_detail.html, portal/cm/verify_county_player.html */
+.s-b7f8cac:not(#_) {
+    font-weight: 700;
+    font-size: .9rem;
+    color: #111;
+}
+
+/* admin_dashboard/manage_users.html, portal/referee_appoint.html */
+.s-b8f1d2a:not(#_) {
+    text-align: center;
+    padding: 2rem;
+    color: #999;
+}
+
+/* portal/cm/verify_county_player.html, public/home.html */
+.s-bb08fa5:not(#_) {
+    flex: 1;
+    text-align: center;
+}
+
+/* admin_dashboard/dashboard.html, admin_dashboard/user_detail.html */
+.s-bcb8f21:not(#_) {
+    background: #C62828;
+    color: #fff;
+}
+
+/* admin_dashboard/user_detail.html, portal/referee_edit_profile.html */
+.s-bdc943e:not(#_) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(160px,1fr));
+    gap: 1rem;
+}
+
+/* admin_dashboard/competition_fixtures.html, portal/coordinator/manage_competition.html */
+.s-c07d29a:not(#_) {
+    text-align: center;
+    color: #999;
+    padding: 1rem;
+}
+
+/* admin_dashboard/admin_edit_fixture.html, admin_dashboard/competition_fixtures.html */
+.s-c2c0d0a:not(#_) {
+    margin-bottom: 1rem;
+}
+
+/* kicosca/api_test.html, kicosca/verification_dashboard.html */
+.s-c33bec6:not(#_) {
+    margin-bottom: 1.25rem;
+}
+
+/* portal/scout/players.html, portal/verification/discipline_players.html */
+.s-c408cfa:not(#_) {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+/* kicosca/api_test.html, kicosca/verification_dashboard.html */
+.s-c438d31:not(#_) {
+    margin-bottom: .75rem;
+}
+
+/* admin_dashboard/delete_knockout_fixture.html, portal/coordinator/allocate_venues.html */
+.s-c9be501:not(#_) {
+    font-size: .85rem;
+    color: #757575;
+}
+
+/* dashboard/index.html, portal/secretary_general/exceptional_overrides.html */
+.s-ca5511e:not(#_) {
+    font-size: .78rem;
+    color: #777;
+}
+
+/* kicosca/add_player.html, portal/county_admin/add_player.html */
+.s-cb2516f:not(#_) {
+    font-size: .95rem;
+    font-weight: 800;
+    color: #111;
+    margin: 0 0 1.25rem;
+}
+
+/* portal/county_admin/verification_status.html, portal/media/dashboard.html */
+.s-cde534b:not(#_) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* portal/add_player.html, portal/match_report_form.html */
+.s-ced7761:not(#_) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+@media (max-width: 767px) { .app-main .s-ced7761:not(#_) { grid-template-columns: 1fr; } }
+
+/* kicosca/discipline_players.html, portal/county_admin/verification_status.html */
+.s-cfe5b3f:not(#_) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .88rem;
+}
+
+/* portal/scout/players.html, portal/verification/discipline_players.html */
+.s-d0bdb3b:not(#_) {
+    padding: .45rem .9rem;
+}
+
+/* portal/scout/players.html, portal/verification/discipline_players.html */
+.s-d3b5cbc:not(#_) {
+    margin-bottom: 1rem;
+    padding: 1rem 1.25rem;
+}
+
+/* portal/verify_player.html, portal/scout/shortlist.html */
+.s-d4aa11c:not(#_) {
+    color: #1B5E20;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* admin_dashboard/dashboard.html, appeals/jury_dashboard.html */
+.s-d6a9f41:not(#_) {
+    background: linear-gradient(135deg,#FFF3E0,#FFE0B2);
+    color: #E65100;
+}
+
+/* admin_dashboard/user_detail.html, admin_dashboard/user_edit_profile.html */
+.s-d84d705:not(#_) {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+/* dashboard/email_logs.html, portal/cm/manage_competition.html */
+.s-dabaad5:not(#_) {
+    width: 80px;
+}
+
+/* portal/add_player.html, portal/verify_player.html */
+.s-db5923f:not(#_) {
+    font-size: 1.5rem;
+}
+
+/* competitions/detail.html, portal/appointment_action.html */
+.s-dead149:not(#_) {
+    color: #757575;
+}
+
+/* admin_dashboard/user_detail.html, portal/cm/dashboard.html */
+.s-e02d7b3:not(#_) {
+    background: #FFF8E1;
+    color: #F57F17;
+}
+
+/* portal/competition_reports.html, portal/competition_standings.html */
+.s-e2b0c0d:not(#_) {
+    color: #888;
+    text-align: center;
+    padding: 2rem;
+}
+
+/* portal/player_profile.html, portal/county_admin/add_bench_member.html */
+.s-e52ba79:not(#_) {
+    color: #1B5E20;
+    font-weight: 600;
+    font-size: .9rem;
+}
+
+/* admin_dashboard/user_detail.html, portal/appointment_action.html */
+.s-e705884:not(#_) {
+    margin-bottom: 2rem;
+}
+
+/* portal/delete_player.html, public/county_admin_register_success.html */
+.s-e793c0f:not(#_) {
+    color: #555;
+    margin-bottom: 1.5rem;
+}
+
+/* portal/add_player.html, portal/competition_report_approve.html */
+.s-e9c866b:not(#_) {
+    color: #f57c00;
+}
+
+/* portal/player_profile.html, portal/county_admin/add_bench_member.html */
+.s-eaecca1:not(#_) {
+    border-bottom: 1px solid #eee;
+}
+
+/* kicosca/player_detail.html, portal/cm/manage_competition.html */
+.s-ef5f7de:not(#_) {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+/* competitions/detail.html, portal/match_report_form.html */
+.s-f4bb5b2:not(#_) {
+    font-size: .8rem;
+}
+
+/* admin_dashboard/competition_fixtures.html, portal/cm/manage_competition.html */
+.s-fb07672:not(#_) {
+    font-size: .7rem;
+}
+
+/* competitions/list.html, dashboard/email_logs.html */
+.s-fb2a0ae:not(#_) {
+    font-size: .78rem;
+}
+
+/* portal/competition_report_approve.html, portal/county_admin/payment.html */
+.s-fe18fbb:not(#_) {
+    color: #1b5e20;
+}

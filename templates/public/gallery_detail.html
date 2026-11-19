@@ -1,4 +1,5 @@
 {% extends "public/base.html" %}
+{% block body_class %}pg-public-gallery-detail{% endblock %}
 {% load static %}
 
 {% block title %}{{ album.title }} Gallery{% endblock %}
@@ -8,77 +9,6 @@
 {% block og_url %}https://kyisa.org/media-hub/gallery/{{ album.slug }}/{% endblock %}
 
 {% block extra_css %}
-<style>
-/* ═══════════════════════════════════════
-   GALLERY DETAIL PAGE (Lightbox album)
-═══════════════════════════════════════ */
-
-/* ── Photo grid ── */
-.gd-grid-section {
-    max-width: 1200px; margin: -2rem auto 4rem; padding: 0 1.5rem;
-    position: relative; z-index: 5;
-}
-.gd-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1rem;
-}
-.gd-photo {
-    border-radius: 12px; overflow: hidden; cursor: pointer;
-    position: relative; aspect-ratio: 4/3;
-    background: #e8f5e9;
-}
-.gd-photo img {
-    width: 100%; height: 100%; object-fit: cover;
-    transition: transform .4s;
-}
-.gd-photo:hover img { transform: scale(1.05); }
-.gd-photo-overlay {
-    position: absolute; inset: 0;
-    background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,.5) 100%);
-    opacity: 0; transition: opacity .3s;
-    display: flex; align-items: flex-end; padding: 1rem;
-}
-.gd-photo:hover .gd-photo-overlay { opacity: 1; }
-.gd-photo-overlay span { color: #fff; font-size: .82rem; font-weight: 500; }
-
-/* ── Lightbox ── */
-.gd-lightbox {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,.92); z-index: 99999;
-    align-items: center; justify-content: center;
-    padding: 2rem;
-}
-.gd-lightbox.active { display: flex; }
-.gd-lightbox-img {
-    max-width: 90%; max-height: 85vh;
-    border-radius: 8px; object-fit: contain;
-}
-.gd-lightbox-close {
-    position: absolute; top: 1.5rem; right: 1.5rem;
-    background: rgba(255,255,255,.15); border: none; color: #fff;
-    width: 44px; height: 44px; border-radius: 50%;
-    font-size: 1.4rem; cursor: pointer; transition: background .2s;
-    display: flex; align-items: center; justify-content: center;
-}
-.gd-lightbox-close:hover { background: rgba(255,255,255,.3); }
-.gd-lightbox-nav {
-    position: absolute; top: 50%; transform: translateY(-50%);
-    background: rgba(255,255,255,.15); border: none; color: #fff;
-    width: 48px; height: 48px; border-radius: 50%;
-    font-size: 1.3rem; cursor: pointer; transition: background .2s;
-    display: flex; align-items: center; justify-content: center;
-}
-.gd-lightbox-nav:hover { background: rgba(255,255,255,.3); }
-.gd-lightbox-prev { left: 1.5rem; }
-.gd-lightbox-next { right: 1.5rem; }
-.gd-lightbox-caption {
-    position: absolute; bottom: 1.5rem; left: 50%;
-    transform: translateX(-50%);
-    color: rgba(255,255,255,.8); font-size: .88rem;
-    text-align: center; max-width: 600px;
-}
-</style>
 {% endblock %}
 
 {% block content %}
@@ -103,12 +33,12 @@
             <span>{{ album.title|truncatewords:5 }}</span>
         </div>
     </div>
-    <div class="kenya-stripe" style="position:absolute;bottom:0;left:0;right:0;z-index:5"></div>
+    <div class="kenya-stripe s-4a0e33c"></div>
 </section>
 
 {% if album.description %}
-<div style="max-width:800px;margin:2rem auto 0;padding:0 1.5rem;text-align:center;">
-    <p style="color:#666;font-size:.95rem;line-height:1.7;">{{ album.description }}</p>
+<div class="s-8646d99">
+    <p class="s-35794ee">{{ album.description }}</p>
 </div>
 {% endif %}
 
@@ -131,7 +61,7 @@
     <button class="gd-lightbox-close" onclick="closeLightbox()"><i class="bi bi-x-lg"></i></button>
     <button class="gd-lightbox-nav gd-lightbox-prev" onclick="navLightbox(-1)"><i class="bi bi-chevron-left"></i></button>
     <button class="gd-lightbox-nav gd-lightbox-next" onclick="navLightbox(1)"><i class="bi bi-chevron-right"></i></button>
-    <a id="lightboxDownload" href="#" class="gd-lightbox-download" title="Download as PNG" style="position:absolute;top:1rem;right:4rem;z-index:10002;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:1.1rem;transition:background .2s;" onmouseover="this.style.background='rgba(0,0,0,.85)'" onmouseout="this.style.background='rgba(0,0,0,.6)'"><i class="bi bi-download"></i></a>
+    <a id="lightboxDownload" href="#" class="gd-lightbox-download s-8344d71" title="Download as PNG" onmouseover="this.style.background='rgba(0,0,0,.85)'" onmouseout="this.style.background='rgba(0,0,0,.6)'"><i class="bi bi-download"></i></a>
     <img class="gd-lightbox-img" id="lightboxImg" src="" alt="">
     <div class="gd-lightbox-caption" id="lightboxCaption"></div>
 </div>

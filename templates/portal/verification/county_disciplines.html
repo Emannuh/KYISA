@@ -13,43 +13,43 @@
 </div>
 
 {% if disc_data %}
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.25rem;">
+<div class="s-acf5d83">
     {% for item in disc_data %}
-    <div class="card" style="padding:0;overflow:hidden;">
-        <div style="background:linear-gradient(135deg,#1B5E20,#2E7D32);padding:1rem 1.25rem;color:#fff;">
-            <h3 style="margin:0;font-size:1.1rem;font-weight:700">{{ item.discipline.get_sport_type_display }}</h3>
+    <div class="card s-ca073c3">
+        <div class="s-5d33775">
+            <h3 class="s-72fa390">{{ item.discipline.get_sport_type_display }}</h3>
         </div>
-        <div style="padding:1.25rem;">
+        <div class="s-316b71b">
             <!-- Player Stats -->
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1rem;">
-                <div style="text-align:center;padding:.5rem;background:#FFF3E0;border-radius:8px;">
-                    <div style="font-size:1.3rem;font-weight:700;color:#E65100">{{ item.pending }}</div>
-                    <div style="font-size:.75rem;color:#E65100">Pending</div>
+            <div class="s-8e3e052">
+                <div class="s-a5df10c">
+                    <div class="s-69d7397">{{ item.pending }}</div>
+                    <div class="s-e7b816d">Pending</div>
                 </div>
-                <div style="text-align:center;padding:.5rem;background:#E8F5E9;border-radius:8px;">
-                    <div style="font-size:1.3rem;font-weight:700;color:#1B5E20">{{ item.verified }}</div>
-                    <div style="font-size:.75rem;color:#1B5E20">Verified</div>
+                <div class="s-8535bba">
+                    <div class="s-fc49cb1">{{ item.verified }}</div>
+                    <div class="s-401deff">Verified</div>
                 </div>
-                <div style="text-align:center;padding:.5rem;background:#FFEBEE;border-radius:8px;">
-                    <div style="font-size:1.3rem;font-weight:700;color:#C62828">{{ item.rejected }}</div>
-                    <div style="font-size:.75rem;color:#C62828">Rejected</div>
+                <div class="s-7cf6dff">
+                    <div class="s-d9ac1f3">{{ item.rejected }}</div>
+                    <div class="s-e29ec4c">Rejected</div>
                 </div>
-                <div style="text-align:center;padding:.5rem;background:#F3E5F5;border-radius:8px;">
-                    <div style="font-size:1.3rem;font-weight:700;color:#6A1B9A">{{ item.resubmit }}</div>
-                    <div style="font-size:.75rem;color:#6A1B9A">Resubmit</div>
+                <div class="s-12d230f">
+                    <div class="s-b31d5fe">{{ item.resubmit }}</div>
+                    <div class="s-b5f377f">Resubmit</div>
                 </div>
             </div>
 
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;font-size:.85rem;color:#666;">
+            <div class="s-d2d8d16">
                 <span><i class="bi bi-people"></i> {{ item.total_players }} Players</span>
                 <span><i class="bi bi-person-badge"></i> {{ item.bench_count }} Delegation</span>
             </div>
 
-            <div style="display:flex;gap:.5rem;">
-                <a href="{% url 'vo_discipline_players' discipline_pk=item.discipline.pk %}" class="btn btn-outline btn-sm" style="flex:1;background:#1B5E20;color:#fff;border-color:#1B5E20;text-align:center;padding:.4rem .5rem;font-size:.8rem">
+            <div class="s-5cd47cb">
+                <a href="{% url 'vo_discipline_players' discipline_pk=item.discipline.pk %}" class="btn btn-outline btn-sm s-8edf34c">
                     <i class="bi bi-people-fill"></i> Players
                 </a>
-                <a href="{% url 'vo_discipline_delegation' discipline_pk=item.discipline.pk %}" class="btn btn-outline btn-sm" style="flex:1;text-align:center;padding:.4rem .5rem;font-size:.8rem">
+                <a href="{% url 'vo_discipline_delegation' discipline_pk=item.discipline.pk %}" class="btn btn-outline btn-sm s-7f70723">
                     <i class="bi bi-person-badge-fill"></i> Delegation
                 </a>
             </div>
@@ -59,10 +59,10 @@
 </div>
 {% else %}
 <div class="card">
-    <div class="card-body" style="padding:3rem;text-align:center">
-        <div style="font-size:3rem">📋</div>
+    <div class="card-body s-0c1b9d7">
+        <div class="s-64a35c0">📋</div>
         <h3>No disciplines registered</h3>
-        <p style="color:#888">{{ reg.get_county_display }} has not registered any disciplines yet.</p>
+        <p class="s-9dae231">{{ reg.get_county_display }} has not registered any disciplines yet.</p>
     </div>
 </div>
 {% endif %}

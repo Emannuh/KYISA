@@ -2,17 +2,17 @@
 {% block title %}Jury Decision KYISA CMS{% endblock %}
 
 {% block content %}
-<div style="margin-bottom:1rem;">
-    <a href="{% url 'appeal_detail' pk=appeal.pk %}" class="btn btn-outline" style="font-size:.85rem;">← Back to Appeal #{{ appeal.pk }}</a>
+<div class="s-c2c0d0a">
+    <a href="{% url 'appeal_detail' pk=appeal.pk %}" class="btn btn-outline s-3dc1f6c">← Back to Appeal #{{ appeal.pk }}</a>
 </div>
 
-<div class="card" style="padding:2rem; max-width:800px;">
-    <h1 style="margin:0 0 .5rem;">🏛️ Make Jury Decision</h1>
+<div class="card s-c4abbf5">
+    <h1 class="s-fe260dd">🏛️ Make Jury Decision</h1>
     <p class="text-muted">Appeal #{{ appeal.pk }}: {{ appeal.subject }}</p>
 
     <!-- Appeal Summary -->
-    <div style="background:#f8f9fa; padding:1rem; border-radius:4px; margin:1rem 0;">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:.5rem;">
+    <div class="s-594942c">
+        <div class="s-f2e6645">
             <div><strong>Appellant:</strong> {{ appeal.appellant_team }}</div>
             <div><strong>Respondent:</strong> {{ appeal.respondent_team }}</div>
             <div><strong>Status:</strong> {{ appeal.get_status_display }}</div>
@@ -21,52 +21,52 @@
     </div>
 
     {% if appeal.is_reappeal %}
-    <div style="background:#fff3cd; padding:.75rem; border-radius:4px; margin-bottom:1rem;">
+    <div class="s-38b2cf5">
         <strong>⚠️ This is a RE-APPEAL.</strong> The original appeal was
         <a href="{% url 'appeal_detail' pk=appeal.original_appeal.pk %}">#{{ appeal.original_appeal.pk }}</a>.
         This decision is final and binding.
     </div>
     {% endif %}
 
-    <hr style="margin:1rem 0;">
+    <hr class="s-8545ea2">
 
     <form method="post">
         {% csrf_token %}
         {% for field in form %}
-        <div style="margin-bottom:1rem;">
-            <label for="{{ field.id_for_label }}" style="display:block; font-weight:600; margin-bottom:.25rem;">
+        <div class="s-c2c0d0a">
+            <label for="{{ field.id_for_label }}" class="s-fd7130f">
                 {{ field.label }}{% if field.field.required %} *{% endif %}
             </label>
             {{ field }}
             {% if field.help_text %}
-            <small style="color:#666;">{{ field.help_text }}</small>
+            <small class="s-0ce45ac">{{ field.help_text }}</small>
             {% endif %}
             {% for error in field.errors %}
-            <div style="color:#dc3545; font-size:.85rem;">{{ error }}</div>
+            <div class="s-79f04f6">{{ error }}</div>
             {% endfor %}
         </div>
         {% endfor %}
 
         {% if form.non_field_errors %}
-        <div style="color:#dc3545; margin-bottom:1rem;">
+        <div class="s-23d1ce1">
             {% for error in form.non_field_errors %}
             <p>{{ error }}</p>
             {% endfor %}
         </div>
         {% endif %}
 
-        <p style="color:#666; font-size:.85rem;">After saving, you will be prompted to upload supporting evidence for your decision.</p>
+        <p class="s-cee95e6">After saving, you will be prompted to upload supporting evidence for your decision.</p>
 
-        <div style="margin-top:1.5rem; display:flex; gap:.5rem;">
+        <div class="s-4ccfabd">
             <button type="submit" class="btn btn-primary">Save Decision</button>
             <a href="{% url 'appeal_detail' pk=appeal.pk %}" class="btn btn-outline">Cancel</a>
         </div>
     </form>
 </div>
 
-<div class="card" style="padding:1.5rem; margin-top:1.5rem; max-width:800px; background:#e8f5e9; border-left:4px solid #4caf50;">
-    <h4 style="margin:0 0 .5rem;">📋 Decision Options</h4>
-    <ul style="margin:.5rem 0; padding-left:1.5rem;">
+<div class="card s-3d15533">
+    <h4 class="s-fe260dd">📋 Decision Options</h4>
+    <ul class="s-587260e">
         <li><strong>Appeal Successful:</strong> The appeal is upheld. Appropriate sanctions may be imposed.</li>
         <li><strong>Appeal Rejected:</strong> The appeal is dismissed. The appellant may file one re-appeal.</li>
         <li><strong>More Information Required:</strong> Request additional evidence from either party. The appeal returns to submitted status.</li>

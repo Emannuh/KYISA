@@ -4,16 +4,16 @@
 {% block content %}
 
 <!-- ── Breadcrumb + Header ─────────────────────────────────────────────── -->
-<div style="margin-bottom:1.5rem">
-    <div style="font-size:.78rem;color:#aaa;margin-bottom:.5rem">
-        <a href="{% url 'county_player_verification_list' %}" style="color:#1B5E20;text-decoration:none;font-weight:600">Player Verification</a>
-        <span style="margin:0 .4rem">›</span>
+<div class="s-92cb257">
+    <div class="s-fd12ff1">
+        <a href="{% url 'county_player_verification_list' %}" class="s-7bea975">Player Verification</a>
+        <span class="s-bd4f66b">›</span>
         <span>{{ player.first_name }} {{ player.last_name }}</span>
     </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem">
+    <div class="s-28fffd7">
         <div>
-            <h1 style="margin:0;font-size:1.5rem;font-weight:800;color:#111">{{ player.first_name }} {{ player.last_name }}</h1>
-            <p style="margin:.25rem 0 0;color:#888;font-size:.86rem">
+            <h1 class="s-13c80df">{{ player.first_name }} {{ player.last_name }}</h1>
+            <p class="s-a5397de">
                 {{ player.discipline.registration.get_county_display }} &nbsp;·&nbsp; {{ player.discipline.get_sport_type_display }}
                 {% if player.jersey_number %} &nbsp;·&nbsp; #{{ player.jersey_number }}{% endif %}
                 {% if player.position %} {{ player.position }}{% endif %}
@@ -46,55 +46,55 @@
 {% endif %}
 
 {% if player.age < 18 or player.age > 23 %}
-<div style="margin-bottom:1rem;padding:.85rem 1rem;border-radius:9px;background:#fce4ec;border-left:4px solid #C62828;font-size:.88rem;color:#C62828;font-weight:600">
+<div class="s-fb55408">
     ⛔ Age warning player is <strong>{{ player.age }} years old</strong>. Allowed bracket is 18–23.
 </div>
 {% endif %}
 
 <!-- ── MAIN LAYOUT: Left column (info + docs) + Right column (steps) ──── -->
-<div style="display:grid;grid-template-columns:380px 1fr;gap:1.25rem;align-items:start">
+<div class="s-8f83247">
 
     <!-- ══ LEFT COLUMN ════════════════════════════════════════════════════ -->
-    <div style="display:flex;flex-direction:column;gap:1.1rem">
+    <div class="s-8950b6a">
 
         <!-- Player Details + IPRS Comparison Card -->
-        <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden">
-            <div style="padding:.75rem 1rem;background:linear-gradient(135deg,#1B5E20,#2E7D32);display:flex;align-items:center;gap:.6rem">
-                <span style="font-size:1rem">👤</span>
-                <span style="font-weight:700;font-size:.9rem;color:#fff">Player Details</span>
+        <div class="s-056e508">
+            <div class="s-5d55380">
+                <span class="s-b407bc0">👤</span>
+                <span class="s-1599aa7">Player Details</span>
             </div>
-            <div style="padding:.9rem 1rem">
-                <div style="display:grid;grid-template-columns:110px 1fr;gap:.45rem .75rem;font-size:.84rem">
-                    <span style="color:#aaa;font-weight:500">Full Name</span>
-                    <span style="font-weight:700;color:#111">{{ player.first_name }} {{ player.last_name }}</span>
+            <div class="s-0a9eb3d">
+                <div class="s-7031d5c">
+                    <span class="s-1f4ad34">Full Name</span>
+                    <span class="s-19d5738">{{ player.first_name }} {{ player.last_name }}</span>
 
-                    <span style="color:#aaa;font-weight:500">Date of Birth</span>
+                    <span class="s-1f4ad34">Date of Birth</span>
                     <span>{{ player.date_of_birth|date:"d M Y" }}</span>
 
-                    <span style="color:#aaa;font-weight:500">Age</span>
+                    <span class="s-1f4ad34">Age</span>
                     <span>
                         <strong>{{ player.age }} yrs</strong>
                         {% if player.age >= 18 and player.age <= 23 %}
-                        <span style="margin-left:.4rem;padding:.1rem .5rem;background:#e8f5e9;color:#1B5E20;border-radius:20px;font-size:.75rem;font-weight:700">✓ Eligible</span>
+                        <span class="s-b7f674e">✓ Eligible</span>
                         {% else %}
-                        <span style="margin-left:.4rem;padding:.1rem .5rem;background:#fce4ec;color:#C62828;border-radius:20px;font-size:.75rem;font-weight:700">⛔ Ineligible</span>
+                        <span class="s-84dafd3">⛔ Ineligible</span>
                         {% endif %}
                     </span>
 
-                    <span style="color:#aaa;font-weight:500">National ID</span>
-                    <span style="font-family:monospace;font-weight:600;color:#333">{{ player.national_id_number|default:"—" }}</span>
+                    <span class="s-1f4ad34">National ID</span>
+                    <span class="s-f9cd13e">{{ player.national_id_number|default:"—" }}</span>
 
-                    <span style="color:#aaa;font-weight:500">Phone</span>
+                    <span class="s-1f4ad34">Phone</span>
                     <span>{{ player.phone|default:"—" }}</span>
 
-                    <span style="color:#aaa;font-weight:500">County</span>
+                    <span class="s-1f4ad34">County</span>
                     <span>{{ player.discipline.registration.get_county_display }}</span>
 
-                    <span style="color:#aaa;font-weight:500">Discipline</span>
+                    <span class="s-1f4ad34">Discipline</span>
                     <span>{{ player.discipline.get_sport_type_display }}</span>
 
-                    <span style="color:#aaa;font-weight:500">Registered</span>
-                    <span style="font-size:.8rem;color:#888">{{ player.registered_at|date:"d M Y, H:i" }}</span>
+                    <span class="s-1f4ad34">Registered</span>
+                    <span class="s-caa7b5b">{{ player.registered_at|date:"d M Y, H:i" }}</span>
                 </div>
             </div>
         </div>
@@ -103,36 +103,36 @@
         {% comment %}Comparison is rendered by JS inside Step 1 card{% endcomment %}
 
         <!-- Photo Comparison Card -->
-        <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden">
-            <div style="padding:.75rem 1rem;background:linear-gradient(135deg,#0D47A1,#1565C0);display:flex;align-items:center;gap:.6rem">
-                <span style="font-size:1rem">📸</span>
-                <span style="font-weight:700;font-size:.9rem;color:#fff">Photo Comparison</span>
+        <div class="s-056e508">
+            <div class="s-e4cd072">
+                <span class="s-b407bc0">📸</span>
+                <span class="s-1599aa7">Photo Comparison</span>
             </div>
-            <div style="padding:.9rem 1rem">
+            <div class="s-0a9eb3d">
 
                 <!-- Photos side by side -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:.9rem">
+                <div class="s-3746517">
                     <!-- Uploaded photo -->
-                    <div style="text-align:center">
-                        <p style="margin:0 0 .5rem;font-size:.78rem;font-weight:700;color:#444;text-transform:uppercase;letter-spacing:.04em">📤 Uploaded</p>
+                    <div class="s-65f9d5a">
+                        <p class="s-24cf1cb">📤 Uploaded</p>
                         {% if player.photo %}
                         <img src="{{ player.photo.url }}" alt="Uploaded Photo"
-                             style="width:100%;max-height:180px;object-fit:cover;border-radius:10px;border:3px solid #e0e0e0">
-                        <a href="{{ player.photo.url }}" target="_blank" style="font-size:.75rem;color:#1565C0;display:block;margin-top:.3rem">View full ↗</a>
+                             class="s-0a4ef6d">
+                        <a href="{{ player.photo.url }}" target="_blank" class="s-0efbd35">View full ↗</a>
                         {% else %}
-                        <div style="height:150px;background:#fce4ec;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#C62828;font-size:.82rem;font-weight:600">⚠️ Not uploaded</div>
+                        <div class="s-7d4a2d8">⚠️ Not uploaded</div>
                         {% endif %}
                     </div>
 
                     <!-- IPRS photo -->
-                    <div style="text-align:center">
-                        <p style="margin:0 0 .5rem;font-size:.78rem;font-weight:700;color:#1565C0;text-transform:uppercase;letter-spacing:.04em">🏛️ IPRS</p>
+                    <div class="s-65f9d5a">
+                        <p class="s-6bb2d39">🏛️ IPRS</p>
                         {% if player.iprs_photo %}
                         <img src="{{ player.iprs_photo.url }}" alt="IPRS Photo"
-                             style="width:100%;max-height:180px;object-fit:cover;border-radius:10px;border:3px solid #1565C0">
-                        <a href="{{ player.iprs_photo.url }}" target="_blank" style="font-size:.75rem;color:#1565C0;display:block;margin-top:.3rem">View full ↗</a>
+                             class="s-382548c">
+                        <a href="{{ player.iprs_photo.url }}" target="_blank" class="s-0efbd35">View full ↗</a>
                         {% else %}
-                        <div style="height:150px;background:#f8fafc;border-radius:10px;border:1px dashed #c5cae9;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:.78rem;text-align:center;padding:.5rem">
+                        <div class="s-753ab77">
                             {% if player.prembly_status == 'verified' %}
                             No IPRS photo returned
                             {% else %}
@@ -143,27 +143,27 @@
                     </div>
                 </div>
 
-                <div style="height:1px;background:#f0f0f0;margin-bottom:.85rem"></div>
+                <div class="s-a9a6d02"></div>
 
                 <!-- National ID Document -->
                 <div>
-                    <p style="margin:0 0 .45rem;font-size:.8rem;font-weight:700;color:#444">🪪 National ID Copy</p>
+                    <p class="s-c7a7e20">🪪 National ID Copy</p>
                     {% if player.id_document %}
                     <img src="{{ player.id_document.url }}" alt="ID"
-                         style="width:100%;max-height:160px;object-fit:contain;border-radius:8px;border:1px solid #e0e0e0;background:#fafafa">
-                    <a href="{{ player.id_document.url }}" target="_blank" style="font-size:.76rem;color:#1565C0;display:block;margin-top:.3rem">View full ↗</a>
+                         class="s-3d108df">
+                    <a href="{{ player.id_document.url }}" target="_blank" class="s-e0a200a">View full ↗</a>
                     {% else %}
-                    <div style="padding:.85rem;background:#fce4ec;border-radius:8px;text-align:center;font-size:.82rem;color:#C62828;font-weight:600">⚠️ Not uploaded</div>
+                    <div class="s-7834abe">⚠️ Not uploaded</div>
                     {% endif %}
                 </div>
 
                 {% if player.birth_certificate %}
-                <div style="height:1px;background:#f0f0f0;margin:.85rem 0"></div>
+                <div class="s-a94a94a"></div>
                 <div>
-                    <p style="margin:0 0 .45rem;font-size:.8rem;font-weight:700;color:#444">📜 Birth Certificate</p>
+                    <p class="s-c7a7e20">📜 Birth Certificate</p>
                     <img src="{{ player.birth_certificate.url }}" alt="Birth Cert"
-                         style="width:100%;max-height:160px;object-fit:contain;border-radius:8px;border:1px solid #e0e0e0;background:#fafafa">
-                    <a href="{{ player.birth_certificate.url }}" target="_blank" style="font-size:.76rem;color:#1565C0;display:block;margin-top:.3rem">View full ↗</a>
+                         class="s-3d108df">
+                    <a href="{{ player.birth_certificate.url }}" target="_blank" class="s-e0a200a">View full ↗</a>
                 </div>
                 {% endif %}
 
@@ -173,50 +173,50 @@
     </div><!-- /left column -->
 
     <!-- ══ RIGHT COLUMN Verification Steps ════════════════════════════ -->
-    <div style="display:flex;flex-direction:column;gap:1rem">
+    <div class="s-11a63a3">
 
         <!-- Progress indicator -->
-        <div style="background:#fff;border-radius:12px;padding:.85rem 1.1rem;box-shadow:0 1px 4px rgba(0,0,0,.08);display:flex;align-items:center;gap:0">
+        <div class="s-b16131f">
             {% with s1=player.prembly_status s2=player.huduma_status s3=player.higher_league_status s4=player.verification_status %}
             <!-- Step 1 -->
-            <div style="flex:1;text-align:center">
+            <div class="s-bb08fa5">
                 <div style="width:32px;height:32px;border-radius:50%;margin:0 auto .3rem;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;
                     {% if s1 == 'verified' or s2 == 'verified' %}background:#1B5E20;color:#fff{% elif s1 == 'failed' %}background:#C62828;color:#fff{% else %}background:#e8e8e8;color:#aaa{% endif %}">
                     {% if s1 == 'verified' or s2 == 'verified' %}✓{% elif s1 == 'failed' %}✗{% else %}1{% endif %}
                 </div>
-                <div style="font-size:.7rem;font-weight:600;color:#666">IPRS</div>
+                <div class="s-95488b0">IPRS</div>
             </div>
-            <div style="flex:0 0 24px;height:2px;background:#e0e0e0;margin-bottom:20px"></div>
+            <div class="s-d3fd008"></div>
             <!-- Step 2 -->
-            <div style="flex:1;text-align:center">
+            <div class="s-bb08fa5">
                 <div style="width:32px;height:32px;border-radius:50%;margin:0 auto .3rem;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;
                     {% if s3 == 'clear' %}background:#1B5E20;color:#fff{% elif s3 == 'flagged' %}background:#C62828;color:#fff{% else %}background:#e8e8e8;color:#aaa{% endif %}">
                     {% if s3 == 'clear' %}✓{% elif s3 == 'flagged' %}✗{% else %}2{% endif %}
                 </div>
-                <div style="font-size:.7rem;font-weight:600;color:#666">League</div>
+                <div class="s-95488b0">League</div>
             </div>
-            <div style="flex:0 0 24px;height:2px;background:#e0e0e0;margin-bottom:20px"></div>
+            <div class="s-d3fd008"></div>
             <!-- Step 3 -->
-            <div style="flex:1;text-align:center">
+            <div class="s-bb08fa5">
                 <div style="width:32px;height:32px;border-radius:50%;margin:0 auto .3rem;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;
                     {% if s4 == 'verified' %}background:#1B5E20;color:#fff{% elif s4 == 'rejected' %}background:#C62828;color:#fff{% else %}background:#e8e8e8;color:#aaa{% endif %}">
                     {% if s4 == 'verified' %}✓{% elif s4 == 'rejected' %}✗{% else %}3{% endif %}
                 </div>
-                <div style="font-size:.7rem;font-weight:600;color:#666">Decision</div>
+                <div class="s-95488b0">Decision</div>
             </div>
             {% endwith %}
         </div>
 
         <!-- ── STEP 1: IPRS Verification (Live) ────────────────────── -->
         <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden;border-left:4px solid {% if player.prembly_status == 'verified' %}#1B5E20{% elif player.prembly_status == 'failed' %}#C62828{% else %}#0D47A1{% endif %}">
-            <div style="padding:.7rem 1rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f0f0f0">
-                <div style="display:flex;align-items:center;gap:.6rem">
+            <div class="s-5490b73">
+                <div class="s-859efa8">
                     <span style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:.75rem;font-weight:800;
                         {% if player.prembly_status == 'verified' %}background:#1B5E20;color:#fff{% elif player.prembly_status == 'failed' %}background:#C62828;color:#fff{% else %}background:#e8e8e8;color:#888{% endif %}">
                         {% if player.prembly_status == 'verified' %}✓{% elif player.prembly_status == 'failed' %}✗{% else %}1{% endif %}
                     </span>
-                    <span style="font-weight:700;font-size:.9rem;color:#111">IPRS Verification</span>
-                    <span style="font-size:.68rem;padding:.12rem .5rem;background:#e8f5e9;color:#1B5E20;border-radius:20px;font-weight:700">● Live</span>
+                    <span class="s-b7f8cac">IPRS Verification</span>
+                    <span class="s-fa75188">● Live</span>
                 </div>
                 <span style="font-size:.75rem;padding:.2rem .65rem;border-radius:20px;font-weight:700;
                     {% if player.prembly_status == 'verified' %}background:#e8f5e9;color:#1B5E20
@@ -227,19 +227,19 @@
                     {% else %}Not checked{% endif %}
                 </span>
             </div>
-            <div style="padding:.9rem 1rem">
+            <div class="s-0a9eb3d">
 
                 {% if player.prembly_status == 'not_checked' or player.prembly_status == 'failed' %}
                 <!-- Not checked or failed — show run button -->
-                <div style="display:flex;gap:.75rem;align-items:flex-start">
-                    <div style="flex:1">
-                        <p style="margin:0 0 .75rem;font-size:.83rem;color:#666;line-height:1.5">
+                <div class="s-bb843f6">
+                    <div class="s-634a28b">
+                        <p class="s-314df02">
                             Checks this player's National ID against Kenya's IPRS government database.
-                            {% if player.prembly_status == 'failed' %}<strong style="color:#C62828"> Previous check failed.</strong>{% endif %}
+                            {% if player.prembly_status == 'failed' %}<strong class="s-767a43b"> Previous check failed.</strong>{% endif %}
                         </p>
-                        <form method="post" action="{% url 'prembly_verify_county_player' player_pk=player.pk %}" style="margin:0">
+                        <form method="post" action="{% url 'prembly_verify_county_player' player_pk=player.pk %}" class="s-2a0ca83">
                             {% csrf_token %}<input type="hidden" name="action" value="submit">
-                            <button type="submit" style="padding:.55rem 1.25rem;background:#0D47A1;color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:.88rem;font-weight:700">
+                            <button type="submit" class="s-30342be">
                                 🔍 Run IPRS Check
                             </button>
                         </form>
@@ -248,20 +248,20 @@
 
                 {% elif player.prembly_status == 'verified' %}
                 <!-- Verified — show clean result card -->
-                <div style="display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:start">
+                <div class="s-2dff368">
 
                     <!-- Result data -->
                     <div>
-                        <div id="iprs-result-card" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:.85rem 1rem;margin-bottom:.75rem">
-                            <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#166534;margin-bottom:.55rem">IPRS Record</div>
+                        <div id="iprs-result-card" class="s-992c48d">
+                            <div class="s-3705b22">IPRS Record</div>
                             <div id="iprs-comparison-body"></div>
                         </div>
 
                         <!-- Re-check with billing warning -->
-                        <form method="post" action="{% url 'prembly_verify_county_player' player_pk=player.pk %}" style="margin:0"
+                        <form method="post" action="{% url 'prembly_verify_county_player' player_pk=player.pk %}" class="s-2a0ca83"
                               onsubmit="return confirm('⚠️ Running a new IPRS check will use a Prembly credit and will be billed. Only proceed if details have changed. Continue?')">
                             {% csrf_token %}<input type="hidden" name="action" value="submit">
-                            <button type="submit" style="padding:.35rem .85rem;background:#fff;color:#666;border:1px solid #e0e0e0;border-radius:7px;cursor:pointer;font-size:.78rem">
+                            <button type="submit" class="s-027028e">
                                 🔄 Re-check (uses credit)
                             </button>
                         </form>
@@ -269,10 +269,10 @@
 
                     <!-- IPRS Photo if available -->
                     {% if player.iprs_photo %}
-                    <div style="text-align:center;flex-shrink:0">
+                    <div class="s-9f5e417">
                         <img src="{{ player.iprs_photo.url }}" alt="IPRS Photo"
-                             style="width:72px;height:90px;object-fit:cover;border-radius:8px;border:2px solid #1B5E20">
-                        <div style="font-size:.65rem;color:#1B5E20;font-weight:700;margin-top:.25rem">IPRS Photo</div>
+                             class="s-172e91a">
+                        <div class="s-7ffce92">IPRS Photo</div>
                     </div>
                     {% endif %}
 
@@ -281,15 +281,15 @@
 
                 <!-- Quick lookup (only when not verified) -->
                 {% if player.prembly_status != 'verified' %}
-                <div style="margin-top:.85rem;padding:.75rem;background:#f8faff;border-radius:8px;border:1px solid #e8eaf6">
-                    <p style="margin:0 0 .4rem;font-size:.76rem;font-weight:700;color:#1565C0">🔎 Preview IPRS data before running full check</p>
-                    <div style="display:flex;gap:.4rem">
+                <div class="s-08fbd24">
+                    <p class="s-43271fd">🔎 Preview IPRS data before running full check</p>
+                    <div class="s-0916813">
                         <input type="text" id="vcp-iprs-input" value="{{ player.national_id_number|default:'' }}"
-                               placeholder="National ID…" style="flex:1;padding:.38rem .65rem;border:1px solid #c5cae9;border-radius:7px;font-size:.82rem;background:#fff">
-                        <button onclick="vcpLookup()" style="padding:.38rem .9rem;background:#1565C0;color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:.81rem;font-weight:600">Preview</button>
+                               placeholder="National ID…" class="s-65e2226">
+                        <button onclick="vcpLookup()" class="s-1c4960b">Preview</button>
                     </div>
-                    <div id="vcp-iprs-result" style="display:none;margin-top:.55rem"></div>
-                    <p style="margin:.4rem 0 0;font-size:.7rem;color:#aaa">Preview is free. Only "Run IPRS Check" uses a credit.</p>
+                    <div id="vcp-iprs-result" class="s-4aa37e3"></div>
+                    <p class="s-eb20a37">Preview is free. Only "Run IPRS Check" uses a credit.</p>
                 </div>
                 {% endif %}
 
@@ -297,14 +297,14 @@
         </div>
 
         <!-- ── STEP 2: Manual IPRS Fallback ─────────────────────────── -->
-        <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden">
-            <div style="padding:.7rem 1rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f0f0f0">
-                <div style="display:flex;align-items:center;gap:.6rem">
+        <div class="s-056e508">
+            <div class="s-5490b73">
+                <div class="s-859efa8">
                     <span style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:.75rem;font-weight:800;
                         {% if player.huduma_status == 'verified' %}background:#1B5E20;color:#fff{% elif player.huduma_status == 'failed' %}background:#C62828;color:#fff{% else %}background:#e8e8e8;color:#888{% endif %}">
                         {% if player.huduma_status == 'verified' %}✓{% elif player.huduma_status == 'failed' %}✗{% else %}2{% endif %}
                     </span>
-                    <span style="font-weight:700;font-size:.9rem;color:#111">Manual IPRS Fallback</span>
+                    <span class="s-b7f8cac">Manual IPRS Fallback</span>
                 </div>
                 <span style="font-size:.75rem;padding:.2rem .65rem;border-radius:20px;font-weight:700;
                     {% if player.huduma_status == 'verified' %}background:#e8f5e9;color:#1B5E20
@@ -313,36 +313,36 @@
                     {{ player.get_huduma_status_display }}
                 </span>
             </div>
-            <div style="padding:.85rem 1rem">
-                <p style="margin:0 0 .75rem;font-size:.83rem;color:#777;line-height:1.5">
+            <div class="s-0e2bc6b">
+                <p class="s-c344d89">
                     Use only if IPRS check failed or is unavailable. Mark after physical Huduma Kenya verification.
                     {% if player.prembly_status == 'verified' %}
-                    <span style="color:#1B5E20;font-weight:600"> Prembly check passed, this step is not required.</span>
+                    <span class="s-35363a4"> Prembly check passed, this step is not required.</span>
                     {% endif %}
                 </p>
-                <div style="display:flex;gap:.4rem;flex-wrap:wrap">
-                    <form method="post" style="margin:0">{% csrf_token %}
-                        <button type="submit" name="action" value="huduma_verify" style="padding:.4rem .9rem;background:#1B5E20;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:700">✅ Mark Verified</button>
+                <div class="s-e6832a6">
+                    <form method="post" class="s-2a0ca83">{% csrf_token %}
+                        <button type="submit" name="action" value="huduma_verify" class="s-e3bec34">✅ Mark Verified</button>
                     </form>
-                    <form method="post" style="margin:0">{% csrf_token %}
-                        <button type="submit" name="action" value="huduma_fail" style="padding:.4rem .9rem;background:#C62828;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:700">❌ Mark Failed</button>
+                    <form method="post" class="s-2a0ca83">{% csrf_token %}
+                        <button type="submit" name="action" value="huduma_fail" class="s-b1e206e">❌ Mark Failed</button>
                     </form>
-                    <form method="post" style="margin:0">{% csrf_token %}
-                        <button type="submit" name="action" value="huduma_reset" style="padding:.4rem .85rem;background:#f5f5f5;color:#666;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:.82rem">Reset</button>
+                    <form method="post" class="s-2a0ca83">{% csrf_token %}
+                        <button type="submit" name="action" value="huduma_reset" class="s-a4bd91c">Reset</button>
                     </form>
                 </div>
             </div>
         </div>
 
         <!-- ── STEP 3: Higher League / FIFA Connect Check ────────────── -->
-        <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden">
-            <div style="padding:.7rem 1rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f0f0f0">
-                <div style="display:flex;align-items:center;gap:.6rem">
+        <div class="s-056e508">
+            <div class="s-5490b73">
+                <div class="s-859efa8">
                     <span style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:.75rem;font-weight:800;
                         {% if player.higher_league_status == 'clear' %}background:#1B5E20;color:#fff{% elif player.higher_league_status == 'flagged' %}background:#C62828;color:#fff{% else %}background:#e8e8e8;color:#888{% endif %}">
                         {% if player.higher_league_status == 'clear' %}✓{% elif player.higher_league_status == 'flagged' %}✗{% else %}3{% endif %}
                     </span>
-                    <span style="font-weight:700;font-size:.9rem;color:#111">{% if is_football %}FIFA Connect Check{% else %}Higher League Check{% endif %}</span>
+                    <span class="s-b7f8cac">{% if is_football %}FIFA Connect Check{% else %}Higher League Check{% endif %}</span>
                 </div>
                 <span style="font-size:.75rem;padding:.2rem .65rem;border-radius:20px;font-weight:700;
                     {% if player.higher_league_status == 'clear' %}background:#e8f5e9;color:#1B5E20
@@ -351,36 +351,36 @@
                     {{ player.get_higher_league_status_display }}
                 </span>
             </div>
-            <div style="padding:.85rem 1rem">
-                <p style="margin:0 0 .75rem;font-size:.83rem;color:#777;line-height:1.5">
+            <div class="s-0e2bc6b">
+                <p class="s-c344d89">
                     Confirm this player is not registered in a higher-level league or national team.
                 </p>
-                <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.65rem">
-                    <form method="post" style="margin:0">{% csrf_token %}
+                <div class="s-12f4f87">
+                    <form method="post" class="s-2a0ca83">{% csrf_token %}
                         <button type="submit" name="action" value="clearance_clear"
-                                style="padding:.4rem .9rem;background:#1B5E20;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:700">
+                                class="s-e3bec34">
                             ✅ Mark Clear
                         </button>
                     </form>
-                    <form method="post" style="margin:0">{% csrf_token %}
+                    <form method="post" class="s-2a0ca83">{% csrf_token %}
                         <button type="submit" name="action" value="clearance_reset"
-                                style="padding:.4rem .85rem;background:#f5f5f5;color:#666;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:.82rem">
+                                class="s-a4bd91c">
                             Reset
                         </button>
                     </form>
                 </div>
-                <form method="post" style="display:flex;gap:.4rem;margin:0">
+                <form method="post" class="s-7496aa3">
                     {% csrf_token %}<input type="hidden" name="action" value="clearance_flag">
                     <input type="text" name="higher_league_details"
                            placeholder="Flag reason club / league / national team…"
-                           style="flex:1;padding:.4rem .7rem;border:1px solid #e0e0e0;border-radius:8px;font-size:.82rem">
+                           class="s-67f2a64">
                     <button type="submit"
-                            style="padding:.4rem .9rem;background:#C62828;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:700;white-space:nowrap">
+                            class="s-6cff4c1">
                         🚩 Flag
                     </button>
                 </form>
                 {% if player.higher_league_details %}
-                <div style="margin-top:.6rem;padding:.45rem .75rem;background:#fce4ec;border-radius:7px;font-size:.81rem;color:#C62828">
+                <div class="s-a17976e">
                     {{ player.higher_league_details }}
                 </div>
                 {% endif %}
@@ -388,59 +388,59 @@
         </div>
 
         <!-- ── STEP 4: Final Decision ─────────────────────────────────── -->
-        <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden">
-            <div style="padding:.7rem 1rem;display:flex;align-items:center;gap:.6rem;border-bottom:1px solid #f0f0f0">
+        <div class="s-056e508">
+            <div class="s-73d178e">
                 <span style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:.75rem;font-weight:800;
                     {% if player.verification_status == 'verified' %}background:#1B5E20;color:#fff{% elif player.verification_status == 'rejected' %}background:#C62828;color:#fff{% else %}background:#e8e8e8;color:#888{% endif %}">
                     {% if player.verification_status == 'verified' %}✓{% elif player.verification_status == 'rejected' %}✗{% else %}4{% endif %}
                 </span>
-                <span style="font-weight:700;font-size:.9rem;color:#111">Final Verification Decision</span>
+                <span class="s-b7f8cac">Final Verification Decision</span>
             </div>
-            <div style="padding:.9rem 1rem">
+            <div class="s-0a9eb3d">
 
                 {% if player.verification_status == 'verified' %}
-                <div style="padding:1.25rem;background:#e8f5e9;border-radius:10px;text-align:center;margin-bottom:.85rem">
-                    <div style="font-size:2.2rem;margin-bottom:.3rem">✅</div>
-                    <div style="font-weight:800;color:#1B5E20;font-size:1rem">Player Verified & Cleared</div>
-                    <div style="color:#555;font-size:.83rem;margin-top:.25rem">This player is cleared to participate in competition.</div>
+                <div class="s-dbb4434">
+                    <div class="s-12113cb">✅</div>
+                    <div class="s-b1cdadf">Player Verified & Cleared</div>
+                    <div class="s-30cc051">This player is cleared to participate in competition.</div>
                 </div>
-                <form method="post" style="margin:0">{% csrf_token %}
+                <form method="post" class="s-2a0ca83">{% csrf_token %}
                     <button type="submit" name="action" value="reset"
-                            style="width:100%;padding:.5rem;background:#f5f5f5;color:#666;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:.85rem">
+                            class="s-2c3c4a3">
                         🔄 Reset to Pending
                     </button>
                 </form>
 
                 {% elif player.verification_status == 'rejected' %}
-                <div style="padding:1.1rem;background:#fce4ec;border-radius:10px;text-align:center;margin-bottom:.85rem">
-                    <div style="font-size:2rem;margin-bottom:.3rem">❌</div>
-                    <div style="font-weight:800;color:#C62828;font-size:.95rem">Rejected</div>
-                    {% if player.rejection_reason %}<div style="color:#555;font-size:.82rem;margin-top:.3rem">{{ player.rejection_reason }}</div>{% endif %}
+                <div class="s-19a4112">
+                    <div class="s-69757b7">❌</div>
+                    <div class="s-65db438">Rejected</div>
+                    {% if player.rejection_reason %}<div class="s-b272f04">{{ player.rejection_reason }}</div>{% endif %}
                 </div>
-                <form method="post" style="display:flex;gap:.5rem;margin:0">{% csrf_token %}
+                <form method="post" class="s-a60180e">{% csrf_token %}
                     <button type="submit" name="action" value="verify"
-                            style="flex:1;padding:.55rem;background:#1B5E20;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:.88rem">
+                            class="s-21e531e">
                         ✅ Override & Verify
                     </button>
                     <button type="submit" name="action" value="reset"
-                            style="flex:1;padding:.55rem;background:#f5f5f5;color:#666;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:.88rem">
+                            class="s-0f37334">
                         🔄 Reset
                     </button>
                 </form>
 
                 {% elif player.verification_status == 'resubmit' %}
-                <div style="padding:1.1rem;background:#fff3e0;border-radius:10px;text-align:center;margin-bottom:.85rem">
-                    <div style="font-size:2rem;margin-bottom:.3rem">🔄</div>
-                    <div style="font-weight:800;color:#E65100;font-size:.95rem">Awaiting Resubmission</div>
-                    {% if player.rejection_reason %}<div style="color:#555;font-size:.82rem;margin-top:.3rem">{{ player.rejection_reason }}</div>{% endif %}
+                <div class="s-78d73a2">
+                    <div class="s-69757b7">🔄</div>
+                    <div class="s-9b4b4c8">Awaiting Resubmission</div>
+                    {% if player.rejection_reason %}<div class="s-b272f04">{{ player.rejection_reason }}</div>{% endif %}
                 </div>
-                <form method="post" style="display:flex;gap:.5rem;margin:0">{% csrf_token %}
+                <form method="post" class="s-a60180e">{% csrf_token %}
                     <button type="submit" name="action" value="verify"
-                            style="flex:1;padding:.55rem;background:#1B5E20;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:.88rem">
+                            class="s-21e531e">
                         ✅ Verify
                     </button>
                     <button type="submit" name="action" value="reset"
-                            style="flex:1;padding:.55rem;background:#f5f5f5;color:#666;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:.88rem">
+                            class="s-0f37334">
                         🔄 Reset
                     </button>
                 </form>
@@ -448,15 +448,15 @@
                 {% else %}
                 <!-- PENDING -->
                 {% if not can_verify %}
-                <div style="margin-bottom:.9rem;padding:.75rem .9rem;border-radius:9px;background:#fff8e1;border-left:3px solid #F9A825">
-                    <div style="font-size:.82rem;font-weight:700;color:#F57F17;margin-bottom:.35rem">⚠️ Complete these steps before verifying:</div>
-                    <ul style="margin:0;padding-left:1.1rem;color:#666;font-size:.82rem;line-height:1.7">
+                <div class="s-e469652">
+                    <div class="s-7d6fabb">⚠️ Complete these steps before verifying:</div>
+                    <ul class="s-1154933">
                         {% for reason in blocking_reasons %}<li>{{ reason }}</li>{% endfor %}
                     </ul>
                 </div>
                 {% endif %}
 
-                <form method="post" style="margin:0">
+                <form method="post" class="s-2a0ca83">
                     {% csrf_token %}
                     <button type="submit" name="action" value="verify"
                             {% if not can_verify %}disabled{% endif %}
@@ -465,25 +465,25 @@
                         ✅ Verify Player
                     </button>
 
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem">
-                        <div style="border:1.5px solid #fce4ec;border-radius:9px;padding:.85rem">
-                            <div style="font-size:.82rem;font-weight:700;color:#C62828;margin-bottom:.5rem">❌ Reject</div>
+                    <div class="s-2815c7d">
+                        <div class="s-caa1ef2">
+                            <div class="s-8851467">❌ Reject</div>
                             <textarea name="rejection_reason" rows="2"
                                       placeholder="Reason fake ID, age mismatch…"
-                                      style="width:100%;padding:.38rem .6rem;border:1px solid #e8e8e8;border-radius:7px;font-size:.81rem;margin-bottom:.5rem;resize:vertical;box-sizing:border-box"></textarea>
+                                      class="s-dea56ac"></textarea>
                             <button type="submit" name="action" value="reject"
                                     onclick="return confirm('Reject this player?')"
-                                    style="width:100%;padding:.45rem;background:#C62828;color:#fff;border:none;border-radius:7px;cursor:pointer;font-weight:700;font-size:.84rem">
+                                    class="s-bfd6fd9">
                                 ❌ Reject
                             </button>
                         </div>
-                        <div style="border:1.5px solid #ffe0cc;border-radius:9px;padding:.85rem">
-                            <div style="font-size:.82rem;font-weight:700;color:#E65100;margin-bottom:.5rem">🔄 Resubmit</div>
+                        <div class="s-c45f693">
+                            <div class="s-20df284">🔄 Resubmit</div>
                             <textarea name="rejection_reason" rows="2"
                                       placeholder="What needs fixing…"
-                                      style="width:100%;padding:.38rem .6rem;border:1px solid #e8e8e8;border-radius:7px;font-size:.81rem;margin-bottom:.5rem;resize:vertical;box-sizing:border-box"></textarea>
+                                      class="s-dea56ac"></textarea>
                             <button type="submit" name="action" value="resubmit"
-                                    style="width:100%;padding:.45rem;background:#E65100;color:#fff;border:none;border-radius:7px;cursor:pointer;font-weight:700;font-size:.84rem">
+                                    class="s-cd937ba">
                                 🔄 Send Back
                             </button>
                         </div>

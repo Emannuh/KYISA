@@ -1,22 +1,18 @@
 {% extends 'base.html' %}
+{% block body_class %}pg-portal-coordinator-venues{% endblock %}
 {% block title %}Venues   KYISA CMS{% endblock %}
 
 {% block extra_css %}
-<style>
-    .venue-card { background: #fff; border-radius: 12px; padding: 1rem 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: .75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .5rem; }
-    .venue-card h4 { font-size: .95rem; font-weight: 600; margin: 0; }
-    .venue-card .meta { font-size: .8rem; color: #757575; }
-</style>
 {% endblock %}
 
 {% block content %}
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
-    <h2 style="font-size:1.3rem;font-weight:700;"><i class="bi bi-geo-alt"></i> Venues ({{ total_venues }})</h2>
+<div class="s-aa0ee9a">
+    <h2 class="s-99083dd"><i class="bi bi-geo-alt"></i> Venues ({{ total_venues }})</h2>
 </div>
 
 <!-- Create -->
 <div class="card mb-3">
-    <div class="card-header"><h3 style="margin:0;font-size:.95rem;">Add Venue</h3></div>
+    <div class="card-header"><h3 class="s-acd9a61">Add Venue</h3></div>
     <div class="card-body">
         <form method="post">
             {% csrf_token %}
@@ -43,30 +39,30 @@
 </div>
 
 <!-- Active -->
-<h3 style="font-size:1rem;font-weight:600;margin-bottom:.75rem;">Active Venues ({{ active_venues|length }})</h3>
+<h3 class="s-9a8a7eb">Active Venues ({{ active_venues|length }})</h3>
 {% for v in active_venues %}
 <div class="venue-card">
     <div>
         <h4>{{ v.name }}</h4>
         <div class="meta">{{ v.county }} &middot; {{ v.city|default:"—" }} &middot; Capacity: {{ v.capacity|default:"—" }} &middot; {{ v.surface|default:"—" }}</div>
     </div>
-    <div style="display:flex;gap:.35rem;">
-        <form method="post" style="margin:0;">{% csrf_token %}<input type="hidden" name="action" value="toggle"><input type="hidden" name="venue_id" value="{{ v.pk }}"><button class="btn btn-sm btn-outline-warning">Deactivate</button></form>
+    <div class="s-2b0718e">
+        <form method="post" class="s-2a0ca83">{% csrf_token %}<input type="hidden" name="action" value="toggle"><input type="hidden" name="venue_id" value="{{ v.pk }}"><button class="btn btn-sm btn-outline-warning">Deactivate</button></form>
     </div>
 </div>
 {% empty %}
-<div style="text-align:center;padding:2rem;color:#999;">No active venues.</div>
+<div class="s-b8f1d2a">No active venues.</div>
 {% endfor %}
 
 {% if inactive_venues %}
-<h3 style="font-size:1rem;font-weight:600;margin:1.5rem 0 .75rem;">Inactive Venues ({{ inactive_venues|length }})</h3>
+<h3 class="s-b5d26cc">Inactive Venues ({{ inactive_venues|length }})</h3>
 {% for v in inactive_venues %}
-<div class="venue-card" style="opacity:.7;">
+<div class="venue-card s-0d69900">
     <div>
         <h4>{{ v.name }}</h4>
         <div class="meta">{{ v.county }} &middot; {{ v.city|default:"—" }}</div>
     </div>
-    <form method="post" style="margin:0;">{% csrf_token %}<input type="hidden" name="action" value="toggle"><input type="hidden" name="venue_id" value="{{ v.pk }}"><button class="btn btn-sm btn-outline-success">Activate</button></form>
+    <form method="post" class="s-2a0ca83">{% csrf_token %}<input type="hidden" name="action" value="toggle"><input type="hidden" name="venue_id" value="{{ v.pk }}"><button class="btn btn-sm btn-outline-success">Activate</button></form>
 </div>
 {% endfor %}
 {% endif %}

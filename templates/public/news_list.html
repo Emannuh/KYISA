@@ -1,4 +1,5 @@
 {% extends "public/base.html" %}
+{% block body_class %}pg-public-news-list{% endblock %}
 {% load static %}
 {% load humanize %}
 
@@ -9,206 +10,6 @@
 {% block og_url %}https://kyisa.org/media-hub/news/{% endblock %}
 
 {% block extra_css %}
-<style>
-/* ═══════════════════════════════════════
-   NEWS LIST PAGE
-═══════════════════════════════════════ */
-
-/* ── Filter Bar ── */
-.news-filter-bar {
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(0,0,0,.06);
-    padding: 1.25rem 1.5rem;
-    margin: -2.5rem auto 3rem;
-    max-width: 900px;
-    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
-    position: relative; z-index: 5;
-}
-.news-filter-bar form {
-    display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; width: 100%;
-}
-.nf-search {
-    flex: 1; min-width: 200px;
-    padding: .6rem 1rem .6rem 2.5rem;
-    border: 1px solid #e0e0e0; border-radius: 8px;
-    font-size: .88rem; outline: none; transition: border-color .2s;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23999' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.442.156a5 5 0 1 1 0-10 5 5 0 0 1 0 10z'/%3E%3C/svg%3E") no-repeat .85rem center;
-}
-.nf-search:focus { border-color: #1B5E20; }
-.nf-cats {
-    display: flex; gap: .4rem; flex-wrap: wrap;
-}
-.nf-cat {
-    padding: .4rem .9rem; border-radius: 50px;
-    font-size: .78rem; font-weight: 600; text-decoration: none;
-    border: 1px solid #e0e0e0; color: #555; transition: all .2s;
-    white-space: nowrap;
-}
-.nf-cat:hover, .nf-cat.active { background: #1B5E20; color: #fff; border-color: #1B5E20; }
-
-/* ── Featured Article ── */
-.news-featured {
-    max-width: 1200px; margin: 0 auto 3rem; padding: 0 1.5rem;
-}
-.nf-card {
-    display: grid; grid-template-columns: 1fr 1fr;
-    border-radius: 20px; overflow: hidden;
-    background: #fff; box-shadow: 0 4px 32px rgba(0,0,0,.07);
-    transition: transform .3s, box-shadow .3s;
-}
-.nf-card:hover { transform: translateY(-4px); box-shadow: 0 8px 40px rgba(0,0,0,.1); }
-.nf-card-img {
-    position: relative; overflow: hidden; min-height: 340px;
-    background: #e8f5e9;
-}
-.nf-card-img img { width: 100%; height: 100%; object-fit: cover; }
-.nf-card-img .nf-badge {
-    position: absolute; top: 1rem; left: 1rem;
-    background: #1B5E20; color: #fff; padding: .3rem .8rem;
-    border-radius: 6px; font-size: .72rem; font-weight: 700; letter-spacing: .5px;
-    text-transform: uppercase;
-}
-.nf-card-body {
-    padding: 2.5rem;
-    display: flex; flex-direction: column; justify-content: center;
-}
-.nf-card-body .nf-meta {
-    display: flex; align-items: center; gap: .75rem;
-    font-size: .78rem; color: #999; margin-bottom: 1rem;
-}
-.nf-card-body h2 {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1.6rem; font-weight: 700; color: #1a1a1a;
-    margin-bottom: .75rem; line-height: 1.3;
-}
-.nf-card-body h2 a { color: inherit; transition: color .2s; }
-.nf-card-body h2 a:hover { color: #1B5E20; }
-.nf-card-body p { color: #666; font-size: .95rem; line-height: 1.6; margin-bottom: 1.5rem; }
-.nf-read-btn {
-    display: inline-flex; align-items: center; gap: .5rem;
-    color: #1B5E20; font-weight: 600; font-size: .88rem;
-    transition: gap .2s;
-}
-.nf-read-btn:hover { gap: .8rem; }
-@media (max-width: 768px) {
-    .nf-card { grid-template-columns: 1fr; }
-    .nf-card-img { min-height: 220px; }
-}
-
-/* ── Highlights Strip ── */
-.news-highlights {
-    max-width: 1200px; margin: 0 auto 3rem; padding: 0 1.5rem;
-}
-.nh-title {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1.2rem; font-weight: 700; color: #1a1a1a;
-    margin-bottom: 1.25rem;
-    display: flex; align-items: center; gap: .5rem;
-}
-.nh-title i { color: #F9A825; }
-.nh-grid {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem;
-}
-.nh-item {
-    background: #fff; border-radius: 12px; overflow: hidden;
-    box-shadow: 0 2px 12px rgba(0,0,0,.05);
-    transition: transform .25s, box-shadow .25s;
-    text-decoration: none; display: block;
-}
-.nh-item:hover { transform: translateY(-3px); box-shadow: 0 6px 24px rgba(0,0,0,.08); }
-.nh-item-img {
-    height: 140px; overflow: hidden; background: #e8f5e9;
-    position: relative;
-}
-.nh-item-img img { width: 100%; height: 100%; object-fit: cover; }
-.nh-item-body { padding: 1rem; }
-.nh-item-body h4 {
-    font-size: .85rem; font-weight: 600; color: #1a1a1a;
-    line-height: 1.4; margin-bottom: .35rem;
-    display: -webkit-box; -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical; overflow: hidden;
-}
-.nh-item-body span { font-size: .72rem; color: #999; }
-@media (max-width: 900px) { .nh-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 500px) { .nh-grid { grid-template-columns: 1fr; } }
-
-/* ── All articles grid ── */
-.news-grid-section {
-    max-width: 1200px; margin: 0 auto 4rem; padding: 0 1.5rem;
-}
-.ng-title {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1.2rem; font-weight: 700; color: #1a1a1a;
-    margin-bottom: 1.25rem;
-}
-.ng-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
-}
-.ng-card {
-    background: #fff; border-radius: 14px; overflow: hidden;
-    box-shadow: 0 2px 12px rgba(0,0,0,.04);
-    transition: transform .25s, box-shadow .25s;
-    text-decoration: none; display: flex; flex-direction: column;
-}
-.ng-card:hover { transform: translateY(-3px); box-shadow: 0 6px 24px rgba(0,0,0,.08); }
-.ng-card-img {
-    height: 180px; overflow: hidden; background: #e8f5e9;
-    position: relative;
-}
-.ng-card-img img { width: 100%; height: 100%; object-fit: cover; }
-.ng-cat-tag {
-    position: absolute; top: .75rem; left: .75rem;
-    background: rgba(27,94,32,.9); color: #fff;
-    padding: .2rem .6rem; border-radius: 4px;
-    font-size: .68rem; font-weight: 700; text-transform: uppercase;
-}
-.ng-card-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
-.ng-card-body h3 {
-    font-size: .95rem; font-weight: 600; color: #1a1a1a;
-    line-height: 1.4; margin-bottom: .5rem;
-    display: -webkit-box; -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical; overflow: hidden;
-}
-.ng-card-body p {
-    font-size: .82rem; color: #888; line-height: 1.5; flex: 1;
-    display: -webkit-box; -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical; overflow: hidden;
-}
-.ng-card-footer {
-    padding: .75rem 1.25rem;
-    border-top: 1px solid #f0f0f0;
-    display: flex; justify-content: space-between; align-items: center;
-    font-size: .72rem; color: #aaa;
-}
-@media (max-width: 900px) { .ng-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 500px) { .ng-grid { grid-template-columns: 1fr; } }
-
-/* ── Pagination ── */
-.news-pagination {
-    display: flex; justify-content: center; gap: .5rem; padding: 2rem 0;
-}
-.news-pagination a, .news-pagination span {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 36px; height: 36px; border-radius: 8px;
-    font-size: .85rem; font-weight: 600; transition: all .2s;
-}
-.news-pagination a {
-    background: #fff; color: #555; border: 1px solid #e0e0e0;
-}
-.news-pagination a:hover { background: #e8f5e9; color: #1B5E20; border-color: #1B5E20; }
-.news-pagination .current {
-    background: #1B5E20; color: #fff; border: 1px solid #1B5E20;
-}
-
-/* ── Empty state ── */
-.news-empty {
-    text-align: center; padding: 5rem 1.5rem;
-}
-.news-empty i { font-size: 3rem; color: #ccc; margin-bottom: 1rem; display: block; }
-.news-empty h3 { font-size: 1.2rem; color: #555; margin-bottom: .5rem; }
-.news-empty p { color: #999; font-size: .9rem; }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -229,7 +30,7 @@
             <span>News</span>
         </div>
     </div>
-    <div class="kenya-stripe" style="position:absolute;bottom:0;left:0;right:0;z-index:5"></div>
+    <div class="kenya-stripe s-4a0e33c"></div>
 </section>
 
 <!-- ── FILTER BAR ── -->
@@ -253,8 +54,8 @@
             {% if featured.featured_image %}
                 <img src="{{ featured.featured_image.url }}" alt="{{ featured.title }}">
             {% else %}
-                <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#1B5E20;">
-                    <i class="bi bi-newspaper" style="font-size:4rem;opacity:.3;"></i>
+                <div class="s-a027eeb">
+                    <i class="bi bi-newspaper s-576cf44"></i>
                 </div>
             {% endif %}
             <span class="nf-badge">Featured</span>
@@ -286,8 +87,8 @@
                 {% if hl.featured_image %}
                     <img src="{{ hl.featured_image.url }}" alt="{{ hl.title }}">
                 {% else %}
-                    <div style="display:flex;align-items:center;justify-content:center;height:100%;background:#e8f5e9;color:#1B5E20;">
-                        <i class="bi bi-star" style="font-size:2rem;opacity:.3;"></i>
+                    <div class="s-81cba59">
+                        <i class="bi bi-star s-a3b877f"></i>
                     </div>
                 {% endif %}
             </div>
@@ -312,8 +113,8 @@
                 {% if article.featured_image %}
                     <img src="{{ article.featured_image.url }}" alt="{{ article.title }}">
                 {% else %}
-                    <div style="display:flex;align-items:center;justify-content:center;height:100%;background:#e8f5e9;color:#1B5E20;">
-                        <i class="bi bi-file-text" style="font-size:2.5rem;opacity:.3;"></i>
+                    <div class="s-81cba59">
+                        <i class="bi bi-file-text s-50b0133"></i>
                     </div>
                 {% endif %}
                 {% if article.category %}<span class="ng-cat-tag">{{ article.category.name }}</span>{% endif %}

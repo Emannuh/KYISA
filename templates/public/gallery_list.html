@@ -1,4 +1,5 @@
 {% extends "public/base.html" %}
+{% block body_class %}pg-public-gallery-list{% endblock %}
 {% load static %}
 
 {% block title %}Gallery{% endblock %}
@@ -8,79 +9,6 @@
 {% block og_url %}https://kyisa.org/media-hub/gallery/{% endblock %}
 
 {% block extra_css %}
-<style>
-/* ═══════════════════════════════════════
-   GALLERY LIST PAGE
-═══════════════════════════════════════ */
-
-/* ── Albums grid ── */
-.gallery-section {
-    max-width: 1200px; margin: -2rem auto 4rem; padding: 0 1.5rem;
-    position: relative; z-index: 5;
-}
-.ga-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
-}
-.ga-card {
-    background: #fff; border-radius: 16px; overflow: hidden;
-    box-shadow: 0 2px 16px rgba(0,0,0,.05);
-    transition: transform .3s, box-shadow .3s;
-    text-decoration: none; display: block;
-    position: relative;
-}
-.ga-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(0,0,0,.1); }
-.ga-card-img {
-    height: 220px; overflow: hidden; position: relative;
-    background: #e8f5e9;
-}
-.ga-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
-.ga-card:hover .ga-card-img img { transform: scale(1.05); }
-.ga-overlay {
-    position: absolute; inset: 0;
-    background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,.6) 100%);
-    display: flex; align-items: flex-end; padding: 1.25rem;
-    opacity: 0; transition: opacity .3s;
-}
-.ga-card:hover .ga-overlay { opacity: 1; }
-.ga-overlay span {
-    color: #fff; font-size: .82rem; font-weight: 600;
-    display: flex; align-items: center; gap: .4rem;
-}
-.ga-card-body { padding: 1.25rem; }
-.ga-card-body h3 {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1rem; font-weight: 600; color: #1a1a1a;
-    margin-bottom: .4rem;
-}
-.ga-card-meta {
-    display: flex; align-items: center; gap: 1rem;
-    font-size: .78rem; color: #999;
-}
-.ga-card-meta i { margin-right: .2rem; }
-@media (max-width: 900px) { .ga-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 500px) { .ga-grid { grid-template-columns: 1fr; } }
-
-/* ── Pagination ── */
-.gallery-pagination {
-    display: flex; justify-content: center; gap: .5rem; padding: 2rem 0;
-}
-.gallery-pagination a, .gallery-pagination span {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 36px; height: 36px; border-radius: 8px;
-    font-size: .85rem; font-weight: 600; transition: all .2s;
-}
-.gallery-pagination a { background: #fff; color: #555; border: 1px solid #e0e0e0; }
-.gallery-pagination a:hover { background: #e8f5e9; color: #1B5E20; border-color: #1B5E20; }
-.gallery-pagination .current { background: #1B5E20; color: #fff; border: 1px solid #1B5E20; }
-
-/* ── Empty ── */
-.gallery-empty {
-    text-align: center; padding: 5rem 1.5rem;
-}
-.gallery-empty i { font-size: 3rem; color: #ccc; margin-bottom: 1rem; display: block; }
-.gallery-empty h3 { font-size: 1.2rem; color: #555; margin-bottom: .5rem; }
-.gallery-empty p { color: #999; font-size: .9rem; }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -101,7 +29,7 @@
             <span>Gallery</span>
         </div>
     </div>
-    <div class="kenya-stripe" style="position:absolute;bottom:0;left:0;right:0;z-index:5"></div>
+    <div class="kenya-stripe s-4a0e33c"></div>
 </section>
 
 <!-- ── ALBUMS GRID ── -->
@@ -114,8 +42,8 @@
                 {% if album.display_cover %}
                     <img src="{{ album.display_cover }}" alt="{{ album.title }}">
                 {% else %}
-                    <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#1B5E20;">
-                        <i class="bi bi-images" style="font-size:3rem;opacity:.3;"></i>
+                    <div class="s-a027eeb">
+                        <i class="bi bi-images s-63ede09"></i>
                     </div>
                 {% endif %}
                 <div class="ga-overlay">

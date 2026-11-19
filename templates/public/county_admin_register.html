@@ -1,78 +1,10 @@
 {% extends 'public/base.html' %}
+{% block body_class %}pg-public-county-admin-register{% endblock %}
 {% load static %}
 
 {% block title %}KYISA 11th Edition County Registration{% endblock %}
 
 {% block extra_css %}
-<style>
-    .cr-page { padding: 120px 0 60px; background: linear-gradient(160deg, #0d1b0e 0%, #1B5E20 50%, #2E7D32 100%); min-height: 100vh; }
-    .cr-container { max-width: 720px; margin: 0 auto; padding: 0 1rem; }
-
-    /* Header */
-    .cr-header { text-align: center; margin-bottom: 2rem; }
-    .cr-header__logo { width: 72px; height: 72px; border-radius: 50%; border: 3px solid rgba(255,255,255,.2); margin-bottom: 1rem; object-fit: cover; }
-    .cr-header h1 { font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 800; color: #fff; margin: 0; }
-    .cr-header h1 span { color: #F9A825; }
-    .cr-header__sub { color: rgba(255,255,255,.7); font-size: .95rem; margin-top: .4rem; }
-    .cr-header__date { display: inline-block; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15); padding: .35rem 1rem; border-radius: 20px; font-size: .82rem; color: rgba(255,255,255,.8); margin-top: .6rem; backdrop-filter: blur(6px); }
-
-    /* Fee card */
-    .cr-fee { display: flex; align-items: center; gap: 1.2rem; background: rgba(255,255,255,.08); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 1.2rem 1.5rem; margin-bottom: 1.5rem; }
-    .cr-fee__icon { font-size: 2.2rem; color: #F9A825; flex-shrink: 0; }
-    .cr-fee__label { font-size: .85rem; color: rgba(255,255,255,.65); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-    .cr-fee__amount { font-size: 1.8rem; font-weight: 800; color: #fff; line-height: 1.1; }
-    .cr-fee__note { font-size: .78rem; color: rgba(255,255,255,.5); margin-top: .2rem; }
-    .cr-card { background: #fff; border-radius: 20px; padding: 2.5rem; box-shadow: 0 20px 60px rgba(0,0,0,.25); }
-    .cr-card h3 { font-size: 1rem; font-weight: 700; color: #1B5E20; margin: 0 0 1rem; padding-bottom: .6rem; border-bottom: 2px solid #e8f5e9; display: flex; align-items: center; gap: .5rem; }
-    .cr-card h3 i { font-size: 1.1rem; }
-
-    /* Alert */
-    .cr-alert { margin-bottom: 1.5rem; padding: 1rem 1.2rem; border-radius: 10px; font-size: .9rem; line-height: 1.6; }
-    .cr-alert-success { background: #e8f5e9; border-left: 4px solid #1B5E20; }
-    .cr-alert-error { background: #fce4ec; border-left: 4px solid #C62828; }
-    .cr-alert-warning { background: #fff3e0; border-left: 4px solid #f57c00; }
-
-    /* Fields */
-    .cr-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.1rem; }
-    .cr-field { margin-bottom: 1.1rem; }
-    .cr-field label { display: block; font-weight: 600; color: #333; margin-bottom: .4rem; font-size: .88rem; }
-    .cr-field input, .cr-field select { width: 100%; padding: .7rem .9rem; border: 1.5px solid #d0d0d0; border-radius: 10px; font-size: .92rem; transition: border-color .2s, box-shadow .2s; background: #fafafa; }
-    .cr-field input:focus, .cr-field select:focus { outline: none; border-color: #1B5E20; box-shadow: 0 0 0 3px rgba(27,94,32,.1); background: #fff; }
-    .cr-field .err { color: #C62828; font-size: .8rem; margin-top: .3rem; }
-    .cr-field small { color: #999; font-size: .78rem; }
-
-    /* Divider */
-    .cr-section { margin-top: 1.8rem; }
-
-    /* Info box */
-    .cr-info { background: #fffde7; border: 1px solid #fff176; border-radius: 10px; padding: .9rem 1.1rem; margin-bottom: 1.5rem; font-size: .85rem; color: #5d4e00; display: flex; align-items: flex-start; gap: .6rem; }
-    .cr-info i { margin-top: 2px; flex-shrink: 0; }
-
-    /* Submit */
-    .cr-submit { width: 100%; padding: .95rem; background: linear-gradient(135deg, #1B5E20, #2E7D32); color: #fff; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: transform .15s, box-shadow .2s; display: flex; align-items: center; justify-content: center; gap: .5rem; }
-    .cr-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(27,94,32,.35); }
-    .cr-submit:active { transform: translateY(0); }
-
-    /* Non-field errors */
-    .cr-errors { color: #C62828; font-size: .88rem; margin-bottom: 1rem; padding: .8rem 1rem; background: #fce4ec; border-radius: 10px; }
-
-    /* Footer link */
-    .cr-footer { text-align: center; margin-top: 1.5rem; font-size: .88rem; color: rgba(255,255,255,.6); }
-    .cr-footer a { color: #F9A825; font-weight: 600; text-decoration: none; }
-    .cr-footer a:hover { text-decoration: underline; }
-
-    /* Steps pill */
-    .cr-steps { display: flex; gap: .5rem; margin-bottom: 1.8rem; justify-content: center; }
-    .cr-step { display: flex; align-items: center; gap: .4rem; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); padding: .4rem .9rem; border-radius: 20px; font-size: .75rem; color: rgba(255,255,255,.7); }
-    .cr-step i { font-size: .8rem; }
-    .cr-step--active { background: rgba(249,168,37,.15); border-color: rgba(249,168,37,.3); color: #F9A825; }
-
-    @media (max-width: 600px) {
-        .cr-row { grid-template-columns: 1fr; }
-        .cr-card { padding: 1.5rem; }
-        .cr-steps { flex-wrap: wrap; justify-content: center; }
-    }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -152,7 +84,7 @@
                 <div>A secure temporary password will be generated and <strong>emailed</strong> to you. It will not be displayed on this page. Check your inbox (and spam) after registration.</div>
             </div>
 
-            <div class="cr-info" style="background:#e8f5e9;border-color:#a5d6a7;color:#1b5e20">
+            <div class="cr-info s-b3d28c6">
                 <i class="bi bi-info-circle"></i>
                 <div>As the <strong>Director of Sports</strong>, you are the registrant for your county. After registering, log in and submit your payment proof. The KYISA Treasurer will review and approve before you can add disciplines and players.</div>
             </div>
@@ -162,12 +94,12 @@
             </button>
         </form>
 
-        <div class="cr-footer" style="color:#888;margin-top:1.5rem">
-            Already registered? <a href="{% url 'web_login' %}" style="color:#1B5E20">Log in to the portal</a>
+        <div class="cr-footer s-4e2ba41">
+            Already registered? <a href="{% url 'web_login' %}" class="s-a24cb3b">Log in to the portal</a>
         </div>
     </div>
 
-    <div class="cr-footer" style="margin-top:1.2rem">
+    <div class="cr-footer s-6b6553a">
         <a href="{% url 'home' %}"><i class="bi bi-arrow-left"></i> Back to Home</a>
     </div>
 </div>

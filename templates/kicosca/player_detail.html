@@ -2,14 +2,14 @@
 {% block title %}{{ player.full_name }} KICOSCA{% endblock %}
 
 {% block content %}
-<div style="margin-bottom:1.5rem">
-  <div style="font-size:.78rem;color:#aaa;margin-bottom:.4rem">
-    <a href="{% url 'kicosca_dashboard' %}" style="color:#7c3aed;font-weight:600">KICOSCA</a> ›
-    <a href="{% url 'kicosca_discipline_players' discipline_pk=player.discipline.pk %}" style="color:#7c3aed;font-weight:600">{{ player.discipline.get_sport_display }}</a> ›
+<div class="s-92cb257">
+  <div class="s-daedf6a">
+    <a href="{% url 'kicosca_dashboard' %}" class="s-bf497d3">KICOSCA</a> ›
+    <a href="{% url 'kicosca_discipline_players' discipline_pk=player.discipline.pk %}" class="s-bf497d3">{{ player.discipline.get_sport_display }}</a> ›
     {{ player.full_name }}
   </div>
-  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem">
-    <h1 style="margin:0;font-size:1.4rem;font-weight:800;color:#111">{{ player.full_name }}</h1>
+  <div class="s-28fffd7">
+    <h1 class="s-e0a88a8">{{ player.full_name }}</h1>
     <span style="padding:.38rem 1rem;border-radius:20px;font-size:.84rem;font-weight:700;
       {% if player.verification_status == 'verified' %}background:#dcfce7;color:#166534
       {% elif player.verification_status == 'rejected' %}background:#fee2e2;color:#991b1b
@@ -21,70 +21,70 @@
   </div>
 </div>
 
-<div style="display:grid;grid-template-columns:360px 1fr;gap:1.25rem;align-items:start">
+<div class="s-187881a">
 
   <!-- LEFT: Player info + documents -->
-  <div style="display:flex;flex-direction:column;gap:1rem">
-    <div style="background:#fff;border-radius:12px;padding:1rem;box-shadow:0 1px 4px rgba(0,0,0,.07)">
-      <div style="padding:.6rem .85rem;background:linear-gradient(135deg,#4c1d95,#7c3aed);border-radius:8px;margin:-1rem -1rem .85rem;display:flex;align-items:center;gap:.5rem">
-        <i class="bi bi-person-badge" style="color:#fff"></i>
-        <span style="font-weight:700;font-size:.88rem;color:#fff">Player Details</span>
+  <div class="s-11a63a3">
+    <div class="s-2f8d4bf">
+      <div class="s-4983a31">
+        <i class="bi bi-person-badge s-12e7917"></i>
+        <span class="s-33fa591">Player Details</span>
       </div>
-      <div style="display:grid;grid-template-columns:110px 1fr;gap:.35rem .65rem;font-size:.83rem">
-        <span style="color:#9ca3af">County</span><strong>{{ player.discipline.entry.county }}</strong>
-        <span style="color:#9ca3af">Sport</span><span>{{ player.discipline.get_sport_display }}</span>
-        <span style="color:#9ca3af">DOB</span><span>{{ player.date_of_birth|date:"d M Y" }} ({{ player.age }} yrs)</span>
-        <span style="color:#9ca3af">National ID</span><span style="font-family:monospace">{{ player.national_id_number }}</span>
-        <span style="color:#9ca3af">KRA PIN</span><span style="font-family:monospace">{{ player.kra_pin|default:"—" }}</span>
-        <span style="color:#9ca3af">Phone</span><span>{{ player.phone }}</span>
-        <span style="color:#9ca3af">Department</span><span>{{ player.department|default:"—" }}</span>
-        <span style="color:#9ca3af">Job Title</span><span>{{ player.position_title|default:"—" }}</span>
-        <span style="color:#9ca3af">Employee No.</span><span>{{ player.employee_number|default:"—" }}</span>
+      <div class="s-c303cd4">
+        <span class="s-5401ea9">County</span><strong>{{ player.discipline.entry.county }}</strong>
+        <span class="s-5401ea9">Sport</span><span>{{ player.discipline.get_sport_display }}</span>
+        <span class="s-5401ea9">DOB</span><span>{{ player.date_of_birth|date:"d M Y" }} ({{ player.age }} yrs)</span>
+        <span class="s-5401ea9">National ID</span><span class="s-3557948">{{ player.national_id_number }}</span>
+        <span class="s-5401ea9">KRA PIN</span><span class="s-3557948">{{ player.kra_pin|default:"—" }}</span>
+        <span class="s-5401ea9">Phone</span><span>{{ player.phone }}</span>
+        <span class="s-5401ea9">Department</span><span>{{ player.department|default:"—" }}</span>
+        <span class="s-5401ea9">Job Title</span><span>{{ player.position_title|default:"—" }}</span>
+        <span class="s-5401ea9">Employee No.</span><span>{{ player.employee_number|default:"—" }}</span>
       </div>
     </div>
 
     <!-- Documents -->
-    <div style="background:#fff;border-radius:12px;padding:1rem;box-shadow:0 1px 4px rgba(0,0,0,.07)">
-      <div style="padding:.6rem .85rem;background:linear-gradient(135deg,#1e40af,#3b82f6);border-radius:8px;margin:-1rem -1rem .85rem;display:flex;align-items:center;gap:.5rem">
-        <i class="bi bi-file-earmark" style="color:#fff"></i>
-        <span style="font-weight:700;font-size:.88rem;color:#fff">Documents</span>
+    <div class="s-2f8d4bf">
+      <div class="s-0c56c44">
+        <i class="bi bi-file-earmark s-12e7917"></i>
+        <span class="s-33fa591">Documents</span>
       </div>
-      <div style="display:flex;flex-direction:column;gap:.75rem">
+      <div class="s-a939d5d">
         {% if player.photo %}
         <div>
-          <div style="font-size:.78rem;font-weight:700;color:#555;margin-bottom:.3rem">📸 Photo</div>
-          <div style="display:flex;gap:.65rem">
-            <img src="{{ player.photo.url }}" alt="Photo" style="width:72px;height:90px;object-fit:cover;border-radius:8px;border:2px solid #e5e7eb">
+          <div class="s-301ac6a">📸 Photo</div>
+          <div class="s-469f040">
+            <img src="{{ player.photo.url }}" alt="Photo" class="s-bb7bff9">
             {% if player.iprs_photo %}
             <div>
-              <img src="{{ player.iprs_photo.url }}" alt="IPRS" style="width:60px;height:75px;object-fit:cover;border-radius:7px;border:2px solid #22c55e">
-              <div style="font-size:.63rem;color:#16a34a;font-weight:700;margin-top:.15rem;text-align:center">IPRS</div>
+              <img src="{{ player.iprs_photo.url }}" alt="IPRS" class="s-8dcac63">
+              <div class="s-c2a77a6">IPRS</div>
             </div>
             {% endif %}
           </div>
         </div>
         {% endif %}
-        {% if player.id_document %}<div><span style="font-size:.78rem;font-weight:700;color:#555">🪪 National ID: </span><a href="{{ player.id_document.url }}" target="_blank" style="font-size:.78rem;color:#3b82f6">View ↗</a></div>{% endif %}
-        {% if player.payslip %}<div><span style="font-size:.78rem;font-weight:700;color:#555">💰 Payslip: </span><a href="{{ player.payslip.url }}" target="_blank" style="font-size:.78rem;color:#3b82f6">View ↗</a></div>{% endif %}
-        {% if player.appointment_letter %}<div><span style="font-size:.78rem;font-weight:700;color:#555">📋 Appointment Letter: </span><a href="{{ player.appointment_letter.url }}" target="_blank" style="font-size:.78rem;color:#3b82f6">View ↗</a></div>{% endif %}
+        {% if player.id_document %}<div><span class="s-096f722">🪪 National ID: </span><a href="{{ player.id_document.url }}" target="_blank" class="s-ba1f7a5">View ↗</a></div>{% endif %}
+        {% if player.payslip %}<div><span class="s-096f722">💰 Payslip: </span><a href="{{ player.payslip.url }}" target="_blank" class="s-ba1f7a5">View ↗</a></div>{% endif %}
+        {% if player.appointment_letter %}<div><span class="s-096f722">📋 Appointment Letter: </span><a href="{{ player.appointment_letter.url }}" target="_blank" class="s-ba1f7a5">View ↗</a></div>{% endif %}
       </div>
     </div>
   </div>
 
   <!-- RIGHT: Verification steps -->
-  <div style="display:flex;flex-direction:column;gap:1rem">
+  <div class="s-11a63a3">
 
     <!-- Step 1: KRA Employment Check (PRIMARY only check needed) -->
     <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.07);overflow:hidden;border-left:4px solid
       {% if player.kra_employment_status == 'verified' %}#16a34a{% elif player.kra_employment_status == 'failed' or player.kra_employment_status == 'mismatch' %}#dc2626{% else %}#ea580c{% endif %}">
-      <div style="padding:.65rem 1rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f3f4f6">
-        <div style="display:flex;align-items:center;gap:.5rem">
+      <div class="s-f877989">
+        <div class="s-ef5f7de">
           <span style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:.75rem;font-weight:800;
             {% if player.kra_employment_status == 'verified' %}background:#16a34a;color:#fff{% elif player.kra_employment_status in 'failed,mismatch' %}background:#dc2626;color:#fff{% else %}background:#e5e7eb;color:#6b7280{% endif %}">
             {% if player.kra_employment_status == 'verified' %}✓{% elif player.kra_employment_status == 'failed' or player.kra_employment_status == 'mismatch' %}✗{% else %}1{% endif %}
           </span>
-          <span style="font-weight:700;font-size:.9rem;color:#111">KRA Employment Verification</span>
-          <span style="font-size:.68rem;padding:.12rem .5rem;background:#fff7ed;color:#ea580c;border-radius:20px;font-weight:700">GavaConnect</span>
+          <span class="s-b7f8cac">KRA Employment Verification</span>
+          <span class="s-b038b95">GavaConnect</span>
         </div>
         <span style="font-size:.74rem;padding:.2rem .65rem;border-radius:20px;font-weight:700;
           {% if player.kra_employment_status == 'verified' %}background:#dcfce7;color:#166534
@@ -97,8 +97,8 @@
           {% else %}Not Checked{% endif %}
         </span>
       </div>
-      <div style="padding:.9rem 1rem">
-        <p style="margin:0 0 .75rem;font-size:.83rem;color:#666;line-height:1.5">
+      <div class="s-0a9eb3d">
+        <p class="s-314df02">
           Verifies this player is a current <strong>{{ player.discipline.entry.county }} County Government</strong>
           employee via KRA PAYE records. This is the only check required for KICOSCA eligibility.
         </p>
@@ -106,72 +106,72 @@
         <div style="margin-bottom:.75rem;padding:.55rem .85rem;border-radius:8px;font-size:.83rem;
           {% if player.kra_employment_status == 'verified' %}background:#dcfce7;color:#166534{% elif player.kra_employment_status == 'mismatch' %}background:#fff7ed;color:#9a3412{% else %}background:#fee2e2;color:#991b1b{% endif %}">
           <strong>KRA Employer:</strong> {{ player.kra_employer_name }}
-          {% if player.kra_employer_pin %} <span style="font-family:monospace;opacity:.7">({{ player.kra_employer_pin }})</span>{% endif %}
+          {% if player.kra_employer_pin %} <span class="s-b9180e5">({{ player.kra_employer_pin }})</span>{% endif %}
         </div>
         {% endif %}
         <form method="post" action="{% url 'kicosca_kra_verify' player_pk=player.pk %}">
           {% csrf_token %}
-          <div style="display:flex;gap:.5rem;margin-bottom:.45rem">
+          <div class="s-6ba9b38">
             <input type="text" name="kra_pin" value="{{ player.kra_pin }}" placeholder="KRA PIN e.g. A001234567B"
-                   style="flex:1;padding:.42rem .7rem;border:1.5px solid #fdba74;border-radius:8px;font-size:.84rem;font-family:monospace;text-transform:uppercase">
+                   class="s-5fc7425">
             <button type="submit"
-                    style="padding:.42rem 1.1rem;background:#ea580c;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.83rem;font-weight:700;white-space:nowrap">
+                    class="s-68880f5">
               🏛️ Verify Employment
             </button>
           </div>
-          <p style="margin:0;font-size:.74rem;color:#9ca3af">Checks KRA PAYE to confirm county government employment.</p>
+          <p class="s-f7374fb">Checks KRA PAYE to confirm county government employment.</p>
         </form>
       </div>
     </div>
 
     <!-- Step 2: Final Decision (admin only) -->
     {% if can_approve %}
-    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.07);overflow:hidden">
-      <div style="padding:.65rem 1rem;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;gap:.5rem">
+    <div class="s-8c5def3">
+      <div class="s-0a18d7b">
         <span style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:.75rem;font-weight:800;
           {% if player.verification_status == 'verified' %}background:#16a34a;color:#fff{% elif player.verification_status == 'rejected' %}background:#dc2626;color:#fff{% else %}background:#e5e7eb;color:#6b7280{% endif %}">
           {% if player.verification_status == 'verified' %}✓{% elif player.verification_status == 'rejected' %}✗{% else %}2{% endif %}
         </span>
-        <span style="font-weight:700;font-size:.9rem;color:#111">Final Decision</span>
+        <span class="s-b7f8cac">Final Decision</span>
       </div>
-      <div style="padding:.9rem 1rem">
+      <div class="s-0a9eb3d">
         {% if player.verification_status == 'verified' %}
-        <div style="padding:1.1rem;background:#dcfce7;border-radius:9px;text-align:center;margin-bottom:.75rem">
-          <div style="font-size:1.8rem;margin-bottom:.2rem">✅</div>
-          <div style="font-weight:800;color:#166534">Verified Eligible for KICOSCA</div>
+        <div class="s-3ed4346">
+          <div class="s-4575060">✅</div>
+          <div class="s-66d0fc9">Verified Eligible for KICOSCA</div>
         </div>
         <form method="post">{% csrf_token %}
-          <button type="submit" name="action" value="reset" style="width:100%;padding:.45rem;background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;border-radius:7px;cursor:pointer;font-size:.83rem">Reset to Pending</button>
+          <button type="submit" name="action" value="reset" class="s-32fa556">Reset to Pending</button>
         </form>
         {% else %}
         {% if player.kra_employment_status != 'verified' %}
-        <div style="margin-bottom:.65rem;padding:.55rem .75rem;background:#fff7ed;border-radius:7px;font-size:.81rem;color:#92400e;border-left:3px solid #f97316">
+        <div class="s-3781f5a">
           ⚠️ KRA employment check must pass before final approval.
         </div>
         {% endif %}
-        <form method="post" style="display:flex;flex-direction:column;gap:.5rem">
+        <form method="post" class="s-d84d705">
           {% csrf_token %}
           {% if player.kra_employment_status == 'verified' %}
           <button type="submit" name="action" value="verify"
-                  style="padding:.6rem;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:.9rem;font-weight:800">
+                  class="s-fc4dd0b">
             ✅ Verify & Approve for KICOSCA
           </button>
           {% endif %}
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.25rem">
-            <div style="border:1px solid #fee2e2;border-radius:8px;padding:.75rem">
-              <p style="margin:0 0 .4rem;font-size:.78rem;font-weight:700;color:#dc2626">❌ Reject</p>
+          <div class="s-d384243">
+            <div class="s-5fe791e">
+              <p class="s-0c4347d">❌ Reject</p>
               <input type="text" name="rejection_reason" placeholder="Reason…"
-                     style="width:100%;padding:.35rem .55rem;border:1px solid #e5e7eb;border-radius:6px;font-size:.79rem;margin-bottom:.4rem;box-sizing:border-box">
+                     class="s-ec3d382">
               <button type="submit" name="action" value="reject"
-                      style="width:100%;padding:.4rem;background:#dc2626;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:.8rem;font-weight:700"
+                      class="s-16b93e5"
                       onclick="return confirm('Reject this player?')">Reject</button>
             </div>
-            <div style="border:1px solid #fde68a;border-radius:8px;padding:.75rem">
-              <p style="margin:0 0 .4rem;font-size:.78rem;font-weight:700;color:#d97706">🔄 Resubmit</p>
+            <div class="s-5d49561">
+              <p class="s-833f1ed">🔄 Resubmit</p>
               <input type="text" name="rejection_reason" placeholder="What needs fixing…"
-                     style="width:100%;padding:.35rem .55rem;border:1px solid #e5e7eb;border-radius:6px;font-size:.79rem;margin-bottom:.4rem;box-sizing:border-box">
+                     class="s-ec3d382">
               <button type="submit" name="action" value="resubmit"
-                      style="width:100%;padding:.4rem;background:#d97706;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:.8rem;font-weight:700">Send Back</button>
+                      class="s-0bfb1fc">Send Back</button>
             </div>
           </div>
         </form>

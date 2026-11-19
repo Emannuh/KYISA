@@ -44,44 +44,44 @@
 <div class="dash-section-title"><i class="bi bi-database"></i> Competition Data</div>
 <div class="dash-actions">
     <a href="{% url 'jury_teams' %}" class="dash-tile">
-        <div class="tile-icon" style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);color:#1565C0;"><i class="bi bi-people-fill"></i></div>
+        <div class="tile-icon s-0530c51"><i class="bi bi-people-fill"></i></div>
         <div class="tile-text">
             <h4>{{ total_teams }} Registered Teams</h4>
             <p>View &amp; Download</p>
         </div>
     </a>
     <a href="{% url 'jury_players' %}" class="dash-tile">
-        <div class="tile-icon" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);color:#2E7D32;"><i class="bi bi-person-check-fill"></i></div>
+        <div class="tile-icon s-22d0a87"><i class="bi bi-person-check-fill"></i></div>
         <div class="tile-text">
             <h4>{{ total_players }} Approved Players</h4>
             <p>View &amp; Download</p>
         </div>
     </a>
     <a href="{% url 'jury_fixtures' %}" class="dash-tile">
-        <div class="tile-icon" style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);color:#E65100;"><i class="bi bi-calendar-event"></i></div>
+        <div class="tile-icon s-d6a9f41"><i class="bi bi-calendar-event"></i></div>
         <div class="tile-text">
-            <h4>{{ total_fixtures }} Fixtures <span class="dash-badge" style="background:#FFF3E0;color:#E65100;">{{ completed_fixtures }} completed</span></h4>
+            <h4>{{ total_fixtures }} Fixtures <span class="dash-badge s-013065e">{{ completed_fixtures }} completed</span></h4>
             <p>View &amp; Download</p>
         </div>
     </a>
     <a href="{% url 'jury_match_reports' %}" class="dash-tile">
-        <div class="tile-icon" style="background:linear-gradient(135deg,#F3E5F5,#E1BEE7);color:#7B1FA2;"><i class="bi bi-file-earmark-text"></i></div>
+        <div class="tile-icon s-dbed1b6"><i class="bi bi-file-earmark-text"></i></div>
         <div class="tile-text">
             <h4>{{ total_reports }} Match Reports</h4>
             <p>View &amp; Download</p>
         </div>
     </a>
     <a href="{% url 'jury_squads' %}" class="dash-tile">
-        <div class="tile-icon" style="background:linear-gradient(135deg,#E0F2F1,#B2DFDB);color:#00695C;"><i class="bi bi-list-check"></i></div>
+        <div class="tile-icon s-3d73108"><i class="bi bi-list-check"></i></div>
         <div class="tile-text">
             <h4>{{ total_squads }} Squad Submissions</h4>
             <p>View &amp; Download</p>
         </div>
     </a>
     <a href="{% url 'jury_disciplinary' %}" class="dash-tile">
-        <div class="tile-icon" style="background:linear-gradient(135deg,#FBE9E7,#FFCCBC);color:#BF360C;"><i class="bi bi-exclamation-triangle-fill"></i></div>
+        <div class="tile-icon s-fe55be1"><i class="bi bi-exclamation-triangle-fill"></i></div>
         <div class="tile-text">
-            <h4><span style="color:#F9A825;">{{ total_yellows }}</span> / <span style="color:#E53935;">{{ total_reds }}</span> Cards</h4>
+            <h4><span class="s-a7026e2">{{ total_yellows }}</span> / <span class="s-40766e4">{{ total_reds }}</span> Cards</h4>
             <p>Yellow / Red View &amp; Download</p>
         </div>
     </a>
@@ -89,9 +89,9 @@
 
 <!-- Recent Appeals -->
 <div class="dash-panel">
-    <div class="dash-panel-head" style="display:flex;justify-content:space-between;align-items:center">
+    <div class="dash-panel-head s-6823804">
         <span><i class="bi bi-journal-text"></i> Recent Appeals</span>
-        <a href="{% url 'appeals_list' %}" style="font-size:.76rem;text-decoration:none;color:#6A1B9A;font-weight:600;">View All Appeals &rarr;</a>
+        <a href="{% url 'appeals_list' %}" class="s-49ba48e">View All Appeals &rarr;</a>
     </div>
     <div class="dash-panel-body">
         {% if recent_appeals %}
@@ -115,29 +115,29 @@
                         <td>
                             {{ appeal.subject|truncatechars:40 }}
                             {% if appeal.is_reappeal %}
-                            <span class="dash-badge" style="background:#FFF3E0;color:#E65100;">RE-APPEAL</span>
+                            <span class="dash-badge s-013065e">RE-APPEAL</span>
                             {% endif %}
                         </td>
                         <td>{{ appeal.appellant_team }}</td>
                         <td>{{ appeal.respondent_team }}</td>
                         <td>
                             {% if appeal.status == 'submitted' %}
-                            <span class="dash-badge" style="background:#FFF3E0;color:#E65100;">{{ appeal.get_status_display }}</span>
+                            <span class="dash-badge s-013065e">{{ appeal.get_status_display }}</span>
                             {% elif appeal.status == 'response_received' %}
-                            <span class="dash-badge" style="background:#E3F2FD;color:#1565C0;">{{ appeal.get_status_display }}</span>
+                            <span class="dash-badge s-744c8ec">{{ appeal.get_status_display }}</span>
                             {% elif appeal.status == 'under_review' %}
-                            <span class="dash-badge" style="background:#E8EAF6;color:#283593;">{{ appeal.get_status_display }}</span>
+                            <span class="dash-badge s-7ffafa2">{{ appeal.get_status_display }}</span>
                             {% elif appeal.status == 'decided' %}
-                            <span class="dash-badge" style="background:#E8F5E9;color:#1B5E20;">{{ appeal.get_status_display }}</span>
+                            <span class="dash-badge s-02f0f8b">{{ appeal.get_status_display }}</span>
                             {% else %}
-                            <span class="dash-badge" style="background:#ECEFF1;color:#37474F;">{{ appeal.get_status_display }}</span>
+                            <span class="dash-badge s-e6eb5ef">{{ appeal.get_status_display }}</span>
                             {% endif %}
                         </td>
                         <td>{{ appeal.created_at|date:"d M Y" }}</td>
                         <td>
-                            <a href="{% url 'appeal_detail' pk=appeal.pk %}" class="dash-badge" style="background:#F3E5F5;color:#6A1B9A;text-decoration:none;">View</a>
+                            <a href="{% url 'appeal_detail' pk=appeal.pk %}" class="dash-badge s-b4088ab">View</a>
                             {% if appeal.status in 'response_received,under_review' %}
-                            <a href="{% url 'jury_decision' pk=appeal.pk %}" class="dash-badge" style="background:#6A1B9A;color:#fff;text-decoration:none;">Decide</a>
+                            <a href="{% url 'jury_decision' pk=appeal.pk %}" class="dash-badge s-edb9f2e">Decide</a>
                             {% endif %}
                         </td>
                     </tr>
@@ -147,7 +147,7 @@
         </div>
         {% else %}
         <div class="dash-empty">
-            <i class="bi bi-inbox" style="font-size:2.5rem;color:#E1BEE7;"></i>
+            <i class="bi bi-inbox s-5e67fba"></i>
             <p>No appeals filed yet.</p>
         </div>
         {% endif %}

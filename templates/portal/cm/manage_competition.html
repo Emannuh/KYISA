@@ -1,164 +1,10 @@
 {% extends 'base.html' %}
+{% block body_class %}pg-portal-cm-manage-competition{% endblock %}
 {% load static %}
 
 {% block title %}{{ competition.name }}   KYISA CMS{% endblock %}
 
 {% block extra_css %}
-<style>
-    .comp-hero {
-        background: linear-gradient(135deg, #4A148C 0%, #7B1FA2 50%, #9C27B0 100%);
-        border-radius: 16px;
-        padding: 1.5rem 2rem;
-        color: #fff;
-        margin-bottom: 1.5rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-    .comp-hero h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: .2rem; }
-    .comp-hero .meta {
-        font-size: .85rem;
-        opacity: .85;
-        display: flex;
-        flex-wrap: wrap;
-        gap: .75rem;
-    }
-    .comp-hero .hero-actions { display: flex; gap: .5rem; flex-wrap: wrap; align-items: flex-start; }
-    .comp-hero .hero-actions .btn { font-size: .8rem; padding: .35rem .8rem; }
-    .comp-badge {
-        display: inline-block;
-        padding: .15rem .6rem;
-        border-radius: 6px;
-        font-size: .75rem;
-        font-weight: 600;
-    }
-    .badge-active { background: rgba(76,175,80,.2); color: #2E7D32; }
-    .badge-registration { background: rgba(255,193,7,.2); color: #F57F17; }
-    .badge-completed { background: rgba(0,0,0,.1); color: #fff; }
-    .badge-draft { background: rgba(255,255,255,.2); color: #fff; }
-
-    .mini-stats {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: .75rem;
-        margin-bottom: 1.5rem;
-    }
-    .mini-stat {
-        background: #fff;
-        border-radius: 10px;
-        padding: .75rem 1rem;
-        box-shadow: 0 1px 4px rgba(0,0,0,.05);
-        text-align: center;
-    }
-    .mini-stat .num { font-size: 1.3rem; font-weight: 800; color: #7B1FA2; }
-    .mini-stat .lbl { font-size: .72rem; color: #757575; font-weight: 500; }
-
-    .section-title {
-        font-size: 1rem;
-        font-weight: 700;
-        color: #333;
-        margin-bottom: .75rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .section-title .actions { display: flex; gap: .4rem; }
-
-    .pool-card {
-        background: #fff;
-        border-radius: 10px;
-        box-shadow: 0 1px 6px rgba(0,0,0,.06);
-        margin-bottom: 1rem;
-        overflow: hidden;
-    }
-    .pool-header {
-        background: #F3E5F5;
-        padding: .6rem 1rem;
-        font-weight: 700;
-        font-size: .9rem;
-        color: #4A148C;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .standings-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: .82rem;
-    }
-    .standings-table th {
-        background: #FAFAFA;
-        padding: .45rem .6rem;
-        text-align: center;
-        font-weight: 600;
-        color: #666;
-        border-bottom: 1px solid #eee;
-    }
-    .standings-table th:first-child, .standings-table td:first-child { text-align: left; padding-left: 1rem; }
-    .standings-table td {
-        padding: .45rem .6rem;
-        text-align: center;
-        border-bottom: 1px solid #f5f5f5;
-    }
-    .standings-table tr:hover { background: #FAFAFA; }
-    .pos-badge {
-        display: inline-block;
-        width: 22px;
-        height: 22px;
-        line-height: 22px;
-        text-align: center;
-        border-radius: 50%;
-        font-size: .7rem;
-        font-weight: 700;
-        margin-right: .3rem;
-    }
-    .pos-1 { background: #FFD700; color: #333; }
-    .pos-2 { background: #C0C0C0; color: #333; }
-    .pos-3 { background: #CD7F32; color: #fff; }
-    .pos-other { background: #EEE; color: #666; }
-
-    .fixture-list {
-        background: #fff;
-        border-radius: 10px;
-        box-shadow: 0 1px 6px rgba(0,0,0,.06);
-        padding: 1rem;
-        margin-bottom: 1rem;
-    }
-    .fixture-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: .5rem 0;
-        border-bottom: 1px solid #f5f5f5;
-        font-size: .82rem;
-        gap: .5rem;
-    }
-    .fixture-item:last-child { border-bottom: none; }
-    .fixture-teams { flex: 1; font-weight: 600; }
-    .fixture-meta { font-size: .75rem; color: #999; white-space: nowrap; }
-    .fixture-badge {
-        font-size: .7rem;
-        font-weight: 600;
-        padding: .15rem .5rem;
-        border-radius: 4px;
-    }
-    .fb-scheduled { background: #E3F2FD; color: #1565C0; }
-    .fb-completed { background: #E8F5E9; color: #1B5E20; }
-    .fb-cancelled { background: #FFEBEE; color: #C62828; }
-    .fb-postponed { background: #FFF8E1; color: #F57F17; }
-
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-    @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
-    .no-data {
-        text-align: center;
-        padding: 1.5rem;
-        color: #bbb;
-        font-size: .85rem;
-    }
-    .no-data i { font-size: 1.5rem; display: block; margin-bottom: .3rem; }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -219,8 +65,8 @@
 <div class="section-title">
     <span><i class="bi bi-collection"></i> Pool Standings</span>
     <div class="actions">
-        <a href="{% url 'cm_manage_pools' pk=competition.pk %}" class="btn btn-primary btn-sm" style="font-size:.75rem;"><i class="bi bi-plus"></i> Manage Pools</a>
-        <a href="{% url 'cm_edit_standings' pk=competition.pk %}" class="btn btn-secondary btn-sm" style="font-size:.75rem;"><i class="bi bi-pencil"></i> Edit Standings</a>
+        <a href="{% url 'cm_manage_pools' pk=competition.pk %}" class="btn btn-primary btn-sm s-b47f69f"><i class="bi bi-plus"></i> Manage Pools</a>
+        <a href="{% url 'cm_edit_standings' pk=competition.pk %}" class="btn btn-secondary btn-sm s-b47f69f"><i class="bi bi-pencil"></i> Edit Standings</a>
     </div>
 </div>
 
@@ -229,16 +75,16 @@
     <div class="pool-card">
         <div class="pool-header">
             {{ pd.pool.name }}
-            <div style="display:flex;align-items:center;gap:.5rem;">
-                <span style="font-size:.75rem;font-weight:500;color:#7B1FA2;">{{ pd.teams|length }} teams</span>
-                <a href="#pool-fixtures-{{ pd.pool.pk }}" class="btn btn-sm" style="font-size:.7rem;padding:.15rem .5rem;background:#7B1FA2;color:#fff;border-radius:4px;text-decoration:none;"><i class="bi bi-calendar-event"></i> Manage</a>
+            <div class="s-ef5f7de">
+                <span class="s-9e1cd29">{{ pd.teams|length }} teams</span>
+                <a href="#pool-fixtures-{{ pd.pool.pk }}" class="btn btn-sm s-bb68482"><i class="bi bi-calendar-event"></i> Manage</a>
             </div>
         </div>
         {% if pd.teams %}
         <table class="standings-table">
             <thead>
                 <tr>
-                    <th style="width:30%;">Team</th>
+                    <th class="s-6528b27">Team</th>
                     <th>P</th><th>W</th><th>D</th><th>L</th>
                     <th>GF</th><th>GA</th><th>GD</th><th>Pts</th>
                 </tr>
@@ -268,7 +114,7 @@
     </div>
     {% endfor %}
 {% else %}
-    <div class="no-data" style="background:#fff;border-radius:10px;padding:2rem;box-shadow:0 1px 4px rgba(0,0,0,.05);margin-bottom:1.5rem;">
+    <div class="no-data s-b0dff7f">
         <i class="bi bi-collection"></i>
         No pools created yet.
         <a href="{% url 'cm_manage_pools' pk=competition.pk %}">Create pools</a>
@@ -276,64 +122,64 @@
 {% endif %}
 
 <!-- Fixtures -->
-<div style="margin-top:.5rem;">
+<div class="s-98176a3">
     <!-- Group Fixtures -->
     <div>
         <div class="section-title">
             <span><i class="bi bi-calendar-event"></i> Group Stage Fixtures</span>
-            <div style="display:flex;gap:.4rem;align-items:center;">
+            <div class="s-782c969">
                 {% if group_fixtures %}
-                <form method="post" style="margin:0;" onsubmit="return confirm('Auto-detect and remove duplicate fixtures?');">
+                <form method="post" class="s-2a0ca83" onsubmit="return confirm('Auto-detect and remove duplicate fixtures?');">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="remove_duplicates">
-                    <button type="submit" class="btn btn-warning btn-sm" style="font-size:.72rem;"><i class="bi bi-layers"></i> Remove Duplicates</button>
+                    <button type="submit" class="btn btn-warning btn-sm s-5829376"><i class="bi bi-layers"></i> Remove Duplicates</button>
                 </form>
-                <form method="post" style="margin:0;" onsubmit="return confirm('Delete ALL fixtures? This cannot be undone.');">
+                <form method="post" class="s-2a0ca83" onsubmit="return confirm('Delete ALL fixtures? This cannot be undone.');">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="clear_all_fixtures">
-                    <button type="submit" class="btn btn-danger btn-sm" style="font-size:.72rem;"><i class="bi bi-trash"></i> Clear All</button>
+                    <button type="submit" class="btn btn-danger btn-sm s-5829376"><i class="bi bi-trash"></i> Clear All</button>
                 </form>
                 {% endif %}
             </div>
         </div>
         {% if pool_data %}
             {% for pd in pool_data %}
-            <div id="pool-fixtures-{{ pd.pool.pk }}" style="margin-bottom:1.25rem;">
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem .75rem;background:#F3E5F5;border-radius:8px 8px 0 0;margin-bottom:0;">
-                    <h4 style="font-size:.9rem;font-weight:700;color:#4A148C;margin:0;">
+            <div id="pool-fixtures-{{ pd.pool.pk }}" class="s-c33bec6">
+                <div class="s-3bc5a89">
+                    <h4 class="s-08ea0ab">
                         <i class="bi bi-collection"></i> {{ pd.pool.name }} Fixtures
                     </h4>
-                    <button type="button" class="btn btn-sm" style="font-size:.7rem;padding:.2rem .5rem;background:#4A148C;color:#fff;border:none;border-radius:4px;cursor:pointer;"
+                    <button type="button" class="btn btn-sm s-bafff15"
                             onclick="document.getElementById('gen-form-{{ pd.pool.pk }}').style.display=document.getElementById('gen-form-{{ pd.pool.pk }}').style.display==='none'?'block':'none'">
                         <i class="bi bi-lightning-charge"></i> Auto-Generate
                     </button>
                 </div>
                 <!-- Per-group generate form (hidden by default) -->
-                <div id="gen-form-{{ pd.pool.pk }}" style="display:none;background:#fff;border:1px solid #E1BEE7;border-top:none;border-radius:0 0 8px 8px;padding:.75rem 1rem;margin-bottom:.5rem;">
+                <div id="gen-form-{{ pd.pool.pk }}" class="s-6bd7535">
                     <form method="post">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="generate_group_fixtures">
                         <input type="hidden" name="pool_id" value="{{ pd.pool.pk }}">
-                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;align-items:end;">
+                        <div class="s-1a174b3">
                             <div>
-                                <label style="font-size:.72rem;font-weight:600;color:#666;display:block;margin-bottom:.15rem;">Start Date</label>
-                                <input type="date" name="start_date" value="{{ competition.start_date|date:'Y-m-d' }}" required style="width:100%;padding:.3rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.8rem;">
+                                <label class="s-efb58ae">Start Date</label>
+                                <input type="date" name="start_date" value="{{ competition.start_date|date:'Y-m-d' }}" required class="s-f96e9d5">
                             </div>
                             <div>
-                                <label style="font-size:.72rem;font-weight:600;color:#666;display:block;margin-bottom:.15rem;">Kickoff Time</label>
-                                <input type="time" name="kickoff_time" value="14:00" style="width:100%;padding:.3rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.8rem;">
+                                <label class="s-efb58ae">Kickoff Time</label>
+                                <input type="time" name="kickoff_time" value="14:00" class="s-f96e9d5">
                             </div>
                             <div>
-                                <label style="font-size:.72rem;font-weight:600;color:#666;display:block;margin-bottom:.15rem;">Venue</label>
-                                <select name="venue_id" style="width:100%;padding:.3rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.8rem;">
+                                <label class="s-efb58ae">Venue</label>
+                                <select name="venue_id" class="s-f96e9d5">
                                     <option value="">— None —</option>
                                     {% for v in venues %}<option value="{{ v.pk }}">{{ v.name }}</option>{% endfor %}
                                 </select>
                             </div>
                         </div>
-                        <div style="margin-top:.6rem;display:flex;gap:.5rem;">
-                            <button type="submit" class="btn btn-primary btn-sm" style="font-size:.75rem;"><i class="bi bi-lightning"></i> Generate {{ pd.pool.name }} Fixtures</button>
-                            <button type="button" class="btn btn-secondary btn-sm" style="font-size:.75rem;" onclick="this.closest('[id^=gen-form]').style.display='none'">Cancel</button>
+                        <div class="s-f83c781">
+                            <button type="submit" class="btn btn-primary btn-sm s-b47f69f"><i class="bi bi-lightning"></i> Generate {{ pd.pool.name }} Fixtures</button>
+                            <button type="button" class="btn btn-secondary btn-sm s-b47f69f" onclick="this.closest('[id^=gen-form]').style.display='none'">Cancel</button>
                         </div>
                     </form>
                 </div>
@@ -342,86 +188,86 @@
                 <form method="post" id="delete-form-{{ pd.pool.pk }}">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="delete_selected">
-                    <table class="standings-table" style="font-size:.8rem;">
+                    <table class="standings-table s-f4bb5b2">
                         <thead>
                             <tr>
-                                <th style="width:30px;text-align:center;"><input type="checkbox" onclick="document.querySelectorAll('.chk-{{ current_pool.pk }}').forEach(c=>c.checked=this.checked)" title="Select all"></th>
+                                <th class="s-50b8438"><input type="checkbox" onclick="document.querySelectorAll('.chk-{{ current_pool.pk }}').forEach(c=>c.checked=this.checked)" title="Select all"></th>
                                 <th>Match</th>
                                 <th>Date</th>
                                 <th>Time</th>
                                 <th>Venue</th>
                                 <th>Status</th>
-                                <th style="width:80px;">Actions</th>
+                                <th class="s-dabaad5">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for f in group_fixtures %}
                             {% if f.pool_id == current_pool.pk %}
                             <tr id="fixture-row-{{ f.pk }}">
-                                <td style="text-align:center;"><input type="checkbox" name="fixture_ids" value="{{ f.pk }}" class="chk-{{ current_pool.pk }}"></td>
+                                <td class="s-65f9d5a"><input type="checkbox" name="fixture_ids" value="{{ f.pk }}" class="chk-{{ current_pool.pk }}"></td>
                                 <td><strong>{{ f.home_team.name }}</strong> vs <strong>{{ f.away_team.name }}</strong></td>
                                 <td>{{ f.match_date|date:"d M Y" }}</td>
                                 <td>{{ f.kickoff_time|time:"H:i" }}</td>
                                 <td>{{ f.venue.name|default:"—" }}</td>
-                                <td><span class="fixture-badge fb-{{ f.status }}" style="font-size:.68rem;">{{ f.get_status_display }}</span></td>
-                                <td style="white-space:nowrap;">
-                                    <button type="button" class="btn btn-sm" style="font-size:.65rem;padding:.1rem .35rem;background:#7B1FA2;color:#fff;border:none;border-radius:3px;" onclick="toggleEdit({{ f.pk }})" title="Edit"><i class="bi bi-pencil"></i></button>
-                                    <a href="{% url 'cm_edit_fixture' pk=competition.pk fixture_pk=f.pk %}" class="btn btn-sm" style="font-size:.65rem;padding:.1rem .35rem;background:#1565C0;color:#fff;border:none;border-radius:3px;" title="Full Edit"><i class="bi bi-pencil-square"></i></a>
+                                <td><span class="fixture-badge fb-{{ f.status }} s-2c9e09f">{{ f.get_status_display }}</span></td>
+                                <td class="s-1cd2eeb">
+                                    <button type="button" class="btn btn-sm s-c762868" onclick="toggleEdit({{ f.pk }})" title="Edit"><i class="bi bi-pencil"></i></button>
+                                    <a href="{% url 'cm_edit_fixture' pk=competition.pk fixture_pk=f.pk %}" class="btn btn-sm s-ed72700" title="Full Edit"><i class="bi bi-pencil-square"></i></a>
                                 </td>
                             </tr>
                             <!-- Inline edit row (hidden) -->
-                            <tr id="edit-row-{{ f.pk }}" style="display:none;background:#F3E5F5;">
-                                <td colspan="7" style="padding:.6rem .8rem;">
-                                    <form method="post" style="display:flex;gap:.5rem;align-items:end;flex-wrap:wrap;">
+                            <tr id="edit-row-{{ f.pk }}" class="s-7ba3a37">
+                                <td colspan="7" class="s-d19829a">
+                                    <form method="post" class="s-2ed8aab">
                                         {% csrf_token %}
                                         <input type="hidden" name="action" value="inline_edit_fixture">
                                         <input type="hidden" name="fixture_pk" value="{{ f.pk }}">
                                         <div>
-                                            <label style="font-size:.65rem;font-weight:600;color:#666;display:block;">Date</label>
-                                            <input type="date" name="match_date" value="{{ f.match_date|date:'Y-m-d' }}" style="padding:.25rem .4rem;border:1px solid #ccc;border-radius:4px;font-size:.78rem;">
+                                            <label class="s-dcf5900">Date</label>
+                                            <input type="date" name="match_date" value="{{ f.match_date|date:'Y-m-d' }}" class="s-b8ef83e">
                                         </div>
                                         <div>
-                                            <label style="font-size:.65rem;font-weight:600;color:#666;display:block;">Time</label>
-                                            <input type="time" name="kickoff_time" value="{{ f.kickoff_time|time:'H:i' }}" style="padding:.25rem .4rem;border:1px solid #ccc;border-radius:4px;font-size:.78rem;">
+                                            <label class="s-dcf5900">Time</label>
+                                            <input type="time" name="kickoff_time" value="{{ f.kickoff_time|time:'H:i' }}" class="s-b8ef83e">
                                         </div>
                                         <div>
-                                            <label style="font-size:.65rem;font-weight:600;color:#666;display:block;">Venue</label>
-                                            <select name="venue_id" style="padding:.25rem .4rem;border:1px solid #ccc;border-radius:4px;font-size:.78rem;">
+                                            <label class="s-dcf5900">Venue</label>
+                                            <select name="venue_id" class="s-b8ef83e">
                                                 <option value="">— None —</option>
                                                 {% for v in venues %}<option value="{{ v.pk }}" {% if f.venue_id == v.pk %}selected{% endif %}>{{ v.name }}</option>{% endfor %}
                                             </select>
                                         </div>
                                         <div>
-                                            <label style="font-size:.65rem;font-weight:600;color:#666;display:block;">Status</label>
-                                            <select name="status" style="padding:.25rem .4rem;border:1px solid #ccc;border-radius:4px;font-size:.78rem;">
+                                            <label class="s-dcf5900">Status</label>
+                                            <select name="status" class="s-b8ef83e">
                                                 <option value="pending" {% if f.status == 'pending' %}selected{% endif %}>Pending</option>
                                                 <option value="confirmed" {% if f.status == 'confirmed' %}selected{% endif %}>Confirmed</option>
                                                 <option value="postponed" {% if f.status == 'postponed' %}selected{% endif %}>Postponed</option>
                                                 <option value="cancelled" {% if f.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
                                             </select>
                                         </div>
-                                        <button type="submit" class="btn btn-primary btn-sm" style="font-size:.72rem;padding:.25rem .5rem;"><i class="bi bi-check"></i> Save</button>
-                                        <button type="button" class="btn btn-secondary btn-sm" style="font-size:.72rem;padding:.25rem .5rem;" onclick="toggleEdit({{ f.pk }})">Cancel</button>
+                                        <button type="submit" class="btn btn-primary btn-sm s-36d9595"><i class="bi bi-check"></i> Save</button>
+                                        <button type="button" class="btn btn-secondary btn-sm s-36d9595" onclick="toggleEdit({{ f.pk }})">Cancel</button>
                                     </form>
                                 </td>
                             </tr>
                             {% endif %}
                             {% empty %}
                             <tr>
-                                <td colspan="7" style="text-align:center;padding:1rem;color:#bbb;">No fixtures yet click <strong>Auto-Generate</strong> above</td>
+                                <td colspan="7" class="s-3ff58a3">No fixtures yet click <strong>Auto-Generate</strong> above</td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
-                    <div style="display:flex;justify-content:flex-end;padding:.4rem .5rem;background:#FAFAFA;border-radius:0 0 8px 8px;">
-                        <button type="submit" class="btn btn-danger btn-sm" style="font-size:.7rem;" onclick="return confirm('Delete selected fixtures?')"><i class="bi bi-trash"></i> Delete Selected</button>
+                    <div class="s-9e6c2a6">
+                        <button type="submit" class="btn btn-danger btn-sm s-fb07672" onclick="return confirm('Delete selected fixtures?')"><i class="bi bi-trash"></i> Delete Selected</button>
                     </div>
                 </form>
                 {% endwith %}
             </div>
             {% endfor %}
         {% else %}
-        <div class="no-data" style="background:#fff;border-radius:10px;padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.05);">
+        <div class="no-data s-922597e">
             <i class="bi bi-calendar-x"></i>
             No pools created yet <a href="{% url 'cm_manage_pools' pk=competition.pk %}">create pools first</a>
         </div>
@@ -429,58 +275,58 @@
     </div>
 
     <!-- Create Fixture -->
-    <div style="margin-top:1rem;">
-        <div class="section-title" style="cursor:pointer;" onclick="document.getElementById('cmCreateFixtureForm').style.display=document.getElementById('cmCreateFixtureForm').style.display==='none'?'block':'none'">
+    <div class="s-a6cb65c">
+        <div class="section-title s-74fa97c" onclick="document.getElementById('cmCreateFixtureForm').style.display=document.getElementById('cmCreateFixtureForm').style.display==='none'?'block':'none'">
             <span><i class="bi bi-plus-circle"></i> Create Fixture</span>
-            <span style="font-size:.75rem;color:#7B1FA2;"><i class="bi bi-chevron-down"></i></span>
+            <span class="s-e7b4d79"><i class="bi bi-chevron-down"></i></span>
         </div>
-        <div id="cmCreateFixtureForm" style="display:none;background:#fff;border:1px solid #E1BEE7;border-radius:10px;padding:1rem;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,.05);">
+        <div id="cmCreateFixtureForm" class="s-62f06ea">
             <form method="post">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="create_fixture">
 
                 <!-- Match Type -->
-                <div style="margin-bottom:.75rem;">
-                    <label style="font-size:.75rem;font-weight:600;color:#555;display:block;margin-bottom:.3rem;">Match Type</label>
-                    <div style="display:flex;gap:.75rem;">
-                        <label style="font-size:.82rem;cursor:pointer;display:flex;align-items:center;gap:.3rem;">
+                <div class="s-c438d31">
+                    <label class="s-67de110">Match Type</label>
+                    <div class="s-2259230">
+                        <label class="s-fa22cb4">
                             <input type="radio" name="match_type" value="group" checked onchange="toggleMatchTypeCM()"> Group Stage
                         </label>
-                        <label style="font-size:.82rem;cursor:pointer;display:flex;align-items:center;gap:.3rem;">
+                        <label class="s-fa22cb4">
                             <input type="radio" name="match_type" value="knockout" onchange="toggleMatchTypeCM()"> Knockout
                         </label>
                     </div>
                 </div>
 
                 <!-- Pool (for group) -->
-                <div id="cmPoolSelect" style="margin-bottom:.6rem;">
-                    <label style="font-size:.72rem;font-weight:600;color:#555;display:block;margin-bottom:.2rem;">Pool</label>
-                    <select name="pool_id" style="width:100%;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                <div id="cmPoolSelect" class="s-5c27c29">
+                    <label class="s-b2b5a1b">Pool</label>
+                    <select name="pool_id" class="s-31a20ec">
                         <option value="">— Select Pool —</option>
                         {% for pd in pool_data %}<option value="{{ pd.pool.pk }}">{{ pd.pool.name }}</option>{% endfor %}
                     </select>
                 </div>
 
                 <!-- Knockout Round (hidden by default) -->
-                <div id="cmKnockoutSelect" style="display:none;margin-bottom:.6rem;">
-                    <label style="font-size:.72rem;font-weight:600;color:#555;display:block;margin-bottom:.2rem;">Knockout Round</label>
-                    <select name="knockout_round" style="width:100%;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                <div id="cmKnockoutSelect" class="s-38aa3d5">
+                    <label class="s-b2b5a1b">Knockout Round</label>
+                    <select name="knockout_round" class="s-31a20ec">
                         {% for val, label in knockout_round_choices %}<option value="{{ val }}">{{ label }}</option>{% endfor %}
                     </select>
                 </div>
 
                 <!-- Teams -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.6rem;">
+                <div class="s-eea8f3d">
                     <div>
-                        <label style="font-size:.72rem;font-weight:600;color:#555;display:block;margin-bottom:.2rem;">Home Team</label>
-                        <select name="home_team_id" required style="width:100%;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                        <label class="s-b2b5a1b">Home Team</label>
+                        <select name="home_team_id" required class="s-31a20ec">
                             <option value="">— Select —</option>
                             {% for t in teams_in_comp %}<option value="{{ t.pk }}">{{ t.name }}</option>{% endfor %}
                         </select>
                     </div>
                     <div>
-                        <label style="font-size:.72rem;font-weight:600;color:#555;display:block;margin-bottom:.2rem;">Away Team</label>
-                        <select name="away_team_id" required style="width:100%;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                        <label class="s-b2b5a1b">Away Team</label>
+                        <select name="away_team_id" required class="s-31a20ec">
                             <option value="">— Select —</option>
                             {% for t in teams_in_comp %}<option value="{{ t.pk }}">{{ t.name }}</option>{% endfor %}
                         </select>
@@ -488,25 +334,25 @@
                 </div>
 
                 <!-- Date, Time, Venue -->
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-bottom:.75rem;">
+                <div class="s-32e35f5">
                     <div>
-                        <label style="font-size:.72rem;font-weight:600;color:#555;display:block;margin-bottom:.2rem;">Date</label>
-                        <input type="date" name="match_date" required style="width:100%;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                        <label class="s-b2b5a1b">Date</label>
+                        <input type="date" name="match_date" required class="s-31a20ec">
                     </div>
                     <div>
-                        <label style="font-size:.72rem;font-weight:600;color:#555;display:block;margin-bottom:.2rem;">Kickoff</label>
-                        <input type="time" name="kickoff_time" value="14:00" style="width:100%;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                        <label class="s-b2b5a1b">Kickoff</label>
+                        <input type="time" name="kickoff_time" value="14:00" class="s-31a20ec">
                     </div>
                     <div>
-                        <label style="font-size:.72rem;font-weight:600;color:#555;display:block;margin-bottom:.2rem;">Venue</label>
-                        <select name="venue_id" style="width:100%;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                        <label class="s-b2b5a1b">Venue</label>
+                        <select name="venue_id" class="s-31a20ec">
                             <option value="">— None —</option>
                             {% for v in venues %}<option value="{{ v.pk }}">{{ v.name }}</option>{% endfor %}
                         </select>
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-sm" style="font-size:.78rem;"><i class="bi bi-plus-circle"></i> Create Fixture</button>
+                <button type="submit" class="btn btn-primary btn-sm s-fb2a0ae"><i class="bi bi-plus-circle"></i> Create Fixture</button>
             </form>
         </div>
     </div>
@@ -521,33 +367,33 @@
             {% csrf_token %}
             <input type="hidden" name="action" value="delete_selected">
             <div class="fixture-list">
-                <div style="display:flex;align-items:center;gap:.5rem;padding:.4rem .75rem;background:#f9f9f9;border-bottom:1px solid #eee;">
-                    <input type="checkbox" onclick="document.querySelectorAll('.chk-ko').forEach(c=>c.checked=this.checked)" title="Select all" style="cursor:pointer;">
-                    <span style="font-size:.72rem;font-weight:600;color:#666;">Select all</span>
+                <div class="s-d3fb38d">
+                    <input type="checkbox" onclick="document.querySelectorAll('.chk-ko').forEach(c=>c.checked=this.checked)" title="Select all" class="s-74fa97c">
+                    <span class="s-a496d1f">Select all</span>
                 </div>
                 {% for f in knockout_fixtures %}
                 <div class="fixture-item">
-                    <input type="checkbox" name="fixture_ids" value="{{ f.pk }}" class="chk-ko" style="cursor:pointer;margin-right:.4rem;">
-                    <div class="fixture-teams" style="flex:1;">
+                    <input type="checkbox" name="fixture_ids" value="{{ f.pk }}" class="chk-ko s-e821012">
+                    <div class="fixture-teams s-634a28b">
                         {{ f.home_team.name|default:"TBD" }} vs {{ f.away_team.name|default:"TBD" }}
-                        <span style="font-size:.7rem;color:#E65100;font-weight:400;"> {{ f.get_knockout_round_display }}</span>
+                        <span class="s-dcad7c0"> {{ f.get_knockout_round_display }}</span>
                     </div>
                     <div class="fixture-meta">
                         {{ f.match_date|date:"d M" }}
                         {% if f.kickoff_time %}{{ f.kickoff_time|time:"H:i" }}{% endif %}
                     </div>
                     <span class="fixture-badge fb-{{ f.status }}">{{ f.get_status_display }}</span>
-                    <a href="{% url 'cm_edit_fixture' pk=competition.pk fixture_pk=f.pk %}" style="font-size:.75rem;color:#7B1FA2;" title="Edit"><i class="bi bi-pencil-square"></i></a>
+                    <a href="{% url 'cm_edit_fixture' pk=competition.pk fixture_pk=f.pk %}" class="s-e7b4d79" title="Edit"><i class="bi bi-pencil-square"></i></a>
                 </div>
                 {% endfor %}
             </div>
-            <div style="display:flex;gap:.5rem;margin-top:.5rem;padding:.5rem 0;">
-                <button type="submit" class="btn btn-danger btn-sm" style="font-size:.72rem;" onclick="return confirm('Delete selected knockout fixtures?')"><i class="bi bi-trash"></i> Delete Selected</button>
-                <button type="button" class="btn btn-outline-danger btn-sm" style="font-size:.72rem;" onclick="if(confirm('Delete ALL {{ knockout_fixtures|length }} knockout fixtures?')){document.querySelectorAll('.chk-ko').forEach(c=>c.checked=true);document.getElementById('ko-delete-form').submit();}"><i class="bi bi-trash3"></i> Delete All Knockouts ({{ knockout_fixtures|length }})</button>
+            <div class="s-ca700f0">
+                <button type="submit" class="btn btn-danger btn-sm s-5829376" onclick="return confirm('Delete selected knockout fixtures?')"><i class="bi bi-trash"></i> Delete Selected</button>
+                <button type="button" class="btn btn-outline-danger btn-sm s-5829376" onclick="if(confirm('Delete ALL {{ knockout_fixtures|length }} knockout fixtures?')){document.querySelectorAll('.chk-ko').forEach(c=>c.checked=true);document.getElementById('ko-delete-form').submit();}"><i class="bi bi-trash3"></i> Delete All Knockouts ({{ knockout_fixtures|length }})</button>
             </div>
         </form>
         {% else %}
-        <div class="no-data" style="background:#fff;border-radius:10px;padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.05);">
+        <div class="no-data s-922597e">
             <i class="bi bi-diagram-3"></i>
             No knockout fixtures yet
         </div>
@@ -557,9 +403,9 @@
 
 <!-- Match Reports -->
 {% if pending_reports > 0 %}
-<div class="card" style="margin-top:1.5rem;">
-    <div class="card-header" style="background:#FFF8E1;">
-        <h3 style="color:#E65100;"><i class="bi bi-exclamation-triangle"></i> {{ pending_reports }} Pending Match Report{{ pending_reports|pluralize }}</h3>
+<div class="card s-1d30ad4">
+    <div class="card-header s-67e7eaa">
+        <h3 class="s-687040b"><i class="bi bi-exclamation-triangle"></i> {{ pending_reports }} Pending Match Report{{ pending_reports|pluralize }}</h3>
     </div>
     <div class="card-body">
         <a href="{% url 'competition_reports' pk=competition.pk %}" class="btn btn-primary btn-sm"><i class="bi bi-clipboard-check"></i> Review Reports</a>
@@ -569,12 +415,12 @@
 
 <!-- Competition Rules Preview -->
 {% if competition.rules %}
-<div class="card" style="margin-top:1.5rem;">
+<div class="card s-1d30ad4">
     <div class="card-header">
         <h3><i class="bi bi-journal-text"></i> Competition Rules</h3>
     </div>
-    <div class="card-body" style="max-height:200px;overflow-y:auto;">
-        <div style="font-size:.85rem;white-space:pre-wrap;line-height:1.6;">{{ competition.rules }}</div>
+    <div class="card-body s-0bb4943">
+        <div class="s-27b93af">{{ competition.rules }}</div>
     </div>
 </div>
 {% endif %}

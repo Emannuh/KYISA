@@ -49,38 +49,38 @@
 </div>
 
 {% if user.role == 'competition_manager' or user.role == 'admin' or user.is_superuser %}
-<div style="display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap">
-    <a href="{% url 'cm_competition_manage' competition.pk %}" class="btn btn--primary" style="padding:.6rem 1.5rem">
+<div class="s-2be0ccd">
+    <a href="{% url 'cm_competition_manage' competition.pk %}" class="btn btn--primary s-ac59137">
         <i class="bi bi-gear"></i> Manage Competition
     </a>
-    <a href="{% url 'cm_manage_pools' competition.pk %}" class="btn btn--primary" style="padding:.6rem 1.5rem;background:#2e7d32">
+    <a href="{% url 'cm_manage_pools' competition.pk %}" class="btn btn--primary s-e649fbc">
         <i class="bi bi-grid-3x3"></i> Manage Pools
     </a>
-    <a href="{% url 'cm_generate_fixtures' competition.pk %}" class="btn btn--primary" style="padding:.6rem 1.5rem;background:#e65100">
+    <a href="{% url 'cm_generate_fixtures' competition.pk %}" class="btn btn--primary s-0694592">
         <i class="bi bi-calendar-plus"></i> Generate Fixtures
     </a>
-    <a href="{% url 'cm_allocate_venues' competition.pk %}" class="btn btn--primary" style="padding:.6rem 1.5rem;background:#6a1b9a">
+    <a href="{% url 'cm_allocate_venues' competition.pk %}" class="btn btn--primary s-5a5749f">
         <i class="bi bi-geo-alt"></i> Allocate Venues
     </a>
-    <a href="{% url 'competition_standings' competition.pk %}" class="btn btn--primary" style="padding:.6rem 1.5rem;background:#0d47a1">
+    <a href="{% url 'competition_standings' competition.pk %}" class="btn btn--primary s-c93bb8a">
         <i class="bi bi-bar-chart-line"></i> Standings
     </a>
-    <a href="{% url 'competition_reports' competition.pk %}" class="btn btn--primary" style="padding:.6rem 1.5rem;background:#1565c0">
+    <a href="{% url 'competition_reports' competition.pk %}" class="btn btn--primary s-358b489">
         <i class="bi bi-clipboard-data"></i> Match Reports
     </a>
 </div>
 {% elif user.role == 'coordinator' or user.role == 'soccer_coordinator' or user.role == 'handball_coordinator' or user.role == 'basketball_coordinator' or user.role == 'volleyball_coordinator' %}
-<div style="display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap">
-    <a href="{% url 'coordinator_competition_manage' competition.pk %}" class="btn btn--primary" style="padding:.6rem 1.5rem">
+<div class="s-2be0ccd">
+    <a href="{% url 'coordinator_competition_manage' competition.pk %}" class="btn btn--primary s-ac59137">
         <i class="bi bi-gear"></i> Manage Competition
     </a>
-    <a href="{% url 'coordinator_manage_pools' competition.pk %}" class="btn btn--primary" style="padding:.6rem 1.5rem;background:#2e7d32">
+    <a href="{% url 'coordinator_manage_pools' competition.pk %}" class="btn btn--primary s-e649fbc">
         <i class="bi bi-grid-3x3"></i> Manage Pools
     </a>
-    <a href="{% url 'coordinator_generate_fixtures' competition.pk %}" class="btn btn--primary" style="padding:.6rem 1.5rem;background:#e65100">
+    <a href="{% url 'coordinator_generate_fixtures' competition.pk %}" class="btn btn--primary s-0694592">
         <i class="bi bi-calendar-plus"></i> Generate Fixtures
     </a>
-    <a href="{% url 'competition_standings' competition.pk %}" class="btn btn--primary" style="padding:.6rem 1.5rem;background:#0d47a1">
+    <a href="{% url 'competition_standings' competition.pk %}" class="btn btn--primary s-c93bb8a">
         <i class="bi bi-bar-chart-line"></i> Standings
     </a>
 </div>
@@ -127,18 +127,18 @@
                 </tbody>
             </table>
             {% else %}
-            <p style="color:#757575;">No teams registered yet.</p>
+            <p class="s-dead149">No teams registered yet.</p>
             {% endif %}
         </div>
     </div>
 </div>
 
 <!-- Fixtures -->
-<div class="card" style="margin-top:1.5rem;">
-    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+<div class="card s-1d30ad4">
+    <div class="card-header s-6823804">
         <h3>Fixtures</h3>
         {% if user.role == 'admin' or user.role == 'competition_manager' or user.is_superuser %}
-        <a href="{% url 'admin_competition_fixtures' pk=competition.pk %}" class="btn btn--primary" style="padding:.4rem 1rem;font-size:.85rem;">
+        <a href="{% url 'admin_competition_fixtures' pk=competition.pk %}" class="btn btn--primary s-2091e7f">
             <i class="bi bi-pencil-square"></i> Manage Fixtures &amp; Results
         </a>
         {% endif %}
@@ -164,7 +164,7 @@
                         <td>{% if f.home_score is not None %}<strong>{{ f.home_score }} - {{ f.away_score }}</strong>{% else %}—{% endif %}</td>
                         {% if user.role == 'admin' or user.role == 'competition_manager' or user.is_superuser %}
                         <td>
-                            <a href="{% url 'admin_edit_fixture' pk=competition.pk fixture_pk=f.pk %}" class="btn-action btn-action-primary" style="font-size:.8rem;">
+                            <a href="{% url 'admin_edit_fixture' pk=competition.pk fixture_pk=f.pk %}" class="btn-action btn-action-primary s-f4bb5b2">
                                 <i class="bi bi-pencil"></i> Edit
                             </a>
                         </td>
@@ -175,7 +175,7 @@
             </table>
         </div>
         {% else %}
-        <p style="color:#757575;">No fixtures scheduled yet.</p>
+        <p class="s-dead149">No fixtures scheduled yet.</p>
         {% endif %}
     </div>
 </div>

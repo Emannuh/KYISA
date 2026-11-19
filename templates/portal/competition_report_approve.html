@@ -13,42 +13,42 @@
 </div>
 
 <!-- Match Summary -->
-<div class="card" style="margin-bottom:1.5rem">
-    <div class="card-body" style="text-align:center;padding:2rem">
-        <div style="font-size:.85rem;color:#888;margin-bottom:.5rem">
+<div class="card s-92cb257">
+    <div class="card-body s-1671690">
+        <div class="s-03e6a51">
             {{ report.fixture.match_date|date:"d M Y" }} &#8226; {{ report.fixture.kickoff_time|time:"H:i" }}
             {% if report.fixture.venue %} &#8226; {{ report.fixture.venue.name }}{% endif %}
         </div>
-        <div style="display:flex;justify-content:center;align-items:center;gap:2rem">
-            <div style="text-align:right;flex:1">
-                <div style="font-size:1.3rem;font-weight:800">{{ report.fixture.home_team.name }}</div>
-                <div style="font-size:.8rem;color:#888">{{ report.fixture.home_team.county }}</div>
+        <div class="s-e9d209a">
+            <div class="s-c593ad0">
+                <div class="s-e2df1ea">{{ report.fixture.home_team.name }}</div>
+                <div class="s-caa7b5b">{{ report.fixture.home_team.county }}</div>
             </div>
-            <div style="font-size:2.5rem;font-weight:900;font-family:monospace;color:#1b5e20;padding:0 1rem">
+            <div class="s-da8b03d">
                 {{ report.home_score }}   {{ report.away_score }}
             </div>
-            <div style="text-align:left;flex:1">
-                <div style="font-size:1.3rem;font-weight:800">{{ report.fixture.away_team.name }}</div>
-                <div style="font-size:.8rem;color:#888">{{ report.fixture.away_team.county }}</div>
+            <div class="s-40d7166">
+                <div class="s-e2df1ea">{{ report.fixture.away_team.name }}</div>
+                <div class="s-caa7b5b">{{ report.fixture.away_team.county }}</div>
             </div>
         </div>
-        <div style="margin-top:.8rem">
+        <div class="s-3f87be5">
             {% if report.status == 'submitted' %}
-            <span class="badge badge--warning" style="font-size:.85rem;padding:.3rem .8rem">Pending Approval</span>
+            <span class="badge badge--warning s-e9805e0">Pending Approval</span>
             {% elif report.status == 'approved' %}
-            <span class="badge badge--success" style="font-size:.85rem;padding:.3rem .8rem">Approved</span>
+            <span class="badge badge--success s-e9805e0">Approved</span>
             {% elif report.status == 'returned' %}
-            <span class="badge badge--danger" style="font-size:.85rem;padding:.3rem .8rem">Returned for Revision</span>
+            <span class="badge badge--danger s-e9805e0">Returned for Revision</span>
             {% endif %}
         </div>
     </div>
 </div>
 
 <!-- Match Details -->
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;margin-bottom:1.5rem">
-    <div class="card" style="padding:1.2rem">
-        <h4 style="margin-bottom:.8rem;color:#1b5e20">Match Details</h4>
-        <div style="font-size:.88rem;line-height:1.8">
+<div class="s-705bcca">
+    <div class="card s-0724862">
+        <h4 class="s-88281ce">Match Details</h4>
+        <div class="s-537f8e3">
             <div><strong>Referee:</strong> {{ report.referee.user.get_full_name|default:" " }}</div>
             <div><strong>Duration:</strong> {{ report.match_duration }} mins</div>
             <div><strong>Added Time:</strong> +{{ report.added_time_ht }}' (HT), +{{ report.added_time_ft }}' (FT)</div>
@@ -57,26 +57,26 @@
             <div><strong>Attendance:</strong> {{ report.attendance|default:" " }}</div>
         </div>
     </div>
-    <div class="card" style="padding:1.2rem">
-        <h4 style="margin-bottom:.8rem;color:#c62828">Disciplinary Summary</h4>
-        <table style="font-size:.88rem">
+    <div class="card s-0724862">
+        <h4 class="s-1451b8e">Disciplinary Summary</h4>
+        <table class="s-4f3c556">
             <thead>
                 <tr>
                     <th></th>
-                    <th style="text-align:center">{{ report.fixture.home_team.name }}</th>
-                    <th style="text-align:center">{{ report.fixture.away_team.name }}</th>
+                    <th class="s-65f9d5a">{{ report.fixture.home_team.name }}</th>
+                    <th class="s-65f9d5a">{{ report.fixture.away_team.name }}</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>Yellow Cards</td>
-                    <td style="text-align:center;font-weight:700;color:#f9a825">{{ report.home_yellow_cards }}</td>
-                    <td style="text-align:center;font-weight:700;color:#f9a825">{{ report.away_yellow_cards }}</td>
+                    <td class="s-74bbd56">{{ report.home_yellow_cards }}</td>
+                    <td class="s-74bbd56">{{ report.away_yellow_cards }}</td>
                 </tr>
                 <tr>
                     <td>Red Cards</td>
-                    <td style="text-align:center;font-weight:700;color:#c62828">{{ report.home_red_cards }}</td>
-                    <td style="text-align:center;font-weight:700;color:#c62828">{{ report.away_red_cards }}</td>
+                    <td class="s-5b35a00">{{ report.home_red_cards }}</td>
+                    <td class="s-5b35a00">{{ report.away_red_cards }}</td>
                 </tr>
             </tbody>
         </table>
@@ -85,13 +85,13 @@
 
 <!-- Match Events Timeline -->
 {% if events %}
-<div class="card" style="margin-bottom:1.5rem">
+<div class="card s-92cb257">
     <div class="card-header"><h3>Match Events</h3></div>
-    <div class="card-body" style="padding:0">
-        <table style="margin:0">
+    <div class="card-body s-ac0d4af">
+        <table class="s-2a0ca83">
             <thead>
                 <tr>
-                    <th style="width:60px;text-align:center">Min</th>
+                    <th class="s-e091d7b">Min</th>
                     <th>Event</th>
                     <th>Player</th>
                     <th>Team</th>
@@ -101,35 +101,35 @@
             <tbody>
                 {% for event in events %}
                 <tr>
-                    <td style="text-align:center;font-weight:700;font-family:monospace">{{ event.minute }}'</td>
+                    <td class="s-3d22456">{{ event.minute }}'</td>
                     <td>
                         {% if event.event_type == 'goal' %}
-                        <span style="color:#2e7d32"><i class="bi bi-bullseye"></i> Goal</span>
+                        <span class="s-505d4e6"><i class="bi bi-bullseye"></i> Goal</span>
                         {% elif event.event_type == 'assist' %}
-                        <span style="color:#1565c0"><i class="bi bi-hand-thumbs-up"></i> Assist</span>
+                        <span class="s-6cf5fc8"><i class="bi bi-hand-thumbs-up"></i> Assist</span>
                         {% elif event.event_type == 'yellow' %}
-                        <span style="color:#f9a825"><i class="bi bi-square-fill"></i> Yellow Card</span>
+                        <span class="s-9206f2c"><i class="bi bi-square-fill"></i> Yellow Card</span>
                         {% elif event.event_type == 'red' or event.event_type == 'second_yellow' %}
-                        <span style="color:#c62828"><i class="bi bi-square-fill"></i> Red Card</span>
+                        <span class="s-e9606c2"><i class="bi bi-square-fill"></i> Red Card</span>
                         {% elif event.event_type == 'penalty' %}
-                        <span style="color:#2e7d32"><i class="bi bi-bullseye"></i> Penalty Goal</span>
+                        <span class="s-505d4e6"><i class="bi bi-bullseye"></i> Penalty Goal</span>
                         {% elif event.event_type == 'penalty_miss' %}
-                        <span style="color:#888"><i class="bi bi-x-circle"></i> Penalty Missed</span>
+                        <span class="s-9dae231"><i class="bi bi-x-circle"></i> Penalty Missed</span>
                         {% elif event.event_type == 'og' %}
-                        <span style="color:#c62828"><i class="bi bi-exclamation-circle"></i> Own Goal</span>
+                        <span class="s-e9606c2"><i class="bi bi-exclamation-circle"></i> Own Goal</span>
                         {% elif event.event_type == 'sub_on' %}
-                        <span style="color:#1b5e20"><i class="bi bi-arrow-up-circle"></i> Sub On</span>
+                        <span class="s-fe18fbb"><i class="bi bi-arrow-up-circle"></i> Sub On</span>
                         {% elif event.event_type == 'sub_off' %}
-                        <span style="color:#c62828"><i class="bi bi-arrow-down-circle"></i> Sub Off</span>
+                        <span class="s-e9606c2"><i class="bi bi-arrow-down-circle"></i> Sub Off</span>
                         {% elif event.event_type == 'injury' %}
-                        <span style="color:#f57c00"><i class="bi bi-bandaid"></i> Injury</span>
+                        <span class="s-e9c866b"><i class="bi bi-bandaid"></i> Injury</span>
                         {% else %}
                         {{ event.get_event_type_display }}
                         {% endif %}
                     </td>
                     <td>{{ event.player.get_full_name|default:" " }}</td>
-                    <td style="font-size:.85rem">{{ event.team.name }}</td>
-                    <td style="font-size:.82rem;color:#888">{{ event.notes|default:"" }}</td>
+                    <td class="s-3dc1f6c">{{ event.team.name }}</td>
+                    <td class="s-1889d5d">{{ event.notes|default:"" }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -140,43 +140,43 @@
 
 <!-- Referee Notes -->
 {% if report.referee_notes %}
-<div class="card" style="margin-bottom:1.5rem">
+<div class="card s-92cb257">
     <div class="card-header"><h3>Referee Notes</h3></div>
     <div class="card-body">
-        <p style="white-space:pre-wrap;font-size:.9rem">{{ report.referee_notes }}</p>
+        <p class="s-07b43ff">{{ report.referee_notes }}</p>
     </div>
 </div>
 {% endif %}
 
 {% if report.is_abandoned %}
-<div style="background:#ffebee;border:1px solid #ef9a9a;border-radius:10px;padding:1rem 1.4rem;margin-bottom:1.5rem">
-    <strong style="color:#c62828"><i class="bi bi-exclamation-triangle"></i> Match Abandoned</strong>
-    <p style="margin:.5rem 0 0;font-size:.9rem">{{ report.abandonment_reason }}</p>
+<div class="s-a2444ea">
+    <strong class="s-e9606c2"><i class="bi bi-exclamation-triangle"></i> Match Abandoned</strong>
+    <p class="s-63c41f2">{{ report.abandonment_reason }}</p>
 </div>
 {% endif %}
 
 <!-- Approval Form -->
 {% if report.status == 'submitted' %}
-<div class="card" style="border:2px solid #1b5e20">
-    <div class="card-header" style="background:#e8f5e9">
+<div class="card s-f8f98af">
+    <div class="card-header s-93b3300">
         <h3><i class="bi bi-check-circle"></i> Approve or Return This Report</h3>
     </div>
     <div class="card-body">
         <form method="post">
             {% csrf_token %}
-            <div style="margin-bottom:1rem">
+            <div class="s-c2c0d0a">
                 <label class="form-label">Reviewer Notes (optional)</label>
                 <textarea name="reviewer_notes" class="form-control" rows="3" placeholder="Any notes about this report..."></textarea>
             </div>
-            <div style="display:flex;gap:1rem">
-                <button type="submit" name="action" value="approve" class="btn btn--primary" style="padding:.6rem 2rem">
+            <div class="s-51f478e">
+                <button type="submit" name="action" value="approve" class="btn btn--primary s-58142ee">
                     <i class="bi bi-check-lg"></i> Approve Report
                 </button>
-                <button type="submit" name="action" value="return" class="btn btn--light" style="padding:.6rem 2rem;color:#c62828">
+                <button type="submit" name="action" value="return" class="btn btn--light s-bfad34f">
                     <i class="bi bi-arrow-return-left"></i> Return for Revision
                 </button>
             </div>
-            <p style="font-size:.82rem;color:#888;margin-top:.8rem">
+            <p class="s-6605286">
                 Approving will update the fixture score, pool standings, and player statistics automatically.
             </p>
         </form>
@@ -185,12 +185,12 @@
 {% endif %}
 
 {% if report.reviewer_notes %}
-<div class="card" style="margin-top:1rem">
+<div class="card s-a6cb65c">
     <div class="card-header"><h3>Reviewer Notes</h3></div>
     <div class="card-body">
-        <p style="font-size:.9rem">{{ report.reviewer_notes }}</p>
+        <p class="s-8ae5f8c">{{ report.reviewer_notes }}</p>
         {% if report.reviewed_by %}
-        <p style="font-size:.8rem;color:#888;margin-top:.5rem">
+        <p class="s-b680bf3">
             Reviewed by {{ report.reviewed_by.get_full_name }} on {{ report.reviewed_at|date:"d M Y H:i" }}
         </p>
         {% endif %}

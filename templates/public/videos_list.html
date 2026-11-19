@@ -1,4 +1,5 @@
 {% extends "public/base.html" %}
+{% block body_class %}pg-public-videos-list{% endblock %}
 {% load static %}
 
 {% block title %}Videos{% endblock %}
@@ -8,146 +9,6 @@
 {% block og_url %}https://kyisa.org/media-hub/videos/{% endblock %}
 
 {% block extra_css %}
-<style>
-/* ═══════════════════════════════════════
-   VIDEOS LIST PAGE
-═══════════════════════════════════════ */
-
-/* ── Featured video ── */
-.vid-featured {
-    max-width: 900px; margin: -2.5rem auto 3rem; padding: 0 1.5rem;
-    position: relative; z-index: 5;
-}
-.vf-card {
-    border-radius: 16px; overflow: hidden;
-    box-shadow: 0 8px 40px rgba(0,0,0,.12);
-    background: #000;
-}
-.vf-embed {
-    position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;
-}
-.vf-embed iframe, .vf-embed video {
-    position: absolute; top: 0; left: 0;
-    width: 100%; height: 100%; border: none;
-}
-.vf-info {
-    background: #fff; padding: 1.5rem;
-}
-.vf-info h3 {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1.15rem; font-weight: 700; color: #1a1a1a; margin-bottom: .3rem;
-}
-.vf-info span { font-size: .8rem; color: #999; }
-
-/* ── Video grid ── */
-.vid-section {
-    max-width: 1200px; margin: 0 auto 4rem; padding: 0 1.5rem;
-}
-.vid-section-title {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1.2rem; font-weight: 700; color: #1a1a1a;
-    margin-bottom: 1.25rem;
-}
-.vg-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
-}
-.vg-card {
-    background: #fff; border-radius: 14px; overflow: hidden;
-    box-shadow: 0 2px 12px rgba(0,0,0,.05);
-    transition: transform .25s, box-shadow .25s;
-    cursor: pointer;
-}
-.vg-card:hover { transform: translateY(-3px); box-shadow: 0 6px 24px rgba(0,0,0,.08); }
-.vg-thumb {
-    position: relative; height: 180px; overflow: hidden;
-    background: #111;
-}
-.vg-thumb img { width: 100%; height: 100%; object-fit: cover; opacity: .9; }
-.vg-play {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 52px; height: 52px; border-radius: 50%;
-    background: rgba(27,94,32,.9); color: #fff;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.2rem; transition: transform .25s, background .25s;
-}
-.vg-card:hover .vg-play { transform: translate(-50%, -50%) scale(1.1); background: #1B5E20; }
-.vg-dur {
-    position: absolute; bottom: .6rem; right: .6rem;
-    background: rgba(0,0,0,.7); color: #fff;
-    padding: .15rem .5rem; border-radius: 4px;
-    font-size: .72rem; font-weight: 600;
-}
-.vg-source-badge {
-    position: absolute; top: .6rem; left: .6rem;
-    padding: .15rem .5rem; border-radius: 4px;
-    font-size: .68rem; font-weight: 700; text-transform: uppercase;
-}
-.vg-source-badge.youtube { background: #FF0000; color: #fff; }
-.vg-source-badge.upload { background: #1B5E20; color: #fff; }
-.vg-source-badge.external { background: #1565C0; color: #fff; }
-.vg-body { padding: 1rem 1.25rem; }
-.vg-body h4 {
-    font-size: .9rem; font-weight: 600; color: #1a1a1a;
-    line-height: 1.4; margin-bottom: .3rem;
-    display: -webkit-box; -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical; overflow: hidden;
-}
-.vg-body span { font-size: .75rem; color: #999; }
-@media (max-width: 900px) { .vg-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 500px) { .vg-grid { grid-template-columns: 1fr; } }
-
-/* ── Video modal ── */
-.vid-modal {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,.92); z-index: 99999;
-    align-items: center; justify-content: center; padding: 2rem;
-}
-.vid-modal.active { display: flex; }
-.vid-modal-inner {
-    width: 100%; max-width: 900px;
-}
-.vid-modal-embed {
-    position: relative; padding-bottom: 56.25%; height: 0;
-    border-radius: 12px; overflow: hidden;
-}
-.vid-modal-embed iframe, .vid-modal-embed video {
-    position: absolute; top: 0; left: 0;
-    width: 100%; height: 100%; border: none;
-}
-.vid-modal-close {
-    position: absolute; top: 1.5rem; right: 1.5rem;
-    background: rgba(255,255,255,.15); border: none; color: #fff;
-    width: 44px; height: 44px; border-radius: 50%;
-    font-size: 1.4rem; cursor: pointer; transition: background .2s;
-    display: flex; align-items: center; justify-content: center;
-}
-.vid-modal-close:hover { background: rgba(255,255,255,.3); }
-.vid-modal-title {
-    color: #fff; text-align: center; margin-top: 1rem;
-    font-size: 1rem; font-weight: 600;
-}
-
-/* ── Pagination ── */
-.vid-pagination {
-    display: flex; justify-content: center; gap: .5rem; padding: 2rem 0;
-}
-.vid-pagination a, .vid-pagination span {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 36px; height: 36px; border-radius: 8px;
-    font-size: .85rem; font-weight: 600; transition: all .2s;
-}
-.vid-pagination a { background: #fff; color: #555; border: 1px solid #e0e0e0; }
-.vid-pagination a:hover { background: #e8f5e9; color: #1B5E20; border-color: #1B5E20; }
-.vid-pagination .current { background: #1B5E20; color: #fff; border: 1px solid #1B5E20; }
-
-/* ── Empty ── */
-.vid-empty {
-    text-align: center; padding: 5rem 1.5rem;
-}
-.vid-empty i { font-size: 3rem; color: #ccc; margin-bottom: 1rem; display: block; }
-.vid-empty h3 { font-size: 1.2rem; color: #555; margin-bottom: .5rem; }
-.vid-empty p { color: #999; font-size: .9rem; }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -168,7 +29,7 @@
             <span>Videos</span>
         </div>
     </div>
-    <div class="kenya-stripe" style="position:absolute;bottom:0;left:0;right:0;z-index:5"></div>
+    <div class="kenya-stripe s-4a0e33c"></div>
 </section>
 
 {% if featured_video %}
@@ -210,8 +71,8 @@
                 {% elif video.youtube_id %}
                     <img src="https://img.youtube.com/vi/{{ video.youtube_id }}/hqdefault.jpg" alt="{{ video.title }}">
                 {% else %}
-                    <div style="display:flex;align-items:center;justify-content:center;height:100%;background:#111;color:#555;">
-                        <i class="bi bi-camera-video" style="font-size:2.5rem;"></i>
+                    <div class="s-3703907">
+                        <i class="bi bi-camera-video s-049e68a"></i>
                     </div>
                 {% endif %}
                 <div class="vg-play"><i class="bi bi-play-fill"></i></div>

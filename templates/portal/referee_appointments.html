@@ -12,29 +12,29 @@
 </div>
 
 <!-- ═══ SUMMARY CARDS ═══ -->
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;">
-    <div class="card" style="text-align:center;padding:1.2rem;">
-        <div style="font-size:2rem;font-weight:700;color:#c62828;">{{ total_needing }}</div>
-        <div style="color:#666;font-size:.85rem;">Needing Officials</div>
+<div class="s-df75d82">
+    <div class="card s-94550a8">
+        <div class="s-d094250">{{ total_needing }}</div>
+        <div class="s-cee95e6">Needing Officials</div>
     </div>
-    <div class="card" style="text-align:center;padding:1.2rem;">
-        <div style="font-size:2rem;font-weight:700;color:#FF8F00;">{{ total_partially }}</div>
-        <div style="color:#666;font-size:.85rem;">Partially Appointed</div>
+    <div class="card s-94550a8">
+        <div class="s-03e508f">{{ total_partially }}</div>
+        <div class="s-cee95e6">Partially Appointed</div>
     </div>
-    <div class="card" style="text-align:center;padding:1.2rem;">
-        <div style="font-size:2rem;font-weight:700;color:#1B5E20;">{{ total_fully_appointed }}</div>
-        <div style="color:#666;font-size:.85rem;">Fully Appointed</div>
+    <div class="card s-94550a8">
+        <div class="s-0b8ea3a">{{ total_fully_appointed }}</div>
+        <div class="s-cee95e6">Fully Appointed</div>
     </div>
-    <div class="card" style="text-align:center;padding:1.2rem;">
-        <div style="font-size:2rem;font-weight:700;color:#1565C0;">{{ approved_referees_count }}</div>
-        <div style="color:#666;font-size:.85rem;">Approved Referees</div>
+    <div class="card s-94550a8">
+        <div class="s-32a66d5">{{ approved_referees_count }}</div>
+        <div class="s-cee95e6">Approved Referees</div>
     </div>
 </div>
 
 <!-- ═══ FILTER TABS ═══ -->
-<div class="card" style="margin-bottom:1.5rem;">
-    <div class="card-body" style="padding:.8rem 1rem;">
-        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+<div class="card s-92cb257">
+    <div class="card-body s-9074657">
+        <div class="s-5283a0d">
             <a href="?status=upcoming"
                style="padding:.4rem 1rem;border-radius:20px;text-decoration:none;font-size:.9rem;
                       {% if filter_status == 'upcoming' %}background:#1B5E20;color:#fff;{% else %}background:#f0f0f0;color:#333;{% endif %}">
@@ -60,7 +60,7 @@
     <div class="card-header">
         <h3>{{ filter_status|title }} Fixtures ({{ total_fixtures }})</h3>
     </div>
-    <div class="card-body" style="padding:0;">
+    <div class="card-body s-ac0d4af">
         <div class="table-responsive">
             <table>
                 <thead>
@@ -77,19 +77,19 @@
                 <tbody>
                     {% for item in fixture_data %}
                     <tr style="{% if item.needs_officials and not item.fixture.status == 'completed' %}background:#FFF8E1;{% elif item.is_fully_appointed %}background:#F1F8E9;{% endif %}">
-                        <td style="white-space:nowrap;">
+                        <td class="s-1cd2eeb">
                             {{ item.fixture.match_date|date:"d M Y" }}<br>
-                            <span style="font-size:.8rem;color:#666;">{{ item.fixture.kickoff_time|time:"H:i" }}</span>
+                            <span class="s-623930c">{{ item.fixture.kickoff_time|time:"H:i" }}</span>
                         </td>
                         <td>
                             <strong>{{ item.fixture.home_team }}</strong>
-                            <span style="color:#999;">vs</span>
+                            <span class="s-900f755">vs</span>
                             <strong>{{ item.fixture.away_team }}</strong>
                         </td>
-                        <td style="font-size:.85rem;">{{ item.fixture.competition.name }}</td>
-                        <td style="font-size:.85rem;">{{ item.fixture.venue|default:"TBD" }}</td>
+                        <td class="s-3dc1f6c">{{ item.fixture.competition.name }}</td>
+                        <td class="s-3dc1f6c">{{ item.fixture.venue|default:"TBD" }}</td>
                         <td>
-                            <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
+                            <div class="s-82ecb98">
                                 {% for role in item.roles %}
                                 <span style="display:inline-block;padding:.15rem .5rem;border-radius:4px;font-size:.75rem;
                                     {% if role.status == 'confirmed' %}background:#E8F5E9;color:#1B5E20;border:1px solid #A5D6A7;
@@ -102,7 +102,7 @@
                                 </span>
                                 {% endfor %}
                             </div>
-                            <div style="font-size:.75rem;color:#666;margin-top:.3rem;">
+                            <div class="s-2066c37">
                                 {{ item.filled }}/{{ item.total_roles }} roles filled
                             </div>
                         </td>
@@ -131,10 +131,10 @@
 </div>
 {% else %}
 <div class="card">
-    <div class="card-body" style="text-align:center;padding:3rem;">
-        <div style="font-size:3rem;">📅</div>
+    <div class="card-body s-4168ee8">
+        <div class="s-64a35c0">📅</div>
         <h3>No fixtures found</h3>
-        <p style="color:#666;">There are no {{ filter_status }} fixtures to display. Try a different filter.</p>
+        <p class="s-0ce45ac">There are no {{ filter_status }} fixtures to display. Try a different filter.</p>
     </div>
 </div>
 {% endif %}

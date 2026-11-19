@@ -13,29 +13,29 @@
 </div>
 
 <!-- Fixture Info -->
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem;">
-    <div class="card" style="text-align:center;padding:1rem;">
-        <div style="font-size:.85rem;color:#666;">Match Date</div>
-        <div style="font-weight:700;">{{ fixture.match_date|date:"d M Y" }}</div>
+<div class="s-0a9e69f">
+    <div class="card s-d8fd394">
+        <div class="s-53b7c24">Match Date</div>
+        <div class="s-5db75d4">{{ fixture.match_date|date:"d M Y" }}</div>
     </div>
-    <div class="card" style="text-align:center;padding:1rem;">
-        <div style="font-size:.85rem;color:#666;">Kick-off</div>
-        <div style="font-weight:700;">{{ fixture.kickoff_time|time:"H:i" }}</div>
+    <div class="card s-d8fd394">
+        <div class="s-53b7c24">Kick-off</div>
+        <div class="s-5db75d4">{{ fixture.kickoff_time|time:"H:i" }}</div>
     </div>
-    <div class="card" style="text-align:center;padding:1rem;">
-        <div style="font-size:.85rem;color:#666;">Squad Deadline</div>
+    <div class="card s-d8fd394">
+        <div class="s-53b7c24">Squad Deadline</div>
         <div style="font-weight:700;{% if deadline_passed %}color:#c62828{% else %}color:#2E7D32{% endif %}">
             {{ deadline|date:"d M Y H:i" }}
         </div>
     </div>
-    <div class="card" style="text-align:center;padding:1rem;">
-        <div style="font-size:.85rem;color:#666;">Venue</div>
-        <div style="font-weight:700;">{{ fixture.venue|default:"TBD" }}</div>
+    <div class="card s-d8fd394">
+        <div class="s-53b7c24">Venue</div>
+        <div class="s-5db75d4">{{ fixture.venue|default:"TBD" }}</div>
     </div>
 </div>
 
 {% if existing %}
-<div class="alert alert-{% if existing.status == 'approved' %}success{% elif existing.status == 'rejected' %}danger{% elif existing.status == 'submitted' %}info{% else %}gray{% endif %}" style="margin-bottom:1.5rem;">
+<div class="alert alert-{% if existing.status == 'approved' %}success{% elif existing.status == 'rejected' %}danger{% elif existing.status == 'submitted' %}info{% else %}gray{% endif %} s-92cb257">
     <strong>Current Status:</strong> {{ existing.get_status_display }}
     {% if existing.rejection_reason %}
     <br><strong>Rejection Reason:</strong> {{ existing.rejection_reason }}
@@ -44,7 +44,7 @@
 {% endif %}
 
 {% if deadline_passed %}
-<div class="alert alert-danger" style="margin-bottom:1.5rem;">
+<div class="alert alert-danger s-92cb257">
     <strong>⏰ Deadline Passed</strong> Squad submission closed at {{ deadline|date:"d M Y H:i" }}. Contact the Organising Secretary if you need an extension.
 </div>
 {% endif %}
@@ -53,10 +53,10 @@
 {% csrf_token %}
 
 <!-- Rules -->
-<div class="card" style="margin-bottom:1.5rem;">
+<div class="card s-92cb257">
     <div class="card-header"><h3>📏 Squad Rules</h3></div>
     <div class="card-body">
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;">
+        <div class="s-b9166db">
             <div><strong>Min Starters:</strong> {{ settings.min_starters }}</div>
             <div><strong>Max Starters:</strong> {{ settings.max_starters }}</div>
             <div><strong>Max Subs:</strong> {{ settings.max_subs }}</div>
@@ -66,23 +66,23 @@
 </div>
 
 <!-- Formation & Kit Selection -->
-<div class="card" style="margin-bottom:1.5rem;">
-    <div class="card-header" style="background:#E8F5E9;"><h3>⚙️ Playing Units &amp; Kit Colours</h3></div>
+<div class="card s-92cb257">
+    <div class="card-header s-35552ee"><h3>⚙️ Playing Units &amp; Kit Colours</h3></div>
     <div class="card-body">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+        <div class="s-2cfd5e5">
             <div>
-                <label style="font-weight:600;display:block;margin-bottom:.3rem;">Playing Formation / Units *</label>
+                <label class="s-b0103db">Playing Formation / Units *</label>
                 <input type="text" name="formation" id="formationInput"
                        value="{{ saved_formation }}"
                        placeholder="e.g. 4-3-3, 4-4-2, 3-5-2"
-                       style="width:100%;padding:.6rem;border:1px solid #ddd;border-radius:8px;font-size:1rem;"
+                       class="s-23140d7"
                        {% if deadline_passed %}disabled{% endif %} required>
-                <small style="color:#666;">Enter your team's tactical formation</small>
+                <small class="s-0ce45ac">Enter your team's tactical formation</small>
             </div>
             <div>
-                <label style="font-weight:600;display:block;margin-bottom:.3rem;">Kit Selection *</label>
+                <label class="s-b0103db">Kit Selection *</label>
                 <select name="kit_choice" id="kitChoice"
-                        style="width:100%;padding:.6rem;border:1px solid #ddd;border-radius:8px;font-size:1rem;"
+                        class="s-23140d7"
                         {% if deadline_passed %}disabled{% endif %} required>
                     {% for val, label, colour in kit_options %}
                     <option value="{{ val }}" {% if saved_kit == val %}selected{% endif %}>
@@ -90,31 +90,31 @@
                     </option>
                     {% endfor %}
                 </select>
-                <small style="color:#666;">Select the kit your team will wear</small>
+                <small class="s-0ce45ac">Select the kit your team will wear</small>
             </div>
         </div>
 
         <!-- Kit Colour Preview -->
-        <div style="margin-top:1rem;padding:.8rem;background:#f9f9f9;border-radius:8px;">
+        <div class="s-71c50b4">
             <strong>Team Kit Colours:</strong>
-            <div style="display:flex;flex-wrap:wrap;gap:1.5rem;margin-top:.5rem;">
+            <div class="s-b1cad8f">
                 {% if team.home_outfield_colour %}
-                <div style="font-size:.85rem;">
-                    <span style="font-weight:600;">🏠 Home:</span>
+                <div class="s-3dc1f6c">
+                    <span class="s-21a1be8">🏠 Home:</span>
                     {{ team.home_outfield_colour }}/{{ team.home_shorts_colour }}/{{ team.home_socks_colour }}
                     (GK: {{ team.home_gk_colour }})
                 </div>
                 {% endif %}
                 {% if team.away_outfield_colour %}
-                <div style="font-size:.85rem;">
-                    <span style="font-weight:600;">✈️ Away:</span>
+                <div class="s-3dc1f6c">
+                    <span class="s-21a1be8">✈️ Away:</span>
                     {{ team.away_outfield_colour }}/{{ team.away_shorts_colour }}/{{ team.away_socks_colour }}
                     (GK: {{ team.away_gk_colour }})
                 </div>
                 {% endif %}
                 {% if team.third_outfield_colour %}
-                <div style="font-size:.85rem;">
-                    <span style="font-weight:600;">3️⃣ Third:</span>
+                <div class="s-3dc1f6c">
+                    <span class="s-21a1be8">3️⃣ Third:</span>
                     {{ team.third_outfield_colour }}/{{ team.third_shorts_colour }}/{{ team.third_socks_colour }}
                     (GK: {{ team.third_gk_colour }})
                 </div>
@@ -126,19 +126,19 @@
 
 {% if players %}
 <!-- Validation Summary -->
-<div id="validationSummary" class="card" style="margin-bottom:1rem;display:none;">
-    <div class="card-body" style="padding:.8rem 1rem;">
-        <div id="validationErrors" style="color:#c62828;"></div>
+<div id="validationSummary" class="card s-2311152">
+    <div class="card-body s-9074657">
+        <div id="validationErrors" class="s-e9606c2"></div>
     </div>
 </div>
 
-<div class="card" style="margin-bottom:1.5rem;">
+<div class="card s-92cb257">
     <div class="card-header">
         <h3>⚽ Available Players ({{ players|length }})</h3>
-        <div style="display:flex;gap:1rem;font-size:.9rem;">
-            <span id="starterCount" style="color:#1B5E20;font-weight:600">Starters: 0</span>
-            <span id="subCount" style="color:#1565C0;font-weight:600">Subs: 0</span>
-            <span id="gkStatus" style="color:#6A1B9A;font-weight:600">GK: ✗</span>
+        <div class="s-25b1b73">
+            <span id="starterCount" class="s-35363a4">Starters: 0</span>
+            <span id="subCount" class="s-84a8648">Subs: 0</span>
+            <span id="gkStatus" class="s-217cce0">GK: ✗</span>
         </div>
     </div>
     <div class="card-body">
@@ -146,8 +146,8 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="width:70px;">Starter</th>
-                        <th style="width:70px;">Sub</th>
+                        <th class="s-8251857">Starter</th>
+                        <th class="s-8251857">Sub</th>
                         <th>#</th>
                         <th>Name</th>
                         <th>Position</th>
@@ -157,13 +157,13 @@
                 <tbody>
                     {% for player in players %}
                     <tr {% if player.position == 'GK' %}style="background:#f0f7f0;"{% endif %}>
-                        <td style="text-align:center;">
+                        <td class="s-65f9d5a">
                             <input type="checkbox" name="starters" value="{{ player.pk }}"
                                    class="starter-cb" data-player="{{ player.pk }}" data-position="{{ player.position }}"
                                    {% if player.pk in starter_ids %}checked{% endif %}
                                    {% if deadline_passed %}disabled{% endif %}>
                         </td>
-                        <td style="text-align:center;">
+                        <td class="s-65f9d5a">
                             <input type="checkbox" name="subs" value="{{ player.pk }}"
                                    class="sub-cb" data-player="{{ player.pk }}" data-position="{{ player.position }}"
                                    {% if player.pk in sub_ids %}checked{% endif %}
@@ -173,7 +173,7 @@
                         <td>
                             {{ player.get_full_name }}
                             {% if player.position == 'GK' %}
-                            <span style="display:inline-block;background:#1B5E20;color:#fff;font-size:.7rem;padding:1px 6px;border-radius:10px;margin-left:4px;">GK</span>
+                            <span class="s-9d740ba">GK</span>
                             {% endif %}
                         </td>
                         <td>{{ player.get_position_display }}</td>
@@ -187,10 +187,10 @@
 </div>
 
 {% if not deadline_passed %}
-<div style="display:flex;gap:1rem;justify-content:flex-end;">
-    <a href="{% url 'matches_list' %}" class="btn" style="background:#757575;color:#fff;padding:.6rem 1.5rem;border-radius:8px;text-decoration:none;">Cancel</a>
-    <button type="submit" class="btn" id="submitBtn"
-            style="background:#1B5E20;color:#fff;padding:.6rem 1.5rem;border-radius:8px;border:none;cursor:pointer;font-size:1rem;opacity:.5;" disabled>
+<div class="s-1f3907f">
+    <a href="{% url 'matches_list' %}" class="btn s-cf031e4">Cancel</a>
+    <button type="submit" class="btn s-2ac9549" id="submitBtn"
+            disabled>
         📤 Submit Squad
     </button>
 </div>

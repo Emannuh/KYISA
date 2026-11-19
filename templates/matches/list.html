@@ -121,11 +121,11 @@
 
                             {% comment %} ADMIN / CM Edit Fixture & View Report {% endcomment %}
                             {% if user.role == 'admin' or user.role == 'competition_manager' %}
-                                <a href="{% url 'admin_edit_fixture' pk=f.competition.pk fixture_pk=f.pk %}" class="btn-action btn-action-primary" style="margin-right:.5rem;font-size:.75rem;">
+                                <a href="{% url 'admin_edit_fixture' pk=f.competition.pk fixture_pk=f.pk %}" class="btn-action btn-action-primary s-5ab8d22">
                                     <i class="bi bi-pencil"></i> Edit
                                 </a>
                                 {% if fd.report %}
-                                <a href="{% url 'match_report_detail' report_pk=fd.report.pk %}" class="btn-action btn-action-link" style="margin-right:.5rem;">
+                                <a href="{% url 'match_report_detail' report_pk=fd.report.pk %}" class="btn-action btn-action-link s-99d695e">
                                     Report
                                 </a>
                                 {% endif %}
@@ -159,7 +159,7 @@
 <!-- Pending Reports (Referee Manager / Admin) -->
 {% if pending_reports %}
 <div class="card mt-1">
-    <div class="card-header"><h3><i class="bi bi-exclamation-triangle" style="color:#FF8F00"></i> Reports Pending Review</h3></div>
+    <div class="card-header"><h3><i class="bi bi-exclamation-triangle s-af92746"></i> Reports Pending Review</h3></div>
     <div class="card-body">
         <div class="table-responsive">
             <table>

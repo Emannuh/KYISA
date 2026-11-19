@@ -40,14 +40,14 @@
 <div class="dash-section-title"><i class="bi bi-lightning-charge"></i> Quick Actions</div>
 <div class="dash-actions">
     <a href="{% url 'scout_players' %}" class="dash-tile">
-        <div class="tile-icon" style="background:linear-gradient(135deg,#E0F2F1,#B2DFDB);color:#00695C;"><i class="bi bi-search"></i></div>
+        <div class="tile-icon s-3d73108"><i class="bi bi-search"></i></div>
         <div class="tile-text">
             <h4>Browse Players</h4>
             <p>Search and scout verified players</p>
         </div>
     </a>
     <a href="{% url 'scout_shortlist' %}" class="dash-tile">
-        <div class="tile-icon" style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);color:#1565C0;"><i class="bi bi-bookmark-star"></i></div>
+        <div class="tile-icon s-0530c51"><i class="bi bi-bookmark-star"></i></div>
         <div class="tile-text">
             <h4>My Shortlist</h4>
             <p>View and manage shortlisted players</p>
@@ -58,10 +58,10 @@
 <!-- Recent Shortlist -->
 {% if shortlist %}
 <div class="dash-panel">
-    <div class="dash-panel-head" style="display:flex;justify-content:space-between;align-items:center">
+    <div class="dash-panel-head s-6823804">
         <span><i class="bi bi-bookmark-star-fill"></i> Recent Shortlist</span>
         {% if shortlist_count > 10 %}
-        <a href="{% url 'scout_shortlist' %}" style="font-size:.76rem;text-decoration:none;color:#00695C;font-weight:600;">View all {{ shortlist_count }} entries &rarr;</a>
+        <a href="{% url 'scout_shortlist' %}" class="s-b65cb9c">View all {{ shortlist_count }} entries &rarr;</a>
         {% endif %}
     </div>
     <div class="dash-panel-body">
@@ -87,9 +87,9 @@
                         <td>
                             {% for i in "12345" %}
                                 {% if forloop.counter <= entry.rating %}
-                                <span style="color:#E65100">★</span>
+                                <span class="s-687040b">★</span>
                                 {% else %}
-                                <span style="color:#ddd">★</span>
+                                <span class="s-549fc04">★</span>
                                 {% endif %}
                             {% endfor %}
                         </td>
@@ -104,10 +104,10 @@
 {% else %}
 <div class="dash-panel">
     <div class="dash-panel-body dash-empty">
-        <i class="bi bi-binoculars" style="font-size:3rem;color:#B2DFDB;"></i>
+        <i class="bi bi-binoculars s-2c8442a"></i>
         <h3>No players shortlisted yet</h3>
         <p>Browse verified players and start building your shortlist.</p>
-        <a href="{% url 'scout_players' %}" style="color:#00695C;font-weight:600;text-decoration:none;">Browse Players &rarr;</a>
+        <a href="{% url 'scout_players' %}" class="s-1810fa8">Browse Players &rarr;</a>
     </div>
 </div>
 {% endif %}

@@ -1,104 +1,10 @@
 {% extends 'base.html' %}
+{% block body_class %}pg-portal-cm-edit-standings{% endblock %}
 {% load static %}
 
 {% block title %}Edit Standings   {{ competition.name }}   KYISA CMS{% endblock %}
 
 {% block extra_css %}
-<style>
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-        flex-wrap: wrap;
-        gap: .5rem;
-    }
-    .page-header h2 { font-size: 1.3rem; font-weight: 700; color: #212121; }
-    .page-header .subtitle { font-size: .85rem; color: #757575; }
-
-    .recalc-bar {
-        background: #E8F5E9;
-        border: 1px solid #C8E6C9;
-        border-radius: 10px;
-        padding: .75rem 1rem;
-        margin-bottom: 1.25rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: .5rem;
-    }
-    .recalc-bar span { font-size: .85rem; color: #1B5E20; }
-
-    .pool-section {
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,.06);
-        margin-bottom: 1.5rem;
-        overflow: hidden;
-    }
-    .pool-head {
-        background: linear-gradient(135deg, #4A148C, #7B1FA2);
-        color: #fff;
-        padding: .65rem 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .pool-head h3 { font-size: .95rem; font-weight: 700; color: #fff; margin: 0; }
-
-    .edit-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: .82rem;
-    }
-    .edit-table th {
-        background: #FAFAFA;
-        padding: .45rem .5rem;
-        text-align: center;
-        font-weight: 600;
-        color: #666;
-        border-bottom: 1px solid #eee;
-        font-size: .75rem;
-        text-transform: uppercase;
-    }
-    .edit-table th:first-child { text-align: left; padding-left: 1rem; }
-    .edit-table td {
-        padding: .4rem .35rem;
-        text-align: center;
-        border-bottom: 1px solid #f5f5f5;
-    }
-    .edit-table td:first-child { text-align: left; padding-left: 1rem; font-weight: 600; }
-    .edit-table input[type="number"] {
-        width: 52px;
-        padding: .25rem .3rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        text-align: center;
-        font-size: .82rem;
-    }
-    .edit-table input[type="number"]:focus {
-        outline: none;
-        border-color: #7B1FA2;
-        box-shadow: 0 0 0 2px rgba(123,31,162,.15);
-    }
-    .edit-table .pts-cell { font-weight: 800; font-size: .9rem; color: #7B1FA2; }
-    .edit-table .gd-cell { font-weight: 600; color: #1565C0; }
-    .team-actions {
-        display: flex;
-        gap: .3rem;
-        justify-content: center;
-    }
-
-    .no-pools {
-        text-align: center;
-        padding: 3rem;
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 1px 4px rgba(0,0,0,.05);
-    }
-    .no-pools i { font-size: 2rem; color: #ccc; display: block; margin-bottom: .5rem; }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -114,10 +20,10 @@
 {% if pool_data %}
 <div class="recalc-bar">
     <span><i class="bi bi-info-circle"></i> Recalculate standings from approved match reports, or manually edit individual team stats below.</span>
-    <form method="post" style="margin:0;">
+    <form method="post" class="s-2a0ca83">
         {% csrf_token %}
         <input type="hidden" name="action" value="recalculate_all">
-        <button type="submit" class="btn btn-primary btn-sm" style="font-size:.78rem;"><i class="bi bi-arrow-repeat"></i> Recalculate All Pools</button>
+        <button type="submit" class="btn btn-primary btn-sm s-fb2a0ae"><i class="bi bi-arrow-repeat"></i> Recalculate All Pools</button>
     </form>
 </div>
 {% endif %}
@@ -127,11 +33,11 @@
     <div class="pool-section">
         <div class="pool-head">
             <h3>{{ pd.pool.name }}</h3>
-            <form method="post" style="margin:0;">
+            <form method="post" class="s-2a0ca83">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="recalculate">
                 <input type="hidden" name="pool_id" value="{{ pd.pool.pk }}">
-                <button type="submit" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:6px;padding:.2rem .6rem;font-size:.72rem;cursor:pointer;">
+                <button type="submit" class="s-778eb09">
                     <i class="bi bi-arrow-repeat"></i> Recalculate
                 </button>
             </form>
@@ -141,7 +47,7 @@
         <table class="edit-table">
             <thead>
                 <tr>
-                    <th style="width:22%;">Team</th>
+                    <th class="s-f0fb063">Team</th>
                     <th>P</th>
                     <th>W</th>
                     <th>D</th>
@@ -151,7 +57,7 @@
                     <th>GD</th>
                     <th>Bonus</th>
                     <th>Pts</th>
-                    <th style="width:10%;">Save</th>
+                    <th class="s-ae0638a">Save</th>
                 </tr>
             </thead>
             <tbody>
@@ -174,7 +80,7 @@
                     <td><input type="number" name="bonus_points" value="{{ pt.bonus_points }}" min="0" form="form-{{ pt.pk }}"></td>
                     <td class="pts-cell">{{ pt.points }}</td>
                     <td>
-                        <button type="submit" form="form-{{ pt.pk }}" class="btn btn-primary btn-sm" style="font-size:.7rem;padding:.15rem .45rem;"><i class="bi bi-check-lg"></i></button>
+                        <button type="submit" form="form-{{ pt.pk }}" class="btn btn-primary btn-sm s-378ae87"><i class="bi bi-check-lg"></i></button>
                         </form>
                     </td>
                 </tr>
@@ -182,14 +88,14 @@
             </tbody>
         </table>
         {% else %}
-        <div style="text-align:center;padding:1rem;color:#bbb;font-size:.85rem;">No teams in this pool</div>
+        <div class="s-a61f54b">No teams in this pool</div>
         {% endif %}
     </div>
     {% endfor %}
 {% else %}
 <div class="no-pools">
     <i class="bi bi-collection"></i>
-    <p style="color:#999;">No pools exist for this competition.</p>
+    <p class="s-900f755">No pools exist for this competition.</p>
     <a href="{% url 'cm_manage_pools' pk=competition.pk %}" class="btn btn-primary btn-sm"><i class="bi bi-plus"></i> Create Pools</a>
 </div>
 {% endif %}

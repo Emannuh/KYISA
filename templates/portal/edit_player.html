@@ -12,7 +12,7 @@
     <h1>Edit Player: {{ player.get_full_name }}</h1>
 </div>
 
-<div class="card" style="max-width:600px">
+<div class="card s-2e56d29">
     <div class="card-header"><h3>Player Details</h3></div>
     <div class="card-body">
         {% if messages %}
@@ -26,19 +26,19 @@
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% for field in form %}
-            <div style="margin-bottom:1rem">
-                <label for="{{ field.id_for_label }}" style="display:block;font-weight:600;color:#333;margin-bottom:.3rem;font-size:.9rem">{{ field.label }}</label>
+            <div class="s-c2c0d0a">
+                <label for="{{ field.id_for_label }}" class="s-578cd24">{{ field.label }}</label>
                 {{ field }}
-                {% if field.help_text %}<small style="color:#888;font-size:.8rem">{{ field.help_text }}</small>{% endif %}
-                {% for error in field.errors %}<div style="color:#C62828;font-size:.85rem">{{ error }}</div>{% endfor %}
+                {% if field.help_text %}<small class="s-3dc9ffe">{{ field.help_text }}</small>{% endif %}
+                {% for error in field.errors %}<div class="s-71078af">{{ error }}</div>{% endfor %}
             </div>
             {% endfor %}
 
-            <div style="display:flex;gap:.75rem;margin-top:1rem">
-                <button type="submit" class="btn btn-outline btn-sm" style="background:#1B5E20;color:#fff;border-color:#1B5E20;padding:.6rem 1.5rem">
+            <div class="s-5b72d13">
+                <button type="submit" class="btn btn-outline btn-sm s-1cf0776">
                     Save Changes
                 </button>
-                <a href="{% url 'team_detail' pk=team.pk %}" class="btn btn-outline btn-sm" style="padding:.6rem 1.5rem">Cancel</a>
+                <a href="{% url 'team_detail' pk=team.pk %}" class="btn btn-outline btn-sm s-ac59137">Cancel</a>
             </div>
         </form>
     </div>

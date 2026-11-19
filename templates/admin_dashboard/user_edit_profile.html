@@ -1,55 +1,8 @@
 {% extends "base.html" %}
+{% block body_class %}pg-admin-dashboard-user-edit-profile{% endblock %}
 {% block title %}Edit Profile: {{ detail_user.get_full_name }} - KYISA CMS{% endblock %}
 
 {% block extra_css %}
-<style>
-    .ep-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem; }
-    .form-row.full { grid-template-columns: 1fr; }
-    .field label {
-        display: block;
-        font-size: .82rem;
-        font-weight: 600;
-        margin-bottom: .3rem;
-        color: #333;
-    }
-    .field .hint {
-        font-size: .78rem;
-        color: #999;
-        margin-top: .2rem;
-    }
-    .field .req { color: #C62828; }
-    .sidebar-field {
-        margin-bottom: .75rem;
-    }
-    .sidebar-field .sf-label {
-        font-size: .72rem;
-        text-transform: uppercase;
-        letter-spacing: .8px;
-        color: #757575;
-        margin-bottom: .1rem;
-    }
-    .sidebar-field .sf-value {
-        font-weight: 600;
-        font-size: .9rem;
-        color: #212121;
-    }
-    .sidebar-action {
-        display: flex;
-        align-items: center;
-        gap: .5rem;
-        padding: .5rem .8rem;
-        border-radius: 8px;
-        text-decoration: none;
-        font-size: .85rem;
-        font-weight: 600;
-        transition: all .2s;
-    }
-    .sidebar-action:hover { transform: translateX(3px); }
-    @media (max-width: 768px) {
-        .ep-grid { grid-template-columns: 1fr; }
-    }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -66,7 +19,7 @@
 <div class="ep-grid">
     <!-- Edit Form -->
     <div class="card">
-        <div class="card-header" style="background:#E8F5E9;">
+        <div class="card-header s-35552ee">
             <h3>Profile Details</h3>
         </div>
         <div class="card-body">
@@ -107,7 +60,7 @@
                     </div>
                 </div>
 
-                <div style="display:flex;gap:.8rem;margin-top:1.5rem;">
+                <div class="s-7228731">
                     <button type="submit" class="btn btn-primary">Save Changes</button>
                     <a href="{% url 'user_detail' user_id=detail_user.id %}" class="btn btn-outline">Cancel</a>
                 </div>
@@ -117,7 +70,7 @@
 
     <!-- Sidebar -->
     <div>
-        <div class="card" style="margin-bottom:1rem;">
+        <div class="card s-c2c0d0a">
             <div class="card-header">
                 <h3>Current Info</h3>
             </div>
@@ -138,7 +91,7 @@
                     <div class="sf-label">Status</div>
                     <div class="sf-value">
                         {% if detail_user.is_active %}<span class="badge badge-success">Active</span>{% else %}<span class="badge badge-danger">Inactive</span>{% endif %}
-                        {% if detail_user.is_suspended %}<span class="badge badge-gray" style="background:#212121;color:#fff;">Suspended</span>{% endif %}
+                        {% if detail_user.is_suspended %}<span class="badge badge-gray s-499562e">Suspended</span>{% endif %}
                     </div>
                 </div>
                 <div class="sidebar-field">
@@ -152,11 +105,11 @@
             <div class="card-header">
                 <h3>Other Actions</h3>
             </div>
-            <div class="card-body" style="display:flex;flex-direction:column;gap:.5rem;">
-                <a href="{% url 'edit_user_roles' user_id=detail_user.id %}" class="sidebar-action" style="background:#E3F2FD;color:#1565C0;">
+            <div class="card-body s-d84d705">
+                <a href="{% url 'edit_user_roles' user_id=detail_user.id %}" class="sidebar-action s-744c8ec">
                     <i class="bi bi-gear"></i> Change Role
                 </a>
-                <form method="post" action="{% url 'reset_user_password' user_id=detail_user.id %}" class="inline-form" onsubmit="return confirm('Reset password?')">{% csrf_token %}<button type="submit" class="sidebar-action" style="background:#FFF3E0;color:#E65100;">
+                <form method="post" action="{% url 'reset_user_password' user_id=detail_user.id %}" class="inline-form" onsubmit="return confirm('Reset password?')">{% csrf_token %}<button type="submit" class="sidebar-action s-013065e">
                     <i class="bi bi-key"></i> Reset Password
                 </button></form>
             </div>

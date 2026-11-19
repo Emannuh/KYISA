@@ -11,35 +11,35 @@
     <p>{{ fixture.home_team.name }} vs {{ fixture.away_team.name }}   {{ fixture.match_date|date:"d M Y, H:i" }}</p>
 </div>
 
-<div style="background:#e3f2fd;border:1px solid #90caf9;border-radius:10px;padding:.9rem 1.2rem;margin-bottom:1rem;display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;">
-    <span style="font-size:1.2rem"><i class="bi bi-clock"></i></span>
-    <div style="font-size:.88rem;color:#355;">
+<div class="s-3167a21">
+    <span class="s-8ed6849"><i class="bi bi-clock"></i></span>
+    <div class="s-f03854e">
         Squad selection/edit window: from <strong>{{ selection_opens_at|date:"d M Y, H:i" }}</strong> until kickoff.
         Once match starts, squad is locked.
     </div>
 </div>
 
 {% if needs_re_approval %}
-<div style="background:#fff3e0;border:1px solid #ffcc80;border-radius:10px;padding:1rem 1.4rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem">
-    <span style="font-size:1.5rem"><i class="bi bi-exclamation-triangle"></i></span>
+<div class="s-33fb6a5">
+    <span class="s-db5923f"><i class="bi bi-exclamation-triangle"></i></span>
     <div>
-        <strong style="color:#e65100">Previously Approved Squad</strong>
-        <div style="font-size:.88rem;color:#555">Any changes will reset the squad to "Submitted" and require referee re-approval.</div>
+        <strong class="s-02c9dfc">Previously Approved Squad</strong>
+        <div class="s-516c5cc">Any changes will reset the squad to "Submitted" and require referee re-approval.</div>
     </div>
 </div>
 {% endif %}
 
-<div class="card" style="padding:1.5rem">
+<div class="card s-a97308a">
     <form method="post">
         {% csrf_token %}
 
         {% if is_football %}
-        <div style="margin-bottom:1.5rem">
-            <h3 style="font-size:1rem;color:#333;margin-bottom:.8rem"><i class="bi bi-diagram-3"></i> Formation</h3>
-            <p style="margin:0 0 .6rem;color:#666;font-size:.85rem;">
+        <div class="s-92cb257">
+            <h3 class="s-d2922ca"><i class="bi bi-diagram-3"></i> Formation</h3>
+            <p class="s-05c4842">
                 Football rules: starting lineup must include at least one <strong>Goalkeeper (GK)</strong> and total selected squad must be <strong>7 to 25 players</strong>.
             </p>
-            <select name="formation" style="padding:.5rem .8rem;border:1px solid #ccc;border-radius:8px;font-size:.9rem;min-width:200px">
+            <select name="formation" class="s-45ca609">
                 <option value="">— Select Formation —</option>
                 {% for val, label in formations %}
                 <option value="{{ val }}" {% if val == current_formation %}selected{% endif %}>{{ label }}</option>
@@ -48,50 +48,50 @@
         </div>
         {% endif %}
 
-        <div style="margin-bottom:1.5rem">
-            <h3 style="font-size:1rem;color:#333;margin-bottom:.8rem"><i class="bi bi-star"></i> Starting {{ required_starters }} (select exactly {{ required_starters }})</h3>
-            <div style="background:#f5f5f5;border-radius:8px;padding:1rem;max-height:400px;overflow-y:auto">
+        <div class="s-92cb257">
+            <h3 class="s-d2922ca"><i class="bi bi-star"></i> Starting {{ required_starters }} (select exactly {{ required_starters }})</h3>
+            <div class="s-4334427">
                 {% for p in eligible_players %}
                 <label style="display:flex;align-items:center;gap:.6rem;padding:.4rem .5rem;border-radius:6px;cursor:pointer;{% if p.pk in suspended_ids %}opacity:.5;cursor:not-allowed{% endif %}"
                        {% if p.pk in suspended_ids %}title="Suspended cannot be selected"{% endif %}>
                     <input type="checkbox" name="starters" value="{{ p.pk }}"
                            {% if p.pk in starter_ids %}checked{% endif %}
                            {% if p.pk in suspended_ids %}disabled{% endif %}
-                           style="width:18px;height:18px">
-                    <span style="font-weight:600;min-width:30px;text-align:center;font-size:.85rem;color:#888">#{{ p.shirt_number }}</span>
-                    <span style="font-weight:600">{{ p.first_name }} {{ p.last_name }}</span>
+                           class="s-9bbf0a7">
+                    <span class="s-dbee408">#{{ p.shirt_number }}</span>
+                    <span class="s-21a1be8">{{ p.first_name }} {{ p.last_name }}</span>
                     {% if p.pk in suspended_ids %}
-                    <span style="background:#fce4ec;color:#C62828;padding:.15rem .5rem;border-radius:4px;font-size:.75rem;font-weight:600;margin-left:auto">SUSPENDED</span>
+                    <span class="s-503b203">SUSPENDED</span>
                     {% endif %}
                 </label>
                 {% endfor %}
             </div>
         </div>
 
-        <div style="margin-bottom:1.5rem">
-            <h3 style="font-size:1rem;color:#333;margin-bottom:.8rem"><i class="bi bi-arrow-repeat"></i> Substitutes</h3>
-            <div style="background:#f5f5f5;border-radius:8px;padding:1rem;max-height:300px;overflow-y:auto">
+        <div class="s-92cb257">
+            <h3 class="s-d2922ca"><i class="bi bi-arrow-repeat"></i> Substitutes</h3>
+            <div class="s-c9b5ffc">
                 {% for p in eligible_players %}
                 <label style="display:flex;align-items:center;gap:.6rem;padding:.4rem .5rem;border-radius:6px;cursor:pointer;{% if p.pk in suspended_ids %}opacity:.5;cursor:not-allowed{% endif %}">
                     <input type="checkbox" name="subs" value="{{ p.pk }}"
                            {% if p.pk in sub_ids %}checked{% endif %}
                            {% if p.pk in suspended_ids %}disabled{% endif %}
-                           style="width:18px;height:18px">
-                    <span style="font-weight:600;min-width:30px;text-align:center;font-size:.85rem;color:#888">#{{ p.shirt_number }}</span>
-                    <span style="font-weight:600">{{ p.first_name }} {{ p.last_name }}</span>
+                           class="s-9bbf0a7">
+                    <span class="s-dbee408">#{{ p.shirt_number }}</span>
+                    <span class="s-21a1be8">{{ p.first_name }} {{ p.last_name }}</span>
                     {% if p.pk in suspended_ids %}
-                    <span style="background:#fce4ec;color:#C62828;padding:.15rem .5rem;border-radius:4px;font-size:.75rem;font-weight:600;margin-left:auto">SUSPENDED</span>
+                    <span class="s-503b203">SUSPENDED</span>
                     {% endif %}
                 </label>
                 {% endfor %}
             </div>
         </div>
 
-        <div style="display:flex;gap:.8rem;margin-top:1.2rem;flex-wrap:wrap">
-            <button type="submit" class="btn btn--primary" style="padding:.5rem 1.5rem;font-size:.9rem">
+        <div class="s-935ea02">
+            <button type="submit" class="btn btn--primary s-b3c8c9d">
                 <i class="bi bi-check-circle"></i> Submit Squad
             </button>
-            <a href="{% url 'team_manager_dashboard' %}" class="btn" style="padding:.5rem 1.2rem;font-size:.9rem;background:#e0e0e0;color:#333;border-radius:8px;text-decoration:none;font-weight:600">
+            <a href="{% url 'team_manager_dashboard' %}" class="btn s-3ee9947">
                 Cancel
             </a>
         </div>
@@ -99,30 +99,30 @@
 </div>
 
 {% if existing %}
-<div class="card" style="padding:1.2rem;margin-top:1.5rem">
-    <h3 style="font-size:.95rem;color:#888;margin-bottom:.5rem">Current Submission Status</h3>
-    <div style="display:flex;gap:1rem;align-items:center">
+<div class="card s-92ef383">
+    <h3 class="s-692d792">Current Submission Status</h3>
+    <div class="s-6529466">
         {% if existing.status == 'submitted' %}
-        <span style="background:#e3f2fd;color:#1565c0;padding:.3rem .8rem;border-radius:20px;font-size:.82rem;font-weight:600">
+        <span class="s-25e69f0">
             <i class="bi bi-clock"></i> Submitted Awaiting Referee Review
         </span>
         {% elif existing.status == 'approved' %}
-        <span style="background:#e8f5e9;color:#2e7d32;padding:.3rem .8rem;border-radius:20px;font-size:.82rem;font-weight:600">
+        <span class="s-689abbc">
             <i class="bi bi-check-circle"></i> Approved by Referee
         </span>
         {% elif existing.status == 'rejected' %}
-        <span style="background:#fce4ec;color:#C62828;padding:.3rem .8rem;border-radius:20px;font-size:.82rem;font-weight:600">
+        <span class="s-8f1d362">
             <i class="bi bi-x-circle"></i> Rejected
         </span>
         {% if existing.rejection_reason %}
-        <span style="font-size:.85rem;color:#666">{{ existing.rejection_reason }}</span>
+        <span class="s-53b7c24">{{ existing.rejection_reason }}</span>
         {% endif %}
         {% endif %}
     </div>
 </div>
 {% endif %}
 
-<div style="margin-top:1.5rem">
-    <a href="{% url 'team_manager_dashboard' %}" style="color:#1B5E20;font-weight:600;font-size:.9rem"><i class="bi bi-arrow-left"></i> Back to Dashboard</a>
+<div class="s-1d30ad4">
+    <a href="{% url 'team_manager_dashboard' %}" class="s-e52ba79"><i class="bi bi-arrow-left"></i> Back to Dashboard</a>
 </div>
 {% endblock %}

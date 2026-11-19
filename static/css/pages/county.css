@@ -1,0 +1,1668 @@
+/* Generated from inline template styles by inline_to_css.py.
+   .s-<hash>:not(#_) = an inline style moved here; :not(#_) keeps inline-level
+   precedence (beats stylesheet classes, loses to styles set by JavaScript).
+   Page styles below are scoped with :where(.pg-<template>). Prefer replacing
+   these with shared component classes over time. */
+/* portal/county_admin/add_player.html */
+.s-01fa406:not(#_) {
+    font-size: .75rem;
+    font-weight: 700;
+    color: #065f46;
+    margin-bottom: .6rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
+/* portal/treasurer/county_payments.html */
+.s-0502292:not(#_) {
+    padding: 1.4rem;
+    text-align: center;
+    border-top: 4px solid #1565c0;
+}
+
+/* portal/county_admin/add_player.html */
+.s-06d6861:not(#_) {
+    margin: 0 0 .5rem;
+    font-size: .95rem;
+    font-weight: 800;
+    color: #1e40af;
+}
+
+/* portal/county_admin/delegation_members.html */
+.s-0782d0b:not(#_) {
+    display: block;
+    color: #666;
+    font-size: .78rem;
+}
+
+/* portal/county_admin/add_discipline.html */
+.s-08e003e:not(#_) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(280px,1fr));
+    gap: 1rem;
+}
+
+/* portal/secretary_general/dashboard.html */
+.s-0935b67:not(#_) {
+    margin-left: .35rem;
+    background: #fee2e2;
+    color: #dc2626;
+    border-radius: 999px;
+    padding: .05rem .5rem;
+    font-size: .7rem;
+    font-weight: 800;
+}
+
+/* portal/treasurer/county_payments.html */
+.s-0afa6d3:not(#_) {
+    padding: .35rem .8rem;
+    font-size: .82rem;
+}
+
+/* portal/treasurer/county_payments.html */
+.s-0cc71a0:not(#_) {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #1565c0;
+}
+
+/* portal/county_admin/add_player.html */
+.s-0da94cc:not(#_) {
+    flex: 1;
+    padding: .8rem;
+    background: #1B5E20;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* portal/county_admin/delegation_members.html */
+.s-0e20cdf:not(#_) {
+    margin-top: .9rem;
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/* portal/county_admin/add_bench_member.html, portal/county_admin/discipline_players.html */
+.s-10ac8e0:not(#_) {
+    background: none;
+    border: none;
+    color: #C62828;
+    cursor: pointer;
+    font-size: .85rem;
+}
+
+/* portal/county_admin/discipline_players.html */
+.s-112021f:not(#_) {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .5rem 1.2rem;
+    font-size: .9rem;
+    background: #7b1fa2;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* portal/county_admin/discipline_players.html */
+.s-13e45b4:not(#_) {
+    background: #fce4ec;
+    border: 1px solid #ef9a9a;
+    border-radius: 8px;
+    padding: .8rem 1.2rem;
+    font-size: .9rem;
+    color: #C62828;
+    display: inline-block;
+}
+
+/* portal/secretary_general/system_overview.html */
+.s-144763f:not(#_) {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+/* portal/county_admin/verification_status.html */
+.s-156c886:not(#_) {
+    padding: 1.2rem;
+    text-align: center;
+    border-top: 4px solid #1565c0;
+}
+
+/* portal/secretary_general/exceptional_overrides.html */
+.s-157a568:not(#_) {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #6A1B9A;
+}
+
+/* portal/county_admin/discipline_players.html */
+.s-1635d5c:not(#_) {
+    display: inline-block;
+    padding: .5rem 1.2rem;
+    font-size: .9rem;
+    background: #1565c0;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* portal/county_admin/verification_status.html */
+.s-1832876:not(#_) {
+    font-size: 1rem;
+    color: #2e7d32;
+    margin-bottom: .8rem;
+}
+
+/* portal/county_admin/add_player.html */
+.s-1c1eacc:not(#_) {
+    font-family: monospace;
+    font-size: .8rem;
+}
+
+/* portal/cec_sports_dashboard.html */
+.s-1c54ff6:not(#_) {
+    color: #0D47A1;
+}
+
+/* portal/county_admin/add_player.html */
+.s-1ca6f9e:not(#_) {
+    font-size: .62rem;
+    color: #059669;
+    font-weight: 700;
+    margin-top: .2rem;
+}
+
+/* portal/treasurer/county_payments.html */
+.s-1cac54b:not(#_) {
+    padding: 1.4rem;
+    text-align: center;
+    border-top: 4px solid #f57c00;
+}
+
+/* portal/county_admin/dashboard.html */
+.s-1d28a6e:not(#_) {
+    font-size: 1rem;
+    text-transform: capitalize;
+}
+
+/* portal/county_admin/complete_registration.html */
+.s-1e19c9c:not(#_) {
+    width: 100%;
+    padding: .85rem;
+    background: linear-gradient(135deg,#1B5E20,#2E7D32);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+}
+
+/* portal/treasurer/county_registrations.html */
+.s-200d30e:not(#_) {
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    border-radius: 10px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+/* portal/county_admin/dashboard.html */
+.s-2037db2:not(#_) {
+    margin-left: .75rem;
+}
+
+/* portal/county_admin/add_bench_member.html, portal/county_admin/verification_status.html */
+.s-21f4454:not(#_) {
+    padding: 1.2rem;
+    margin-bottom: 1.5rem;
+}
+
+/* portal/county_admin/complete_registration.html */
+.s-2364156:not(#_) {
+    color: #999;
+    font-size: .78rem;
+}
+
+/* portal/county_admin/verification_status.html */
+.s-249800b:not(#_) {
+    padding: 1.2rem;
+    text-align: center;
+    border-top: 4px solid #C62828;
+}
+
+/* portal/county_admin/dashboard.html */
+.s-277c7e4:not(#_) {
+    color: #7c3aed;
+}
+
+/* portal/treasurer/county_payments.html */
+.s-27d41ee:not(#_) {
+    font-family: monospace;
+    font-size: .85rem;
+}
+
+/* portal/county_admin/delegation_members.html */
+.s-280745e:not(#_) {
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+    border-left: 4px solid #00838f;
+}
+
+/* portal/treasurer/county_payments.html */
+.s-280ea06:not(#_) {
+    padding: .55rem 1.5rem;
+}
+
+/* portal/treasurer/dashboard.html */
+.s-285b04e:not(#_) {
+    background: linear-gradient(135deg,#e3f2fd,#bbdefb);
+    border: 1px solid #90caf9;
+    border-radius: 12px;
+    padding: 1rem 1.4rem;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .75rem;
+}
+
+/* portal/county_admin/delegation_members.html */
+.s-2b6ff84:not(#_) {
+    font-size: .82rem;
+    color: #666;
+}
+
+/* portal/county_admin/payment.html */
+.s-2b94310:not(#_) {
+    background: #e8f5e9;
+    border-color: #a5d6a7;
+}
+
+/* portal/secretary_general/exceptional_overrides.html */
+.s-2d07c93:not(#_) {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #C62828;
+}
+
+/* portal/county_admin/verification_status.html */
+.s-2de73a2:not(#_) {
+    font-size: 1rem;
+    color: #1565c0;
+    margin-bottom: .8rem;
+}
+
+/* portal/secretary_general/exceptional_overrides.html, portal/secretary_general/treasurer_actions.html */
+.s-2df0407:not(#_) {
+    font-size: .82rem;
+    white-space: nowrap;
+}
+
+/* portal/secretary_general/exceptional_overrides.html, portal/secretary_general/user_actions.html */
+.s-2f6e163:not(#_) {
+    margin-bottom: 2px;
+}
+
+/* portal/county_admin/add_player.html */
+.s-3282fe7:not(#_) {
+    padding: .8rem 1.5rem;
+    background: #e0e0e0;
+    color: #333;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* portal/county_admin/verification_status.html */
+.s-32e22a6:not(#_) {
+    font-size: 1rem;
+    color: #f57c00;
+    margin-bottom: .8rem;
+}
+
+/* portal/county_admin/delegation_members.html, portal/treasurer/county_registrations.html */
+.s-343097e:not(#_) {
+    text-align: center;
+    padding: 2rem;
+    color: #888;
+}
+
+/* portal/county_admin/add_player.html */
+.s-35c44ea:not(#_) {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: .28rem .65rem;
+    font-size: .83rem;
+}
+
+/* portal/county_admin/add_discipline.html */
+.s-3ca56ab:not(#_) {
+    width: 100%;
+    text-align: left;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 1.2rem;
+    cursor: pointer;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* portal/county_admin/dashboard.html */
+.s-3cdaac4:not(#_) {
+    background: #f8f9fc;
+    border-radius: 10px;
+    padding: 1rem;
+    border: 1px solid #e8eaf0;
+    border-left: 3px solid #166534;
+}
+
+/* portal/secretary_general/verified_players.html */
+.s-3d3026d:not(#_) {
+    font-size: .8rem;
+    font-weight: 600;
+    color: #0f5132;
+}
+
+/* portal/county_admin/payment.html */
+.s-3d59ac9:not(#_) {
+    text-transform: uppercase;
+}
+
+/* portal/secretary_general/dashboard.html */
+.s-4142f0c:not(#_) {
+    color: #6d28d9;
+}
+
+/* portal/county_admin/payment.html */
+.s-43c0b65:not(#_) {
+    background: #e3f2fd;
+    border-color: #90caf9;
+}
+
+/* portal/county_admin/discipline_players.html, portal/treasurer/county_registrations.html */
+.s-4423bf9:not(#_) {
+    padding: .6rem 1rem;
+    font-size: .82rem;
+    color: #888;
+}
+
+/* portal/county_admin/add_player.html */
+.s-46ca817:not(#_) {
+    display: flex;
+    gap: .5rem;
+    align-items: flex-end;
+}
+
+/* portal/county_admin/add_player.html */
+.s-49f60fc:not(#_) {
+    width: 100%;
+    padding: .52rem .8rem;
+    border: 1.5px solid #93c5fd;
+    border-radius: 9px;
+    font-size: .9rem;
+    font-family: monospace;
+    box-sizing: border-box;
+}
+
+/* portal/county_admin/delegation_members.html */
+.s-4abde4c:not(#_) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+    gap: .75rem;
+}
+
+/* portal/county_admin/verification_status.html */
+.s-4d43ab9:not(#_) {
+    padding: .5rem .8rem;
+    color: #1565c0;
+}
+
+/* portal/treasurer/county_payments.html */
+.s-539b72c:not(#_) {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* portal/county_admin/discipline_players.html */
+.s-53c1956:not(#_) {
+    display: flex;
+    gap: .8rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/* portal/secretary_general/team_lists.html */
+.s-53f71c3:not(#_) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+    gap: .75rem;
+    align-items: end;
+}
+
+/* portal/secretary_general/team_lists.html */
+.s-553c356:not(#_) {
+    margin-bottom: 1rem;
+    grid-template-columns: repeat(auto-fit,minmax(170px,1fr));
+}
+
+/* portal/cec_sports_dashboard.html */
+.s-56b6bda:not(#_) {
+    color: #555;
+}
+
+/* portal/county_admin/discipline_players.html */
+.s-580beb9:not(#_) {
+    background: #FFF8E1;
+    color: #F57F17;
+    padding: .15rem .5rem;
+    border-radius: 10px;
+    font-size: .75rem;
+    font-weight: 600;
+}
+
+/* portal/secretary_general/dashboard.html */
+.s-584f239:not(#_) {
+    position: absolute;
+    top: .55rem;
+    right: .65rem;
+    font-size: .62rem;
+    font-weight: 700;
+    background: #6d28d9;
+    color: #fff;
+    padding: .1rem .45rem;
+    border-radius: 20px;
+    letter-spacing: .04em;
+}
+
+/* portal/secretary_general/exceptional_overrides.html */
+.s-590e4ee:not(#_) {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #E65100;
+}
+
+/* portal/county_admin/add_player.html */
+.s-5ae6493:not(#_) {
+    font-weight: 400;
+    color: #888;
+}
+
+/* portal/county_admin/discipline_players.html */
+.s-5e14d1f:not(#_) {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .5rem 1.2rem;
+    font-size: .9rem;
+    background: #0d6efd;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* portal/secretary_general/exceptional_overrides.html */
+.s-5f32489:not(#_) {
+    font-size: .75rem;
+    max-width: 230px;
+}
+
+/* portal/county_admin/add_player.html, portal/county_admin/payment.html */
+.s-5fa6d76:not(#_) {
+    max-width: 640px;
+}
+
+/* portal/secretary_general/exceptional_overrides.html */
+.s-605fe4d:not(#_) {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1565C0;
+}
+
+/* portal/county_admin/add_bench_member.html */
+.s-60d2610:not(#_) {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: .5rem;
+    color: #2e7d32;
+}
+
+/* portal/county_admin/payment.html */
+.s-6144d07:not(#_) {
+    width: 100%;
+    padding: .9rem;
+    background: #1B5E20;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: .5rem;
+}
+
+/* portal/county_admin/delegation_members.html */
+.s-63cc601:not(#_) {
+    margin: 0;
+    font-size: 1.05rem;
+    color: #333;
+}
+
+/* portal/treasurer/county_registrations.html */
+.s-63d1764:not(#_) {
+    font-size: 1.3rem;
+}
+
+/* portal/county_admin/discipline_players.html */
+.s-64369d9:not(#_) {
+    background: #e0e0e0;
+    border-radius: 8px;
+    height: 10px;
+    margin-bottom: 1.5rem;
+    max-width: 600px;
+}
+
+/* portal/county_admin/complete_registration.html */
+.s-681d6c8:not(#_) {
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+/* portal/treasurer/county_payments.html */
+.s-683fb32:not(#_) {
+    width: 120px;
+    font-size: .85rem;
+}
+
+/* portal/treasurer/county_payments.html */
+.s-6c75449:not(#_) {
+    width: 140px;
+    font-size: .85rem;
+}
+
+/* portal/county_admin/delegation_members.html */
+.s-71cb89b:not(#_) {
+    color: #c62828;
+    font-size: .8rem;
+}
+
+/* portal/secretary_general/dashboard.html */
+.s-7216989:not(#_) {
+    background: #ede9fe;
+    color: #6d28d9;
+}
+
+/* portal/treasurer/county_registrations.html */
+.s-762bf8b:not(#_) {
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* portal/treasurer/county_registrations.html */
+.s-7842c9a:not(#_) {
+    padding: .4rem 1rem;
+    background: #1B5E20;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* portal/secretary_general/exceptional_overrides.html */
+.s-795d123:not(#_) {
+    min-width: 240px;
+}
+
+/* portal/county_admin/add_discipline.html */
+.s-7b8934c:not(#_) {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: .5rem;
+    color: #2e7d32;
+}
+
+/* portal/county_admin/discipline_players.html */
+.s-7de536f:not(#_) {
+    background: #FFF3E0;
+    color: #E65100;
+    padding: .15rem .5rem;
+    border-radius: 10px;
+    font-size: .75rem;
+    font-weight: 600;
+}
+
+/* portal/county_admin/add_player.html */
+.s-7dfc3d5:not(#_) {
+    margin-top: .75rem;
+    padding: .42rem 1rem;
+    background: #059669;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: .82rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* portal/secretary_general/verifications.html */
+.s-7fc6835:not(#_) {
+    color: #F44336;
+}
+
+/* portal/county_admin/add_bench_member.html, portal/county_admin/discipline_players.html */
+.s-7ffbc46:not(#_) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .9rem;
+}
+
+/* portal/county_admin/discipline_players.html */
+.s-805eab9:not(#_) {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .5rem 1.2rem;
+    font-size: .9rem;
+}
+
+/* portal/county_admin/delegation_members.html */
+.s-8096670:not(#_) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: .75rem;
+    flex-wrap: wrap;
+    margin-bottom: .75rem;
+}
+
+/* portal/county_admin/delegation_members.html */
+.s-80c36bc:not(#_) {
+    margin-top: .5rem;
+    color: #c62828;
+    font-size: .85rem;
+}
+
+/* portal/secretary_general/verifications.html */
+.s-8340246:not(#_) {
+    color: #4CAF50;
+}
+
+/* portal/county_admin/verification_status.html */
+.s-857350d:not(#_) {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1565c0;
+}
+
+/* portal/treasurer/county_registrations.html */
+.s-866d4d4:not(#_) {
+    font-size: 1.1rem;
+    color: #f57c00;
+    margin-bottom: 1rem;
+}
+
+/* portal/county_admin/add_player.html */
+.s-86944f4:not(#_) {
+    margin-bottom: 1.75rem;
+    padding: 1.1rem 1.25rem;
+    background: #f0f7ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+}
+
+/* portal/county_admin/dashboard.html */
+.s-872e3d8:not(#_) {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: .35rem .75rem;
+    font-size: .83rem;
+}
+
+/* portal/county_admin/dashboard.html */
+.s-88b44f1:not(#_) {
+    font-size: .78rem;
+    color: #6b7280;
+    margin-bottom: .75rem;
+}
+
+/* portal/treasurer/county_payments.html */
+.s-88dd8e7:not(#_) {
+    padding: 1.4rem;
+    text-align: center;
+    border-top: 4px solid #2e7d32;
+}
+
+/* portal/treasurer/county_payments.html */
+.s-8b1ed5b:not(#_) {
+    color: #888;
+    font-size: .85rem;
+    margin-top: .3rem;
+}
+
+/* portal/treasurer/county_payments.html */
+.s-8b88eb7:not(#_) {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #f57c00;
+}
+
+/* portal/secretary_general/system_overview.html */
+.s-8c52ae0:not(#_) {
+    background: #f8fafc;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+}
+
+/* portal/county_admin/add_player.html */
+.s-8d5bf14:not(#_) {
+    padding: .52rem 1.25rem;
+    background: #1d4ed8;
+    color: #fff;
+    border: none;
+    border-radius: 9px;
+    font-size: .86rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* portal/treasurer/county_payments.html */
+.s-8efa1a7:not(#_) {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #2e7d32;
+}
+
+/* portal/county_admin/discipline_players.html */
+.s-8f95b44:not(#_) {
+    display: flex;
+    gap: .8rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+/* portal/county_admin/add_player.html */
+.s-92f105f:not(#_) {
+    display: none;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #fff;
+    border: 1.5px solid #6ee7b7;
+    border-radius: 10px;
+}
+
+/* portal/county_admin/delegation_members.html */
+.s-93007d5:not(#_) {
+    margin: 0 0 .75rem;
+    font-size: 1.05rem;
+    color: #1b5e20;
+}
+
+/* portal/county_admin/add_bench_member.html */
+.s-9365f5b:not(#_) {
+    font-size: 1.1rem;
+    color: #1565c0;
+}
+
+/* portal/county_admin/bulk_upload_results.html */
+.s-95f9049:not(#_) {
+    font-size: .8rem;
+    color: #374151;
+}
+
+/* portal/treasurer/county_registrations.html */
+.s-96f8cf5:not(#_) {
+    padding: .4rem 1rem;
+    background: #C62828;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* portal/county_admin/delegation_members.html */
+.s-985e886:not(#_) {
+    color: #C62828;
+    border-color: #C62828;
+}
+
+/* portal/county_admin/add_bench_member.html */
+.s-9932e0f:not(#_) {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+/* portal/treasurer/dashboard.html */
+.s-9984fc0:not(#_) {
+    background: linear-gradient(135deg,#e8f5e9,#c8e6c9);
+    border: 1px solid #a5d6a7;
+    border-radius: 12px;
+    padding: .9rem 1.4rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+/* portal/county_admin/add_player.html */
+.s-9bd1564:not(#_) {
+    width: 72px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #34d399;
+}
+
+/* portal/secretary_general/dashboard.html */
+.s-9d5d33a:not(#_) {
+    border: 2px solid #6d28d9;
+    position: relative;
+    background: linear-gradient(135deg,#fdfcff,#f5f3ff);
+}
+
+/* portal/county_admin/payment.html */
+.s-9f6987c:not(#_) {
+    margin-top: .5rem;
+    padding-top: .5rem;
+    border-top: 1px solid rgba(255,255,255,.12);
+}
+
+/* portal/county_admin/verification_status.html */
+.s-9f92c59:not(#_) {
+    background: #fce4ec;
+    text-align: left;
+}
+
+/* portal/treasurer/county_registrations.html */
+.s-a1e3ac3:not(#_) {
+    font-size: 1.05rem;
+    color: #333;
+}
+
+/* portal/secretary_general/exceptional_overrides.html */
+.s-a380593:not(#_) {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #2E7D32;
+}
+
+/* portal/treasurer/county_registrations.html */
+.s-a39e3e6:not(#_) {
+    background: #e8f5e9;
+    border: 1px solid #a5d6a7;
+    border-radius: 10px;
+    padding: .9rem 1.4rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+/* portal/county_admin/discipline_players.html */
+.s-a4a7850:not(#_) {
+    padding: .6rem 1rem;
+    color: #888;
+}
+
+/* portal/cec_sports_dashboard.html */
+.s-a5c2fb0:not(#_) {
+    font-size: 2.5rem;
+    color: #BBDEFB;
+}
+
+/* portal/secretary_general/appeals.html, portal/secretary_general/exceptional_overrides.html */
+.s-a78eb9c:not(#_) {
+    font-size: .82rem;
+    font-weight: 600;
+}
+
+/* portal/treasurer/county_registrations.html */
+.s-a9af966:not(#_) {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-bottom: .8rem;
+}
+
+/* portal/county_admin/verification_status.html */
+.s-a9d0257:not(#_) {
+    font-size: 1rem;
+    color: #C62828;
+    margin-bottom: .8rem;
+}
+
+/* portal/county_admin/bulk_upload_results.html */
+.s-afd6397:not(#_) {
+    font-size: .78rem;
+    color: #c2410c;
+}
+
+/* portal/county_admin/bulk_upload_results.html */
+.s-b1e7898:not(#_) {
+    display: flex;
+    gap: .75rem;
+    margin-top: 1.25rem;
+    flex-wrap: wrap;
+}
+
+/* portal/treasurer/county_payments.html */
+.s-b2e8e98:not(#_) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* portal/county_admin/payment.html */
+.s-b3bf29b:not(#_) {
+    background: #e8f5e9;
+    border: 1px solid #a5d6a7;
+    border-radius: 10px;
+    padding: 1rem 1.4rem;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+/* portal/county_admin/add_player.html, portal/county_admin/complete_registration.html */
+.s-b5287b5:not(#_) {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: .4rem;
+    font-size: .9rem;
+}
+
+/* portal/treasurer/county_payments.html */
+.s-b6b1597:not(#_) {
+    min-width: 300px;
+}
+
+/* portal/county_admin/complete_registration.html */
+.s-b85182d:not(#_) {
+    background: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.5rem;
+    font-size: .88rem;
+    color: #1565c0;
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+}
+
+/* portal/county_admin/add_player.html */
+.s-ba4a422:not(#_) {
+    color: #6b7280;
+    font-weight: 500;
+}
+
+/* portal/treasurer/county_payments.html */
+.s-ba7ad2e:not(#_) {
+    display: flex;
+    gap: .5rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+/* portal/treasurer/county_payments.html */
+.s-baed6cf:not(#_) {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* portal/county_admin/dashboard.html */
+.s-bb668be:not(#_) {
+    font-weight: 700;
+    color: #111;
+    font-size: .9rem;
+    margin-bottom: .3rem;
+}
+
+/* portal/county_admin/verification_status.html */
+.s-bc6e4dc:not(#_) {
+    padding: 1.2rem;
+    text-align: center;
+    border-top: 4px solid #2e7d32;
+}
+
+/* portal/county_admin/add_bench_member.html */
+.s-bd13e6c:not(#_) {
+    display: flex;
+    gap: .8rem;
+    margin-top: 1.2rem;
+}
+
+/* portal/secretary_general/verifications.html */
+.s-bdc4df6:not(#_) {
+    color: #FF9800;
+}
+
+/* portal/county_admin/discipline_players.html */
+.s-bf823ba:not(#_) {
+    background: #F3E5F5;
+    color: #6A1B9A;
+    padding: .15rem .5rem;
+    border-radius: 10px;
+    font-size: .75rem;
+    font-weight: 600;
+}
+
+/* portal/county_admin/dashboard.html */
+.s-c20e394:not(#_) {
+    pointer-events: none;
+    opacity: .5;
+}
+
+/* portal/treasurer/county_registrations.html */
+.s-c5abc59:not(#_) {
+    font-size: .9rem;
+    color: #444;
+    margin-bottom: .8rem;
+}
+
+/* portal/county_admin/delegation_members.html */
+.s-c67dd6a:not(#_) {
+    display: block;
+    font-weight: 600;
+    font-size: .85rem;
+    margin-bottom: .25rem;
+}
+
+/* portal/secretary_general/exceptional_overrides.html */
+.s-c83478f:not(#_) {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1B5E20;
+}
+
+/* portal/county_admin/add_player.html */
+.s-c9b10e4:not(#_) {
+    font-size: .74rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: .25rem;
+    color: #1e40af;
+}
+
+/* portal/cec_sports_dashboard.html */
+.s-ca26d81:not(#_) {
+    margin-bottom: 1.25rem;
+    padding: 1rem 1.2rem;
+    border-radius: 12px;
+    background: linear-gradient(135deg,#E3F2FD,#BBDEFB);
+    border-left: 4px solid #1565C0;
+}
+
+/* portal/secretary_general/system_overview.html */
+.s-cc8981f:not(#_) {
+    font-weight: 700;
+    color: var(--so-ink2);
+}
+
+/* portal/secretary_general/system_overview.html */
+.s-cd0086f:not(#_) {
+    background: var(--so-surf);
+    border: 1px solid var(--so-border);
+    border-radius: var(--so-r);
+    padding: .7rem 1rem;
+    margin-bottom: 1.35rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    align-items: center;
+    font-size: .76rem;
+    color: var(--so-muted);
+}
+
+/* portal/county_admin/verification_status.html */
+.s-cd5bdb9:not(#_) {
+    background: #e3f2fd;
+    text-align: left;
+}
+
+/* portal/county_admin/add_player.html, portal/county_admin/payment.html */
+.s-cf0fb5e:not(#_) {
+    color: #C62828;
+    font-size: .9rem;
+    margin-bottom: 1rem;
+    padding: .8rem;
+    background: #fce4ec;
+    border-radius: 8px;
+}
+
+/* portal/county_admin/add_player.html */
+.s-cf5193e:not(#_) {
+    color: #C62828;
+    font-size: .82rem;
+    margin-top: .3rem;
+}
+
+/* portal/county_admin/add_player.html, portal/county_admin/payment.html */
+.s-d04cabd:not(#_) {
+    padding: 2rem;
+}
+
+/* portal/county_admin/dashboard.html */
+.s-d37d325:not(#_) {
+    font-size: .83rem;
+    color: #374151;
+}
+
+/* portal/county_admin/discipline_players.html */
+.s-d41ed2c:not(#_) {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .5rem 1.2rem;
+    font-size: .9rem;
+    background: #198754;
+    color: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* portal/county_admin/discipline_players.html */
+.s-d9aefeb:not(#_) {
+    display: inline-block;
+    padding: .5rem 1.2rem;
+    font-size: .9rem;
+    background: #7b1fa2;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* portal/county_admin/dashboard.html */
+.s-dbe3045:not(#_) {
+    margin-bottom: 1.25rem;
+    border-left: 3px solid #7c3aed;
+}
+
+/* portal/county_admin/verification_status.html */
+.s-dc792f7:not(#_) {
+    padding: .5rem .8rem;
+    color: #C62828;
+}
+
+/* portal/county_admin/add_bench_member.html */
+.s-dd552a2:not(#_) {
+    background: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 10px;
+    padding: .8rem 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    gap: .6rem;
+    align-items: flex-start;
+}
+
+/* portal/county_admin/add_player.html */
+.s-debfce5:not(#_) {
+    display: none;
+    margin-bottom: 1rem;
+    padding: .8rem 1rem;
+    background: #fff7ed;
+    border-left: 4px solid #f59e0b;
+    border-radius: 0 8px 8px 0;
+    font-size: .84rem;
+    color: #92400e;
+}
+
+/* portal/county_admin/verification_status.html */
+.s-df60cec:not(#_) {
+    padding: 1.2rem;
+    text-align: center;
+    border-top: 4px solid #f57c00;
+}
+
+/* portal/county_admin/discipline_players.html */
+.s-dfabd73:not(#_) {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .5rem 1.2rem;
+    font-size: .9rem;
+    background: #1565c0;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* portal/secretary_general/team_lists.html */
+.s-e0ef7c8:not(#_) {
+    font-size: .8rem;
+    font-weight: 600;
+    display: block;
+    margin-bottom: .35rem;
+}
+
+/* portal/county_admin/complete_registration.html */
+.s-e1437bf:not(#_) {
+    width: 100%;
+    padding: .7rem .9rem;
+    border: 1.5px solid #d0d0d0;
+    border-radius: 10px;
+    font-size: .92rem;
+    background: #fafafa;
+}
+
+/* portal/county_admin/add_discipline.html */
+.s-e496529:not(#_) {
+    font-weight: 700;
+    color: #333;
+    font-size: 1rem;
+}
+
+/* portal/county_admin/delegation_members.html */
+.s-e664acf:not(#_) {
+    padding: .5rem 1rem;
+    font-size: .88rem;
+}
+
+/* portal/county_admin/bulk_upload_results.html */
+.s-e949e77:not(#_) {
+    margin-left: .3rem;
+}
+
+/* portal/county_admin/add_player.html */
+.s-eb2b1ce:not(#_) {
+    color: #6b7280;
+    font-weight: 500;
+    display: none;
+}
+
+/* portal/county_admin/add_player.html */
+.s-ed3599c:not(#_) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+@media (max-width: 767px) { .app-main .s-ed3599c:not(#_) { grid-template-columns: 1fr; } }
+
+/* portal/county_admin/verification_status.html */
+.s-eda6d3f:not(#_) {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #2e7d32;
+}
+
+/* portal/county_admin/dashboard.html */
+.s-edf9d92:not(#_) {
+    background: #7c3aed;
+    color: #fff;
+    border: none;
+}
+
+/* portal/treasurer/dashboard.html */
+.s-f08dec5:not(#_) {
+    background: linear-gradient(135deg,#fff8e1,#ffecb3);
+    border: 1px solid #ffe082;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #f9a825;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    flex-wrap: wrap;
+}
+
+/* portal/secretary_general/system_overview.html */
+.s-f0f6ff2:not(#_) {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .2rem .7rem;
+    border-radius: 999px;
+    background: rgba(139,92,246,.2);
+    border: 1px solid rgba(139,92,246,.3);
+    font-size: .65rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #c4b5fd;
+    margin-bottom: .5rem;
+}
+
+/* portal/county_admin/payment.html, portal/treasurer/county_registrations.html */
+.s-f11e1bd:not(#_) {
+    font-size: .92rem;
+}
+
+/* portal/secretary_general/verified_players.html */
+.s-f14d7af:not(#_) {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #0f5132;
+}
+
+/* portal/treasurer/dashboard.html */
+.s-f392935:not(#_) {
+    margin-left: auto;
+    padding: .4rem 1rem;
+    font-size: .85rem;
+    border-radius: 8px;
+}
+
+/* portal/county_admin/add_bench_member.html */
+.s-f446f66:not(#_) {
+    font-size: 1rem;
+    margin-bottom: .8rem;
+    color: #333;
+}
+
+/* portal/secretary_general/verified_players.html */
+.s-f6b9208:not(#_) {
+    min-width: 140px;
+    background: #d1e7dd;
+}
+
+/* portal/county_admin/dashboard.html */
+.s-f8a692b:not(#_) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(260px,1fr));
+    gap: .75rem;
+}
+
+/* portal/county_admin/verification_status.html */
+.s-f8b3782:not(#_) {
+    background: #fff3e0;
+    text-align: left;
+}
+
+/* portal/secretary_general/exceptional_overrides.html */
+.s-f9b008d:not(#_) {
+    font-size: .84rem;
+}
+
+/* portal/county_admin/add_player.html */
+.s-fa5d764:not(#_) {
+    display: none;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+/* portal/county_admin/add_bench_member.html */
+.s-fa94ba1:not(#_) {
+    font-size: .86rem;
+    color: #334;
+    line-height: 1.45;
+}
+
+/* portal/county_admin/payment.html */
+.s-faf78bb:not(#_) {
+    background: rgba(255,255,255,.2);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 6px;
+    padding: .15rem .5rem;
+    font-size: .75rem;
+    cursor: pointer;
+    margin-left: .5rem;
+}
+
+/* portal/treasurer/county_registrations.html */
+.s-fbb700b:not(#_) {
+    padding: .6rem 1rem;
+    font-size: .85rem;
+}
+
+/* portal/secretary_general/appeals.html, portal/secretary_general/exceptional_overrides.html */
+.s-fcb358b:not(#_) {
+    background: #f9f9f9;
+}
+
+/* portal/county_admin/add_discipline.html */
+.s-fde717f:not(#_) {
+    width: 48px;
+    height: 48px;
+    background: #e8f5e9;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: #1B5E20;
+    flex-shrink: 0;
+}
+
+/* portal/county_admin/add_player.html */
+.s-feb8e64:not(#_) {
+    color: #111;
+}
+
+/* -- Page styles (scoped to body.pg-*) -- */
+/* portal/county_admin/payment.html */
+:where(.pg-portal-county-admin-payment) .pay-tabs { display:flex;gap:0;border-radius:12px;overflow:hidden;border:2px solid #e0e0e0;margin-bottom:1.5rem }
+:where(.pg-portal-county-admin-payment) .pay-tab { flex:1;padding:.85rem;text-align:center;cursor:pointer;font-weight:700;font-size:.9rem;transition:all .2s;background:#fafafa;color:#666 }
+:where(.pg-portal-county-admin-payment) .pay-tab.active { background:#1B5E20;color:#fff }
+:where(.pg-portal-county-admin-payment) .pay-tab:first-child { border-right:2px solid #e0e0e0 }
+:where(.pg-portal-county-admin-payment) .pay-panel { display:none }
+:where(.pg-portal-county-admin-payment) .pay-panel.active { display:block }
+:where(.pg-portal-county-admin-payment) .pay-field { margin-bottom:1.25rem }
+:where(.pg-portal-county-admin-payment) .pay-field label { display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem }
+:where(.pg-portal-county-admin-payment) .pay-field input,
+:where(.pg-portal-county-admin-payment) .pay-field select { width:100%;padding:.7rem .9rem;border:1.5px solid #d0d0d0;border-radius:10px;font-size:.92rem;background:#fafafa }
+:where(.pg-portal-county-admin-payment) .pay-field small { color:#888;font-size:.8rem }
+:where(.pg-portal-county-admin-payment) .pay-info { background:#fff3e0;border:1px solid #ffe0b2;border-radius:10px;padding:1rem;margin-bottom:1.25rem;font-size:.88rem }
+:where(.pg-portal-county-admin-payment) .pay-acct { background:linear-gradient(135deg,#1B5E20,#2E7D32);color:#fff;border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.5rem }
+:where(.pg-portal-county-admin-payment) .pay-acct__title { font-weight:700;font-size:1rem;margin-bottom:.75rem }
+:where(.pg-portal-county-admin-payment) .pay-acct__row { display:flex;justify-content:space-between;padding:.3rem 0;font-size:.88rem }
+:where(.pg-portal-county-admin-payment) .pay-acct__label { opacity:.8 }
+:where(.pg-portal-county-admin-payment) .pay-acct__value { font-weight:600 }
+
+/* portal/secretary_general/dashboard.html */
+body:where(.pg-portal-secretary-general-dashboard) {
+    --hub-bg:#f0f2f7;--hub-surface:#ffffff;--hub-ink:#0d1117;--hub-muted:#6b7280;
+    --hub-border:#e5e9f0;--hub-brand:#6d28d9;--hub-brand2:#7c3aed;
+    --hub-accent:#0a66c2;--hub-radius:16px;--hub-radius-sm:10px;
+    --hub-shadow:0 4px 24px rgba(13,17,23,.07);--hub-shadow-md:0 8px 32px rgba(13,17,23,.11);
+  }
+:where(.pg-portal-secretary-general-dashboard) .hub {padding:0 0 1rem}
+:where(.pg-portal-secretary-general-dashboard) .hub-stats {display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.75rem;margin-bottom:1.75rem}
+:where(.pg-portal-secretary-general-dashboard) .hub-stat {background:var(--hub-surface);border:1px solid var(--hub-border);border-radius:var(--hub-radius);padding:1rem 1.1rem .9rem;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s}
+:where(.pg-portal-secretary-general-dashboard) .hub-stat:hover {transform:translateY(-3px);box-shadow:var(--hub-shadow-md)}
+:where(.pg-portal-secretary-general-dashboard) .hub-stat::before {content:"";position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--hub-radius) var(--hub-radius) 0 0}
+:where(.pg-portal-secretary-general-dashboard) .hub-stat--purple::before {background:#7c3aed}
+:where(.pg-portal-secretary-general-dashboard) .hub-stat--blue::before {background:#3b82f6}
+:where(.pg-portal-secretary-general-dashboard) .hub-stat--green::before {background:#22c55e}
+:where(.pg-portal-secretary-general-dashboard) .hub-stat--amber::before {background:#f59e0b}
+:where(.pg-portal-secretary-general-dashboard) .hub-stat--red::before {background:#ef4444}
+:where(.pg-portal-secretary-general-dashboard) .hub-stat--teal::before {background:#14b8a6}
+:where(.pg-portal-secretary-general-dashboard) .hub-stat--slate::before {background:#64748b}
+:where(.pg-portal-secretary-general-dashboard) .hub-stat-icon {width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.95rem;margin-bottom:.65rem}
+:where(.pg-portal-secretary-general-dashboard) .hub-stat--purple .hub-stat-icon {background:#f5f3ff;color:#7c3aed}
+:where(.pg-portal-secretary-general-dashboard) .hub-stat--blue   .hub-stat-icon {background:#eff6ff;color:#3b82f6}
+:where(.pg-portal-secretary-general-dashboard) .hub-stat--green  .hub-stat-icon {background:#f0fdf4;color:#22c55e}
+:where(.pg-portal-secretary-general-dashboard) .hub-stat--amber  .hub-stat-icon {background:#fffbeb;color:#f59e0b}
+:where(.pg-portal-secretary-general-dashboard) .hub-stat--red    .hub-stat-icon {background:#fef2f2;color:#ef4444}
+:where(.pg-portal-secretary-general-dashboard) .hub-stat--teal   .hub-stat-icon {background:#f0fdfa;color:#14b8a6}
+:where(.pg-portal-secretary-general-dashboard) .hub-stat--slate  .hub-stat-icon {background:#f8fafc;color:#64748b}
+:where(.pg-portal-secretary-general-dashboard) .hub-stat-val {font-size:1.5rem;font-weight:800;color:var(--hub-ink);line-height:1;margin-bottom:.22rem}
+:where(.pg-portal-secretary-general-dashboard) .hub-stat-label {font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--hub-muted)}
+:where(.pg-portal-secretary-general-dashboard) .hub-section-head {display:flex;align-items:center;gap:.5rem;margin:0 0 1rem}
+:where(.pg-portal-secretary-general-dashboard) .hub-section-head h2 {font-size:1rem;font-weight:800;color:var(--hub-ink);margin:0}
+:where(.pg-portal-secretary-general-dashboard) .hub-sep {flex:1;height:1px;background:var(--hub-border)}
+:where(.pg-portal-secretary-general-dashboard) .hub-quick {display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.75rem;margin-bottom:1.75rem}
+:where(.pg-portal-secretary-general-dashboard) .hub-qa {display:flex;gap:.75rem;align-items:center;background:var(--hub-surface);border:1px solid var(--hub-border);border-radius:var(--hub-radius);padding:1rem 1.1rem;text-decoration:none;color:inherit;transition:transform .18s,box-shadow .18s,border-color .18s}
+:where(.pg-portal-secretary-general-dashboard) .hub-qa:hover {transform:translateY(-3px);border-color:#b6c8e4;box-shadow:var(--hub-shadow-md);color:inherit}
+:where(.pg-portal-secretary-general-dashboard) .hub-qa-icon {width:44px;height:44px;flex-shrink:0;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:#f5f3ff;color:#7c3aed}
+:where(.pg-portal-secretary-general-dashboard) .hub-qa-icon.green {background:#ecfdf5;color:#059669}
+:where(.pg-portal-secretary-general-dashboard) .hub-qa-icon.amber {background:#fffbeb;color:#d97706}
+:where(.pg-portal-secretary-general-dashboard) .hub-qa-icon.blue {background:#eff6ff;color:#3b82f6}
+:where(.pg-portal-secretary-general-dashboard) .hub-qa-icon.red {background:#fef2f2;color:#ef4444}
+:where(.pg-portal-secretary-general-dashboard) .hub-qa h4 {margin:0;font-size:.88rem;font-weight:700;color:var(--hub-ink)}
+:where(.pg-portal-secretary-general-dashboard) .hub-qa p {margin:.15rem 0 0;font-size:.74rem;color:var(--hub-muted)}
+:where(.pg-portal-secretary-general-dashboard) .hub-panels {display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+:where(.pg-portal-secretary-general-dashboard) .hub-panel {background:var(--hub-surface);border:1px solid var(--hub-border);border-radius:var(--hub-radius);overflow:hidden}
+:where(.pg-portal-secretary-general-dashboard) .hub-panel-head {display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.1rem;border-bottom:1px solid var(--hub-border);background:#fafbfc}
+:where(.pg-portal-secretary-general-dashboard) .hub-panel-head h3 {margin:0;font-size:.88rem;font-weight:700;color:var(--hub-ink);display:flex;align-items:center;gap:.45rem}
+:where(.pg-portal-secretary-general-dashboard) .hub-panel-head a {font-size:.74rem;color:var(--hub-accent);text-decoration:none;font-weight:600}
+:where(.pg-portal-secretary-general-dashboard) .hub-panel-body {padding:.9rem 1.1rem;max-height:320px;overflow-y:auto}
+:where(.pg-portal-secretary-general-dashboard) .hub-feed {display:flex;flex-direction:column;gap:.5rem}
+:where(.pg-portal-secretary-general-dashboard) .hub-feed-row {display:flex;gap:.7rem;align-items:flex-start;padding:.62rem .72rem;border:1px solid #edf2fb;border-radius:10px;background:#fafbfe;transition:background .15s}
+:where(.pg-portal-secretary-general-dashboard) .hub-feed-row:hover {background:#f3f7ff}
+:where(.pg-portal-secretary-general-dashboard) .hub-feed-dot {width:8px;height:8px;border-radius:50%;background:#7c3aed;flex-shrink:0;margin-top:.35rem}
+:where(.pg-portal-secretary-general-dashboard) .hub-feed-main {font-size:.78rem;color:var(--hub-ink);line-height:1.4}
+:where(.pg-portal-secretary-general-dashboard) .hub-feed-meta {font-size:.68rem;color:var(--hub-muted);margin-top:.1rem}
+:where(.pg-portal-secretary-general-dashboard) .hub-roles {display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.5rem}
+:where(.pg-portal-secretary-general-dashboard) .hub-role {background:#f8fafc;border:1px solid var(--hub-border);border-radius:10px;padding:.6rem .75rem}
+:where(.pg-portal-secretary-general-dashboard) .hub-role h5 {margin:0;font-size:.76rem;font-weight:700;color:var(--hub-ink)}
+:where(.pg-portal-secretary-general-dashboard) .hub-role p {margin:.15rem 0 0;font-size:.7rem;color:var(--hub-muted)}
+@media(max-width:900px) {
+:where(.pg-portal-secretary-general-dashboard) .hub-panels {grid-template-columns:1fr}
+}
+
+/* portal/secretary_general/system_overview.html */
+body:where(.pg-portal-secretary-general-system-overview) {
+  --so-bg:      #f3f4f8;
+  --so-surf:    #ffffff;
+  --so-border:  #e8eaf0;
+  --so-border2: #f0f2f5;
+  --so-ink:     #0f1117;
+  --so-ink2:    #374151;
+  --so-muted:   #6b7280;
+  --so-subtle:  #9ca3af;
+  --so-r:       12px;
+  --so-shadow:  0 1px 3px rgba(0,0,0,.05), 0 2px 8px rgba(0,0,0,.04);
+}
+:where(.pg-portal-secretary-general-system-overview) .so-page { background: var(--so-bg); min-height: 100vh; padding: 1.5rem 1.25rem 3rem; }
+:where(.pg-portal-secretary-general-system-overview) .so-header {
+  background: #0c0f14;
+  border-radius: 14px;
+  padding: 1.4rem 1.75rem;
+  margin-bottom: 1.5rem;
+  position: relative; overflow: hidden;
+  border: 1px solid rgba(255,255,255,.06);
+}
+:where(.pg-portal-secretary-general-system-overview) .so-header::after {
+  content: ""; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 2px; background: linear-gradient(90deg, #8b5cf6, transparent 55%);
+}
+:where(.pg-portal-secretary-general-system-overview) .so-header-inner { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+:where(.pg-portal-secretary-general-system-overview) .so-header h1 { font-family: 'Outfit', sans-serif; font-size: 1.35rem; font-weight: 800; color: #fff; margin: 0 0 .2rem; }
+:where(.pg-portal-secretary-general-system-overview) .so-header p { font-size: .82rem; color: rgba(255,255,255,.5); margin: 0; }
+:where(.pg-portal-secretary-general-system-overview) .so-back { display: inline-flex; align-items: center; gap: .4rem; padding: .38rem .9rem; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 8px; color: rgba(255,255,255,.75); font-size: .78rem; font-weight: 600; text-decoration: none; transition: background .15s; }
+:where(.pg-portal-secretary-general-system-overview) .so-back:hover { background: rgba(255,255,255,.14); color: #fff; }
+:where(.pg-portal-secretary-general-system-overview) .so-filters { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1.5rem; }
+:where(.pg-portal-secretary-general-system-overview) .so-filter { padding: .3rem .8rem; border-radius: 20px; font-size: .75rem; font-weight: 600; border: 1px solid var(--so-border); background: var(--so-surf); color: var(--so-muted); cursor: pointer; text-decoration: none; transition: all .15s; }
+:where(.pg-portal-secretary-general-system-overview) .so-filter:hover,
+:where(.pg-portal-secretary-general-system-overview) .so-filter.active { background: #0c0f14; color: #fff; border-color: #0c0f14; }
+:where(.pg-portal-secretary-general-system-overview) .so-section { margin-bottom: 2rem; }
+:where(.pg-portal-secretary-general-system-overview) .so-section-head {
+  display: flex; align-items: center; gap: .75rem;
+  margin-bottom: .9rem;
+  padding: .75rem 1rem;
+  background: var(--so-surf);
+  border: 1px solid var(--so-border);
+  border-radius: var(--so-r);
+  box-shadow: var(--so-shadow);
+}
+:where(.pg-portal-secretary-general-system-overview) .so-section-icon {
+  width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 1rem;
+}
+:where(.pg-portal-secretary-general-system-overview) .so-section-meta { flex: 1; }
+:where(.pg-portal-secretary-general-system-overview) .so-section-meta h2 { font-family: 'Outfit', sans-serif; font-size: .95rem; font-weight: 800; color: var(--so-ink); margin: 0; }
+:where(.pg-portal-secretary-general-system-overview) .so-section-meta p { font-size: .76rem; color: var(--so-muted); margin: .1rem 0 0; }
+:where(.pg-portal-secretary-general-system-overview) .so-section-count { font-size: .72rem; font-weight: 700; padding: .2rem .65rem; border-radius: 20px; background: var(--so-bg); color: var(--so-muted); border: 1px solid var(--so-border); white-space: nowrap; }
+:where(.pg-portal-secretary-general-system-overview) .so-sep { flex: 1; height: 1px; background: var(--so-border); }
+:where(.pg-portal-secretary-general-system-overview) .so-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: .65rem; }
+:where(.pg-portal-secretary-general-system-overview) .so-card {
+  background: var(--so-surf);
+  border: 1px solid var(--so-border);
+  border-radius: var(--so-r);
+  padding: 1rem 1.1rem;
+  text-decoration: none; color: var(--so-ink);
+  display: flex; flex-direction: column; gap: .55rem;
+  box-shadow: var(--so-shadow);
+  transition: box-shadow .18s, transform .18s, border-color .18s;
+  position: relative;
+}
+:where(.pg-portal-secretary-general-system-overview) .so-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,.08);
+  transform: translateY(-2px);
+  border-color: #c7d2fe;
+  color: var(--so-ink);
+}
+:where(.pg-portal-secretary-general-system-overview) .so-card-icon-row { display: flex; align-items: center; justify-content: space-between; }
+:where(.pg-portal-secretary-general-system-overview) .so-card-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; font-size: .95rem;
+}
+:where(.pg-portal-secretary-general-system-overview) .so-card-body h4 { font-size: .85rem; font-weight: 700; color: var(--so-ink); margin: 0 0 .18rem; line-height: 1.25; }
+:where(.pg-portal-secretary-general-system-overview) .so-card-body p { font-size: .74rem; color: var(--so-muted); margin: 0; line-height: 1.4; }
+:where(.pg-portal-secretary-general-system-overview) .so-badge {
+  display: inline-flex; align-items: center;
+  font-size: .63rem; font-weight: 700;
+  padding: .15rem .5rem; border-radius: 6px;
+  white-space: nowrap; letter-spacing: .03em;
+}
+:where(.pg-portal-secretary-general-system-overview) .so-arrow {
+  position: absolute; bottom: .75rem; right: .9rem;
+  font-size: .72rem; color: var(--so-subtle);
+  opacity: 0; transition: opacity .15s;
+}
+:where(.pg-portal-secretary-general-system-overview) .so-card:hover .so-arrow { opacity: 1; }
+:where(.pg-portal-secretary-general-system-overview) .so-summary {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: .6rem; margin-bottom: 1.5rem;
+}
+:where(.pg-portal-secretary-general-system-overview) .so-summary-card {
+  background: var(--so-surf); border: 1px solid var(--so-border);
+  border-radius: var(--so-r); padding: .85rem .9rem;
+  box-shadow: var(--so-shadow); position: relative; overflow: hidden;
+}
+:where(.pg-portal-secretary-general-system-overview) .so-summary-card::after {
+  content: ""; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px; border-radius: var(--so-r) var(--so-r) 0 0;
+}
+:where(.pg-portal-secretary-general-system-overview) .so-summary-val { font-family: 'Outfit', sans-serif; font-size: 1.45rem; font-weight: 800; line-height: 1; color: var(--so-ink); }
+:where(.pg-portal-secretary-general-system-overview) .so-summary-lbl { font-size: .67rem; text-transform: uppercase; letter-spacing: .06em; color: var(--so-muted); margin-top: .2rem; }
+@media (max-width: 768px) {
+:where(.pg-portal-secretary-general-system-overview) .so-cards { grid-template-columns: 1fr 1fr; }
+:where(.pg-portal-secretary-general-system-overview) .so-summary { grid-template-columns: repeat(2, 1fr); }
+:where(.pg-portal-secretary-general-system-overview) .so-page { padding: 1rem .85rem 2rem; }
+}
+@media (max-width: 480px) {
+:where(.pg-portal-secretary-general-system-overview) .so-cards { grid-template-columns: 1fr; }
+}

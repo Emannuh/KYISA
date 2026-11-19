@@ -1,0 +1,436 @@
+/* Generated from inline template styles by inline_to_css.py.
+   .s-<hash>:not(#_) = an inline style moved here; :not(#_) keeps inline-level
+   precedence (beats stylesheet classes, loses to styles set by JavaScript).
+   Page styles below are scoped with :where(.pg-<template>). Prefer replacing
+   these with shared component classes over time. */
+/* portal/scout/edit_shortlist.html */
+.s-09485a3:not(#_) {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+/* portal/media/dashboard.html */
+.s-0c4a9c6:not(#_) {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1565C0;
+}
+
+/* portal/media/album_form.html */
+.s-0d3f6bf:not(#_) {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #eee;
+}
+
+/* portal/media/confirm_delete.html */
+.s-102a74f:not(#_) {
+    font-size: .85rem;
+    color: #666;
+    margin-bottom: 1.25rem;
+}
+
+/* portal/scout/dashboard.html */
+.s-1810fa8:not(#_) {
+    color: #00695C;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* portal/media/album_form.html */
+.s-1ee5dfd:not(#_) {
+    font-size: .68rem;
+    color: #888;
+    padding: .2rem .4rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* portal/media/dashboard.html */
+.s-22ce53f:not(#_) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* portal/scout/dashboard.html */
+.s-2c8442a:not(#_) {
+    font-size: 3rem;
+    color: #B2DFDB;
+}
+
+/* portal/scout/players.html */
+.s-3503b66:not(#_) {
+    min-width: 180px;
+}
+
+/* portal/media/dashboard.html */
+.s-37f8163:not(#_) {
+    padding: 1.25rem;
+    text-align: center;
+}
+
+/* portal/scout/shortlist.html */
+.s-40a1fc7:not(#_) {
+    width: auto;
+    min-width: 140px;
+}
+
+/* portal/scout/shortlist.html */
+.s-4ddb8c4:not(#_) {
+    padding: .25rem .5rem;
+    font-size: .78rem;
+    margin-right: .25rem;
+}
+
+/* portal/media/dashboard.html */
+.s-4e013b2:not(#_) {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #333;
+}
+
+/* portal/media/album_list.html */
+.s-4f582d2:not(#_) {
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #bbb;
+    font-size: 2rem;
+}
+
+/* portal/media/dashboard.html */
+.s-5189a00:not(#_) {
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    border-left: 4px solid #C62828;
+}
+
+/* portal/scout/dashboard.html, portal/scout/shortlist.html */
+.s-549fc04:not(#_) {
+    color: #ddd;
+}
+
+/* portal/scout/edit_shortlist.html */
+.s-60aed03:not(#_) {
+    font-size: .85rem;
+    font-weight: 600;
+    display: block;
+    margin-bottom: .4rem;
+}
+
+/* portal/media/album_form.html */
+.s-64aff0d:not(#_) {
+    background: rgba(0,0,0,.6);
+    color: #fff;
+    border: none;
+}
+
+/* portal/scout/players.html */
+.s-6ba614d:not(#_) {
+    background: #1B5E20;
+    color: #fff;
+    border-color: #1B5E20;
+    padding: .25rem .65rem;
+    font-size: .78rem;
+}
+
+/* portal/media/article_list.html */
+.s-7064941:not(#_) {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+    width: 100%;
+    align-items: center;
+}
+
+/* portal/media/dashboard.html */
+.s-7674dc2:not(#_) {
+    background: #fff3e0;
+    color: #e65100;
+    padding: .2rem .5rem;
+    border-radius: 4px;
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+/* portal/media/dashboard.html */
+.s-76b1f67:not(#_) {
+    margin: 0;
+    color: #888;
+    font-size: .88rem;
+}
+
+/* portal/scout/shortlist.html */
+.s-76ed27b:not(#_) {
+    padding: .25rem .5rem;
+    font-size: .78rem;
+    color: #C62828;
+    border-color: #C62828;
+}
+
+/* portal/media/dashboard.html */
+.s-7e5680e:not(#_) {
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    border-left: 4px solid #f57c00;
+}
+
+/* portal/media/article_list.html, portal/media/video_list.html */
+.s-7fc0355:not(#_) {
+    white-space: nowrap;
+    color: #888;
+}
+
+/* portal/scout/edit_shortlist.html */
+.s-8482b7d:not(#_) {
+    width: 50px;
+    height: 60px;
+    background: #f5f5f5;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ccc;
+    font-size: 1.5rem;
+}
+
+/* portal/scout/players.html, portal/scout/shortlist.html */
+.s-8659858:not(#_) {
+    width: 28px;
+    height: 34px;
+    object-fit: cover;
+    border-radius: 4px;
+    vertical-align: middle;
+    margin-right: .4rem;
+}
+
+/* portal/media/confirm_delete.html */
+.s-87a9cd2:not(#_) {
+    font-size: 2.5rem;
+    color: #C62828;
+    margin-bottom: .75rem;
+    display: block;
+}
+
+/* portal/media/album_form.html */
+.s-8d25c50:not(#_) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(120px,1fr));
+    gap: .75rem;
+}
+
+/* portal/media/dashboard.html */
+.s-8ed1e2a:not(#_) {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #2E7D32;
+}
+
+/* portal/media/confirm_delete.html */
+.s-94c366f:not(#_) {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: .35rem;
+}
+
+/* portal/scout/edit_shortlist.html */
+.s-a10c1be:not(#_) {
+    padding: .5rem 1.25rem;
+    border-radius: 8px;
+}
+
+/* portal/media/categories.html */
+.s-abcc2b7:not(#_) {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 2rem;
+    align-items: start;
+}
+@media (max-width: 767px) { .app-main .s-abcc2b7:not(#_) { grid-template-columns: 1fr; } }
+
+/* portal/scout/dashboard.html */
+.s-b65cb9c:not(#_) {
+    font-size: .76rem;
+    text-decoration: none;
+    color: #00695C;
+    font-weight: 600;
+}
+
+/* portal/scout/players.html */
+.s-bc48846:not(#_) {
+    min-width: 220px;
+    flex: 1;
+}
+
+/* portal/media/album_form.html */
+.s-be65054:not(#_) {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    display: block;
+}
+
+/* portal/scout/shortlist.html */
+.s-c0ad513:not(#_) {
+    color: #ccc;
+}
+
+/* portal/media/confirm_delete.html */
+.s-c1780db:not(#_) {
+    justify-content: center;
+}
+
+/* portal/scout/shortlist.html */
+.s-c352e0a:not(#_) {
+    cursor: help;
+    font-size: .85rem;
+    color: #666;
+}
+
+/* portal/scout/edit_shortlist.html */
+.s-c396eb1:not(#_) {
+    background: #1B5E20;
+    color: #fff;
+    padding: .5rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+/* portal/media/dashboard.html */
+.s-c40ab79:not(#_) {
+    background: #1B5E20;
+    color: #fff;
+    text-decoration: none;
+    padding: .4rem .9rem;
+    border-radius: 6px;
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+/* portal/scout/players.html */
+.s-cd676c9:not(#_) {
+    background: #E8F5E9;
+    color: #1B5E20;
+    padding: .25rem .6rem;
+    border-radius: 12px;
+    font-size: .78rem;
+    font-weight: 600;
+}
+
+/* portal/scout/edit_shortlist.html */
+.s-cdfd4c1:not(#_) {
+    font-size: .85rem;
+    font-weight: 600;
+    display: block;
+    margin-bottom: .5rem;
+}
+
+/* portal/media/dashboard.html */
+.s-cf70029:not(#_) {
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    border-left: 4px solid #1565C0;
+}
+
+/* portal/media/dashboard.html */
+.s-d02bb3f:not(#_) {
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    border-left: 4px solid #1B5E20;
+}
+
+/* portal/scout/shortlist.html */
+.s-d076a39:not(#_) {
+    margin-bottom: 1rem;
+    padding: .75rem 1.25rem;
+}
+
+/* portal/media/album_form.html */
+.s-d6a812a:not(#_) {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+}
+
+/* portal/scout/edit_shortlist.html */
+.s-d865e2c:not(#_) {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+/* portal/media/dashboard.html */
+.s-d94d324:not(#_) {
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    border-left: 4px solid #F9A825;
+}
+
+/* portal/media/dashboard.html */
+.s-da31159:not(#_) {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #6A1B9A;
+}
+
+/* portal/media/album_form.html */
+.s-e93f0d4:not(#_) {
+    display: none;
+    margin-top: .75rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(90px,1fr));
+    gap: .5rem;
+}
+
+/* portal/media/dashboard.html */
+.s-ebdf5cb:not(#_) {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1B5E20;
+}
+
+/* portal/media/article_list.html */
+.s-ef180e1:not(#_) {
+    font-weight: 600;
+    max-width: 250px;
+}
+
+/* portal/scout/edit_shortlist.html */
+.s-f512c60:not(#_) {
+    width: 50px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+/* portal/media/confirm_delete.html */
+.s-f55e0ef:not(#_) {
+    border-top: 3px solid #C62828;
+}
+
+/* portal/media/dashboard.html */
+.s-fa6b896:not(#_) {
+    margin: 0 0 .3rem;
+}
+
+/* portal/media/confirm_delete.html */
+.s-ffa674c:not(#_) {
+    background: #f8f8f8;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1.25rem;
+    font-weight: 600;
+}

@@ -1,492 +1,8 @@
 {% extends "base.html" %}
+{% block body_class %}pg-admin-dashboard-manage-users{% endblock %}
 {% block title %}User Management - KYISA CMS{% endblock %}
 
 {% block extra_css %}
-<style>
-    .um-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-    }
-
-    .um-header h1 {
-        font-size: 1.6rem;
-        font-weight: 700;
-    }
-
-    .um-header p {
-        color: #757575;
-        font-size: .9rem;
-        margin-top: .15rem;
-    }
-
-    .um-stats {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-        gap: .75rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .um-stat-card {
-        background: #fff;
-        border-radius: 10px;
-        padding: .85rem 1rem;
-        text-align: center;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
-        border-top: 3px solid #E0E0E0;
-        transition: all .2s;
-    }
-
-    .um-stat-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 3px 10px rgba(0, 0, 0, .1);
-    }
-
-    .um-stat-card .num {
-        font-size: 1.5rem;
-        font-weight: 800;
-        line-height: 1.2;
-    }
-
-    .um-stat-card .lbl {
-        font-size: .72rem;
-        color: #757575;
-        text-transform: uppercase;
-        letter-spacing: .5px;
-    }
-
-    .um-stat-card.green {
-        border-top-color: #1B5E20;
-    }
-
-    .um-stat-card.green .num {
-        color: #1B5E20;
-    }
-
-    .um-stat-card.red {
-        border-top-color: #C62828;
-    }
-
-    .um-stat-card.red .num {
-        color: #C62828;
-    }
-
-    .um-stat-card.blue {
-        border-top-color: #1565C0;
-    }
-
-    .um-stat-card.blue .num {
-        color: #1565C0;
-    }
-
-    .um-stat-card.amber {
-        border-top-color: #E65100;
-    }
-
-    .um-stat-card.amber .num {
-        color: #E65100;
-    }
-
-    .um-stat-card.purple {
-        border-top-color: #6A1B9A;
-    }
-
-    .um-stat-card.purple .num {
-        color: #6A1B9A;
-    }
-
-    .um-stat-card.teal {
-        border-top-color: #00695C;
-    }
-
-    .um-stat-card.teal .num {
-        color: #00695C;
-    }
-
-    .create-form-grid {
-        display: grid;
-        grid-template-columns: 2fr 1.5fr 1.5fr 1.2fr 1.5fr auto;
-        gap: .75rem;
-        align-items: end;
-    }
-
-    .create-form-grid label {
-        font-size: .8rem;
-        font-weight: 600;
-        display: block;
-        margin-bottom: .3rem;
-        color: #333;
-    }
-
-    .create-form-grid .req {
-        color: #C62828;
-    }
-
-    .filter-bar {
-        display: grid;
-        grid-template-columns: 1fr 1fr 2fr;
-        gap: .75rem;
-        align-items: end;
-    }
-
-    .filter-bar label {
-        font-size: .8rem;
-        font-weight: 600;
-        display: block;
-        margin-bottom: .3rem;
-        color: #333;
-    }
-
-    .search-group {
-        display: flex;
-        gap: .4rem;
-    }
-
-    .search-group input {
-        flex: 1;
-    }
-
-    /* ═══ MODERNIZED USER TABLE ═══ */
-    .user-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-    }
-
-    .user-table thead th {
-        background: #F8F9FA;
-        font-size: .72rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .5px;
-        color: #757575;
-        padding: .75rem 1rem;
-        border-bottom: 2px solid #E0E0E0;
-        text-align: left;
-        white-space: nowrap;
-    }
-
-    .user-table thead th:first-child {
-        border-radius: 8px 0 0 0;
-    }
-
-    .user-table thead th:last-child {
-        border-radius: 0 8px 0 0;
-        text-align: center;
-    }
-
-    .user-table tbody tr {
-        transition: background .15s;
-    }
-
-    .user-table tbody tr:hover {
-        background: #FAFAFA;
-    }
-
-    .user-table tbody td {
-        padding: .7rem 1rem;
-        border-bottom: 1px solid #f0f0f0;
-        font-size: .88rem;
-        vertical-align: middle;
-    }
-
-    .user-table tbody tr:last-child td {
-        border-bottom: none;
-    }
-
-    .user-email {
-        font-weight: 600;
-        font-size: .88rem;
-        word-break: break-all;
-    }
-
-    .user-name {
-        font-size: .85rem;
-        color: #333;
-    }
-
-    .user-meta {
-        font-size: .8rem;
-        color: #757575;
-    }
-
-    .role-pill {
-        display: inline-block;
-        padding: .15rem .55rem;
-        border-radius: 6px;
-        font-size: .73rem;
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
-    .status-dot {
-        display: inline-flex;
-        align-items: center;
-        gap: .3rem;
-        font-size: .8rem;
-        font-weight: 600;
-    }
-
-    .status-dot::before {
-        content: "";
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-    }
-
-    .status-dot.active::before {
-        background: #1B5E20;
-    }
-
-    .status-dot.active {
-        color: #1B5E20;
-    }
-
-    .status-dot.inactive::before {
-        background: #C62828;
-    }
-
-    .status-dot.inactive {
-        color: #C62828;
-    }
-
-    .status-dot.suspended::before {
-        background: #212121;
-    }
-
-    .status-dot.suspended {
-        color: #212121;
-    }
-
-    /* ═══ ACTIONS DROPDOWN ═══ */
-    .actions-dropdown {
-        position: relative;
-        display: inline-block;
-        text-align: center;
-        width: 100%;
-    }
-
-    .actions-trigger {
-        display: inline-flex;
-        align-items: center;
-        gap: .4rem;
-        padding: .4rem .85rem;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        background: #fff;
-        color: #555;
-        font-size: .78rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all .2s;
-        white-space: nowrap;
-        font-family: inherit;
-    }
-
-    .actions-trigger:hover {
-        border-color: #1B5E20;
-        color: #1B5E20;
-        background: #f6faf6;
-    }
-
-    .actions-trigger.open {
-        border-color: #1B5E20;
-        color: #1B5E20;
-        background: #f6faf6;
-        box-shadow: 0 2px 8px rgba(27, 94, 32, .12);
-    }
-
-    .actions-trigger svg {
-        width: 14px;
-        height: 14px;
-        transition: transform .2s;
-    }
-
-    .actions-trigger.open svg {
-        transform: rotate(180deg);
-    }
-
-    .actions-menu {
-        display: none;
-        position: absolute;
-        right: 0;
-        top: calc(100% + 4px);
-        min-width: 200px;
-        background: #fff;
-        border: 1px solid #e8e8e8;
-        border-radius: 10px;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, .12);
-        z-index: 100;
-        padding: .35rem 0;
-        animation: dropdown-in .15s ease;
-    }
-
-    .actions-menu.show {
-        display: block;
-    }
-
-    @keyframes dropdown-in {
-        from {
-            opacity: 0;
-            transform: translateY(-6px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .actions-menu .menu-label {
-        font-size: .65rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .8px;
-        color: #aaa;
-        padding: .5rem 1rem .25rem;
-    }
-
-    .actions-menu .menu-divider {
-        height: 1px;
-        background: #f0f0f0;
-        margin: .25rem 0;
-    }
-
-    .actions-menu a,
-    .actions-menu button {
-        display: flex;
-        align-items: center;
-        gap: .6rem;
-        width: 100%;
-        padding: .55rem 1rem;
-        font-size: .82rem;
-        font-weight: 500;
-        color: #333;
-        text-decoration: none;
-        border: none;
-        background: none;
-        cursor: pointer;
-        font-family: inherit;
-        text-align: left;
-        transition: all .15s;
-    }
-
-    .actions-menu a:hover,
-    .actions-menu button:hover {
-        background: #f5f7f5;
-        color: #1B5E20;
-    }
-
-    .actions-menu .menu-icon {
-        width: 28px;
-        height: 28px;
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: .85rem;
-        flex-shrink: 0;
-    }
-
-    .actions-menu .menu-icon.view {
-        background: #E3F2FD;
-        color: #1565C0;
-    }
-
-    .actions-menu .menu-icon.role {
-        background: #F3E5F5;
-        color: #6A1B9A;
-    }
-
-    .actions-menu .menu-icon.toggle {
-        background: #FFF3E0;
-        color: #E65100;
-    }
-
-    .actions-menu .menu-icon.key {
-        background: #E8F5E9;
-        color: #1B5E20;
-    }
-
-    .actions-menu .menu-icon.del {
-        background: #FFEBEE;
-        color: #C62828;
-    }
-
-    .actions-menu .danger-item:hover {
-        background: #FFF5F5;
-        color: #C62828;
-    }
-
-    .info-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-    }
-
-    .info-grid h4 {
-        font-size: .9rem;
-        font-weight: 700;
-        margin-bottom: .5rem;
-        color: #333;
-    }
-
-    .info-grid ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .info-grid li {
-        font-size: .82rem;
-        color: #555;
-        padding: .25rem 0;
-        display: flex;
-        align-items: center;
-        gap: .35rem;
-    }
-
-    .info-grid li strong {
-        color: #212121;
-    }
-
-    @media (max-width: 1024px) {
-        .create-form-grid {
-            grid-template-columns: 1fr 1fr 1fr;
-        }
-
-        .filter-bar {
-            grid-template-columns: 1fr 1fr;
-        }
-
-        .user-table .hide-md {
-            display: none;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .create-form-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .filter-bar {
-            grid-template-columns: 1fr;
-        }
-
-        .um-stats {
-            grid-template-columns: repeat(3, 1fr);
-        }
-
-        .user-table .hide-sm {
-            display: none;
-        }
-
-        .info-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -500,7 +16,7 @@
         <h1>User Management</h1>
         <p>Create and manage all system users, roles, and access</p>
     </div>
-    <a href="{% url 'dashboard' %}" class="btn btn-outline" style="border-radius:8px;">&larr; Dashboard</a>
+    <a href="{% url 'dashboard' %}" class="btn btn-outline s-57ba4c2">&larr; Dashboard</a>
 </div>
 
 <!-- Stats -->
@@ -532,9 +48,9 @@
 </div>
 
 <!-- Create New User -->
-<div class="card" style="margin-bottom:1.5rem;">
-    <div class="card-header" style="background:linear-gradient(135deg,#1B5E20,#2E7D32);color:#fff;">
-        <h3 style="color:#fff;">+ Create New User</h3>
+<div class="card s-92cb257">
+    <div class="card-header s-b69d6d6">
+        <h3 class="s-12e7917">+ Create New User</h3>
     </div>
     <div class="card-body">
         <form method="post" action="{% url 'create_user' %}">
@@ -565,7 +81,7 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div id="county-field-wrap" style="display:none">
+                <div id="county-field-wrap" class="s-5790ffb">
                     <label>County <span class="req">*</span></label>
                     <select name="county" id="create-county" class="form-control">
                         <option value="">Select County...</option>
@@ -575,12 +91,12 @@
                     </select>
                 </div>
                 <div>
-                    <button type="submit" class="btn btn-primary" style="white-space:nowrap;height:38px;">
+                    <button type="submit" class="btn btn-primary s-e18e2b2">
                         + Create
                     </button>
                 </div>
             </div>
-            <div class="alert alert-info" style="margin-top:.75rem;margin-bottom:0;">
+            <div class="alert alert-info s-7e6f16d">
                 A one-time password will be generated. The user must change it on first login.
             </div>
         </form>
@@ -601,7 +117,7 @@ document.addEventListener('DOMContentLoaded', toggleCountyField);
 </script>
 
 <!-- Filters & Search -->
-<div class="card" style="margin-bottom:1.5rem;">
+<div class="card s-92cb257">
     <div class="card-body">
         <form method="get" class="filter-bar">
             <div>
@@ -638,11 +154,11 @@ document.addEventListener('DOMContentLoaded', toggleCountyField);
 </div>
 
 <!-- Users Table -->
-<div class="card" style="margin-bottom:1.5rem;">
+<div class="card s-92cb257">
     <div class="card-header">
         <h3>All Users ({{ users.count }})</h3>
     </div>
-    <div style="overflow-x:auto;">
+    <div class="s-987eb2a">
         {% if users %}
         <table class="user-table">
             <thead>
@@ -652,7 +168,7 @@ document.addEventListener('DOMContentLoaded', toggleCountyField);
                     <th>Status</th>
                     <th class="hide-md">Joined</th>
                     <th class="hide-md">Last Login</th>
-                    <th style="text-align:center;">Actions</th>
+                    <th class="s-65f9d5a">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -662,15 +178,15 @@ document.addEventListener('DOMContentLoaded', toggleCountyField);
                         <div class="user-email">
                             {{ user.email }}
                             {% if user.is_superuser %}
-                            <span class="badge badge-danger"
-                                style="font-size:.6rem;vertical-align:middle;margin-left:.25rem;">SU</span>
+                            <span class="badge badge-danger s-49a6f3e"
+                               >SU</span>
                             {% endif %}
                             {% if user.is_staff %}
-                            <span class="badge badge-warning"
-                                style="font-size:.6rem;vertical-align:middle;margin-left:.15rem;">Staff</span>
+                            <span class="badge badge-warning s-2d18d70"
+                               >Staff</span>
                             {% endif %}
                         </div>
-                        <div class="user-name" style="margin-top:.15rem;">{{ user.first_name }} {{ user.last_name }}
+                        <div class="user-name s-6b6e314">{{ user.first_name }} {{ user.last_name }}
                         </div>
                     </td>
                     <td>
@@ -696,13 +212,13 @@ document.addEventListener('DOMContentLoaded', toggleCountyField);
                         {% endif %}
                         {% if user.must_change_password %}
                         <span
-                            style="background:#FFF8E1;color:#F57F17;padding:.1rem .35rem;border-radius:4px;font-size:.65rem;font-weight:700;margin-left:.2rem;">OTP</span>
+                            class="s-42fdaeb">OTP</span>
                         {% endif %}
                     </td>
                     <td class="user-meta hide-md">{{ user.date_joined|date:"d M Y" }}</td>
                     <td class="user-meta hide-md">
                         {% if user.last_login %}{{ user.last_login|date:"d M Y" }}{% else %}<span
-                            style="color:#bbb;">Never</span>{% endif %}
+                            class="s-70a6667">Never</span>{% endif %}
                     </td>
                     <td>
                         <!-- ═══ ACTIONS DROPDOWN ═══ -->
@@ -752,8 +268,8 @@ document.addEventListener('DOMContentLoaded', toggleCountyField);
             </tbody>
         </table>
         {% else %}
-        <div style="text-align:center;padding:2rem;color:#999;">
-            <div style="font-size:2rem;margin-bottom:.5rem;"><i class="bi bi-people"></i></div>
+        <div class="s-b8f1d2a">
+            <div class="s-aaaf230"><i class="bi bi-people"></i></div>
             <p>No users found matching your filters.</p>
         </div>
         {% endif %}
@@ -762,7 +278,7 @@ document.addEventListener('DOMContentLoaded', toggleCountyField);
 
 <!-- Discipline Coordinators by Role -->
 <div class="card">
-    <div class="card-header" style="background:#FFF3E0;">
+    <div class="card-header s-41879a5">
         <h3>Discipline Coordinators by Sport</h3>
     </div>
     <div class="card-body">
@@ -778,7 +294,7 @@ document.addEventListener('DOMContentLoaded', toggleCountyField);
                                 {{ c.get_full_name|default:c.email }}{% if not forloop.last %}, {% endif %}
                             {% endfor %}
                         {% else %}
-                            <span style="color:#C62828;">Not Assigned</span>
+                            <span class="s-767a43b">Not Assigned</span>
                         {% endif %}
                     </li>
                     {% endfor %}
@@ -793,7 +309,7 @@ document.addEventListener('DOMContentLoaded', toggleCountyField);
                     {% endfor %}
                 </ul>
                 {% else %}
-                <p style="margin:0;color:#666;">All coordinator users are assigned to a discipline.</p>
+                <p class="s-636a19b">All coordinator users are assigned to a discipline.</p>
                 {% endif %}
             </div>
         </div>
@@ -802,7 +318,7 @@ document.addEventListener('DOMContentLoaded', toggleCountyField);
 
 <!-- Info Panel -->
 <div class="card">
-    <div class="card-header" style="background:#E3F2FD;">
+    <div class="card-header s-aa4949f">
         <h3>User Management Guide</h3>
     </div>
     <div class="card-body">

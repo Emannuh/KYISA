@@ -55,7 +55,7 @@
                         </td>
                         <td>{{ player.team.team_name }}</td>
                         <td>{{ player.get_position_display }}</td>
-                        <td><span class="badge bg-primary" style="font-size: 1.1rem;">{{ player.goals_scored }}</span></td>
+                        <td><span class="badge bg-primary s-7463f71">{{ player.goals_scored }}</span></td>
                         <td>{{ player.matches_played }}</td>
                     </tr>
                     {% endfor %}
@@ -87,7 +87,7 @@
                                 <strong>{{ player.full_name }}</strong><br>
                                 <small>{{ player.team.team_name }}</small>
                             </div>
-                            <span class="badge bg-warning text-dark" style="font-size: 1.1rem;">{{ player.yellow_cards }}</span>
+                            <span class="badge bg-warning text-dark s-7463f71">{{ player.yellow_cards }}</span>
                         </div>
                     </div>
                     {% endfor %}
@@ -116,7 +116,7 @@
                                 <strong>{{ player.full_name }}</strong><br>
                                 <small>{{ player.team.team_name }}</small>
                             </div>
-                            <span class="badge bg-danger" style="font-size: 1.1rem;">{{ player.red_cards }}</span>
+                            <span class="badge bg-danger s-7463f71">{{ player.red_cards }}</span>
                         </div>
                     </div>
                     {% endfor %}

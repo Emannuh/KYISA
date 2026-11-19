@@ -19,9 +19,9 @@
 {% endfor %}
 {% endif %}
 
-<div class="card" style="padding:2rem;max-width:600px">
-    <div style="background:#e3f2fd;border:1px solid #90caf9;border-radius:10px;padding:1rem 1.2rem;margin-bottom:1.5rem;font-size:.88rem;color:#1565c0;display:flex;align-items:flex-start;gap:.6rem">
-        <i class="bi bi-info-circle" style="margin-top:2px;flex-shrink:0"></i>
+<div class="card s-048ebd1">
+    <div class="s-b85182d">
+        <i class="bi bi-info-circle s-681d6c8"></i>
         <div>
             You are registered as a <strong>Director of Sports</strong>. Select your county below to create your county registration.
             After this, you will need to submit your payment proof for treasurer approval.
@@ -30,21 +30,21 @@
 
     <form method="post">
         {% csrf_token %}
-        <div style="margin-bottom:1.2rem">
-            <label for="id_county" style="display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem">
+        <div class="s-0ef737a">
+            <label for="id_county" class="s-b5287b5">
                 <i class="bi bi-geo-alt"></i> County *
             </label>
             <select name="county" id="id_county" required
-                    style="width:100%;padding:.7rem .9rem;border:1.5px solid #d0d0d0;border-radius:10px;font-size:.92rem;background:#fafafa">
+                    class="s-e1437bf">
                 <option value="">— Select your county —</option>
                 {% for code, name in available_counties %}
                 <option value="{{ code }}" {% if code == user_county %}selected{% endif %}>{{ name }}</option>
                 {% endfor %}
             </select>
-            <small style="color:#999;font-size:.78rem">Counties already registered by another director are not shown.</small>
+            <small class="s-2364156">Counties already registered by another director are not shown.</small>
         </div>
 
-        <button type="submit" style="width:100%;padding:.85rem;background:linear-gradient(135deg,#1B5E20,#2E7D32);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem">
+        <button type="submit" class="s-1e19c9c">
             <i class="bi bi-check-circle"></i> Register My County
         </button>
     </form>

@@ -14,7 +14,7 @@
 </div>
 
 <!-- Stats -->
-<div class="stats-grid" style="margin-bottom:1.25rem">
+<div class="stats-grid s-c33bec6">
     <div class="stat-card yellow">
         <div class="stat-icon yellow">⏳</div>
         <div class="stat-info"><h3>{{ stats.pending }}</h3><p>Pending</p></div>
@@ -23,33 +23,33 @@
         <div class="stat-icon green">✅</div>
         <div class="stat-info"><h3>{{ stats.verified }}</h3><p>Verified</p></div>
     </div>
-    <div class="stat-card" style="border-left:4px solid #C62828">
-        <div class="stat-icon" style="background:#fce4ec;color:#C62828">❌</div>
+    <div class="stat-card s-7c8c90b">
+        <div class="stat-icon s-c9c1e7b">❌</div>
         <div class="stat-info"><h3>{{ stats.rejected }}</h3><p>Rejected</p></div>
     </div>
-    <div class="stat-card" style="border-left:4px solid #6A1B9A">
-        <div class="stat-icon" style="background:#F3E5F5;color:#6A1B9A">🔄</div>
+    <div class="stat-card s-787d7ab">
+        <div class="stat-icon s-2ae4b1e">🔄</div>
         <div class="stat-info"><h3>{{ stats.resubmit }}</h3><p>Resubmission</p></div>
     </div>
 </div>
 
 <!-- Search -->
-<div class="card" style="margin-bottom:1rem;padding:1rem 1.25rem;">
-    <form method="get" style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-end;">
+<div class="card s-d3b5cbc">
+    <form method="get" class="s-c408cfa">
         <input type="hidden" name="tab" value="{{ tab }}">
-        <div style="min-width:280px;flex:1;">
-            <label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:.25rem;">Search Player</label>
+        <div class="s-1c5bc65">
+            <label class="s-519641f">Search Player</label>
             <input type="text" name="q" value="{{ player_query }}" class="form-control" placeholder="Search by name or national ID">
         </div>
-        <button type="submit" class="btn btn-outline btn-sm" style="padding:.45rem .9rem;">Search</button>
+        <button type="submit" class="btn btn-outline btn-sm s-d0bdb3b">Search</button>
         {% if player_query %}
-        <a href="?tab={{ tab }}" style="font-size:.85rem;color:#C62828;text-decoration:none;font-weight:600;">✕ Clear</a>
+        <a href="?tab={{ tab }}" class="s-72f46c5">✕ Clear</a>
         {% endif %}
     </form>
 </div>
 
 <!-- Tabs -->
-<div style="display:flex;gap:0;margin-bottom:0;border-bottom:2px solid #e0e0e0">
+<div class="s-2e32f5f">
     <a href="?tab=pending{% if player_query %}&q={{ player_query }}{% endif %}" style="padding:.75rem 1.5rem;text-decoration:none;font-weight:600;border-bottom:3px solid {% if tab == 'pending' %}#E65100{% else %}transparent{% endif %};color:{% if tab == 'pending' %}#E65100{% else %}#888{% endif %};margin-bottom:-2px">
         ⏳ Pending ({{ stats.pending }})
     </a>
@@ -65,7 +65,7 @@
 </div>
 
 <!-- Tab Content -->
-<div class="card" style="border-top-left-radius:0;border-top-right-radius:0">
+<div class="card s-033489a">
     <div class="card-body">
 
         {% if tab == 'verified' %}
@@ -82,12 +82,12 @@
 </div>
 
 <!-- Back link -->
-<div style="margin-top:1.25rem">
-    <a href="{% url 'vo_county_disciplines' county_reg_pk=reg.pk %}" style="color:#1B5E20;text-decoration:none;font-weight:600;">
+<div class="s-0ea6527">
+    <a href="{% url 'vo_county_disciplines' county_reg_pk=reg.pk %}" class="s-7bea975">
         <i class="bi bi-arrow-left"></i> Back to {{ reg.get_county_display }} Disciplines
     </a>
     &nbsp;&nbsp;|&nbsp;&nbsp;
-    <a href="{% url 'vo_discipline_delegation' discipline_pk=discipline.pk %}" style="color:#1B5E20;text-decoration:none;font-weight:600;">
+    <a href="{% url 'vo_discipline_delegation' discipline_pk=discipline.pk %}" class="s-7bea975">
         <i class="bi bi-person-badge-fill"></i> View Delegation
     </a>
 </div>

@@ -2,10 +2,10 @@
 {% block title %}Competition Rules   {{ competition.name }}   KYISA CMS{% endblock %}
 
 {% block content %}
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+<div class="s-aa0ee9a">
     <div>
-        <h2 style="font-size:1.3rem;font-weight:700;"><i class="bi bi-file-earmark-text"></i> Competition Rules</h2>
-        <div style="font-size:.85rem;color:#757575;">{{ competition.name }}</div>
+        <h2 class="s-99083dd"><i class="bi bi-file-earmark-text"></i> Competition Rules</h2>
+        <div class="s-c9be501">{{ competition.name }}</div>
     </div>
     <a href="{% url 'coordinator_competition_manage' pk=competition.pk %}" class="btn btn-outline-secondary btn-sm">&larr; Back</a>
 </div>

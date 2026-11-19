@@ -14,35 +14,35 @@
 <div class="card">
     <form method="post" action="{% url 'email_compose' %}">
         {% csrf_token %}
-        <div style="padding:.85rem;display:flex;flex-direction:column;gap:.75rem">
+        <div class="s-339b487">
             <!-- To -->
             <div>
-                <label style="font-size:.75rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.3rem">To <span style="color:var(--danger)">*</span></label>
-                <textarea name="to_emails" rows="2" class="form-input" style="width:100%;font-size:.82rem" placeholder="email@example.com, another@example.com" required>{{ reply_to|default:to_emails }}</textarea>
-                <small style="color:var(--gray-light);font-size:.68rem">Separate multiple addresses with commas</small>
+                <label class="s-e8f88b3">To <span class="s-9cb6f55">*</span></label>
+                <textarea name="to_emails" rows="2" class="form-input s-84900d1" placeholder="email@example.com, another@example.com" required>{{ reply_to|default:to_emails }}</textarea>
+                <small class="s-aa15cb0">Separate multiple addresses with commas</small>
             </div>
 
             <!-- CC -->
             <div>
-                <label style="font-size:.75rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.3rem">CC <span style="color:var(--gray-light)">(optional)</span></label>
-                <input type="text" name="cc_emails" value="{{ cc_emails }}" class="form-input" style="width:100%;font-size:.82rem" placeholder="cc@example.com">
+                <label class="s-e8f88b3">CC <span class="s-9bcf00c">(optional)</span></label>
+                <input type="text" name="cc_emails" value="{{ cc_emails }}" class="form-input s-84900d1" placeholder="cc@example.com">
             </div>
 
             <!-- Subject -->
             <div>
-                <label style="font-size:.75rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.3rem">Subject <span style="color:var(--danger)">*</span></label>
-                <input type="text" name="subject" value="{{ subject }}" class="form-input" style="width:100%;font-size:.82rem" placeholder="Email subject..." required>
+                <label class="s-e8f88b3">Subject <span class="s-9cb6f55">*</span></label>
+                <input type="text" name="subject" value="{{ subject }}" class="form-input s-84900d1" placeholder="Email subject..." required>
             </div>
 
             <!-- Body -->
             <div>
-                <label style="font-size:.75rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.3rem">Message <span style="color:var(--danger)">*</span></label>
-                <textarea name="body" rows="12" class="form-input" style="width:100%;font-size:.82rem;font-family:inherit;line-height:1.6" placeholder="Write your message here..." required>{{ body }}</textarea>
-                <small style="color:var(--gray-light);font-size:.68rem">Email will be sent with the KYISA branded template</small>
+                <label class="s-e8f88b3">Message <span class="s-9cb6f55">*</span></label>
+                <textarea name="body" rows="12" class="form-input s-00e7ca7" placeholder="Write your message here..." required>{{ body }}</textarea>
+                <small class="s-aa15cb0">Email will be sent with the KYISA branded template</small>
             </div>
 
             <!-- Actions -->
-            <div style="display:flex;gap:.5rem;padding-top:.5rem;border-top:1px solid var(--border)">
+            <div class="s-7a39d22">
                 <button type="submit" class="btn btn-primary"><i class="bi bi-send"></i> Send Email</button>
                 <a href="{% url 'email_logs' %}" class="btn btn-outline">Cancel</a>
             </div>

@@ -1,63 +1,9 @@
 {% extends 'base.html' %}
+{% block body_class %}pg-portal-secretary-general-dashboard{% endblock %}
 {% load humanize %}
 {% block title %}Secretary General — KYISA CMS{% endblock %}
 
 {% block extra_css %}
-<style>
-  :root {
-    --hub-bg:#f0f2f7;--hub-surface:#ffffff;--hub-ink:#0d1117;--hub-muted:#6b7280;
-    --hub-border:#e5e9f0;--hub-brand:#6d28d9;--hub-brand2:#7c3aed;
-    --hub-accent:#0a66c2;--hub-radius:16px;--hub-radius-sm:10px;
-    --hub-shadow:0 4px 24px rgba(13,17,23,.07);--hub-shadow-md:0 8px 32px rgba(13,17,23,.11);
-  }
-  .hub{padding:0 0 1rem}
-  .hub-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.75rem;margin-bottom:1.75rem}
-  .hub-stat{background:var(--hub-surface);border:1px solid var(--hub-border);border-radius:var(--hub-radius);padding:1rem 1.1rem .9rem;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s}
-  .hub-stat:hover{transform:translateY(-3px);box-shadow:var(--hub-shadow-md)}
-  .hub-stat::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--hub-radius) var(--hub-radius) 0 0}
-  .hub-stat--purple::before{background:#7c3aed}.hub-stat--blue::before{background:#3b82f6}
-  .hub-stat--green::before{background:#22c55e}.hub-stat--amber::before{background:#f59e0b}
-  .hub-stat--red::before{background:#ef4444}.hub-stat--teal::before{background:#14b8a6}
-  .hub-stat--slate::before{background:#64748b}
-  .hub-stat-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.95rem;margin-bottom:.65rem}
-  .hub-stat--purple .hub-stat-icon{background:#f5f3ff;color:#7c3aed}
-  .hub-stat--blue   .hub-stat-icon{background:#eff6ff;color:#3b82f6}
-  .hub-stat--green  .hub-stat-icon{background:#f0fdf4;color:#22c55e}
-  .hub-stat--amber  .hub-stat-icon{background:#fffbeb;color:#f59e0b}
-  .hub-stat--red    .hub-stat-icon{background:#fef2f2;color:#ef4444}
-  .hub-stat--teal   .hub-stat-icon{background:#f0fdfa;color:#14b8a6}
-  .hub-stat--slate  .hub-stat-icon{background:#f8fafc;color:#64748b}
-  .hub-stat-val{font-size:1.5rem;font-weight:800;color:var(--hub-ink);line-height:1;margin-bottom:.22rem}
-  .hub-stat-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--hub-muted)}
-  .hub-section-head{display:flex;align-items:center;gap:.5rem;margin:0 0 1rem}
-  .hub-section-head h2{font-size:1rem;font-weight:800;color:var(--hub-ink);margin:0}
-  .hub-sep{flex:1;height:1px;background:var(--hub-border)}
-  .hub-quick{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.75rem;margin-bottom:1.75rem}
-  .hub-qa{display:flex;gap:.75rem;align-items:center;background:var(--hub-surface);border:1px solid var(--hub-border);border-radius:var(--hub-radius);padding:1rem 1.1rem;text-decoration:none;color:inherit;transition:transform .18s,box-shadow .18s,border-color .18s}
-  .hub-qa:hover{transform:translateY(-3px);border-color:#b6c8e4;box-shadow:var(--hub-shadow-md);color:inherit}
-  .hub-qa-icon{width:44px;height:44px;flex-shrink:0;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:#f5f3ff;color:#7c3aed}
-  .hub-qa-icon.green{background:#ecfdf5;color:#059669}.hub-qa-icon.amber{background:#fffbeb;color:#d97706}
-  .hub-qa-icon.blue{background:#eff6ff;color:#3b82f6}.hub-qa-icon.red{background:#fef2f2;color:#ef4444}
-  .hub-qa h4{margin:0;font-size:.88rem;font-weight:700;color:var(--hub-ink)}
-  .hub-qa p{margin:.15rem 0 0;font-size:.74rem;color:var(--hub-muted)}
-  .hub-panels{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
-  .hub-panel{background:var(--hub-surface);border:1px solid var(--hub-border);border-radius:var(--hub-radius);overflow:hidden}
-  .hub-panel-head{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.1rem;border-bottom:1px solid var(--hub-border);background:#fafbfc}
-  .hub-panel-head h3{margin:0;font-size:.88rem;font-weight:700;color:var(--hub-ink);display:flex;align-items:center;gap:.45rem}
-  .hub-panel-head a{font-size:.74rem;color:var(--hub-accent);text-decoration:none;font-weight:600}
-  .hub-panel-body{padding:.9rem 1.1rem;max-height:320px;overflow-y:auto}
-  .hub-feed{display:flex;flex-direction:column;gap:.5rem}
-  .hub-feed-row{display:flex;gap:.7rem;align-items:flex-start;padding:.62rem .72rem;border:1px solid #edf2fb;border-radius:10px;background:#fafbfe;transition:background .15s}
-  .hub-feed-row:hover{background:#f3f7ff}
-  .hub-feed-dot{width:8px;height:8px;border-radius:50%;background:#7c3aed;flex-shrink:0;margin-top:.35rem}
-  .hub-feed-main{font-size:.78rem;color:var(--hub-ink);line-height:1.4}
-  .hub-feed-meta{font-size:.68rem;color:var(--hub-muted);margin-top:.1rem}
-  .hub-roles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.5rem}
-  .hub-role{background:#f8fafc;border:1px solid var(--hub-border);border-radius:10px;padding:.6rem .75rem}
-  .hub-role h5{margin:0;font-size:.76rem;font-weight:700;color:var(--hub-ink)}
-  .hub-role p{margin:.15rem 0 0;font-size:.7rem;color:var(--hub-muted)}
-  @media(max-width:900px){.hub-panels{grid-template-columns:1fr}}
-</style>
 {% endblock %}
 
 {% block content %}
@@ -138,7 +84,7 @@
       <div class="hub-qa-icon red"><i class="bi bi-briefcase-fill"></i></div>
       <div>
         <h4>Appeals &amp; Decisions
-          {% if pending_appeals %}<span style="margin-left:.35rem;background:#fee2e2;color:#dc2626;border-radius:999px;padding:.05rem .5rem;font-size:.7rem;font-weight:800">{{ pending_appeals }}</span>{% endif %}
+          {% if pending_appeals %}<span class="s-0935b67">{{ pending_appeals }}</span>{% endif %}
         </h4>
         <p>All appeals, jury responses, and outcomes.</p>
       </div>
@@ -183,13 +129,13 @@
       <div class="hub-qa-icon"><i class="bi bi-envelope-fill"></i></div>
       <div><h4>Email Centre</h4><p>Review outgoing system communications.</p></div>
     </a>
-    <a href="{% url 'sg_system_overview' %}" class="hub-qa" style="border:2px solid #6d28d9;position:relative;background:linear-gradient(135deg,#fdfcff,#f5f3ff)">
-      <div class="hub-qa-icon" style="background:#ede9fe;color:#6d28d9"><i class="bi bi-grid-3x3-gap-fill"></i></div>
+    <a href="{% url 'sg_system_overview' %}" class="hub-qa s-9d5d33a">
+      <div class="hub-qa-icon s-7216989"><i class="bi bi-grid-3x3-gap-fill"></i></div>
       <div>
-        <h4 style="color:#6d28d9">System Overview</h4>
+        <h4 class="s-4142f0c">System Overview</h4>
         <p>Navigate all portals for testing and walkthrough.</p>
       </div>
-      <span style="position:absolute;top:.55rem;right:.65rem;font-size:.62rem;font-weight:700;background:#6d28d9;color:#fff;padding:.1rem .45rem;border-radius:20px;letter-spacing:.04em">NEW</span>
+      <span class="s-584f239">NEW</span>
     </a>
   </div>
 
@@ -198,7 +144,7 @@
     <h2><i class="bi bi-pie-chart-fill me-1"></i>Users By Role</h2>
     <div class="hub-sep"></div>
   </div>
-  <div class="hub-panel" style="margin-bottom:.5rem">
+  <div class="hub-panel s-2414d3c">
     <div class="hub-panel-head">
       <h3><i class="bi bi-bar-chart-fill"></i> Role Distribution</h3>
       <a href="{% url 'manage_users' %}">Open user manager →</a>

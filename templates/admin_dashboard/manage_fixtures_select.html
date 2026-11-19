@@ -1,41 +1,8 @@
 {% extends 'base.html' %}
+{% block body_class %}pg-admin-dashboard-manage-fixtures-select{% endblock %}
 {% block title %}Manage Fixtures   KYISA CMS{% endblock %}
 
 {% block extra_css %}
-<style>
-    .page-hero {
-        background: linear-gradient(135deg, #0D3B0F 0%, #1B5E20 50%, #2E7D32 100%);
-        border-radius: 16px; padding: 1.5rem 2rem; color: #fff; margin-bottom: 2rem;
-    }
-    .page-hero h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: .2rem; }
-    .page-hero p { opacity: .85; font-size: .9rem; margin: 0; }
-    .comp-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 1rem;
-    }
-    .comp-card {
-        background: #fff; border-radius: 12px; padding: 1.25rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,.06);
-        text-decoration: none; color: #212121;
-        border: 1px solid transparent; transition: all .25s ease;
-    }
-    .comp-card:hover {
-        transform: translateY(-3px); border-color: #1B5E20; color: #1B5E20;
-        box-shadow: 0 6px 20px rgba(0,0,0,.1);
-    }
-    .comp-card h4 { font-size: .95rem; font-weight: 600; margin-bottom: .3rem; }
-    .comp-card .meta { font-size: .8rem; color: #757575; margin-bottom: .5rem; }
-    .comp-card .meta span { margin-right: .75rem; }
-    .comp-card .stats { display: flex; gap: 1rem; font-size: .8rem; }
-    .comp-card .stats .stat { text-align: center; }
-    .comp-card .stats .stat-num { font-weight: 700; font-size: 1.1rem; display: block; }
-    .comp-card .stats .stat-lbl { color: #999; }
-    .status-badge {
-        display: inline-block; font-size: .7rem; font-weight: 600;
-        padding: .15rem .5rem; border-radius: 6px;
-    }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -78,9 +45,9 @@
     {% endfor %}
 </div>
 {% else %}
-<div style="text-align:center;padding:3rem;color:#999;">
-    <i class="bi bi-calendar-x" style="font-size:3rem;opacity:.3;"></i>
-    <p style="margin-top:1rem;">No competitions found</p>
+<div class="s-773433b">
+    <i class="bi bi-calendar-x s-63ede09"></i>
+    <p class="s-a6cb65c">No competitions found</p>
 </div>
 {% endif %}
 {% endblock %}

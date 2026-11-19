@@ -1,103 +1,8 @@
 {% extends 'base.html' %}
+{% block body_class %}pg-admin-dashboard-knockout-hub{% endblock %}
 {% block title %}Knockout Matches   KYISA CMS{% endblock %}
 
 {% block extra_css %}
-<style>
-    .ko-hero {
-        background: linear-gradient(135deg, #4A148C 0%, #6A1B9A 50%, #8E24AA 100%);
-        border-radius: 16px; padding: 1.5rem 2rem; color: #fff; margin-bottom: 1.5rem;
-        display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
-    }
-    .ko-hero h1 { font-size: 1.3rem; font-weight: 700; margin-bottom: .15rem; }
-    .ko-hero .sub { font-size: .85rem; opacity: .85; }
-    .ko-hero .btn-back {
-        display: inline-flex; align-items: center; gap: .35rem;
-        background: rgba(255,255,255,.18); color: #fff; border: none;
-        padding: .5rem 1rem; border-radius: 8px; font-size: .85rem;
-        text-decoration: none; transition: background .2s;
-    }
-    .ko-hero .btn-back:hover { background: rgba(255,255,255,.3); }
-
-    .comp-section {
-        background: #fff; border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,.06); overflow: hidden; margin-bottom: 1.5rem;
-    }
-    .comp-header {
-        padding: .85rem 1.25rem; border-bottom: 1px solid #eee;
-        display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .5rem;
-    }
-    .comp-header h2 { font-size: 1rem; font-weight: 700; margin: 0; color: #333; }
-    .comp-header .badge-count {
-        background: #6A1B9A; color: #fff; border-radius: 20px;
-        padding: .15rem .6rem; font-size: .75rem; font-weight: 600;
-    }
-    .btn-create {
-        display: inline-flex; align-items: center; gap: .35rem;
-        background: linear-gradient(135deg, #6A1B9A, #8E24AA); color: #fff;
-        border: none; padding: .45rem 1rem; border-radius: 8px;
-        font-size: .8rem; font-weight: 600; text-decoration: none; transition: opacity .2s;
-    }
-    .btn-create:hover { opacity: .85; color: #fff; }
-    .btn-delete-all {
-        display: inline-flex; align-items: center; gap: .35rem;
-        background: linear-gradient(135deg, #C62828, #E53935); color: #fff;
-        border: none; padding: .45rem 1rem; border-radius: 8px;
-        font-size: .8rem; font-weight: 600; cursor: pointer; transition: opacity .2s;
-    }
-    .btn-delete-all:hover { opacity: .85; }
-
-    .ko-table { width: 100%; border-collapse: collapse; font-size: .85rem; }
-    .ko-table th { padding: .6rem .75rem; text-align: left; font-weight: 600; color: #666; background: #fafafa; border-bottom: 2px solid #eee; }
-    .ko-table td { padding: .65rem .75rem; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
-    .ko-table tr:last-child td { border-bottom: none; }
-    .ko-table tr:hover td { background: #fafbfd; }
-
-    .round-badge {
-        display: inline-block; padding: .15rem .6rem; border-radius: 20px;
-        font-size: .75rem; font-weight: 600; text-transform: uppercase;
-    }
-    .round-QUARTERFINAL { background: #E8F5E9; color: #2E7D32; }
-    .round-SEMIFINAL { background: #E3F2FD; color: #1565C0; }
-    .round-THIRD_PLACE { background: #FFF3E0; color: #E65100; }
-    .round-FINAL { background: #F3E5F5; color: #6A1B9A; }
-
-    .score-cell { font-weight: 700; font-size: .9rem; }
-    .winner-tag { color: #2E7D32; font-weight: 600; font-size: .75rem; }
-
-    .status-badge {
-        display: inline-block; padding: .1rem .5rem; border-radius: 12px;
-        font-size: .72rem; font-weight: 600; text-transform: capitalize;
-    }
-    .status-pending { background: #FFF8E1; color: #F57F17; }
-    .status-in_progress { background: #E3F2FD; color: #1565C0; }
-    .status-completed { background: #E8F5E9; color: #2E7D32; }
-    .status-cancelled { background: #FFEBEE; color: #C62828; }
-
-    .action-links a {
-        display: inline-flex; align-items: center; gap: .25rem;
-        font-size: .78rem; color: #6A1B9A; text-decoration: none;
-        padding: .25rem .5rem; border-radius: 6px; transition: background .2s;
-    }
-    .action-links a:hover { background: #F3E5F5; }
-    .action-links .del { color: #C62828; }
-    .action-links .del:hover { background: #FFEBEE; }
-
-    .empty-msg {
-        padding: 1.5rem; text-align: center; color: #999; font-size: .9rem;
-    }
-
-    @media (max-width: 768px) {
-        .ko-table, .ko-table thead, .ko-table tbody, .ko-table th, .ko-table td, .ko-table tr {
-            display: block;
-        }
-        .ko-table thead { display: none; }
-        .ko-table tr { margin-bottom: .75rem; border: 1px solid #eee; border-radius: 8px; overflow: hidden; }
-        .ko-table td { padding: .5rem .75rem; text-align: right; position: relative; }
-        .ko-table td::before {
-            content: attr(data-label); position: absolute; left: .75rem; font-weight: 600; color: #666; text-align: left;
-        }
-    }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -111,7 +16,7 @@
 </div>
 
 {% if messages %}
-<div style="margin-bottom:1rem;">
+<div class="s-c2c0d0a">
     {% for msg in messages %}
     <div style="padding:.75rem 1rem;border-radius:8px;font-size:.85rem;margin-bottom:.5rem;
         {% if msg.tags == 'success' %}background:#E8F5E9;color:#2E7D32;
@@ -127,8 +32,8 @@
 {% for item in competition_data %}
 <div class="comp-section">
     <div class="comp-header">
-        <div style="display:flex;align-items:center;gap:.75rem;">
-            <h2><i class="bi bi-trophy" style="color:#6A1B9A;"></i> {{ item.competition.name }}</h2>
+        <div class="s-83ee465">
+            <h2><i class="bi bi-trophy s-84a35ef"></i> {{ item.competition.name }}</h2>
             {% if item.count %}
             <span class="badge-count">{{ item.count }} fixture{{ item.count|pluralize }}</span>
             {% endif %}
@@ -137,7 +42,7 @@
             <i class="bi bi-plus-circle"></i> Create Knockout Match
         </a>
         {% if item.count %}
-        <form method="post" action="{% url 'admin_bulk_delete_knockouts' pk=item.competition.pk %}" style="display:inline;"
+        <form method="post" action="{% url 'admin_bulk_delete_knockouts' pk=item.competition.pk %}" class="s-2f8710b"
               onsubmit="return confirm('Delete ALL {{ item.count }} knockout fixture(s) for {{ item.competition.name }}?');">
             {% csrf_token %}
             <button type="submit" class="btn-delete-all">
@@ -148,7 +53,7 @@
     </div>
 
     {% if item.knockout_fixtures %}
-    <div style="overflow-x:auto;">
+    <div class="s-987eb2a">
         <table class="ko-table">
             <thead>
                 <tr>
@@ -160,7 +65,7 @@
                     <th>Venue</th>
                     <th>Status</th>
                     <th>Winner</th>
-                    <th style="text-align:right;">Actions</th>
+                    <th class="s-30489cb">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -188,7 +93,7 @@
                         <span class="winner-tag"><i class="bi bi-trophy-fill"></i> {{ fx.winner.name }}</span>
                         {% else %}—{% endif %}
                     </td>
-                    <td data-label="Actions" class="action-links" style="text-align:right;">
+                    <td data-label="Actions" class="action-links s-30489cb">
                         <a href="{% url 'admin_edit_fixture' pk=item.competition.pk fixture_pk=fx.pk %}">
                             <i class="bi bi-pencil"></i> Edit
                         </a>
@@ -203,9 +108,9 @@
     </div>
     {% else %}
     <div class="empty-msg">
-        <i class="bi bi-trophy" style="font-size:1.5rem;display:block;margin-bottom:.5rem;opacity:.4;"></i>
+        <i class="bi bi-trophy s-d4078d5"></i>
         No knockout fixtures yet for this competition.
-        <a href="{% url 'admin_create_knockout_fixture' pk=item.competition.pk %}" style="color:#6A1B9A;font-weight:600;">Create one &rarr;</a>
+        <a href="{% url 'admin_create_knockout_fixture' pk=item.competition.pk %}" class="s-217cce0">Create one &rarr;</a>
     </div>
     {% endif %}
 </div>

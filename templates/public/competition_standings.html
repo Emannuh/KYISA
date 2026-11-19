@@ -1,4 +1,5 @@
 {% extends "public/base.html" %}
+{% block body_class %}pg-public-competition-standings{% endblock %}
 {% load static %}
 
 {% block title %}{{ competition.name }} Standings{% endblock %}
@@ -8,316 +9,6 @@
 {% block og_url %}https://kyisa.org/results/competitions/{{ competition.pk }}/standings/{% endblock %}
 
 {% block extra_css %}
-<style>
-    .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: .3rem;
-        font-size: .82rem;
-        color: #F9A825;
-        font-weight: 600;
-        transition: color .2s;
-    }
-    .back-link:hover { color: #fff; }
-
-    .badge-status {
-        display: inline-block;
-        padding: .2rem .7rem;
-        border-radius: 20px;
-        font-size: .72rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .5px;
-    }
-    .badge-active { background: #E8F5E9; color: #1B5E20; }
-    .badge-completed { background: #E3F2FD; color: #0D47A1; }
-    .badge-knockout { background: #FFF3E0; color: #E65100; }
-    .badge-registration { background: #F3E5F5; color: #6A1B9A; }
-
-    .section-header {
-        display: flex;
-        align-items: center;
-        gap: .5rem;
-        margin-bottom: 1.25rem;
-    }
-    .section-header h3 {
-        font-size: 1.1rem;
-        font-weight: 800;
-        color: #1a1a1a;
-        margin: 0;
-    }
-    .section-header i { color: #1B5E20; }
-
-    /* ── Pool standings table ─────────────────────────────────────────── */
-    .pool-card {
-        background: #fff;
-        border-radius: 14px;
-        box-shadow: 0 2px 10px rgba(0,0,0,.06);
-        overflow: hidden;
-        margin-bottom: 1.5rem;
-    }
-    .pool-header {
-        background: linear-gradient(135deg, #1B5E20, #2E7D32);
-        color: #fff;
-        padding: .6rem 1.25rem;
-        font-weight: 700;
-        font-size: .9rem;
-        display: flex;
-        align-items: center;
-        gap: .4rem;
-    }
-    .standings-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: .82rem;
-    }
-    .standings-table th {
-        background: #FAFAFA;
-        padding: .5rem .5rem;
-        text-align: center;
-        font-weight: 600;
-        color: #777;
-        border-bottom: 1px solid #eee;
-        font-size: .72rem;
-        text-transform: uppercase;
-    }
-    .standings-table th:first-child, .standings-table td:first-child {
-        text-align: left;
-        padding-left: 1rem;
-    }
-    .standings-table td {
-        padding: .5rem .5rem;
-        text-align: center;
-        border-bottom: 1px solid #f5f5f5;
-    }
-    .standings-table tr:hover { background: #F5F5F5; }
-    .pos-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        font-size: .7rem;
-        font-weight: 800;
-        margin-right: .3rem;
-    }
-    .pos-1 { background: linear-gradient(135deg, #FFD700, #FFA000); color: #333; }
-    .pos-2 { background: linear-gradient(135deg, #E0E0E0, #BDBDBD); color: #333; }
-    .pos-qualify { background: #E8F5E9; color: #1B5E20; }
-    .pos-other { background: #F5F5F5; color: #999; }
-    .team-name-cell { font-weight: 600; color: #1a1a1a; }
-    .team-badge-img { width: 20px; height: 20px; border-radius: 4px; object-fit: cover; margin-right: .3rem; vertical-align: middle; }
-    .pts-cell { font-weight: 800; color: #1B5E20; font-size: .95rem; }
-
-    /* ── Knockout bracket ─────────────────────────────────────────────── */
-    .ko-round {
-        margin-bottom: 1.5rem;
-    }
-    .ko-round-name {
-        font-weight: 700;
-        font-size: .9rem;
-        color: #E65100;
-        margin-bottom: .6rem;
-        display: flex;
-        align-items: center;
-        gap: .3rem;
-    }
-    .ko-fixtures {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: .75rem;
-    }
-    .ko-card {
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,.06);
-        overflow: hidden;
-        border-left: 4px solid #E65100;
-    }
-    .ko-card-body {
-        padding: .75rem 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: .5rem;
-    }
-    .ko-team {
-        font-size: .82rem;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: .3rem;
-        min-width: 0;
-    }
-    .ko-team span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .ko-score {
-        font-size: 1rem;
-        font-weight: 900;
-        color: #1B5E20;
-        white-space: nowrap;
-    }
-    .ko-vs { font-size: .75rem; color: #bbb; font-weight: 600; }
-    .ko-footer {
-        background: #FAFAFA;
-        padding: .3rem 1rem;
-        font-size: .7rem;
-        color: #999;
-        display: flex;
-        gap: .5rem;
-        align-items: center;
-    }
-    .ko-winner { color: #1B5E20; }
-
-    /* ── Match cards ──────────────────────────────────────────────────── */
-    .match-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 1rem;
-    }
-    .match-card {
-        background: #fff;
-        border-radius: 14px;
-        box-shadow: 0 2px 10px rgba(0,0,0,.06);
-        overflow: hidden;
-        transition: all .25s ease;
-    }
-    .match-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.1); }
-    .match-card-header {
-        padding: .5rem 1rem;
-        font-size: .72rem;
-        color: #999;
-        display: flex;
-        align-items: center;
-        gap: .3rem;
-        border-bottom: 1px solid #f5f5f5;
-    }
-    .match-card-body {
-        padding: .75rem 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: .5rem;
-    }
-    .match-team {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        flex: 1;
-        min-width: 0;
-    }
-    .match-team .name {
-        font-weight: 700;
-        font-size: .82rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
-    }
-    .match-score {
-        font-size: 1.1rem;
-        font-weight: 900;
-        color: #1B5E20;
-        letter-spacing: 2px;
-        white-space: nowrap;
-    }
-    .match-vs { font-size: .8rem; color: #bbb; font-weight: 600; }
-    .match-card-footer {
-        padding: .4rem 1rem;
-        background: #FAFAFA;
-        font-size: .72rem;
-        color: #999;
-        display: flex;
-        gap: .4rem;
-        align-items: center;
-    }
-
-    /* ── Stats leaderboard ────────────────────────────────────────────── */
-    .stats-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-    }
-    @media (max-width: 768px) { .stats-grid { grid-template-columns: 1fr; } }
-
-    .leaderboard {
-        background: #fff;
-        border-radius: 14px;
-        box-shadow: 0 2px 10px rgba(0,0,0,.06);
-        overflow: hidden;
-    }
-    .lb-head {
-        padding: .65rem 1.25rem;
-        font-weight: 700;
-        font-size: .9rem;
-        display: flex;
-        align-items: center;
-        gap: .5rem;
-        color: #fff;
-    }
-    .lb-head.green { background: linear-gradient(135deg, #1B5E20, #2E7D32); }
-    .lb-head.blue { background: linear-gradient(135deg, #0D47A1, #1565C0); }
-    .lb-head.amber { background: linear-gradient(135deg, #E65100, #F57F17); }
-    .lb-head.teal { background: linear-gradient(135deg, #004D40, #00695C); }
-
-    .lb-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: .82rem;
-    }
-    .lb-table th {
-        background: #FAFAFA;
-        padding: .4rem .5rem;
-        text-align: center;
-        font-weight: 600;
-        color: #777;
-        border-bottom: 1px solid #eee;
-        font-size: .7rem;
-        text-transform: uppercase;
-    }
-    .lb-table th:first-child, .lb-table td:first-child {
-        text-align: left;
-        padding-left: 1rem;
-    }
-    .lb-table td {
-        padding: .4rem .5rem;
-        text-align: center;
-        border-bottom: 1px solid #f5f5f5;
-    }
-    .lb-table tr:hover { background: #F5F5F5; }
-
-    .rank-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 22px;
-        height: 22px;
-        border-radius: 50%;
-        font-size: .65rem;
-        font-weight: 800;
-        margin-right: .2rem;
-    }
-    .rank-1 { background: linear-gradient(135deg, #FFD700, #FFA000); color: #333; }
-    .rank-2 { background: linear-gradient(135deg, #E0E0E0, #BDBDBD); color: #333; }
-    .rank-3 { background: linear-gradient(135deg, #CD7F32, #A0522D); color: #fff; }
-    .rank-other { background: #F5F5F5; color: #999; }
-    .player-name { font-weight: 600; color: #1a1a1a; }
-    .player-team { font-size: .72rem; color: #999; }
-    .stat-highlight { font-weight: 800; font-size: .9rem; }
-    .lb-empty {
-        text-align: center;
-        padding: 1.5rem;
-        color: #bbb;
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 3rem 1rem;
-        color: #bbb;
-    }
-    .empty-state i { font-size: 2rem; display: block; margin-bottom: .5rem; }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -333,7 +24,7 @@
         <span class="page-hero__badge reveal">
             <i class="bi bi-trophy"></i> {{ competition.get_sport_type_display }}
             &bull;
-            <span class="badge-status {% if competition.status == 'completed' %}badge-completed{% elif competition.status == 'knockout' %}badge-knockout{% elif competition.status == 'registration' %}badge-registration{% else %}badge-active{% endif %}" style="font-size:.65rem;padding:.15rem .5rem;">
+            <span class="badge-status {% if competition.status == 'completed' %}badge-completed{% elif competition.status == 'knockout' %}badge-knockout{% elif competition.status == 'registration' %}badge-registration{% else %}badge-active{% endif %} s-78ee489">
                 {{ competition.get_status_display }}
             </span>
         </span>
@@ -351,7 +42,7 @@
             <span>Standings</span>
         </div>
     </div>
-    <div class="kenya-stripe" style="position:absolute;bottom:0;left:0;right:0;z-index:5"></div>
+    <div class="kenya-stripe s-4a0e33c"></div>
 </section>
 
 
@@ -360,7 +51,7 @@
 <section class="section">
     <div class="container">
         <div class="section-header">
-            <i class="bi bi-table" style="font-size:1.2rem;"></i>
+            <i class="bi bi-table s-8ed6849"></i>
             <h3>Group Standings</h3>
         </div>
 
@@ -392,7 +83,7 @@
                                 {{ forloop.counter }}
                             </span>
                         </td>
-                        <td class="team-name-cell" style="text-align:left;">
+                        <td class="team-name-cell s-99ff2f6">
                             {% if pt.team.badge %}
                             <img src="{{ pt.team.badge.url }}" alt="" class="team-badge-img">
                             {% endif %}
@@ -422,7 +113,7 @@
 <section class="section-alt">
     <div class="container">
         <div class="section-header">
-            <i class="bi bi-trophy" style="font-size:1.2rem;"></i>
+            <i class="bi bi-trophy s-8ed6849"></i>
             <h3>Knockout Stage</h3>
         </div>
 
@@ -435,7 +126,7 @@
                     <div class="ko-card-body">
                         <div class="ko-team {% if f.winner and f.winner.pk == f.home_team.pk %}ko-winner{% endif %}">
                             {% if f.home_team.badge %}
-                            <img src="{{ f.home_team.badge.url }}" alt="" style="width:18px;height:18px;border-radius:3px;object-fit:cover;">
+                            <img src="{{ f.home_team.badge.url }}" alt="" class="s-5b646ad">
                             {% endif %}
                             <span>{{ f.home_team.name|truncatechars:20 }}</span>
                         </div>
@@ -443,9 +134,9 @@
                         <div class="ko-score">
                             {{ f.home_score }} - {{ f.away_score }}
                             {% if f.home_penalties is not None and f.away_penalties is not None %}
-                            <span style="font-size:.65rem;font-weight:600;color:#999;">({{ f.home_penalties }}-{{ f.away_penalties }} pen)</span>
+                            <span class="s-dcd0aeb">({{ f.home_penalties }}-{{ f.away_penalties }} pen)</span>
                             {% elif f.home_score_et is not None and f.away_score_et is not None %}
-                            <span style="font-size:.65rem;font-weight:600;color:#999;">(AET)</span>
+                            <span class="s-dcd0aeb">(AET)</span>
                             {% endif %}
                         </div>
                         {% else %}
@@ -454,7 +145,7 @@
                         <div class="ko-team {% if f.winner and f.winner.pk == f.away_team.pk %}ko-winner{% endif %}">
                             <span>{{ f.away_team.name|truncatechars:20 }}</span>
                             {% if f.away_team.badge %}
-                            <img src="{{ f.away_team.badge.url }}" alt="" style="width:18px;height:18px;border-radius:3px;object-fit:cover;">
+                            <img src="{{ f.away_team.badge.url }}" alt="" class="s-5b646ad">
                             {% endif %}
                         </div>
                     </div>
@@ -477,7 +168,7 @@
 <section class="section">
     <div class="container">
         <div class="section-header">
-            <i class="bi bi-check-circle-fill" style="font-size:1.2rem;color:#1B5E20;"></i>
+            <i class="bi bi-check-circle-fill s-9a986a0"></i>
             <h3>Recent Results</h3>
         </div>
         <div class="match-grid">
@@ -491,18 +182,18 @@
                 <div class="match-card-body">
                     <div class="match-team">
                         {% if match.home_team.badge %}
-                        <img src="{{ match.home_team.badge.url }}" alt="" style="width:28px;height:28px;border-radius:6px;object-fit:cover;margin-bottom:.2rem;">
+                        <img src="{{ match.home_team.badge.url }}" alt="" class="s-5d0c0ad">
                         {% else %}
-                        <i class="bi bi-shield-fill" style="font-size:1.2rem;color:#ccc;margin-bottom:.2rem;"></i>
+                        <i class="bi bi-shield-fill s-5ee0d73"></i>
                         {% endif %}
                         <span class="name">{{ match.home_team.name }}</span>
                     </div>
                     <div class="match-score">{{ match.home_score }} - {{ match.away_score }}</div>
                     <div class="match-team">
                         {% if match.away_team.badge %}
-                        <img src="{{ match.away_team.badge.url }}" alt="" style="width:28px;height:28px;border-radius:6px;object-fit:cover;margin-bottom:.2rem;">
+                        <img src="{{ match.away_team.badge.url }}" alt="" class="s-5d0c0ad">
                         {% else %}
-                        <i class="bi bi-shield-fill" style="font-size:1.2rem;color:#ccc;margin-bottom:.2rem;"></i>
+                        <i class="bi bi-shield-fill s-5ee0d73"></i>
                         {% endif %}
                         <span class="name">{{ match.away_team.name }}</span>
                     </div>
@@ -523,7 +214,7 @@
 <section class="section-alt">
     <div class="container">
         <div class="section-header">
-            <i class="bi bi-clock" style="font-size:1.2rem;color:#1565C0;"></i>
+            <i class="bi bi-clock s-1cbbb53"></i>
             <h3>Upcoming Fixtures</h3>
         </div>
         <div class="match-grid">
@@ -537,18 +228,18 @@
                 <div class="match-card-body">
                     <div class="match-team">
                         {% if match.home_team.badge %}
-                        <img src="{{ match.home_team.badge.url }}" alt="" style="width:28px;height:28px;border-radius:6px;object-fit:cover;margin-bottom:.2rem;">
+                        <img src="{{ match.home_team.badge.url }}" alt="" class="s-5d0c0ad">
                         {% else %}
-                        <i class="bi bi-shield-fill" style="font-size:1.2rem;color:#ccc;margin-bottom:.2rem;"></i>
+                        <i class="bi bi-shield-fill s-5ee0d73"></i>
                         {% endif %}
                         <span class="name">{{ match.home_team.name }}</span>
                     </div>
                     <div class="match-vs">VS</div>
                     <div class="match-team">
                         {% if match.away_team.badge %}
-                        <img src="{{ match.away_team.badge.url }}" alt="" style="width:28px;height:28px;border-radius:6px;object-fit:cover;margin-bottom:.2rem;">
+                        <img src="{{ match.away_team.badge.url }}" alt="" class="s-5d0c0ad">
                         {% else %}
-                        <i class="bi bi-shield-fill" style="font-size:1.2rem;color:#ccc;margin-bottom:.2rem;"></i>
+                        <i class="bi bi-shield-fill s-5ee0d73"></i>
                         {% endif %}
                         <span class="name">{{ match.away_team.name }}</span>
                     </div>
@@ -568,7 +259,7 @@
 <section class="section">
     <div class="container">
         <div class="section-header">
-            <i class="bi bi-bar-chart-line" style="font-size:1.2rem;color:#1B5E20;"></i>
+            <i class="bi bi-bar-chart-line s-9a986a0"></i>
             <h3>Player Statistics</h3>
         </div>
 
@@ -603,7 +294,7 @@
                             </td>
                             <td class="player-team">{{ s.team.name|truncatechars:18 }}</td>
                             <td>{{ s.matches_played }}</td>
-                            <td class="stat-highlight" style="color:#1B5E20;">{{ s.goals }}</td>
+                            <td class="stat-highlight s-a24cb3b">{{ s.goals }}</td>
                             <td>{{ s.assists }}</td>
                         </tr>
                         {% endfor %}
@@ -637,7 +328,7 @@
                             </td>
                             <td class="player-team">{{ s.team.name|truncatechars:18 }}</td>
                             <td>{{ s.matches_played }}</td>
-                            <td class="stat-highlight" style="color:#1565C0;">{{ s.assists }}</td>
+                            <td class="stat-highlight s-06bcaaa">{{ s.assists }}</td>
                             <td>{{ s.goals }}</td>
                         </tr>
                         {% endfor %}
@@ -657,8 +348,8 @@
                         <tr>
                             <th>Player</th>
                             <th>Team</th>
-                            <th><i class="bi bi-square-fill" style="color:#F57F17;font-size:.55rem;"></i> Y</th>
-                            <th><i class="bi bi-square-fill" style="color:#C62828;font-size:.55rem;"></i> R</th>
+                            <th><i class="bi bi-square-fill s-e577704"></i> Y</th>
+                            <th><i class="bi bi-square-fill s-95c81e9"></i> R</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -669,8 +360,8 @@
                                 <span class="player-name">{{ s.player.first_name }} {{ s.player.last_name }}</span>
                             </td>
                             <td class="player-team">{{ s.team.name|truncatechars:18 }}</td>
-                            <td style="color:#F57F17;font-weight:700;">{{ s.yellow_cards }}</td>
-                            <td style="color:#C62828;font-weight:700;">{{ s.red_cards }}</td>
+                            <td class="s-c9e31e4">{{ s.yellow_cards }}</td>
+                            <td class="s-8a3f6f6">{{ s.red_cards }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -703,7 +394,7 @@
                             </td>
                             <td class="player-team">{{ s.team.name|truncatechars:18 }}</td>
                             <td>{{ s.matches_played }}</td>
-                            <td class="stat-highlight" style="color:#00695C;">{{ s.clean_sheets }}</td>
+                            <td class="stat-highlight s-b07cf6d">{{ s.clean_sheets }}</td>
                             <td>{{ s.goals_conceded }}</td>
                         </tr>
                         {% endfor %}
@@ -716,14 +407,14 @@
 
             <!-- FAIR PLAY -->
             <div class="leaderboard">
-                <div class="lb-head" style="background:#E8F5E9;color:#1B5E20;"><i class="bi bi-award"></i> Fair Play Table</div>
+                <div class="lb-head s-02f0f8b"><i class="bi bi-award"></i> Fair Play Table</div>
                 {% if fair_play_table %}
                 <table class="lb-table">
                     <thead>
                         <tr>
                             <th>Team</th>
-                            <th><i class="bi bi-square-fill" style="color:#F57F17;font-size:.55rem;"></i> Y</th>
-                            <th><i class="bi bi-square-fill" style="color:#C62828;font-size:.55rem;"></i> R</th>
+                            <th><i class="bi bi-square-fill s-e577704"></i> Y</th>
+                            <th><i class="bi bi-square-fill s-95c81e9"></i> R</th>
                             <th>FP Pts</th>
                         </tr>
                     </thead>
@@ -734,9 +425,9 @@
                                 <span class="rank-badge {% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% else %}rank-other{% endif %}">{{ forloop.counter }}</span>
                                 <span class="player-name">{{ row.team__name }}</span>
                             </td>
-                            <td style="color:#F57F17;font-weight:700;">{{ row.yellow_total }}</td>
-                            <td style="color:#C62828;font-weight:700;">{{ row.red_total }}</td>
-                            <td class="stat-highlight" style="color:#1B5E20;">{{ row.fair_play_points }}</td>
+                            <td class="s-c9e31e4">{{ row.yellow_total }}</td>
+                            <td class="s-8a3f6f6">{{ row.red_total }}</td>
+                            <td class="stat-highlight s-a24cb3b">{{ row.fair_play_points }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -748,7 +439,7 @@
         </div>
         {% endif %}
 
-        <div style="text-align:center;margin-top:2rem;font-size:.78rem;color:#999;">
+        <div class="s-7b83258">
             <i class="bi bi-info-circle"></i> Statistics are automatically updated when match reports are approved.
         </div>
     </div>

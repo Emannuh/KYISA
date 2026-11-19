@@ -15,7 +15,7 @@
 </div>
 
 <!-- Stats Cards -->
-<div class="dash-stats" style="margin-bottom:1.75rem">
+<div class="dash-stats s-af1a41b">
     <div class="dash-stat dash-stat--amber">
         <div class="stat-icon"><i class="bi bi-clock-history"></i></div>
         <div class="stat-num">{{ stats.pending }}</div>
@@ -57,13 +57,13 @@
                 <tr>
                     <td><strong>{{ profile.user.get_full_name }}</strong></td>
                     <td>{{ profile.user.email }}</td>
-                    <td><code style="background:#f5f5f5;padding:2px 8px;border-radius:6px;font-size:.82rem">{{ profile.license_number }}</code></td>
+                    <td><code class="s-73aa157">{{ profile.license_number }}</code></td>
                     <td><span class="pstatus pstatus--success">{{ profile.get_level_display }}</span></td>
                     <td>{{ profile.county|default:"—" }}</td>
                     <td>{{ profile.years_experience }} yr{{ profile.years_experience|pluralize }}</td>
-                    <td style="white-space:nowrap">{{ profile.created_at|date:"d M Y" }}</td>
+                    <td class="s-1cd2eeb">{{ profile.created_at|date:"d M Y" }}</td>
                     <td>
-                        <form method="post" style="display:inline">
+                        <form method="post" class="s-2f8710b">
                             {% csrf_token %}
                             <input type="hidden" name="profile_id" value="{{ profile.pk }}">
                             <div class="pbtn-group">

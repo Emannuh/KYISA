@@ -13,58 +13,58 @@
 </div>
 
 <!-- Competition Info Bar -->
-<div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem">
-    <span class="badge badge--primary" style="font-size:.85rem;padding:.4rem .8rem">{{ competition.get_format_type_display }}</span>
-    <span class="badge badge--info" style="font-size:.85rem;padding:.4rem .8rem">{{ competition.get_status_display }}</span>
-    <span style="color:#888;font-size:.85rem">{{ competition.start_date|date:"d M" }}   {{ competition.end_date|date:"d M Y" }}</span>
+<div class="s-a9452ca">
+    <span class="badge badge--primary s-bcbd658">{{ competition.get_format_type_display }}</span>
+    <span class="badge badge--info s-bcbd658">{{ competition.get_status_display }}</span>
+    <span class="s-7167656">{{ competition.start_date|date:"d M" }}   {{ competition.end_date|date:"d M Y" }}</span>
 </div>
 
 <!-- TAB NAVIGATION -->
-<div style="display:flex;gap:0;border-bottom:2px solid #e0e0e0;margin-bottom:1.5rem">
-    <button class="tab-btn active" onclick="showTab('groups')" id="tab-groups" style="padding:.6rem 1.2rem;border:none;background:none;cursor:pointer;font-weight:700;border-bottom:3px solid #1b5e20;color:#1b5e20">Group Standings</button>
-    <button class="tab-btn" onclick="showTab('knockout')" id="tab-knockout" style="padding:.6rem 1.2rem;border:none;background:none;cursor:pointer;font-weight:600;color:#888">Knockout</button>
-    <button class="tab-btn" onclick="showTab('scorers')" id="tab-scorers" style="padding:.6rem 1.2rem;border:none;background:none;cursor:pointer;font-weight:600;color:#888">Top Scorers</button>
-    <button class="tab-btn" onclick="showTab('assists')" id="tab-assists" style="padding:.6rem 1.2rem;border:none;background:none;cursor:pointer;font-weight:600;color:#888">Top Assists</button>
-    <button class="tab-btn" onclick="showTab('discipline')" id="tab-discipline" style="padding:.6rem 1.2rem;border:none;background:none;cursor:pointer;font-weight:600;color:#888">Discipline</button>
+<div class="s-8fe99ce">
+    <button class="tab-btn active s-539e762" onclick="showTab('groups')" id="tab-groups">Group Standings</button>
+    <button class="tab-btn s-c50fbb2" onclick="showTab('knockout')" id="tab-knockout">Knockout</button>
+    <button class="tab-btn s-c50fbb2" onclick="showTab('scorers')" id="tab-scorers">Top Scorers</button>
+    <button class="tab-btn s-c50fbb2" onclick="showTab('assists')" id="tab-assists">Top Assists</button>
+    <button class="tab-btn s-c50fbb2" onclick="showTab('discipline')" id="tab-discipline">Discipline</button>
 </div>
 
 <!-- GROUP STANDINGS TAB -->
 <div id="panel-groups">
 {% if pool_standings %}
     {% for ps in pool_standings %}
-    <div class="card" style="margin-bottom:1.5rem">
+    <div class="card s-92cb257">
         <div class="card-header">
             <h3>{{ ps.pool.name }}</h3>
         </div>
-        <div class="card-body" style="overflow-x:auto;padding:0">
-            <table style="margin:0">
+        <div class="card-body s-41df3e0">
+            <table class="s-2a0ca83">
                 <thead>
                     <tr>
-                        <th style="width:30px">#</th>
+                        <th class="s-cb6f3eb">#</th>
                         <th>Team</th>
-                        <th style="text-align:center">P</th>
-                        <th style="text-align:center">W</th>
-                        <th style="text-align:center">D</th>
-                        <th style="text-align:center">L</th>
-                        <th style="text-align:center">GF</th>
-                        <th style="text-align:center">GA</th>
-                        <th style="text-align:center">GD</th>
-                        <th style="text-align:center;font-weight:800">Pts</th>
+                        <th class="s-65f9d5a">P</th>
+                        <th class="s-65f9d5a">W</th>
+                        <th class="s-65f9d5a">D</th>
+                        <th class="s-65f9d5a">L</th>
+                        <th class="s-65f9d5a">GF</th>
+                        <th class="s-65f9d5a">GA</th>
+                        <th class="s-65f9d5a">GD</th>
+                        <th class="s-eda06ea">Pts</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for pt in ps.teams %}
-                    <tr{% if forloop.counter <= competition.qualify_from_group %} style="background:#e8f5e9"{% endif %}>
-                        <td style="text-align:center;font-weight:700;color:#888">{{ forloop.counter }}</td>
-                        <td><strong>{{ pt.team.name }}</strong> <span style="color:#aaa;font-size:.78rem">({{ pt.team.county }})</span></td>
-                        <td style="text-align:center">{{ pt.played }}</td>
-                        <td style="text-align:center">{{ pt.won }}</td>
-                        <td style="text-align:center">{{ pt.drawn }}</td>
-                        <td style="text-align:center">{{ pt.lost }}</td>
-                        <td style="text-align:center">{{ pt.goals_for }}</td>
-                        <td style="text-align:center">{{ pt.goals_against }}</td>
-                        <td style="text-align:center;font-weight:600">{{ pt.goal_difference }}</td>
-                        <td style="text-align:center;font-weight:800;font-size:1.1rem">{{ pt.points }}</td>
+                    <tr{% if forloop.counter <= competition.qualify_from_group %} class="s-93b3300"{% endif %}>
+                        <td class="s-12c19a9">{{ forloop.counter }}</td>
+                        <td><strong>{{ pt.team.name }}</strong> <span class="s-d7567a6">({{ pt.team.county }})</span></td>
+                        <td class="s-65f9d5a">{{ pt.played }}</td>
+                        <td class="s-65f9d5a">{{ pt.won }}</td>
+                        <td class="s-65f9d5a">{{ pt.drawn }}</td>
+                        <td class="s-65f9d5a">{{ pt.lost }}</td>
+                        <td class="s-65f9d5a">{{ pt.goals_for }}</td>
+                        <td class="s-65f9d5a">{{ pt.goals_against }}</td>
+                        <td class="s-d9b1691">{{ pt.goal_difference }}</td>
+                        <td class="s-5a7dacd">{{ pt.points }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -72,31 +72,31 @@
         </div>
     </div>
     {% endfor %}
-    <p style="font-size:.82rem;color:#888">
-        <span style="display:inline-block;width:12px;height:12px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:2px;vertical-align:middle;margin-right:.3rem"></span>
+    <p class="s-1889d5d">
+        <span class="s-f5c082f"></span>
         Qualify for knockout stage (top {{ competition.qualify_from_group }} per group)
     </p>
 {% else %}
-    <div class="card" style="padding:2rem;text-align:center;color:#888">
+    <div class="card s-7bbacec">
         <p>No groups/pools set up yet for this competition.</p>
     </div>
 {% endif %}
 </div>
 
 <!-- KNOCKOUT TAB -->
-<div id="panel-knockout" style="display:none">
+<div id="panel-knockout" class="s-5790ffb">
 {% if knockout_rounds %}
     {% for round_name, fixtures in knockout_rounds.items %}
-    <div class="card" style="margin-bottom:1.5rem">
+    <div class="card s-92cb257">
         <div class="card-header">
             <h3>{{ round_name }}</h3>
         </div>
-        <div class="card-body" style="overflow-x:auto;padding:0">
-            <table style="margin:0">
+        <div class="card-body s-41df3e0">
+            <table class="s-2a0ca83">
                 <thead>
                     <tr>
                         <th>Home</th>
-                        <th style="text-align:center">Score</th>
+                        <th class="s-65f9d5a">Score</th>
                         <th>Away</th>
                         <th>Venue</th>
                         <th>Date</th>
@@ -106,22 +106,22 @@
                 <tbody>
                     {% for f in fixtures %}
                     <tr>
-                        <td{% if f.winner == f.home_team %} style="font-weight:800"{% endif %}>{{ f.home_team.name }}</td>
-                        <td style="text-align:center;font-weight:700;font-family:monospace;font-size:1.1rem">
+                        <td{% if f.winner == f.home_team %} class="s-209732a"{% endif %}>{{ f.home_team.name }}</td>
+                        <td class="s-1514745">
                             {% if f.home_score is not None %}
                                 {{ f.home_score }}   {{ f.away_score }}
                                 {% if f.home_penalties is not None %}
-                                <br><span style="font-size:.75rem;color:#888">(Pens: {{ f.home_penalties }}-{{ f.away_penalties }})</span>
+                                <br><span class="s-127eaa4">(Pens: {{ f.home_penalties }}-{{ f.away_penalties }})</span>
                                 {% elif f.home_score_et is not None %}
-                                <br><span style="font-size:.75rem;color:#888">(AET: {{ f.home_score_et }}-{{ f.away_score_et }})</span>
+                                <br><span class="s-127eaa4">(AET: {{ f.home_score_et }}-{{ f.away_score_et }})</span>
                                 {% endif %}
                             {% else %}
                                 vs
                             {% endif %}
                         </td>
-                        <td{% if f.winner == f.away_team %} style="font-weight:800"{% endif %}>{{ f.away_team.name }}</td>
-                        <td style="font-size:.82rem">{{ f.venue.name|default:"TBD" }}</td>
-                        <td style="font-size:.82rem">{{ f.match_date|date:"d M" }} {{ f.kickoff_time|time:"H:i" }}</td>
+                        <td{% if f.winner == f.away_team %} class="s-209732a"{% endif %}>{{ f.away_team.name }}</td>
+                        <td class="s-9dd65a4">{{ f.venue.name|default:"TBD" }}</td>
+                        <td class="s-9dd65a4">{{ f.match_date|date:"d M" }} {{ f.kickoff_time|time:"H:i" }}</td>
                         <td>
                             {% if f.status == 'completed' %}
                             <span class="badge badge--success">Completed</span>
@@ -139,120 +139,120 @@
     </div>
     {% endfor %}
 {% else %}
-    <div class="card" style="padding:2rem;text-align:center;color:#888">
+    <div class="card s-7bbacec">
         <p>No knockout matches scheduled yet.</p>
     </div>
 {% endif %}
 </div>
 
 <!-- TOP SCORERS TAB -->
-<div id="panel-scorers" style="display:none">
+<div id="panel-scorers" class="s-5790ffb">
 <div class="card">
     <div class="card-header"><h3><i class="bi bi-bullseye"></i> Top Scorers</h3></div>
-    <div class="card-body" style="overflow-x:auto;padding:0">
+    <div class="card-body s-41df3e0">
         {% if top_scorers %}
-        <table style="margin:0">
+        <table class="s-2a0ca83">
             <thead>
                 <tr>
-                    <th style="width:30px">#</th>
+                    <th class="s-cb6f3eb">#</th>
                     <th>Player</th>
                     <th>Team</th>
-                    <th style="text-align:center">Goals</th>
-                    <th style="text-align:center">Assists</th>
-                    <th style="text-align:center">Penalties</th>
-                    <th style="text-align:center">Matches</th>
+                    <th class="s-65f9d5a">Goals</th>
+                    <th class="s-65f9d5a">Assists</th>
+                    <th class="s-65f9d5a">Penalties</th>
+                    <th class="s-65f9d5a">Matches</th>
                 </tr>
             </thead>
             <tbody>
                 {% for s in top_scorers %}
                 <tr>
-                    <td style="text-align:center;font-weight:700;color:#888">{{ forloop.counter }}</td>
+                    <td class="s-12c19a9">{{ forloop.counter }}</td>
                     <td><strong>{{ s.player.get_full_name }}</strong></td>
                     <td>{{ s.team.name }}</td>
-                    <td style="text-align:center;font-weight:800;font-size:1.1rem">{{ s.goals }}</td>
-                    <td style="text-align:center">{{ s.assists }}</td>
-                    <td style="text-align:center">{{ s.penalties_scored }}</td>
-                    <td style="text-align:center">{{ s.matches_played }}</td>
+                    <td class="s-5a7dacd">{{ s.goals }}</td>
+                    <td class="s-65f9d5a">{{ s.assists }}</td>
+                    <td class="s-65f9d5a">{{ s.penalties_scored }}</td>
+                    <td class="s-65f9d5a">{{ s.matches_played }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         {% else %}
-        <p style="color:#888;text-align:center;padding:2rem">No goals recorded yet.</p>
+        <p class="s-e2b0c0d">No goals recorded yet.</p>
         {% endif %}
     </div>
 </div>
 </div>
 
 <!-- TOP ASSISTS TAB -->
-<div id="panel-assists" style="display:none">
+<div id="panel-assists" class="s-5790ffb">
 <div class="card">
     <div class="card-header"><h3><i class="bi bi-hand-thumbs-up"></i> Top Assist Providers</h3></div>
-    <div class="card-body" style="overflow-x:auto;padding:0">
+    <div class="card-body s-41df3e0">
         {% if top_assisters %}
-        <table style="margin:0">
+        <table class="s-2a0ca83">
             <thead>
                 <tr>
-                    <th style="width:30px">#</th>
+                    <th class="s-cb6f3eb">#</th>
                     <th>Player</th>
                     <th>Team</th>
-                    <th style="text-align:center">Assists</th>
-                    <th style="text-align:center">Goals</th>
-                    <th style="text-align:center">Matches</th>
+                    <th class="s-65f9d5a">Assists</th>
+                    <th class="s-65f9d5a">Goals</th>
+                    <th class="s-65f9d5a">Matches</th>
                 </tr>
             </thead>
             <tbody>
                 {% for s in top_assisters %}
                 <tr>
-                    <td style="text-align:center;font-weight:700;color:#888">{{ forloop.counter }}</td>
+                    <td class="s-12c19a9">{{ forloop.counter }}</td>
                     <td><strong>{{ s.player.get_full_name }}</strong></td>
                     <td>{{ s.team.name }}</td>
-                    <td style="text-align:center;font-weight:800;font-size:1.1rem">{{ s.assists }}</td>
-                    <td style="text-align:center">{{ s.goals }}</td>
-                    <td style="text-align:center">{{ s.matches_played }}</td>
+                    <td class="s-5a7dacd">{{ s.assists }}</td>
+                    <td class="s-65f9d5a">{{ s.goals }}</td>
+                    <td class="s-65f9d5a">{{ s.matches_played }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         {% else %}
-        <p style="color:#888;text-align:center;padding:2rem">No assists recorded yet.</p>
+        <p class="s-e2b0c0d">No assists recorded yet.</p>
         {% endif %}
     </div>
 </div>
 </div>
 
 <!-- DISCIPLINE TAB -->
-<div id="panel-discipline" style="display:none">
-<div class="card" style="margin-bottom:1.5rem">
+<div id="panel-discipline" class="s-5790ffb">
+<div class="card s-92cb257">
     <div class="card-header"><h3><i class="bi bi-card-list"></i> Disciplinary Record</h3></div>
-    <div class="card-body" style="overflow-x:auto;padding:0">
+    <div class="card-body s-41df3e0">
         {% if disciplinary %}
-        <table style="margin:0">
+        <table class="s-2a0ca83">
             <thead>
                 <tr>
-                    <th style="width:30px">#</th>
+                    <th class="s-cb6f3eb">#</th>
                     <th>Player</th>
                     <th>Team</th>
-                    <th style="text-align:center"><i class="bi bi-square-fill" style="color:#f9a825"></i> Yellows</th>
-                    <th style="text-align:center"><i class="bi bi-square-fill" style="color:#c62828"></i> Reds</th>
-                    <th style="text-align:center">Matches</th>
+                    <th class="s-65f9d5a"><i class="bi bi-square-fill s-9206f2c"></i> Yellows</th>
+                    <th class="s-65f9d5a"><i class="bi bi-square-fill s-e9606c2"></i> Reds</th>
+                    <th class="s-65f9d5a">Matches</th>
                 </tr>
             </thead>
             <tbody>
                 {% for s in disciplinary %}
                 <tr>
-                    <td style="text-align:center;font-weight:700;color:#888">{{ forloop.counter }}</td>
+                    <td class="s-12c19a9">{{ forloop.counter }}</td>
                     <td><strong>{{ s.player.get_full_name }}</strong></td>
                     <td>{{ s.team.name }}</td>
-                    <td style="text-align:center;font-weight:700;color:#f9a825">{{ s.yellow_cards }}</td>
-                    <td style="text-align:center;font-weight:700;color:#c62828">{{ s.red_cards }}</td>
-                    <td style="text-align:center">{{ s.matches_played }}</td>
+                    <td class="s-74bbd56">{{ s.yellow_cards }}</td>
+                    <td class="s-5b35a00">{{ s.red_cards }}</td>
+                    <td class="s-65f9d5a">{{ s.matches_played }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         {% else %}
-        <p style="color:#888;text-align:center;padding:2rem">No cards recorded yet.</p>
+        <p class="s-e2b0c0d">No cards recorded yet.</p>
         {% endif %}
     </div>
 </div>
@@ -260,27 +260,27 @@
 {% if clean_sheets %}
 <div class="card">
     <div class="card-header"><h3><i class="bi bi-award"></i> Clean Sheet Leaders (Goalkeepers)</h3></div>
-    <div class="card-body" style="overflow-x:auto;padding:0">
-        <table style="margin:0">
+    <div class="card-body s-41df3e0">
+        <table class="s-2a0ca83">
             <thead>
                 <tr>
-                    <th style="width:30px">#</th>
+                    <th class="s-cb6f3eb">#</th>
                     <th>Goalkeeper</th>
                     <th>Team</th>
-                    <th style="text-align:center">Clean Sheets</th>
-                    <th style="text-align:center">Goals Conceded</th>
-                    <th style="text-align:center">Matches</th>
+                    <th class="s-65f9d5a">Clean Sheets</th>
+                    <th class="s-65f9d5a">Goals Conceded</th>
+                    <th class="s-65f9d5a">Matches</th>
                 </tr>
             </thead>
             <tbody>
                 {% for s in clean_sheets %}
                 <tr>
-                    <td style="text-align:center;font-weight:700;color:#888">{{ forloop.counter }}</td>
+                    <td class="s-12c19a9">{{ forloop.counter }}</td>
                     <td><strong>{{ s.player.get_full_name }}</strong></td>
                     <td>{{ s.team.name }}</td>
-                    <td style="text-align:center;font-weight:800;color:#2e7d32;font-size:1.1rem">{{ s.clean_sheets }}</td>
-                    <td style="text-align:center">{{ s.goals_conceded }}</td>
-                    <td style="text-align:center">{{ s.matches_played }}</td>
+                    <td class="s-947522c">{{ s.clean_sheets }}</td>
+                    <td class="s-65f9d5a">{{ s.goals_conceded }}</td>
+                    <td class="s-65f9d5a">{{ s.matches_played }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

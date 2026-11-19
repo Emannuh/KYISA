@@ -12,10 +12,10 @@
 </div>
 
 <!-- Filters -->
-<div class="card p-3 mb-3" style="background:#f9f9f9;">
+<div class="card p-3 mb-3 s-fcb358b">
     <form method="get" class="d-flex gap-3 align-items-end flex-wrap">
         <div>
-            <label class="form-label mb-1" style="font-size:.82rem;font-weight:600;">User</label>
+            <label class="form-label mb-1 s-a78eb9c">User</label>
             <select name="user" class="form-select form-select-sm" onchange="this.form.submit()">
                 <option value="">All Users</option>
                 {% for u in users %}
@@ -24,7 +24,7 @@
             </select>
         </div>
         <div>
-            <label class="form-label mb-1" style="font-size:.82rem;font-weight:600;">Action Type</label>
+            <label class="form-label mb-1 s-a78eb9c">Action Type</label>
             <select name="action" class="form-select form-select-sm" onchange="this.form.submit()">
                 <option value="">All Actions</option>
                 {% for val, label in action_choices %}
@@ -33,7 +33,7 @@
             </select>
         </div>
         {% if user_filter or action_filter %}
-        <a href="{% url 'sg_user_actions' %}" class="btn btn-sm btn-outline-secondary" style="margin-bottom:2px;">Clear</a>
+        <a href="{% url 'sg_user_actions' %}" class="btn btn-sm btn-outline-secondary s-2f6e163">Clear</a>
         {% endif %}
     </form>
 </div>
@@ -41,7 +41,7 @@
 <div class="card p-3">
     <div class="table-responsive">
         <table class="table table-sm table-hover mb-0">
-            <thead style="background:#f5f5f5;">
+            <thead class="s-05b35f1">
                 <tr>
                     <th>Date / Time</th>
                     <th>User</th>
@@ -54,12 +54,12 @@
             <tbody>
                 {% for log in logs %}
                 <tr>
-                    <td style="font-size:.82rem;white-space:nowrap;">{{ log.timestamp|date:"d M Y H:i" }}</td>
+                    <td class="s-2df0407">{{ log.timestamp|date:"d M Y H:i" }}</td>
                     <td>{{ log.user.get_full_name|default:"System" }}</td>
-                    <td style="font-size:.82rem;">{{ log.user.get_role_display|default:"—" }}</td>
+                    <td class="s-9dd65a4">{{ log.user.get_role_display|default:"—" }}</td>
                     <td><span class="badge bg-{{ log.action_class }}">{{ log.get_action_display }}</span></td>
-                    <td style="font-size:.85rem;">{{ log.description|truncatechars:80 }}</td>
-                    <td style="font-size:.82rem;">{{ log.ip_address|default:"—" }}</td>
+                    <td class="s-3dc1f6c">{{ log.description|truncatechars:80 }}</td>
+                    <td class="s-9dd65a4">{{ log.ip_address|default:"—" }}</td>
                 </tr>
                 {% empty %}
                 <tr><td colspan="6" class="text-muted text-center">No activity logs found</td></tr>
@@ -68,7 +68,7 @@
         </table>
     </div>
     {% if logs|length >= 200 %}
-    <p class="text-muted mt-2 mb-0" style="font-size:.82rem;"><em>Showing most recent 200 entries. Use the full Audit Report for comprehensive data.</em></p>
+    <p class="text-muted mt-2 mb-0 s-9dd65a4"><em>Showing most recent 200 entries. Use the full Audit Report for comprehensive data.</em></p>
     {% endif %}
 </div>
 {% endblock %}

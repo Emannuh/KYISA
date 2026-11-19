@@ -14,27 +14,27 @@
 
 {% if not edition %}
 <!-- No active edition — admin can create one here -->
-<div style="background:#fff;border-radius:14px;border:1.5px dashed #e5e7eb;padding:2.5rem;text-align:center;margin-bottom:1.5rem">
-  <i class="bi bi-trophy" style="font-size:2.5rem;color:#d1d5db;display:block;margin-bottom:.75rem"></i>
-  <h3 style="font-size:1rem;font-weight:700;color:#111;margin-bottom:.35rem">No Active KICOSCA Edition</h3>
-  <p style="color:#6b7280;font-size:.85rem;margin-bottom:1.25rem">Create an edition to activate the KICOSCA Games registration cycle.</p>
+<div class="s-b75eb1f">
+  <i class="bi bi-trophy s-a35a8a8"></i>
+  <h3 class="s-e6a652d">No Active KICOSCA Edition</h3>
+  <p class="s-55de225">Create an edition to activate the KICOSCA Games registration cycle.</p>
   {% if can_manage %}
-  <form method="post" action="{% url 'kicosca_create_edition' %}" style="display:inline-flex;gap:.5rem;align-items:flex-end;flex-wrap:wrap;justify-content:center">
+  <form method="post" action="{% url 'kicosca_create_edition' %}" class="s-25c5732">
     {% csrf_token %}
     <div>
-      <label style="font-size:.72rem;font-weight:600;display:block;margin-bottom:.25rem;color:#374151">Edition Name</label>
+      <label class="s-2ebc4ad">Edition Name</label>
       <input type="text" name="name" placeholder="e.g. KICOSCA Games 2026 — Nakuru" required
-             style="padding:.52rem .8rem;border:1.5px solid #e5e7eb;border-radius:9px;font-size:.85rem;min-width:280px">
+             class="s-7d536d1">
     </div>
     <div>
-      <label style="font-size:.72rem;font-weight:600;display:block;margin-bottom:.25rem;color:#374151">Year</label>
+      <label class="s-2ebc4ad">Year</label>
       <input type="number" name="year" value="2026" min="2020" max="2050" required
-             style="padding:.52rem .65rem;border:1.5px solid #e5e7eb;border-radius:9px;font-size:.85rem;width:80px">
+             class="s-c3a0ce8">
     </div>
     <div>
-      <label style="font-size:.72rem;font-weight:600;display:block;margin-bottom:.25rem;color:#374151">Host County</label>
+      <label class="s-2ebc4ad">Host County</label>
       <input type="text" name="host_county" placeholder="e.g. Nakuru" required
-             style="padding:.52rem .8rem;border:1.5px solid #e5e7eb;border-radius:9px;font-size:.85rem;width:140px">
+             class="s-1475b0c">
     </div>
     <button type="submit" class="pbtn pbtn-primary"><i class="bi bi-plus-circle"></i> Create Edition</button>
   </form>
@@ -43,19 +43,19 @@
 {% else %}
 
 <!-- Edition banner -->
-<div style="background:#0c0f14;border-radius:12px;padding:1rem 1.35rem;margin-bottom:1.35rem;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #7c3aed">
+<div class="s-1be5e65">
   <div>
-    <div style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#a78bfa;margin-bottom:.2rem">Active Edition</div>
-    <div style="font-size:1rem;font-weight:800;color:#fff">{{ edition.name }}</div>
+    <div class="s-c62ee24">Active Edition</div>
+    <div class="s-5da38b6">{{ edition.name }}</div>
   </div>
-  <div style="text-align:right">
-    <div style="font-size:1.4rem;font-weight:800;color:#fff">{{ players|length }}</div>
-    <div style="font-size:.68rem;color:#a78bfa;text-transform:uppercase;letter-spacing:.04em">Players</div>
+  <div class="s-30489cb">
+    <div class="s-943d2bf">{{ players|length }}</div>
+    <div class="s-b9aab5e">Players</div>
   </div>
 </div>
 
 <!-- Stats -->
-<div class="dash-stats" style="margin-bottom:1.25rem">
+<div class="dash-stats s-c33bec6">
   <div class="dash-stat dash-stat--green">
     <div class="stat-icon"><i class="bi bi-patch-check-fill"></i></div>
     <div class="stat-num">{{ verified_count }}</div>
@@ -79,15 +79,15 @@
 </div>
 
 <!-- Filters -->
-<div class="card" style="margin-bottom:1rem;padding:.85rem 1rem">
-  <form method="get" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end">
-    <div style="flex:1;min-width:160px">
-      <label style="font-size:.72rem;font-weight:600;color:#6b7280;display:block;margin-bottom:.2rem">Search</label>
-      <input type="text" name="q" value="{{ search }}" placeholder="Name or National ID" style="width:100%;padding:.48rem .75rem;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.83rem">
+<div class="card s-e8a5be7">
+  <form method="get" class="s-c7f2723">
+    <div class="s-3921a7f">
+      <label class="s-6c542c9">Search</label>
+      <input type="text" name="q" value="{{ search }}" placeholder="Name or National ID" class="s-3882589">
     </div>
     <div>
-      <label style="font-size:.72rem;font-weight:600;color:#6b7280;display:block;margin-bottom:.2rem">Sport</label>
-      <select name="sport" style="padding:.48rem .75rem;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.82rem">
+      <label class="s-6c542c9">Sport</label>
+      <select name="sport" class="s-c1bbefa">
         <option value="">All Sports</option>
         {% for val, label in sport_choices %}
         <option value="{{ val }}" {% if sport_filter == val %}selected{% endif %}>{{ label }}</option>
@@ -95,8 +95,8 @@
       </select>
     </div>
     <div>
-      <label style="font-size:.72rem;font-weight:600;color:#6b7280;display:block;margin-bottom:.2rem">Status</label>
-      <select name="status" style="padding:.48rem .75rem;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.82rem">
+      <label class="s-6c542c9">Status</label>
+      <select name="status" class="s-c1bbefa">
         <option value="">All</option>
         <option value="pending"  {% if status_filter == 'pending'  %}selected{% endif %}>⏳ Pending</option>
         <option value="verified" {% if status_filter == 'verified' %}selected{% endif %}>✅ Verified</option>
@@ -104,9 +104,9 @@
       </select>
     </div>
     <div>
-      <label style="font-size:.72rem;font-weight:600;color:#6b7280;display:block;margin-bottom:.2rem">County</label>
+      <label class="s-6c542c9">County</label>
       <input type="text" name="county" value="{{ county_filter }}" placeholder="County name"
-             style="padding:.48rem .75rem;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.82rem;width:130px">
+             class="s-ef5526a">
     </div>
     <button type="submit" class="pbtn pbtn-primary pbtn-sm"><i class="bi bi-search"></i> Filter</button>
     <a href="{% url 'kicosca_verification' %}" class="pbtn pbtn-secondary pbtn-sm">Clear</a>
@@ -135,11 +135,11 @@
       <tbody>
         {% for p in players %}
         <tr>
-          <td style="font-weight:600">{{ p.full_name }}<br><span style="font-size:.72rem;color:#9ca3af">{{ p.discipline.get_sport_display }}</span></td>
-          <td style="font-size:.82rem">{{ p.discipline.entry.county }}</td>
-          <td style="font-size:.78rem">{{ p.discipline.get_sport_display }}</td>
-          <td><code style="font-size:.78rem">{{ p.national_id_number }}</code></td>
-          <td><code style="font-size:.78rem">{{ p.kra_pin|default:"—" }}</code></td>
+          <td class="s-21a1be8">{{ p.full_name }}<br><span class="s-00a1638">{{ p.discipline.get_sport_display }}</span></td>
+          <td class="s-9dd65a4">{{ p.discipline.entry.county }}</td>
+          <td class="s-fb2a0ae">{{ p.discipline.get_sport_display }}</td>
+          <td><code class="s-fb2a0ae">{{ p.national_id_number }}</code></td>
+          <td><code class="s-fb2a0ae">{{ p.kra_pin|default:"—" }}</code></td>
           <td>
             {% if p.kra_employment_status == 'verified' %}
               <span class="pstatus pstatus--success">✅ {{ p.kra_employer_name|truncatechars:22 }}</span>
@@ -163,12 +163,12 @@
             {% endif %}
           </td>
           <td>
-            <div style="display:flex;gap:.35rem;align-items:center">
+            <div class="s-ddec441">
               <a href="{% url 'kicosca_player_detail' player_pk=p.pk %}" class="pbtn pbtn-outline pbtn-sm">
                 <i class="bi bi-eye"></i> Review
               </a>
               {% if can_manage and p.verification_status != 'verified' and p.kra_employment_status == 'verified' %}
-              <form method="post" action="{% url 'kicosca_quick_verify' player_pk=p.pk %}" style="margin:0">
+              <form method="post" action="{% url 'kicosca_quick_verify' player_pk=p.pk %}" class="s-2a0ca83">
                 {% csrf_token %}
                 <button type="submit" class="pbtn pbtn-primary pbtn-sm"
                         onclick="return confirm('Verify {{ p.full_name }}?')">✅ Verify</button>
@@ -178,8 +178,8 @@
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="8" style="text-align:center;padding:2.5rem;color:#9ca3af">
-          <i class="bi bi-people" style="font-size:2rem;display:block;margin-bottom:.5rem;opacity:.3"></i>
+        <tr><td colspan="8" class="s-aa1ce82">
+          <i class="bi bi-people s-d4363f3"></i>
           No players found{% if search or sport_filter or status_filter or county_filter %} matching your filters{% endif %}.
         </td></tr>
         {% endfor %}
@@ -192,61 +192,61 @@
 
 <!-- ── API Test Panel ─────────────────────────────────────────────────────── -->
 {% if can_manage or user.role == 'kicosca_officer' %}
-<div style="margin-top:2rem">
-  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.85rem">
-    <h2 style="font-size:.9rem;font-weight:800;color:#0f1117;margin:0"><i class="bi bi-wrench-adjustable-circle" style="color:#7c3aed;margin-right:.3rem"></i>API Connection Test</h2>
-    <div style="flex:1;height:1px;background:#e8eaf0"></div>
-    <span style="font-size:.68rem;color:#9ca3af">Test KRA and IPRS integrations</span>
+<div class="s-daaaf95">
+  <div class="s-bda00c2">
+    <h2 class="s-b92055f"><i class="bi bi-wrench-adjustable-circle s-47d2254"></i>API Connection Test</h2>
+    <div class="s-85fb0c6"></div>
+    <span class="s-6130622">Test KRA and IPRS integrations</span>
   </div>
 
     <!-- KRA Employment Test only — KICOSCA uses KRA, not IPRS -->
-    <div style="display:grid;grid-template-columns:1fr;gap:.85rem">
+    <div class="s-2f30744">
 
     <!-- KRA Employment Test -->
     <div class="dash-panel">
       <div class="dash-panel-head"><h3><i class="bi bi-building-check"></i> KRA Employment (GavaConnect)</h3></div>
       <div class="dash-panel-body">
-        <form method="post" action="{% url 'kicosca_api_test' %}" style="margin-bottom:.75rem">
+        <form method="post" action="{% url 'kicosca_api_test' %}" class="s-c438d31">
           {% csrf_token %}
           <input type="hidden" name="action" value="test_kra">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.5rem">
+          <div class="s-43afbfb">
             <div>
-              <label style="font-size:.72rem;font-weight:700;display:block;margin-bottom:.2rem;color:#374151">KRA PIN</label>
+              <label class="s-1956079">KRA PIN</label>
               <input type="text" name="kra_pin" value="A011124346B"
-                     style="width:100%;padding:.42rem .65rem;border:1.5px solid #e5e7eb;border-radius:8px;font-family:monospace;font-size:.82rem;box-sizing:border-box">
+                     class="s-0f5ec6d">
             </div>
             <div>
-              <label style="font-size:.72rem;font-weight:700;display:block;margin-bottom:.2rem;color:#374151">Expected County</label>
+              <label class="s-1956079">Expected County</label>
               <input type="text" name="county" value="{{ edition.host_county|default:'Nairobi' }}"
-                     style="width:100%;padding:.42rem .65rem;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.82rem;box-sizing:border-box">
+                     class="s-67ec05e">
             </div>
           </div>
-          <button type="submit" class="pbtn pbtn-primary pbtn-sm" style="width:100%">
+          <button type="submit" class="pbtn pbtn-primary pbtn-sm s-16000cc">
             <i class="bi bi-play-circle"></i> Run KRA Check
           </button>
         </form>
         {% if kra_result %}
         <div style="margin-top:.75rem;padding:.85rem;border-radius:8px;font-size:.8rem;
           {% if kra_result.county_match %}background:#f0fdf4;border:1px solid #bbf7d0{% elif kra_result.token_ok == False %}background:#fef2f2;border:1px solid #fecaca{% elif kra_result.success %}background:#fffbeb;border:1px solid #fde68a{% else %}background:#fef2f2;border:1px solid #fecaca{% endif %}">
-          <div style="font-weight:700;margin-bottom:.5rem">
+          <div class="s-4178b02">
             {% if not kra_result.token_ok %}🔐 Auth Failed
             {% elif kra_result.county_match %}✅ County Employee Confirmed
             {% elif kra_result.is_county_employee %}⚠ County Employee — Wrong County
             {% elif kra_result.success %}❌ Not a County Employee
             {% else %}❌ Failed{% endif %}
-            {% if kra_result.is_simulation %}<span style="font-size:.68rem;background:#e5e7eb;border-radius:4px;padding:.1rem .3rem;margin-left:.3rem">SIMULATION</span>{% endif %}
+            {% if kra_result.is_simulation %}<span class="s-6f3d992">SIMULATION</span>{% endif %}
           </div>
-          <div style="display:grid;grid-template-columns:110px 1fr;gap:.25rem .5rem;color:#374151;margin-bottom:.5rem">
-            <span style="color:#9ca3af">PIN</span><span style="font-family:monospace">{{ kra_result.pin }}</span>
-            <span style="color:#9ca3af">County</span><span>{{ kra_result.county }}</span>
-            {% if kra_result.employer_name %}<span style="color:#9ca3af">Employer</span><span style="font-weight:600">{{ kra_result.employer_name }}</span>{% endif %}
-            {% if kra_result.employer_pin %}<span style="color:#9ca3af">Employer PIN</span><span style="font-family:monospace">{{ kra_result.employer_pin }}</span>{% endif %}
-            {% if kra_result.error_message %}<span style="color:#9ca3af">Error</span><span style="color:#c2410c">{{ kra_result.error_message }}</span>{% endif %}
+          <div class="s-d3a1472">
+            <span class="s-5401ea9">PIN</span><span class="s-3557948">{{ kra_result.pin }}</span>
+            <span class="s-5401ea9">County</span><span>{{ kra_result.county }}</span>
+            {% if kra_result.employer_name %}<span class="s-5401ea9">Employer</span><span class="s-21a1be8">{{ kra_result.employer_name }}</span>{% endif %}
+            {% if kra_result.employer_pin %}<span class="s-5401ea9">Employer PIN</span><span class="s-3557948">{{ kra_result.employer_pin }}</span>{% endif %}
+            {% if kra_result.error_message %}<span class="s-5401ea9">Error</span><span class="s-9c53643">{{ kra_result.error_message }}</span>{% endif %}
           </div>
           {% if kra_result.raw_response %}
-          <details style="margin-top:.35rem">
-            <summary style="font-size:.72rem;color:#6b7280;cursor:pointer;font-weight:600">Raw Response</summary>
-            <pre style="font-size:.68rem;background:#0f172a;color:#86efac;padding:.75rem;border-radius:6px;margin-top:.4rem;overflow-x:auto;white-space:pre-wrap">{{ kra_result.raw_response }}</pre>
+          <details class="s-ade485e">
+            <summary class="s-5fd1c6b">Raw Response</summary>
+            <pre class="s-b6b3192">{{ kra_result.raw_response }}</pre>
           </details>
           {% endif %}
         </div>

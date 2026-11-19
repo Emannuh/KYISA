@@ -2,12 +2,12 @@
 {% block title %}Approved Players Jury | KYISA CMS{% endblock %}
 
 {% block content %}
-<div class="page-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+<div class="page-header s-d79dcbf">
     <div>
         <h1><i class="bi bi-person-check-fill"></i> Approved Players</h1>
         <p class="text-muted">Verified players eligible for competition</p>
     </div>
-    <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+    <div class="s-5283a0d">
         <a href="{% url 'jury_export_players_excel' %}?{{ request.GET.urlencode }}" class="btn btn-success btn-sm"><i class="bi bi-file-earmark-excel"></i> Excel</a>
         <a href="{% url 'jury_export_players_pdf' %}?{{ request.GET.urlencode }}" class="btn btn-danger btn-sm"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
         <a href="{% url 'jury_dashboard' %}" class="btn btn-outline btn-sm"><i class="bi bi-arrow-left"></i> Dashboard</a>
@@ -15,10 +15,10 @@
 </div>
 
 <!-- Filters -->
-<div class="card" style="padding:1rem; margin-bottom:1.5rem;">
-    <form method="get" style="display:flex; gap:.75rem; flex-wrap:wrap; align-items:end;">
-        <div style="flex:1; min-width:180px;">
-            <label style="font-size:.8rem; font-weight:600;">Competition</label>
+<div class="card s-d86a1d8">
+    <form method="get" class="s-a3cb89d">
+        <div class="s-733c234">
+            <label class="s-611f136">Competition</label>
             <select name="competition" class="form-control">
                 <option value="">All Competitions</option>
                 {% for c in competitions %}
@@ -26,8 +26,8 @@
                 {% endfor %}
             </select>
         </div>
-        <div style="flex:1; min-width:180px;">
-            <label style="font-size:.8rem; font-weight:600;">Team</label>
+        <div class="s-733c234">
+            <label class="s-611f136">Team</label>
             <select name="team" class="form-control">
                 <option value="">All Teams</option>
                 {% for t in teams %}
@@ -35,8 +35,8 @@
                 {% endfor %}
             </select>
         </div>
-        <div style="flex:1; min-width:140px;">
-            <label style="font-size:.8rem; font-weight:600;">Verification</label>
+        <div class="s-e6e41be">
+            <label class="s-611f136">Verification</label>
             <select name="verification" class="form-control">
                 <option value="" {% if not filters.verification %}selected{% endif %}>Verified (default)</option>
                 <option value="verified" {% if filters.verification == "verified" %}selected{% endif %}>Verified</option>
@@ -44,17 +44,17 @@
                 <option value="rejected" {% if filters.verification == "rejected" %}selected{% endif %}>Rejected</option>
             </select>
         </div>
-        <div style="flex:1; min-width:180px;">
-            <label style="font-size:.8rem; font-weight:600;">Search</label>
+        <div class="s-733c234">
+            <label class="s-611f136">Search</label>
             <input type="text" name="search" value="{{ filters.search }}" class="form-control" placeholder="Player name or ID…">
         </div>
-        <button type="submit" class="btn btn-primary btn-sm" style="height:38px;">Filter</button>
-        <a href="{% url 'jury_players' %}" class="btn btn-outline btn-sm" style="height:38px; line-height:24px;">Clear</a>
+        <button type="submit" class="btn btn-primary btn-sm s-6a7567b">Filter</button>
+        <a href="{% url 'jury_players' %}" class="btn btn-outline btn-sm s-f645e36">Clear</a>
     </form>
 </div>
 
 <!-- Players Table -->
-<div class="card" style="padding:1rem;">
+<div class="card s-499aa75">
     <div class="table-responsive">
         <table class="table">
             <thead>
@@ -82,19 +82,19 @@
                     <td>{{ p.shirt_number }}</td>
                     <td>{{ p.date_of_birth|date:"d M Y"|default:"-" }}</td>
                     <td>{{ p.age|default:"-" }}</td>
-                    <td style="font-size:.85rem;">{{ p.national_id_number|default:"-" }}</td>
+                    <td class="s-3dc1f6c">{{ p.national_id_number|default:"-" }}</td>
                     <td>
-                        <span class="badge {% if p.status == 'eligible' %}bg-success{% elif p.status == 'suspended' %}bg-danger{% elif p.status == 'injured' %}bg-warning{% else %}bg-secondary{% endif %}" style="padding:3px 8px; border-radius:4px; color:#fff; font-size:.75rem;">
+                        <span class="badge {% if p.status == 'eligible' %}bg-success{% elif p.status == 'suspended' %}bg-danger{% elif p.status == 'injured' %}bg-warning{% else %}bg-secondary{% endif %} s-7040d1f">
                             {{ p.get_status_display }}
                         </span>
                     </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="10" style="text-align:center; color:#888; padding:2rem;">No players found.</td></tr>
+                <tr><td colspan="10" class="s-634406e">No players found.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-    <p style="font-size:.8rem; color:#888; margin:.5rem 0 0;">Showing {{ players|length }} player{{ players|length|pluralize }}.</p>
+    <p class="s-05ea984">Showing {{ players|length }} player{{ players|length|pluralize }}.</p>
 </div>
 {% endblock %}

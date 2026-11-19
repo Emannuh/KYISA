@@ -871,6 +871,14 @@ a.dash-stat:hover, .dash-stat:hover { box-shadow: var(--p-shadow); transform: tr
   font: inherit; color: inherit; text-align: left; cursor: pointer;
 }
 
+/* Horizontal tab rows: scroll inside themselves on small screens instead of
+   widening the page. */
+@media (max-width: 767px) {
+  .tab-strip { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .tab-strip::-webkit-scrollbar { display: none; }
+  .tab-strip > * { flex-shrink: 0; white-space: nowrap; }
+}
+
 /* ── 7. LEGACY COMPONENT REFRESH (scoped to the portal main area) ─────────── */
 :where(.app-main) .page-header { margin-bottom: 1.5rem; }
 :where(.app-main) .page-header h1 {

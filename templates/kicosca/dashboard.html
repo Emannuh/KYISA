@@ -10,79 +10,79 @@
 </section>
 
 {% if not edition %}
-<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;text-align:center">
-  <i class="bi bi-info-circle" style="font-size:2rem;color:#ea580c;display:block;margin-bottom:.5rem"></i>
-  <strong style="color:#9a3412">No active KICOSCA edition found.</strong>
-  <p style="color:#555;margin:.4rem 0 0;font-size:.88rem">Contact the KICOSCA administrator to set up the current edition.</p>
+<div class="s-5730cc5">
+  <i class="bi bi-info-circle s-fbaeb05"></i>
+  <strong class="s-8d6e7ec">No active KICOSCA edition found.</strong>
+  <p class="s-2fc04c7">Contact the KICOSCA administrator to set up the current edition.</p>
 </div>
 {% elif not entry %}
 <!-- Not registered yet -->
-<div style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:1px solid #c4b5fd;border-radius:16px;padding:1.75rem;margin-bottom:1.5rem;text-align:center">
-  <i class="bi bi-trophy" style="font-size:2.5rem;color:#7c3aed;display:block;margin-bottom:.75rem"></i>
-  <h2 style="font-size:1.1rem;font-weight:800;color:#4c1d95;margin:0 0 .4rem">{{ edition.name }}</h2>
-  <p style="color:#6d28d9;font-size:.88rem;margin:0 0 1.25rem">
+<div class="s-7d54220">
+  <i class="bi bi-trophy s-2001d1b"></i>
+  <h2 class="s-1cf1c18">{{ edition.name }}</h2>
+  <p class="s-1f980c6">
     {% if edition.host_county %}Hosted by {{ edition.host_county }} County{% endif %}
     {% if edition.start_date %} · {{ edition.start_date|date:"d M" }} – {{ edition.end_date|date:"d M Y" }}{% endif %}
   </p>
   <form method="post" action="{% url 'kicosca_join' %}">
     {% csrf_token %}
-    <button type="submit" style="padding:.75rem 2rem;background:#7c3aed;color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer">
+    <button type="submit" class="s-9bd92c0">
       <i class="bi bi-plus-circle"></i> Register {% if reg %}{{ reg.county }}{% elif user.county %}{{ user.county }}{% endif %} County for KICOSCA
     </button>
   </form>
 </div>
 {% else %}
 <!-- Registered show disciplines -->
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.75rem;margin-bottom:1.5rem">
-  <div style="background:#fff;border:1px solid #ede9fe;border-radius:14px;padding:1rem;text-align:center">
-    <div style="font-size:1.5rem;font-weight:800;color:#7c3aed">{{ disciplines|length }}</div>
-    <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:#6b7280;margin-top:.2rem">Disciplines</div>
+<div class="s-175d218">
+  <div class="s-d9549dd">
+    <div class="s-06fd0cf">{{ disciplines|length }}</div>
+    <div class="s-0e81609">Disciplines</div>
   </div>
-  <div style="background:#fff;border:1px solid #ede9fe;border-radius:14px;padding:1rem;text-align:center">
-    <div style="font-size:1.5rem;font-weight:800;color:#7c3aed">{{ total_players }}</div>
-    <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:#6b7280;margin-top:.2rem">Players</div>
+  <div class="s-d9549dd">
+    <div class="s-06fd0cf">{{ total_players }}</div>
+    <div class="s-0e81609">Players</div>
   </div>
-  <div style="background:#fff;border:1px solid #ede9fe;border-radius:14px;padding:1rem;text-align:center">
-    <div style="font-size:1.5rem;font-weight:800;color:#059669">{{ verified_count }}</div>
-    <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:#6b7280;margin-top:.2rem">Verified</div>
+  <div class="s-d9549dd">
+    <div class="s-8b19194">{{ verified_count }}</div>
+    <div class="s-0e81609">Verified</div>
   </div>
 </div>
 
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-  <h2 style="margin:0;font-size:1rem;font-weight:800;color:#111">Disciplines</h2>
-  <a href="{% url 'kicosca_add_discipline' %}" style="padding:.45rem 1rem;background:#7c3aed;color:#fff;border-radius:8px;text-decoration:none;font-size:.85rem;font-weight:700">
+<div class="s-132128b">
+  <h2 class="s-d7e4aa1">Disciplines</h2>
+  <a href="{% url 'kicosca_add_discipline' %}" class="s-e34426d">
     <i class="bi bi-plus-circle"></i> Add Discipline
   </a>
 </div>
 
 {% if disciplines %}
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem">
+<div class="s-9d9934e">
   {% for d in disciplines %}
-  <div style="background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:1.25rem;border-left:4px solid #7c3aed">
-    <div style="font-weight:700;color:#111;font-size:.98rem;margin-bottom:.3rem">{{ d.get_sport_display }}</div>
-    <div style="font-size:.82rem;color:#6b7280;margin-bottom:.85rem">{{ d.player_count }} / {{ d.squad_limit }} players</div>
-    <div style="background:#e5e7eb;border-radius:4px;height:6px;margin-bottom:.85rem">
+  <div class="s-09be5f4">
+    <div class="s-dc2826f">{{ d.get_sport_display }}</div>
+    <div class="s-62e3ecd">{{ d.player_count }} / {{ d.squad_limit }} players</div>
+    <div class="s-2f2043d">
       <div style="background:#7c3aed;border-radius:4px;height:6px;width:{% widthratio d.player_count d.squad_limit 100 %}%"></div>
     </div>
-    <div style="display:flex;gap:.5rem">
-      <a href="{% url 'kicosca_discipline_players' discipline_pk=d.pk %}" style="flex:1;padding:.4rem .7rem;background:#f5f3ff;color:#7c3aed;border:1px solid #c4b5fd;border-radius:7px;text-decoration:none;font-size:.8rem;font-weight:600;text-align:center">
+    <div class="s-5cd47cb">
+      <a href="{% url 'kicosca_discipline_players' discipline_pk=d.pk %}" class="s-783da29">
         <i class="bi bi-people"></i> Players
       </a>
       {% if d.can_add_player %}
-      <a href="{% url 'kicosca_add_player' discipline_pk=d.pk %}" style="flex:1;padding:.4rem .7rem;background:#7c3aed;color:#fff;border-radius:7px;text-decoration:none;font-size:.8rem;font-weight:600;text-align:center">
+      <a href="{% url 'kicosca_add_player' discipline_pk=d.pk %}" class="s-38688a6">
         <i class="bi bi-person-plus"></i> Add Player
       </a>
       {% else %}
-      <span style="flex:1;padding:.4rem .7rem;background:#e5e7eb;color:#9ca3af;border-radius:7px;font-size:.8rem;text-align:center">Squad Full</span>
+      <span class="s-5e9699b">Squad Full</span>
       {% endif %}
     </div>
   </div>
   {% endfor %}
 </div>
 {% else %}
-<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:2.5rem;text-align:center;margin-bottom:1.5rem">
-  <i class="bi bi-trophy" style="font-size:2rem;color:#d1d5db;display:block;margin-bottom:.5rem"></i>
-  <p style="color:#6b7280;margin:0">No disciplines added yet. Click <strong>Add Discipline</strong> to get started.</p>
+<div class="s-6980330">
+  <i class="bi bi-trophy s-d042ab8"></i>
+  <p class="s-8622e97">No disciplines added yet. Click <strong>Add Discipline</strong> to get started.</p>
 </div>
 {% endif %}
 {% endif %}

@@ -13,17 +13,17 @@
 
 <!-- Stats -->
 <div class="d-flex gap-3 mb-3 flex-wrap">
-    <div class="card p-3 text-center" style="min-width:140px;background:#d1e7dd;">
-        <div style="font-size:1.6rem;font-weight:700;color:#0f5132;">{{ total }}</div>
-        <div style="font-size:.8rem;font-weight:600;color:#0f5132;">Total Verified</div>
+    <div class="card p-3 text-center s-f6b9208">
+        <div class="s-f14d7af">{{ total }}</div>
+        <div class="s-3d3026d">Total Verified</div>
     </div>
 </div>
 
 <!-- Filters -->
-<div class="card p-3 mb-3" style="background:#f9f9f9;">
+<div class="card p-3 mb-3 s-fcb358b">
     <form method="get" class="d-flex gap-3 align-items-end flex-wrap">
         <div>
-            <label class="form-label mb-1" style="font-size:.82rem;font-weight:600;">Discipline</label>
+            <label class="form-label mb-1 s-a78eb9c">Discipline</label>
             <select name="discipline" class="form-select form-select-sm" onchange="this.form.submit()">
                 <option value="">All Disciplines</option>
                 {% for val, label in disciplines %}
@@ -32,7 +32,7 @@
             </select>
         </div>
         <div>
-            <label class="form-label mb-1" style="font-size:.82rem;font-weight:600;">County</label>
+            <label class="form-label mb-1 s-a78eb9c">County</label>
             <select name="county" class="form-select form-select-sm" onchange="this.form.submit()">
                 <option value="">All Counties</option>
                 {% for c in counties %}
@@ -41,7 +41,7 @@
             </select>
         </div>
         {% if discipline_filter or county_filter %}
-        <a href="{% url 'sg_verified_players' %}" class="btn btn-sm btn-outline-secondary" style="margin-bottom:2px;">Clear</a>
+        <a href="{% url 'sg_verified_players' %}" class="btn btn-sm btn-outline-secondary s-2f6e163">Clear</a>
         {% endif %}
     </form>
 </div>
@@ -49,7 +49,7 @@
 <div class="card p-3">
     <div class="table-responsive">
         <table class="table table-sm table-hover mb-0">
-            <thead style="background:#f5f5f5;">
+            <thead class="s-05b35f1">
                 <tr>
                     <th>#</th>
                     <th>Player Name</th>
@@ -66,8 +66,8 @@
                     <td>{{ p.first_name }} {{ p.last_name }}</td>
                     <td>{{ p.discipline.registration.county|default:"—" }}</td>
                     <td>{{ p.discipline.get_sport_type_display }}</td>
-                    <td style="font-size:.85rem;">{{ p.national_id_number }}</td>
-                    <td style="font-size:.82rem;white-space:nowrap;">
+                    <td class="s-3dc1f6c">{{ p.national_id_number }}</td>
+                    <td class="s-2df0407">
                         {{ p.registered_at|date:"d M Y H:i"|default:"—" }}
                     </td>
                 </tr>

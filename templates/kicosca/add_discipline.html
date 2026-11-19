@@ -9,12 +9,12 @@
   <h1><i class="bi bi-trophy"></i> Add KICOSCA Discipline</h1>
   <p>{{ reg.county }} County {{ edition.name }}</p>
 </div>
-<div style="max-width:480px">
-  <div class="card" style="padding:1.75rem">
+<div class="s-eb7d2f4">
+  <div class="card s-ac8fd7e">
     <form method="post">
       {% csrf_token %}
-      <div style="margin-bottom:1.5rem">
-        <label style="display:block;font-weight:700;color:#333;margin-bottom:.5rem">Select Sport *</label>
+      <div class="s-92cb257">
+        <label class="s-a6838e2">Select Sport *</label>
         <select name="sport" class="form-control" required>
           <option value="">— choose a sport —</option>
           {% for val, label in available %}
@@ -22,11 +22,11 @@
           {% endfor %}
         </select>
       </div>
-      <div style="display:flex;gap:.75rem">
-        <button type="submit" style="flex:1;padding:.75rem;background:#7c3aed;color:#fff;border:none;border-radius:9px;font-size:.95rem;font-weight:700;cursor:pointer">
+      <div class="s-2259230">
+        <button type="submit" class="s-0647e45">
           Add Discipline
         </button>
-        <a href="{% url 'kicosca_dashboard' %}" style="padding:.75rem 1.25rem;background:#e5e7eb;color:#333;border-radius:9px;text-decoration:none;font-size:.95rem;font-weight:600">Cancel</a>
+        <a href="{% url 'kicosca_dashboard' %}" class="s-4bdeb5f">Cancel</a>
       </div>
     </form>
   </div>

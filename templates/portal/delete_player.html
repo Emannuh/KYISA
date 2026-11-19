@@ -12,23 +12,23 @@
     <h1>Remove Player</h1>
 </div>
 
-<div class="card" style="max-width:500px">
-    <div class="card-body" style="text-align:center;padding:2rem">
-        <div style="font-size:3rem;margin-bottom:1rem">⚠️</div>
-        <h3 style="color:#C62828;margin-bottom:.5rem">Confirm Removal</h3>
-        <p style="color:#555;margin-bottom:1.5rem">
+<div class="card s-21418d5">
+    <div class="card-body s-1671690">
+        <div class="s-d27e195">⚠️</div>
+        <h3 class="s-325cf63">Confirm Removal</h3>
+        <p class="s-e793c0f">
             Are you sure you want to remove <strong>{{ player.get_full_name }}</strong>
             (#{{ player.shirt_number }}) from <strong>{{ team.name }}</strong>?
         </p>
-        <p style="color:#888;font-size:.85rem;margin-bottom:1.5rem">This action cannot be undone.</p>
+        <p class="s-4da3c36">This action cannot be undone.</p>
 
         <form method="post">
             {% csrf_token %}
-            <div style="display:flex;gap:.75rem;justify-content:center">
-                <button type="submit" class="btn btn-outline btn-sm" style="background:#C62828;color:#fff;border-color:#C62828;padding:.6rem 1.5rem">
+            <div class="s-30b3b92">
+                <button type="submit" class="btn btn-outline btn-sm s-dd6591b">
                     Yes, Remove Player
                 </button>
-                <a href="{% url 'team_detail' pk=team.pk %}" class="btn btn-outline btn-sm" style="padding:.6rem 1.5rem">Cancel</a>
+                <a href="{% url 'team_detail' pk=team.pk %}" class="btn btn-outline btn-sm s-ac59137">Cancel</a>
             </div>
         </form>
     </div>

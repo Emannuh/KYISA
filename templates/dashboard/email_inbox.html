@@ -3,13 +3,13 @@
 
 {% block content %}
 <div class="page-header">
-  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
+  <div class="s-4f705d1">
     <div>
       <h1><i class="bi bi-inbox-fill"></i> Email Inbox</h1>
       <p>Incoming emails received at <strong>it@kyisa.org</strong></p>
     </div>
-    <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
-      <form method="post" action="{% url 'fetch_inbox' %}" style="display:inline">
+    <div class="s-70c1cc0">
+      <form method="post" action="{% url 'fetch_inbox' %}" class="s-2f8710b">
         {% csrf_token %}
         <button type="submit" class="btn btn-primary" id="fetchBtn">
           <i class="bi bi-arrow-repeat" id="fetchIcon"></i> Fetch Inbox
@@ -26,11 +26,11 @@
 </div>
 
 <!-- How it works notice -->
-<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;gap:.85rem;align-items:flex-start">
-  <i class="bi bi-info-circle-fill" style="color:#3b82f6;font-size:1.2rem;flex-shrink:0;margin-top:.1rem"></i>
+<div class="s-70c70e7">
+  <i class="bi bi-info-circle-fill s-72b8837"></i>
   <div>
-    <p style="margin:0 0 .3rem;font-weight:700;font-size:.88rem;color:#1e40af">Inbox it@kyisa.org</p>
-    <p style="margin:0;font-size:.82rem;color:#374151;line-height:1.6">
+    <p class="s-fd7356c">Inbox it@kyisa.org</p>
+    <p class="s-da7f6a0">
       Click <strong>Fetch Inbox</strong> to pull new emails from <strong>it@kyisa.org</strong>.
       Emails are stored here for easy management, reply, and archiving.
     </p>
@@ -38,7 +38,7 @@
 </div>
 
 <!-- Stats -->
-<div class="stats-grid" style="margin-bottom:1.2rem">
+<div class="stats-grid s-0ef737a">
   <div class="stat-card blue">
     <div class="stat-icon blue"><i class="bi bi-inbox-fill"></i></div>
     <div class="stat-info"><h3>{{ stats.total }}</h3><p>Total Received</p></div>
@@ -58,44 +58,41 @@
 </div>
 
 <!-- Tabs -->
-<div style="display:flex;gap:.35rem;margin-bottom:1rem;border-bottom:2px solid var(--border);padding-bottom:0">
+<div class="s-ef622cb">
   <a href="{% url 'email_inbox' %}"
-     style="padding:.55rem 1rem;font-size:.83rem;font-weight:700;border-radius:8px 8px 0 0;text-decoration:none;
-            background:var(--primary);color:#fff;border:1px solid var(--primary);margin-bottom:-2px;">
+     class="s-e91568c">
     <i class="bi bi-inbox-fill"></i> Inbox
-    <span style="margin-left:.3rem;background:rgba(255,255,255,.25);border-radius:999px;padding:.05rem .45rem;font-size:.72rem;">{{ stats.total }}</span>
+    <span class="s-02216c5">{{ stats.total }}</span>
   </a>
   <a href="{% url 'email_logs' %}"
-     style="padding:.55rem 1rem;font-size:.83rem;font-weight:600;border-radius:8px 8px 0 0;text-decoration:none;
-            background:#fff;color:var(--gray);border:1px solid var(--border);margin-bottom:-2px;">
+     class="s-39d3d38">
     <i class="bi bi-send-fill"></i> Sent
   </a>
   <a href="{% url 'email_logs' %}?status=failed"
      style="padding:.55rem 1rem;font-size:.83rem;font-weight:600;border-radius:8px 8px 0 0;text-decoration:none;
             background:#fff;color:{% if stats.failed %}#dc2626{% else %}var(--gray){% endif %};border:1px solid var(--border);margin-bottom:-2px;">
     <i class="bi bi-x-circle-fill"></i> Failed
-    {% if stats.failed %}<span style="margin-left:.3rem;background:#fee2e2;color:#dc2626;border-radius:999px;padding:.05rem .45rem;font-size:.72rem;font-weight:700;">{{ stats.failed }}</span>{% endif %}
+    {% if stats.failed %}<span class="s-98c7bc9">{{ stats.failed }}</span>{% endif %}
   </a>
   <a href="{% url 'email_compose' %}"
-     style="padding:.55rem 1rem;font-size:.83rem;font-weight:600;border-radius:8px 8px 0 0;text-decoration:none;
-            background:#fff;color:var(--gray);border:1px solid var(--border);margin-bottom:-2px;">
+     class="s-39d3d38">
     <i class="bi bi-pencil-square"></i> Compose
   </a>
 </div>
 
 <!-- Filters -->
-<div class="card" style="margin-bottom:1rem">
-  <form method="get" style="padding:.75rem;display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end">
-    <div style="flex:1;min-width:180px">
-      <label style="font-size:.72rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.2rem">Search</label>
-      <input type="text" name="q" value="{{ search_query }}" placeholder="Subject, sender..." class="form-input" style="width:100%">
+<div class="card s-c2c0d0a">
+  <form method="get" class="s-14128c0">
+    <div class="s-733c234">
+      <label class="s-acf66ac">Search</label>
+      <input type="text" name="q" value="{{ search_query }}" placeholder="Subject, sender..." class="form-input s-16000cc">
     </div>
-    <div style="min-width:140px">
-      <label style="font-size:.72rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.2rem">From Date</label>
+    <div class="s-e797ff2">
+      <label class="s-acf66ac">From Date</label>
       <input type="date" name="from" value="{{ date_from }}" class="form-input">
     </div>
-    <div style="min-width:140px">
-      <label style="font-size:.72rem;font-weight:600;color:var(--gray);display:block;margin-bottom:.2rem">To Date</label>
+    <div class="s-e797ff2">
+      <label class="s-acf66ac">To Date</label>
       <input type="date" name="to" value="{{ date_to }}" class="form-input">
     </div>
     <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Filter</button>
@@ -108,48 +105,48 @@
   <div class="card-header">
     <h3><i class="bi bi-list-ul"></i> Inbox ({{ page_obj.paginator.count }})</h3>
   </div>
-  <div style="overflow-x:auto">
+  <div class="s-987eb2a">
     <table class="data-table">
       <thead>
         <tr>
           <th>From</th>
           <th>Subject</th>
           <th>Received</th>
-          <th style="width:100px">Actions</th>
+          <th class="s-da190a8">Actions</th>
         </tr>
       </thead>
       <tbody>
         {% for email in page_obj %}
-        <tr style="cursor:pointer" onclick="window.location='{% url 'email_detail' email.pk %}'">
-          <td style="font-size:.82rem;font-weight:600;color:var(--ink)">
+        <tr class="s-74fa97c" onclick="window.location='{% url 'email_detail' email.pk %}'">
+          <td class="s-6c64a1f">
             {{ email.from_email|truncatechars:35 }}
           </td>
           <td>
-            <a href="{% url 'email_detail' email.pk %}" style="font-weight:500;color:var(--ink)"
+            <a href="{% url 'email_detail' email.pk %}" class="s-b005809"
                onclick="event.stopPropagation()">
               {{ email.subject|truncatechars:70 }}
             </a>
           </td>
-          <td style="font-size:.78rem;white-space:nowrap;color:var(--gray)">
+          <td class="s-33b8fee">
             {{ email.sent_at|date:"d M Y H:i" }}
           </td>
           <td onclick="event.stopPropagation()">
-            <a href="{% url 'email_detail' email.pk %}" class="btn btn-outline"
-               style="padding:.2rem .5rem;font-size:.7rem">
+            <a href="{% url 'email_detail' email.pk %}" class="btn btn-outline s-b1e2fcc"
+              >
               <i class="bi bi-eye"></i>
             </a>
             <a href="{% url 'email_compose' %}?reply_to={{ email.from_email }}&subject=Re: {{ email.subject|urlencode }}"
-               class="btn btn-primary" style="padding:.2rem .5rem;font-size:.7rem" title="Reply">
+               class="btn btn-primary s-b1e2fcc" title="Reply">
               <i class="bi bi-reply-fill"></i>
             </a>
           </td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="4" style="text-align:center;padding:3rem;color:var(--gray)">
-            <i class="bi bi-inbox" style="font-size:2.5rem;display:block;margin-bottom:.75rem;opacity:.4"></i>
+          <td colspan="4" class="s-3a621bb">
+            <i class="bi bi-inbox s-21b7d3f"></i>
             <strong>Inbox is empty</strong><br>
-            <span style="font-size:.82rem">
+            <span class="s-9dd65a4">
               Emails sent to <strong>inbox@reply.kyisa.org</strong> will appear here automatically.
             </span>
           </td>
@@ -160,17 +157,17 @@
   </div>
 
   {% if page_obj.has_other_pages %}
-  <div style="padding:.75rem;display:flex;justify-content:center;gap:.25rem">
+  <div class="s-8ef6a11">
     {% if page_obj.has_previous %}
     <a href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&from={{ date_from }}&to={{ date_to }}"
-       class="btn btn-outline" style="padding:.3rem .6rem;font-size:.75rem">&laquo; Prev</a>
+       class="btn btn-outline s-d2d82df">&laquo; Prev</a>
     {% endif %}
-    <span style="padding:.3rem .6rem;font-size:.75rem;color:var(--gray)">
+    <span class="s-51d3a49">
       Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
     </span>
     {% if page_obj.has_next %}
     <a href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&from={{ date_from }}&to={{ date_to }}"
-       class="btn btn-outline" style="padding:.3rem .6rem;font-size:.75rem">Next &raquo;</a>
+       class="btn btn-outline s-d2d82df">Next &raquo;</a>
     {% endif %}
   </div>
   {% endif %}

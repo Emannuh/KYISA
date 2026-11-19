@@ -12,25 +12,25 @@
 
 <!-- County Payment Banner -->
 {% if current_season %}
-<div style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border:1px solid #90caf9;border-radius:12px;padding:1rem 1.4rem;margin-bottom:1.2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
-    <div style="display:flex;align-items:center;gap:.75rem">
-        <span style="font-size:1.5rem"><i class="bi bi-building"></i></span>
-        <span style="font-size:.92rem">
-            <strong style="color:#1565c0">{{ current_season }} County Payments:</strong>
+<div class="s-285b04e">
+    <div class="s-83ee465">
+        <span class="s-db5923f"><i class="bi bi-building"></i></span>
+        <span class="s-f11e1bd">
+            <strong class="s-6cf5fc8">{{ current_season }} County Payments:</strong>
             {{ counties_paid }} paid &#8226; {{ counties_pending }} pending &#8226;
             KSh {{ total_collected|floatformat:0 }} collected
         </span>
     </div>
-    <a href="{% url 'treasurer_county_payments' %}" class="btn btn--primary" style="padding:.4rem 1rem;font-size:.85rem;border-radius:8px">
+    <a href="{% url 'treasurer_county_payments' %}" class="btn btn--primary s-8730eb6">
         Manage County Payments &#8594;
     </a>
 </div>
 {% endif %}
 
 <!-- Fee reminder -->
-<div style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border:1px solid #a5d6a7;border-radius:12px;padding:.9rem 1.4rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem">
-    <span style="font-size:1.5rem"><i class="bi bi-credit-card"></i></span>
-    <span style="font-size:.92rem"><strong style="color:#1b5e20">Standard one-time county registration fee: KSh {{ registration_fee|floatformat:0 }}</strong>   confirm this exact amount before approving any county registration.</span>
+<div class="s-9984fc0">
+    <span class="s-db5923f"><i class="bi bi-credit-card"></i></span>
+    <span class="s-f11e1bd"><strong class="s-fe18fbb">Standard one-time county registration fee: KSh {{ registration_fee|floatformat:0 }}</strong>   confirm this exact amount before approving any county registration.</span>
 </div>
 
 <!-- Stats -->
@@ -60,7 +60,7 @@
 
 <!-- Quick action -->
 {% if pending_count or paid_count %}
-<div style="background:linear-gradient(135deg,#fff8e1,#ffecb3);border:1px solid #ffe082;border-radius:12px;padding:1rem 1.5rem;margin-bottom:1.5rem;border-left:4px solid #f9a825;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+<div class="s-f08dec5">
     <strong><i class="bi bi-exclamation-triangle"></i> Action Required:</strong>
     {% if pending_count %}
     <span>{{ pending_count }} county registration{{ pending_count|pluralize }} waiting for review.</span>
@@ -68,15 +68,15 @@
     {% if paid_count %}
     <span>{{ paid_count }} county registration{{ paid_count|pluralize }} with payment submitted awaiting approval.</span>
     {% endif %}
-    <a href="{% url 'treasurer_county_registrations' %}" class="btn btn--primary" style="margin-left:auto;padding:.4rem 1rem;font-size:.85rem;border-radius:8px">Go to County Registrations &#8594;</a>
+    <a href="{% url 'treasurer_county_registrations' %}" class="btn btn--primary s-f392935">Go to County Registrations &#8594;</a>
 </div>
 {% endif %}
 
 <!-- Recent registrations -->
 <div class="dash-panel">
-    <div class="dash-panel-head" style="display:flex;justify-content:space-between;align-items:center">
+    <div class="dash-panel-head s-6823804">
         <span><i class="bi bi-building"></i> Recent County Registrations</span>
-        <a href="{% url 'treasurer_county_registrations' %}" style="font-size:.85rem;color:#1B5E20;text-decoration:none;font-weight:600">View All →</a>
+        <a href="{% url 'treasurer_county_registrations' %}" class="s-0c1b5a4">View All →</a>
     </div>
     <div class="dash-panel-body">
         {% if recent_teams %}
@@ -96,9 +96,9 @@
                     <td><strong>{{ team.county }}</strong></td>
                     <td>{{ team.user.first_name }} {{ team.user.last_name }}</td>
                     <td>{{ team.user.email|default:"—" }}</td>
-                    <td style="font-size:.82rem;color:#888">{{ team.created_at|date:"d M Y H:i" }}</td>
+                    <td class="s-1889d5d">{{ team.created_at|date:"d M Y H:i" }}</td>
                     <td>
-                        <span style="font-weight:600">
+                        <span class="s-21a1be8">
                             {{ team.get_status_display }}
                         </span>
                     </td>

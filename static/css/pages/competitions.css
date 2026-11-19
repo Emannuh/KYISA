@@ -1,0 +1,5759 @@
+/* Generated from inline template styles by inline_to_css.py.
+   .s-<hash>:not(#_) = an inline style moved here; :not(#_) keeps inline-level
+   precedence (beats stylesheet classes, loses to styles set by JavaScript).
+   Page styles below are scoped with :where(.pg-<template>). Prefer replacing
+   these with shared component classes over time. */
+/* portal/referee_appoint.html */
+.s-01408bd:not(#_) {
+    padding: .5rem 1rem;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-01919e8:not(#_) {
+    padding: .7rem .9rem;
+    text-align: left;
+    font-size: .75rem;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    border-bottom: 1px solid #eee;
+}
+
+/* portal/appointment_action.html */
+.s-01a2a27:not(#_) {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #1B5E20;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-01e6958:not(#_) {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: #fff3e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+/* portal/coordinator/edit_standings.html */
+.s-024dd61:not(#_) {
+    display: block;
+    font-size: .72rem;
+    margin-top: .2rem;
+    color: #666;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-027028e:not(#_) {
+    padding: .35rem .85rem;
+    background: #fff;
+    color: #666;
+    border: 1px solid #e0e0e0;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: .78rem;
+}
+
+/* portal/referee_appointments.html */
+.s-03e508f:not(#_) {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #FF8F00;
+}
+
+/* portal/competition_report_approve.html */
+.s-03e6a51:not(#_) {
+    font-size: .85rem;
+    color: #888;
+    margin-bottom: .5rem;
+}
+
+/* portal/referee_dashboard.html */
+.s-0479d4e:not(#_) {
+    text-align: center;
+    padding: 3rem 2rem;
+}
+
+/* portal/cm/upload_players.html */
+.s-053babc:not(#_) {
+    margin-top: 1.2rem;
+    padding: 1rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-056e508:not(#_) {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    overflow: hidden;
+}
+
+/* portal/referee_dashboard.html */
+.s-0590246:not(#_) {
+    color: #15803d;
+}
+
+/* portal/team_manager/match_squad.html */
+.s-05c4842:not(#_) {
+    margin: 0 0 .6rem;
+    color: #666;
+    font-size: .85rem;
+}
+
+/* jury/disciplinary.html, jury/fixtures.html */
+.s-05ea984:not(#_) {
+    font-size: .8rem;
+    color: #888;
+    margin: .5rem 0 0;
+}
+
+/* appeals/appeal_detail.html */
+.s-0630c49:not(#_) {
+    color: #888;
+    font-style: italic;
+}
+
+/* competitions/detail.html */
+.s-0694592:not(#_) {
+    padding: .6rem 1.5rem;
+    background: #e65100;
+}
+
+/* portal/competition_report_approve.html */
+.s-0724862:not(#_) {
+    padding: 1.2rem;
+}
+
+/* portal/squad_review_list.html */
+.s-075fbc2:not(#_) {
+    color: #1B5E20;
+    text-decoration: underline;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-07abbd3:not(#_) {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: #fce4ec;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+/* portal/competition_report_approve.html */
+.s-07b43ff:not(#_) {
+    white-space: pre-wrap;
+    font-size: .9rem;
+}
+
+/* portal/cm/manage_competition.html */
+.s-08ea0ab:not(#_) {
+    font-size: .9rem;
+    font-weight: 700;
+    color: #4A148C;
+    margin: 0;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-08fbd24:not(#_) {
+    margin-top: .85rem;
+    padding: .75rem;
+    background: #f8faff;
+    border-radius: 8px;
+    border: 1px solid #e8eaf6;
+}
+
+/* portal/coordinator/manage_competition.html */
+.s-092c27e:not(#_) {
+    display: none;
+    background: #E0F2F1;
+}
+
+/* portal/team_manager/sanctions.html */
+.s-0a3f23b:not(#_) {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-0a4ef6d:not(#_) {
+    width: 100%;
+    max-height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 3px solid #e0e0e0;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-0a80b13:not(#_) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg,#1B5E20,#43A047);
+    border-radius: 9px;
+    font-size: 1rem;
+}
+
+/* portal/squad_select.html */
+.s-0a9e69f:not(#_) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(160px,1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* portal/referee_appointments.html */
+.s-0b8ea3a:not(#_) {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1B5E20;
+}
+
+/* portal/cm/manage_competition.html */
+.s-0bb4943:not(#_) {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* portal/match_report_detail.html */
+.s-0c0f659:not(#_) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .5rem;
+    font-size: .9rem;
+}
+@media (max-width: 767px) { .app-main .s-0c0f659:not(#_) { grid-template-columns: 1fr; } }
+
+/* portal/coordinator/venues.html */
+.s-0d69900:not(#_) {
+    opacity: .7;
+}
+
+/* portal/match_report_form.html, referees/list.html */
+.s-0d804aa:not(#_) {
+    color: #999;
+    font-size: .85rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-0e2bc6b:not(#_) {
+    padding: .85rem 1rem;
+}
+
+/* portal/cm/dashboard.html */
+.s-0e482b9:not(#_) {
+    font-size: .85rem;
+    color: #333;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-0ea2e3a:not(#_) {
+    padding: .7rem .9rem;
+    font-family: monospace;
+    font-size: .81rem;
+    color: #444;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-0efbd35:not(#_) {
+    font-size: .75rem;
+    color: #1565C0;
+    display: block;
+    margin-top: .3rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-0f37334:not(#_) {
+    flex: 1;
+    padding: .55rem;
+    background: #f5f5f5;
+    color: #666;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: .88rem;
+}
+
+/* appeals/appeal_detail.html */
+.s-1104cf4:not(#_) {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 1.5rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-1154933:not(#_) {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: #666;
+    font-size: .82rem;
+    line-height: 1.7;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-11b0ad0:not(#_) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-bottom: 1.75rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-12113cb:not(#_) {
+    font-size: 2.2rem;
+    margin-bottom: .3rem;
+}
+
+/* portal/competition_standings.html */
+.s-127eaa4:not(#_) {
+    font-size: .75rem;
+    color: #888;
+}
+
+/* portal/competition_standings.html */
+.s-12c19a9:not(#_) {
+    text-align: center;
+    font-weight: 700;
+    color: #888;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-12f4f87:not(#_) {
+    display: flex;
+    gap: .4rem;
+    flex-wrap: wrap;
+    margin-bottom: .65rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-13c80df:not(#_) {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #111;
+}
+
+/* portal/referee_dashboard.html */
+.s-143d858:not(#_) {
+    background: #3b82f6;
+}
+
+/* teams/detail.html */
+.s-144924e:not(#_) {
+    background: #1B5E20;
+    color: #fff;
+    border-color: #1B5E20;
+    padding: .4rem 1rem;
+    font-size: .85rem;
+}
+
+/* portal/competition_report_approve.html */
+.s-1451b8e:not(#_) {
+    margin-bottom: .8rem;
+    color: #c62828;
+}
+
+/* portal/referee_dashboard.html */
+.s-14c0fdd:not(#_) {
+    color: #15803d;
+    font-weight: 600;
+}
+
+/* portal/competition_reports.html, portal/competition_standings.html */
+.s-1514745:not(#_) {
+    text-align: center;
+    font-weight: 700;
+    font-family: monospace;
+    font-size: 1.1rem;
+}
+
+/* portal/team_manager/dashboard.html */
+.s-1537b3a:not(#_) {
+    color: #1565c0;
+    font-weight: 600;
+    font-size: .82rem;
+    text-decoration: none;
+    margin-right: .6rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-1599aa7:not(#_) {
+    font-weight: 700;
+    font-size: .9rem;
+    color: #fff;
+}
+
+/* portal/team_manager/sanctions.html */
+.s-159bcfb:not(#_) {
+    padding: .5rem .8rem;
+    font-size: .82rem;
+}
+
+/* portal/referee_appoint.html */
+.s-162db9a:not(#_) {
+    margin-left: .5rem;
+}
+
+/* portal/match_report_form.html */
+.s-1695dfe:not(#_) {
+    display: grid;
+    grid-template-columns: 120px 1fr 1fr 80px 1fr 40px;
+    gap: .5rem;
+    align-items: center;
+    padding: .5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-172e91a:not(#_) {
+    width: 72px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #1B5E20;
+}
+
+/* portal/cm/venues.html */
+.s-1816523:not(#_) {
+    font-size: .85rem;
+    font-weight: 400;
+    color: #757575;
+}
+
+/* portal/coordinator/manage_competition.html */
+.s-1928e2a:not(#_) {
+    font-size: .7rem;
+    padding: .2rem .5rem;
+    background: #00695C;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-19a4112:not(#_) {
+    padding: 1.1rem;
+    background: #fce4ec;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: .85rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-19d5738:not(#_) {
+    font-weight: 700;
+    color: #111;
+}
+
+/* portal/cm/venues.html */
+.s-19e496b:not(#_) {
+    font-size: .72rem;
+    opacity: .8;
+}
+
+/* portal/cm/manage_competition.html, portal/coordinator/manage_competition.html */
+.s-1a174b3:not(#_) {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: .5rem;
+    align-items: end;
+}
+@media (max-width: 767px) { .app-main .s-1a174b3:not(#_) { grid-template-columns: 1fr; } }
+
+/* portal/coordinator/manage_competition.html */
+.s-1a5da0c:not(#_) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .5rem .75rem;
+    background: #E0F2F1;
+    border-radius: 8px 8px 0 0;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-1c4960b:not(#_) {
+    padding: .38rem .9rem;
+    background: #1565C0;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: .81rem;
+    font-weight: 600;
+}
+
+/* portal/cm/manage_pools.html */
+.s-1ea0e76:not(#_) {
+    color: #999;
+    margin-top: .5rem;
+}
+
+/* portal/match_report_form.html */
+.s-1ebabe4:not(#_) {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #999;
+}
+
+/* portal/match_report_form.html */
+.s-1f0b31a:not(#_) {
+    padding: .6rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+/* portal/appointment_action.html, portal/match_report_review.html */
+.s-1f3907f:not(#_) {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-1f4ad34:not(#_) {
+    color: #aaa;
+    font-weight: 500;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-205e9fa:not(#_) {
+    margin: 0;
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+/* portal/referee_appointments.html */
+.s-2066c37:not(#_) {
+    font-size: .75rem;
+    color: #666;
+    margin-top: .3rem;
+}
+
+/* competitions/detail.html, portal/competition_reports.html */
+.s-2091e7f:not(#_) {
+    padding: .4rem 1rem;
+    font-size: .85rem;
+}
+
+/* portal/competition_standings.html */
+.s-209732a:not(#_) {
+    font-weight: 800;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-20df284:not(#_) {
+    font-size: .82rem;
+    font-weight: 700;
+    color: #E65100;
+    margin-bottom: .5rem;
+}
+
+/* portal/coordinator/manage_competition.html */
+.s-20e67ea:not(#_) {
+    font-size: .72rem;
+    padding: .2rem .6rem;
+    background: #00695C;
+    color: #fff;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-21e531e:not(#_) {
+    flex: 1;
+    padding: .55rem;
+    background: #1B5E20;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: .88rem;
+}
+
+/* appeals/finalize_appeal.html, appeals/publish_decision.html */
+.s-2218006:not(#_) {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+/* portal/cm/manage_pools.html */
+.s-223b7fd:not(#_) {
+    font-size: .7rem;
+    padding: .15rem .4rem;
+}
+
+/* portal/squad_select.html */
+.s-2311152:not(#_) {
+    margin-bottom: 1rem;
+    display: none;
+}
+
+/* portal/squad_select.html */
+.s-23140d7:not(#_) {
+    width: 100%;
+    padding: .6rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+/* portal/appointment_action.html */
+.s-2345945:not(#_) {
+    font-size: 1.3rem;
+    margin-bottom: .5rem;
+}
+
+/* appeals/jury_decision.html, appeals/submit_appeal.html */
+.s-23d1ce1:not(#_) {
+    color: #dc3545;
+    margin-bottom: 1rem;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-23e0fa1:not(#_) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .84rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-24cf1cb:not(#_) {
+    margin: 0 0 .5rem;
+    font-size: .78rem;
+    font-weight: 700;
+    color: #444;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+/* portal/squad_select.html */
+.s-25b1b73:not(#_) {
+    display: flex;
+    gap: 1rem;
+    font-size: .9rem;
+}
+
+/* portal/match_report_detail.html */
+.s-26d80fb:not(#_) {
+    font-weight: 600;
+    margin-bottom: .5rem;
+}
+
+/* portal/cm/manage_competition.html */
+.s-27b93af:not(#_) {
+    font-size: .85rem;
+    white-space: pre-wrap;
+    line-height: 1.6;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-2815c7d:not(#_) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .65rem;
+}
+@media (max-width: 767px) { .app-main .s-2815c7d:not(#_) { grid-template-columns: 1fr; } }
+
+/* portal/team_manager/sanctions.html */
+.s-2858866:not(#_) {
+    padding: .6rem .8rem;
+    text-align: center;
+}
+
+/* portal/team_manager/dashboard.html */
+.s-28837c7:not(#_) {
+    background: linear-gradient(135deg,#E3F2FD,#BBDEFB);
+    color: #1565c0;
+}
+
+/* portal/team_manager/opponent_view.html */
+.s-2a2015e:not(#_) {
+    font-size: .95rem;
+    color: #1B5E20;
+    margin-bottom: .6rem;
+}
+
+/* portal/squad_select.html */
+.s-2ac9549:not(#_) {
+    background: #1B5E20;
+    color: #fff;
+    padding: .6rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    opacity: .5;
+}
+
+/* portal/match_report_form.html */
+.s-2ae23af:not(#_) {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #999;
+}
+
+/* portal/coordinator/referees.html, portal/coordinator/venues.html */
+.s-2b0718e:not(#_) {
+    display: flex;
+    gap: .35rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-2c3c4a3:not(#_) {
+    width: 100%;
+    padding: .5rem;
+    background: #f5f5f5;
+    color: #666;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: .85rem;
+}
+
+/* portal/cm/manage_competition.html */
+.s-2c9e09f:not(#_) {
+    font-size: .68rem;
+}
+
+/* portal/team_manager/dashboard.html */
+.s-2d508cb:not(#_) {
+    color: #888;
+    font-size: .9rem;
+}
+
+/* portal/referee_dashboard.html */
+.s-2d9651c:not(#_) {
+    background: #ef4444;
+}
+
+/* portal/referee_edit_profile.html */
+.s-2db9dc7:not(#_) {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-2dff368:not(#_) {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: start;
+}
+
+/* portal/cm/manage_competition.html, portal/coordinator/manage_competition.html */
+.s-2ed8aab:not(#_) {
+    display: flex;
+    gap: .5rem;
+    align-items: end;
+    flex-wrap: wrap;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-2f6d3fa:not(#_) {
+    width: 100%;
+    padding: .42rem .6rem;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    font-size: .83rem;
+    background: #fafafa;
+    cursor: pointer;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-30342be:not(#_) {
+    padding: .55rem 1.25rem;
+    background: #0D47A1;
+    color: #fff;
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+    font-size: .88rem;
+    font-weight: 700;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-3094fc4:not(#_) {
+    margin: .3rem 0 0 44px;
+    color: #777;
+    font-size: .86rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-30cc051:not(#_) {
+    color: #555;
+    font-size: .83rem;
+    margin-top: .25rem;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-3114cda:not(#_) {
+    display: inline-block;
+    padding: .32rem .85rem;
+    background: #1B5E20;
+    color: #fff;
+    border-radius: 7px;
+    text-decoration: none;
+    font-size: .79rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* portal/team_manager/match_squad.html */
+.s-3167a21:not(#_) {
+    background: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 10px;
+    padding: .9rem 1.2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    flex-wrap: wrap;
+}
+
+/* portal/cm/manage_competition.html, portal/coordinator/manage_competition.html */
+.s-31a20ec:not(#_) {
+    width: 100%;
+    padding: .35rem .5rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: .82rem;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-3264950:not(#_) {
+    margin: 0;
+    color: #444;
+    font-weight: 700;
+}
+
+/* portal/referee_appointments.html */
+.s-32a66d5:not(#_) {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1565C0;
+}
+
+/* portal/match_report_detail.html, portal/match_report_form.html */
+.s-32c297e:not(#_) {
+    padding: .5rem;
+    text-align: left;
+}
+
+/* portal/cm/manage_competition.html, portal/coordinator/manage_competition.html */
+.s-32e35f5:not(#_) {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: .5rem;
+    margin-bottom: .75rem;
+}
+@media (max-width: 767px) { .app-main .s-32e35f5:not(#_) { grid-template-columns: 1fr; } }
+
+/* portal/referee_edit_profile.html */
+.s-33e1a47:not(#_) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+@media (max-width: 767px) { .app-main .s-33e1a47:not(#_) { grid-template-columns: 1fr; } }
+
+/* portal/team_manager/match_squad.html */
+.s-33fb6a5:not(#_) {
+    background: #fff3e0;
+    border: 1px solid #ffcc80;
+    border-radius: 10px;
+    padding: 1rem 1.4rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+/* portal/team_manager/sanctions.html */
+.s-346fad3:not(#_) {
+    background: #fff176;
+    color: #333;
+    padding: .15rem .5rem;
+    border-radius: 4px;
+    font-size: .78rem;
+}
+
+/* portal/coordinator/manage_competition.html */
+.s-34deaa9:not(#_) {
+    width: 90px;
+}
+
+/* portal/match_report_form.html */
+.s-3554039:not(#_) {
+    color: #999;
+    font-size: .85rem;
+    margin-top: .5rem;
+}
+
+/* competitions/detail.html */
+.s-358b489:not(#_) {
+    padding: .6rem 1.5rem;
+    background: #1565c0;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-35b5822:not(#_) {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,.07);
+}
+
+/* portal/cm/manage_competition.html, portal/coordinator/manage_competition.html */
+.s-36d9595:not(#_) {
+    font-size: .72rem;
+    padding: .25rem .5rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-3705b22:not(#_) {
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: #166534;
+    margin-bottom: .55rem;
+}
+
+/* portal/cm/dashboard.html, portal/coordinator/competitions.html */
+.s-372ef7e:not(#_) {
+    color: #212121;
+    text-decoration: none;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-3746517:not(#_) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: .9rem;
+}
+@media (max-width: 767px) { .app-main .s-3746517:not(#_) { grid-template-columns: 1fr; } }
+
+/* portal/cm/edit_standings.html */
+.s-378ae87:not(#_) {
+    font-size: .7rem;
+    padding: .15rem .45rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-382548c:not(#_) {
+    width: 100%;
+    max-height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 3px solid #1565C0;
+}
+
+/* portal/match_report_form.html */
+.s-386190f:not(#_) {
+    width: 70px;
+    padding: .4rem;
+    font-size: 1.2rem;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+/* portal/cm/manage_competition.html, portal/coordinator/manage_competition.html */
+.s-38aa3d5:not(#_) {
+    display: none;
+    margin-bottom: .6rem;
+}
+
+/* appeals/jury_decision.html, appeals/upload_decision_evidence.html */
+.s-38b2cf5:not(#_) {
+    background: #fff3cd;
+    padding: .75rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+/* portal/referee_edit_profile.html */
+.s-38ee57f:not(#_) {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #1565C0;
+}
+
+/* portal/competition_reports.html */
+.s-39dea28:not(#_) {
+    padding: .3rem .8rem;
+    font-size: .8rem;
+}
+
+/* appeals/appeal_detail.html */
+.s-39f1347:not(#_) {
+    white-space: pre-wrap;
+    line-height: 1.6;
+    padding: 1rem;
+    background: #fff3cd;
+    border-radius: 4px;
+}
+
+/* portal/match_report_detail.html, portal/match_report_review.html */
+.s-39f8dfb:not(#_) {
+    white-space: pre-wrap;
+}
+
+/* portal/team_manager/opponent_view.html */
+.s-3a8c069:not(#_) {
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+}
+
+/* jury/disciplinary.html */
+.s-3ac6bc1:not(#_) {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background: #ff6f00;
+    border-radius: 2px;
+}
+
+/* portal/coordinator/competitions.html, portal/coordinator/dashboard.html */
+.s-3b66598:not(#_) {
+    background: #E0F2F1;
+    color: #00695C;
+}
+
+/* portal/cm/manage_competition.html */
+.s-3bc5a89:not(#_) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .5rem .75rem;
+    background: #F3E5F5;
+    border-radius: 8px 8px 0 0;
+    margin-bottom: 0;
+}
+
+/* portal/referee_edit_profile.html */
+.s-3c18514:not(#_) {
+    padding: .4rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-3d108df:not(#_) {
+    width: 100%;
+    max-height: 160px;
+    object-fit: contain;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    background: #fafafa;
+}
+
+/* appeals/jury_decision.html */
+.s-3d15533:not(#_) {
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    max-width: 800px;
+    background: #e8f5e9;
+    border-left: 4px solid #4caf50;
+}
+
+/* portal/competition_report_approve.html */
+.s-3d22456:not(#_) {
+    text-align: center;
+    font-weight: 700;
+    font-family: monospace;
+}
+
+/* portal/cm/venues.html */
+.s-3d8c59a:not(#_) {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: .75rem;
+    margin-top: 1.5rem;
+}
+
+/* portal/match_report_detail.html, portal/match_report_review.html */
+.s-3d95cd7:not(#_) {
+    padding: .5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* portal/referee_dashboard.html */
+.s-3f717eb:not(#_) {
+    margin-top: 1rem;
+    display: inline-flex;
+}
+
+/* portal/competition_report_approve.html */
+.s-3f87be5:not(#_) {
+    margin-top: .8rem;
+}
+
+/* portal/referee_appoint.html */
+.s-3f8aa4a:not(#_) {
+    font-size: .7rem;
+    background: #E8F5E9;
+    color: #1B5E20;
+    padding: .1rem .4rem;
+    border-radius: 4px;
+    margin-left: .3rem;
+}
+
+/* portal/coordinator/edit_fixture.html, portal/coordinator/edit_standings.html */
+.s-3fe4ce0:not(#_) {
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* portal/cm/manage_competition.html, portal/coordinator/manage_competition.html */
+.s-3ff58a3:not(#_) {
+    text-align: center;
+    padding: 1rem;
+    color: #bbb;
+}
+
+/* appeals/schedule_hearing.html */
+.s-404bb9b:not(#_) {
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+/* appeals/jury_dashboard.html */
+.s-40766e4:not(#_) {
+    color: #E53935;
+}
+
+/* appeals/appeals_list.html */
+.s-40a93de:not(#_) {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* portal/competition_report_approve.html */
+.s-40d7166:not(#_) {
+    text-align: left;
+    flex: 1;
+}
+
+/* appeals/appeals_list.html, portal/referee_appointments.html */
+.s-4168ee8:not(#_) {
+    text-align: center;
+    padding: 3rem;
+}
+
+/* portal/competition_reports.html, portal/competition_standings.html */
+.s-41df3e0:not(#_) {
+    overflow-x: auto;
+    padding: 0;
+}
+
+/* portal/referee_appoint.html */
+.s-41f6761:not(#_) {
+    color: #999;
+    margin-left: .5rem;
+}
+
+/* portal/match_report_detail.html, portal/match_report_review.html */
+.s-428ad7b:not(#_) {
+    font-size: 2rem;
+    color: #999;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-43271fd:not(#_) {
+    margin: 0 0 .4rem;
+    font-size: .76rem;
+    font-weight: 700;
+    color: #1565C0;
+}
+
+/* portal/team_manager/match_squad.html */
+.s-4334427:not(#_) {
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 1rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* portal/team_manager/dashboard.html */
+.s-43f53ed:not(#_) {
+    background: linear-gradient(135deg,#F3E5F5,#E1BEE7);
+    color: #7b1fa2;
+}
+
+/* appeals/submit_response.html */
+.s-43fe289:not(#_) {
+    color: red;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-44d73bb:not(#_) {
+    color: #ccc;
+    font-size: .8rem;
+}
+
+/* portal/team_manager/match_squad.html */
+.s-45ca609:not(#_) {
+    padding: .5rem .8rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: .9rem;
+    min-width: 200px;
+}
+
+/* portal/match_report_detail.html, portal/match_report_form.html */
+.s-470fabf:not(#_) {
+    padding: .5rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+/* portal/coordinator/manage_competition.html */
+.s-477182a:not(#_) {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1B5E20;
+    margin-top: .5rem;
+}
+
+/* portal/match_report_form.html */
+.s-47b74df:not(#_) {
+    width: 100%;
+    padding: .5rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-4954185:not(#_) {
+    font-weight: 500;
+    color: #333;
+}
+
+/* appeals/jury_dashboard.html */
+.s-49ba48e:not(#_) {
+    font-size: .76rem;
+    text-decoration: none;
+    color: #6A1B9A;
+    font-weight: 600;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-4aa37e3:not(#_) {
+    display: none;
+    margin-top: .55rem;
+}
+
+/* portal/referee_edit_profile.html */
+.s-4bea303:not(#_) {
+    text-align: center;
+    padding: 1rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+/* portal/referee_appoint.html */
+.s-4bed159:not(#_) {
+    padding: .5rem .8rem;
+    text-align: right;
+}
+
+/* appeals/appeal_detail.html, appeals/schedule_hearing.html */
+.s-4cbd443:not(#_) {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+}
+
+/* appeals/jury_decision.html, appeals/pay_fee.html */
+.s-4ccfabd:not(#_) {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: .5rem;
+}
+
+/* portal/match_report_form.html */
+.s-4d8b74e:not(#_) {
+    color: #1B5E20;
+    margin-bottom: .5rem;
+}
+
+/* jury/match_reports.html */
+.s-4e843b0:not(#_) {
+    color: #e53935;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-4ec675a:not(#_) {
+    font-size: .77rem;
+    color: #888;
+    margin-top: .1rem;
+    font-weight: 500;
+}
+
+/* appeals/upload_decision_evidence.html, appeals/upload_evidence.html */
+.s-4edbe1e:not(#_) {
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    max-width: 700px;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-4ee5ec9:not(#_) {
+    font-size: .8rem;
+    color: #aaa;
+}
+
+/* portal/competition_report_approve.html */
+.s-4f3c556:not(#_) {
+    font-size: .88rem;
+}
+
+/* portal/team_manager/match_squad.html */
+.s-503b203:not(#_) {
+    background: #fce4ec;
+    color: #C62828;
+    padding: .15rem .5rem;
+    border-radius: 4px;
+    font-size: .75rem;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+/* portal/competition_report_approve.html */
+.s-505d4e6:not(#_) {
+    color: #2e7d32;
+}
+
+/* portal/cm/manage_competition.html, portal/coordinator/manage_competition.html */
+.s-50b8438:not(#_) {
+    width: 30px;
+    text-align: center;
+}
+
+/* portal/team_manager/file_appeal.html, portal/team_manager/match_squad.html */
+.s-516c5cc:not(#_) {
+    font-size: .88rem;
+    color: #555;
+}
+
+/* portal/team_manager/dashboard.html, portal/team_manager/opponent_view.html */
+.s-5220785:not(#_) {
+    padding: .5rem .8rem;
+    font-weight: 700;
+}
+
+/* portal/appointment_action.html, portal/match_report_review.html */
+.s-52f564d:not(#_) {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 2rem;
+}
+
+/* portal/match_report_form.html */
+.s-533929e:not(#_) {
+    background: #c62828;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    padding: .3rem .5rem;
+}
+
+/* portal/competition_report_approve.html */
+.s-537f8e3:not(#_) {
+    font-size: .88rem;
+    line-height: 1.8;
+}
+
+/* portal/competition_standings.html */
+.s-539e762:not(#_) {
+    padding: .6rem 1.2rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-weight: 700;
+    border-bottom: 3px solid #1b5e20;
+    color: #1b5e20;
+}
+
+/* portal/team_manager/sanctions.html */
+.s-53a93a2:not(#_) {
+    font-size: 1.5rem;
+    display: block;
+    margin-bottom: .3rem;
+    color: #2e7d32;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-5490b73:not(#_) {
+    padding: .7rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* portal/appointment_action.html, portal/match_report_form.html */
+.s-55e4fe4:not(#_) {
+    width: 100%;
+    padding: .6rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: .95rem;
+}
+
+/* portal/competition_report_approve.html */
+.s-58142ee:not(#_) {
+    padding: .6rem 2rem;
+}
+
+/* referees/list.html */
+.s-5815bee:not(#_) {
+    background: #1B5E20;
+    color: #fff;
+    padding: .3rem .8rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: .85rem;
+}
+
+/* portal/cm/manage_competition.html, portal/cm/venues.html */
+.s-5829376:not(#_) {
+    font-size: .72rem;
+}
+
+/* appeals/jury_decision.html, appeals/submit_appeal.html */
+.s-587260e:not(#_) {
+    margin: .5rem 0;
+    padding-left: 1.5rem;
+}
+
+/* jury/disciplinary.html, jury/squad_detail.html */
+.s-591e096:not(#_) {
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+/* jury/disciplinary.html */
+.s-592b2b8:not(#_) {
+    font-size: .85rem;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* appeals/jury_decision.html, appeals/verify_fee.html */
+.s-594942c:not(#_) {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+}
+
+/* portal/cm/upload_players.html */
+.s-5a4ba47:not(#_) {
+    background: #FFF3E0;
+    border-color: #E65100;
+}
+
+/* competitions/detail.html */
+.s-5a5749f:not(#_) {
+    padding: .6rem 1.5rem;
+    background: #6a1b9a;
+}
+
+/* portal/cm/manage_pools.html */
+.s-5a592d7:not(#_) {
+    opacity: .6;
+}
+
+/* portal/competition_standings.html */
+.s-5a7dacd:not(#_) {
+    text-align: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+}
+
+/* matches/list.html */
+.s-5ab8d22:not(#_) {
+    margin-right: .5rem;
+    font-size: .75rem;
+}
+
+/* portal/competition_report_approve.html, portal/competition_standings.html */
+.s-5b35a00:not(#_) {
+    text-align: center;
+    font-weight: 700;
+    color: #c62828;
+}
+
+/* appeals/schedule_hearing.html */
+.s-5c24f30:not(#_) {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    border-left: 4px solid #2196f3;
+}
+
+/* portal/cm/manage_competition.html, portal/coordinator/manage_competition.html */
+.s-5c27c29:not(#_) {
+    margin-bottom: .6rem;
+}
+
+/* portal/competition_reports.html */
+.s-5c96c8a:not(#_) {
+    padding: 1rem 1.5rem;
+    text-align: center;
+    border-top: 3px solid #2e7d32;
+    flex: 1;
+    min-width: 150px;
+}
+
+/* portal/cm/dashboard.html, portal/coordinator/dashboard.html */
+.s-5cea8ac:not(#_) {
+    margin-top: 1rem;
+    padding-top: .75rem;
+    border-top: 1px solid #eee;
+}
+
+/* portal/referee_dashboard.html */
+.s-5d0dedc:not(#_) {
+    text-align: center;
+    padding: 2.5rem;
+}
+
+/* portal/cm/manage_pools.html */
+.s-5d40bd8:not(#_) {
+    font-size: 2.5rem;
+    color: #ccc;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-5d55380:not(#_) {
+    padding: .75rem 1rem;
+    background: linear-gradient(135deg,#1B5E20,#2E7D32);
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+}
+
+/* appeals/jury_dashboard.html */
+.s-5e67fba:not(#_) {
+    font-size: 2.5rem;
+    color: #E1BEE7;
+}
+
+/* portal/match_report_form.html */
+.s-5ea48ca:not(#_) {
+    font-weight: 600;
+    font-size: .85rem;
+    color: #666;
+    margin-bottom: .3rem;
+}
+
+/* portal/coordinator/edit_fixture.html */
+.s-60ff7c8:not(#_) {
+    margin: 0;
+    display: flex;
+    gap: .4rem;
+    align-items: center;
+}
+
+/* jury/disciplinary.html, jury/fixtures.html */
+.s-611f136:not(#_) {
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+/* portal/match_report_form.html, portal/referee_appointments.html */
+.s-623930c:not(#_) {
+    font-size: .8rem;
+    color: #666;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-625dca7:not(#_) {
+    padding: .7rem .9rem;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+/* portal/cm/manage_competition.html */
+.s-62f06ea:not(#_) {
+    display: none;
+    background: #fff;
+    border: 1px solid #E1BEE7;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,.05);
+}
+
+/* jury/disciplinary.html, jury/fixtures.html */
+.s-634406e:not(#_) {
+    text-align: center;
+    color: #888;
+    padding: 2rem;
+}
+
+/* portal/coordinator/manage_competition.html */
+.s-63499ea:not(#_) {
+    font-size: .8rem;
+    color: #999;
+    margin-top: .5rem;
+}
+
+/* appeals/pay_fee.html, portal/competition_report_approve.html */
+.s-63c41f2:not(#_) {
+    margin: .5rem 0 0;
+    font-size: .9rem;
+}
+
+/* portal/match_report_detail.html, portal/match_report_form.html */
+.s-6525f09:not(#_) {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+/* portal/cm/allocate_venues.html, portal/cm/manage_competition.html */
+.s-6528b27:not(#_) {
+    width: 30%;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-656fe2a:not(#_) {
+    display: inline-block;
+    padding: .18rem .5rem;
+    border-radius: 20px;
+    background: #e3f2fd;
+    color: #1565C0;
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-65db438:not(#_) {
+    font-weight: 800;
+    color: #C62828;
+    font-size: .95rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-65e2226:not(#_) {
+    flex: 1;
+    padding: .38rem .65rem;
+    border: 1px solid #c5cae9;
+    border-radius: 7px;
+    font-size: .82rem;
+    background: #fff;
+}
+
+/* portal/competition_report_approve.html */
+.s-6605286:not(#_) {
+    font-size: .82rem;
+    color: #888;
+    margin-top: .8rem;
+}
+
+/* portal/referee_dashboard.html */
+.s-661e20d:not(#_) {
+    margin-left: .4rem;
+}
+
+/* portal/cm/manage_competition.html, portal/coordinator/manage_competition.html */
+.s-67de110:not(#_) {
+    font-size: .75rem;
+    font-weight: 600;
+    color: #555;
+    display: block;
+    margin-bottom: .3rem;
+}
+
+/* portal/cm/manage_competition.html */
+.s-67e7eaa:not(#_) {
+    background: #FFF8E1;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-67f2a64:not(#_) {
+    flex: 1;
+    padding: .4rem .7rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: .82rem;
+}
+
+/* portal/team_manager/match_squad.html */
+.s-692d792:not(#_) {
+    font-size: .95rem;
+    color: #888;
+    margin-bottom: .5rem;
+}
+
+/* appeals/appeal_detail.html */
+.s-6938385:not(#_) {
+    white-space: pre-wrap;
+    line-height: 1.6;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-69757b7:not(#_) {
+    font-size: 2rem;
+    margin-bottom: .3rem;
+}
+
+/* portal/match_report_form.html */
+.s-6a52d5b:not(#_) {
+    padding: .4rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+/* portal/squad_review.html */
+.s-6a7810f:not(#_) {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1565C0;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-6bb2d39:not(#_) {
+    margin: 0 0 .5rem;
+    font-size: .78rem;
+    font-weight: 700;
+    color: #1565C0;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+/* portal/cm/manage_competition.html */
+.s-6bd7535:not(#_) {
+    display: none;
+    background: #fff;
+    border: 1px solid #E1BEE7;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: .75rem 1rem;
+    margin-bottom: .5rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-6cff4c1:not(#_) {
+    padding: .4rem .9rem;
+    background: #C62828;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: .82rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* portal/coordinator/referees.html */
+.s-6d70d09:not(#_) {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+/* portal/referee_dashboard.html */
+.s-6dc05ad:not(#_) {
+    color: #6b7280;
+    font-size: .85rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-7031d5c:not(#_) {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: .45rem .75rem;
+    font-size: .84rem;
+}
+
+/* jury/fixtures.html, jury/match_reports.html */
+.s-7040d1f:not(#_) {
+    padding: 3px 8px;
+    border-radius: 4px;
+    color: #fff;
+    font-size: .75rem;
+}
+
+/* portal/competition_report_approve.html */
+.s-705bcca:not(#_) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* portal/coordinator/edit_fixture.html */
+.s-717cd64:not(#_) {
+    display: flex;
+    align-items: end;
+}
+
+/* portal/referee_dashboard.html */
+.s-717d9f3:not(#_) {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: .4rem;
+}
+
+/* portal/match_report_detail.html, portal/match_report_form.html */
+.s-71a92c6:not(#_) {
+    border-bottom: 2px solid #ddd;
+}
+
+/* portal/squad_select.html */
+.s-71c50b4:not(#_) {
+    margin-top: 1rem;
+    padding: .8rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-726dc8a:not(#_) {
+    background: #f8f9fb;
+}
+
+/* portal/cm/allocate_venues.html */
+.s-730b984:not(#_) {
+    width: 35%;
+}
+
+/* portal/pending_referees.html */
+.s-73aa157:not(#_) {
+    background: #f5f5f5;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: .82rem;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-73c8959:not(#_) {
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-73d178e:not(#_) {
+    padding: .7rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-73fc74a:not(#_) {
+    display: flex;
+    gap: .4rem;
+    align-items: flex-end;
+    padding-bottom: 1px;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-7496aa3:not(#_) {
+    display: flex;
+    gap: .4rem;
+    margin: 0;
+}
+
+/* portal/competition_report_approve.html, portal/competition_standings.html */
+.s-74bbd56:not(#_) {
+    text-align: center;
+    font-weight: 700;
+    color: #f9a825;
+}
+
+/* portal/coordinator/manage_competition.html */
+.s-75084ab:not(#_) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .4rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-753ab77:not(#_) {
+    height: 150px;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px dashed #c5cae9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-size: .78rem;
+    text-align: center;
+    padding: .5rem;
+}
+
+/* portal/team_manager/dashboard.html */
+.s-757c773:not(#_) {
+    color: #f57c00;
+    font-weight: 600;
+    font-size: .82rem;
+    text-decoration: none;
+}
+
+/* appeals/reappeal.html */
+.s-7600b3e:not(#_) {
+    background: #fce4ec;
+    padding: 1rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+}
+
+/* portal/cm/edit_standings.html */
+.s-778eb09:not(#_) {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.3);
+    color: #fff;
+    border-radius: 6px;
+    padding: .2rem .6rem;
+    font-size: .72rem;
+    cursor: pointer;
+}
+
+/* portal/coordinator/manage_competition.html */
+.s-7795e4d:not(#_) {
+    display: none;
+    background: #fff;
+    border: 1px solid #B2DFDB;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: .75rem 1rem;
+    margin-bottom: .5rem;
+}
+
+/* portal/cm/manage_competition.html, portal/coordinator/manage_competition.html */
+.s-782c969:not(#_) {
+    display: flex;
+    gap: .4rem;
+    align-items: center;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-7834abe:not(#_) {
+    padding: .85rem;
+    background: #fce4ec;
+    border-radius: 8px;
+    text-align: center;
+    font-size: .82rem;
+    color: #C62828;
+    font-weight: 600;
+}
+
+/* portal/cm/dashboard.html */
+.s-7846ad3:not(#_) {
+    font-weight: 700;
+    color: #7B1FA2;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-78d73a2:not(#_) {
+    padding: 1.1rem;
+    background: #fff3e0;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: .85rem;
+}
+
+/* appeals/jury_decision.html, appeals/pay_fee.html */
+.s-79f04f6:not(#_) {
+    color: #dc3545;
+    font-size: .85rem;
+}
+
+/* appeals/upload_response_evidence.html */
+.s-7a25a9d:not(#_) {
+    background: #fff3cd;
+    padding: .75rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+}
+
+/* portal/match_report_detail.html, portal/match_report_review.html */
+.s-7ae1315:not(#_) {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #1B5E20;
+}
+
+/* portal/cm/manage_competition.html */
+.s-7ba3a37:not(#_) {
+    display: none;
+    background: #F3E5F5;
+}
+
+/* appeals/appeal_detail.html */
+.s-7c197e4:not(#_) {
+    margin: 0 0 .5rem;
+    color: #555;
+}
+
+/* portal/cm/upload_players.html */
+.s-7c7c816:not(#_) {
+    background: #FFFDE7;
+    border-color: #F9A825;
+}
+
+/* portal/cm/venues.html */
+.s-7cbbd04:not(#_) {
+    text-align: center;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    margin-bottom: 1.5rem;
+}
+
+/* jury/squad_detail.html */
+.s-7cfe793:not(#_) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+    gap: 1rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-7d4a2d8:not(#_) {
+    height: 150px;
+    background: #fce4ec;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #C62828;
+    font-size: .82rem;
+    font-weight: 600;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-7d6fabb:not(#_) {
+    font-size: .82rem;
+    font-weight: 700;
+    color: #F57F17;
+    margin-bottom: .35rem;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-7d87289:not(#_) {
+    background: #fff;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.07);
+    overflow: hidden;
+}
+
+/* portal/competition_reports.html */
+.s-7e03372:not(#_) {
+    display: flex;
+    gap: .5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+/* portal/referee_appoint.html */
+.s-7ea8c44:not(#_) {
+    font-size: .85rem;
+    color: #666;
+    margin: 0;
+}
+
+/* appeals/appeal_detail.html */
+.s-7ff5815:not(#_) {
+    white-space: pre-wrap;
+    line-height: 1.6;
+}
+
+/* appeals/jury_dashboard.html */
+.s-7ffafa2:not(#_) {
+    background: #E8EAF6;
+    color: #283593;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-7ffce92:not(#_) {
+    font-size: .65rem;
+    color: #1B5E20;
+    font-weight: 700;
+    margin-top: .25rem;
+}
+
+/* portal/coordinator/statistics.html */
+.s-8079dbe:not(#_) {
+    text-align: center;
+    padding: 1rem;
+    color: #999;
+}
+
+/* portal/coordinator/manage_competition.html */
+.s-8135f7c:not(#_) {
+    background: rgba(255,255,255,.2);
+    color: #fff;
+}
+
+/* portal/squad_select.html */
+.s-8251857:not(#_) {
+    width: 70px;
+}
+
+/* portal/team_manager/file_appeal.html */
+.s-83f710e:not(#_) {
+    width: 100%;
+    padding: .5rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: .9rem;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-848a850:not(#_) {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: #fff8e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-84dafd3:not(#_) {
+    margin-left: .4rem;
+    padding: .1rem .5rem;
+    background: #fce4ec;
+    color: #C62828;
+    border-radius: 20px;
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+/* appeals/appeal_detail.html, appeals/jury_decision.html */
+.s-8545ea2:not(#_) {
+    margin: 1rem 0;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-859efa8:not(#_) {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+}
+
+/* appeals/appeal_detail.html */
+.s-861433f:not(#_) {
+    white-space: pre-wrap;
+    line-height: 1.6;
+    margin: 1rem 0;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+/* portal/coordinator/manage_competition.html */
+.s-86d94b0:not(#_) {
+    padding: .35rem 0;
+    font-size: .85rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* portal/competition_reports.html */
+.s-86e76ba:not(#_) {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #2e7d32;
+}
+
+/* portal/match_report_form.html, portal/match_report_review.html */
+.s-8798efa:not(#_) {
+    background: #FF8F00;
+    color: #fff;
+    padding: .6rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+/* portal/competition_report_approve.html */
+.s-88281ce:not(#_) {
+    margin-bottom: .8rem;
+    color: #1b5e20;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-8851467:not(#_) {
+    font-size: .82rem;
+    font-weight: 700;
+    color: #C62828;
+    margin-bottom: .5rem;
+}
+
+/* portal/match_report_form.html */
+.s-8949217:not(#_) {
+    width: 80px;
+    padding: .5rem;
+    font-size: 1.5rem;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+/* appeals/appeal_detail.html */
+.s-894babf:not(#_) {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-8950b6a:not(#_) {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+/* jury/disciplinary.html */
+.s-895efc5:not(#_) {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background: #e53935;
+    border-radius: 2px;
+}
+
+/* appeals/appeals_list.html */
+.s-8a78ae1:not(#_) {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+}
+
+/* portal/cm/generate_fixtures.html */
+.s-8ae978b:not(#_) {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+/* appeals/appeals_list.html */
+.s-8b6253b:not(#_) {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* portal/match_report_detail.html, portal/match_report_form.html */
+.s-8c00b6e:not(#_) {
+    font-size: .75rem;
+    color: #FF8F00;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-8d09ee9:not(#_) {
+    padding: .7rem .9rem;
+    font-size: .82rem;
+    color: #C62828;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-8d3dfe4:not(#_) {
+    padding: .7rem .9rem;
+}
+
+/* appeals/finalize_appeal.html, appeals/publish_decision.html */
+.s-8de7818:not(#_) {
+    margin: .5rem 0 0;
+    padding-left: 1.25rem;
+}
+
+/* jury/disciplinary.html */
+.s-8df76b1:not(#_) {
+    display: inline-block;
+    width: 16px;
+    height: 22px;
+    background: #f9a825;
+    border-radius: 2px;
+    vertical-align: middle;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-8ea41f6:not(#_) {
+    width: 100%;
+    padding: .42rem .75rem .42rem 2rem;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    font-size: .84rem;
+    box-sizing: border-box;
+    background: #fafafa;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-8f4dd82:not(#_) {
+    padding: .42rem .75rem;
+    background: #fff;
+    color: #C62828;
+    border: 1px solid #f5c6c6;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: .83rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-8f83247:not(#_) {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 1.25rem;
+    align-items: start;
+}
+
+/* portal/cm/upload_players.html */
+.s-8fbdc34:not(#_) {
+    font-size: .85rem;
+    font-weight: 600;
+    margin-bottom: .5rem;
+}
+
+/* portal/competition_standings.html */
+.s-8fe99ce:not(#_) {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 1.5rem;
+}
+
+/* portal/referee_appointments.html, portal/squad_select.html */
+.s-9074657:not(#_) {
+    padding: .8rem 1rem;
+}
+
+/* appeals/appeal_detail.html */
+.s-90a5c14:not(#_) {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    border-left: 4px solid #673ab7;
+}
+
+/* portal/match_report_form.html */
+.s-91d4628:not(#_) {
+    padding: .4rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    width: 70px;
+}
+
+/* jury/match_reports.html, jury/squad_detail.html */
+.s-9206f2c:not(#_) {
+    color: #f9a825;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-9207dee:not(#_) {
+    display: inline-block;
+    padding: .2rem .55rem;
+    border-radius: 20px;
+    background: #fce4ec;
+    color: #C62828;
+    font-weight: 700;
+    font-size: .82rem;
+}
+
+/* portal/cm/manage_competition.html */
+.s-922597e:not(#_) {
+    background: #fff;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,.05);
+}
+
+/* portal/cm/county_player_verification.html */
+.s-92a2439:not(#_) {
+    flex: 2;
+    min-width: 190px;
+}
+
+/* appeals/finalize_appeal.html, appeals/publish_decision.html */
+.s-92a89db:not(#_) {
+    background: #fff3cd;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+}
+
+/* portal/team_manager/dashboard.html */
+.s-92a97c0:not(#_) {
+    color: #9e9e9e;
+    font-weight: 600;
+    font-size: .82rem;
+    margin-right: .6rem;
+}
+
+/* portal/team_manager/dashboard.html */
+.s-92bdb11:not(#_) {
+    background: linear-gradient(135deg,#FFF3E0,#FFE0B2);
+    color: #f57c00;
+}
+
+/* portal/cm/manage_pools.html */
+.s-92c2d03:not(#_) {
+    text-align: center;
+    padding: 3rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+/* portal/team_manager/match_squad.html */
+.s-92ef383:not(#_) {
+    padding: 1.2rem;
+    margin-top: 1.5rem;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-92f7602:not(#_) {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: #e8f5e9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+/* portal/cm/dashboard.html, portal/coordinator/dashboard.html */
+.s-9307707:not(#_) {
+    font-size: .78rem;
+    font-weight: 700;
+    color: #757575;
+    text-transform: uppercase;
+    margin-bottom: .5rem;
+}
+
+/* portal/match_report_form.html */
+.s-9327b78:not(#_) {
+    width: 70px;
+    padding: .4rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-932cffb:not(#_) {
+    font-size: 2.8rem;
+    margin-bottom: .75rem;
+}
+
+/* portal/team_manager/sanctions.html */
+.s-9353d57:not(#_) {
+    font-size: 1.5rem;
+    display: block;
+    margin-bottom: .3rem;
+}
+
+/* portal/team_manager/match_squad.html */
+.s-935ea02:not(#_) {
+    display: flex;
+    gap: .8rem;
+    margin-top: 1.2rem;
+    flex-wrap: wrap;
+}
+
+/* portal/competition_report_approve.html, portal/competition_standings.html */
+.s-93b3300:not(#_) {
+    background: #e8f5e9;
+}
+
+/* portal/match_report_form.html */
+.s-940212d:not(#_) {
+    margin-bottom: .8rem;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-9433f18:not(#_) {
+    font-size: .75rem;
+    font-weight: 600;
+    color: #666;
+    display: block;
+    margin-bottom: .3rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+/* portal/referee_appointments.html */
+.s-94550a8:not(#_) {
+    text-align: center;
+    padding: 1.2rem;
+}
+
+/* portal/competition_standings.html */
+.s-947522c:not(#_) {
+    text-align: center;
+    font-weight: 800;
+    color: #2e7d32;
+    font-size: 1.1rem;
+}
+
+/* portal/match_report_detail.html, portal/match_report_form.html */
+.s-94860b6:not(#_) {
+    padding: .5rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-95488b0:not(#_) {
+    font-size: .7rem;
+    font-weight: 600;
+    color: #666;
+}
+
+/* portal/coordinator/allocate_venues.html, portal/coordinator/edit_fixture.html */
+.s-99083dd:not(#_) {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-992c48d:not(#_) {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+    padding: .85rem 1rem;
+    margin-bottom: .75rem;
+}
+
+/* appeals/appeal_detail.html */
+.s-9995e47:not(#_) {
+    margin: 1rem 0 .5rem;
+}
+
+/* portal/cm/edit_competition.html */
+.s-99b2da2:not(#_) {
+    max-width: 200px;
+}
+
+/* matches/list.html */
+.s-99d695e:not(#_) {
+    margin-right: .5rem;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-9a526a7:not(#_) {
+    font-size: .76rem;
+    color: #aaa;
+}
+
+/* portal/coordinator/venues.html */
+.s-9a8a7eb:not(#_) {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: .75rem;
+}
+
+/* portal/competition_reports.html */
+.s-9ab455e:not(#_) {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #f57c00;
+}
+
+/* portal/match_report_form.html */
+.s-9ae5252:not(#_) {
+    font-weight: 600;
+    font-size: .85rem;
+    color: #333;
+    margin-bottom: .3rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-9b4b4c8:not(#_) {
+    font-weight: 800;
+    color: #E65100;
+    font-size: .95rem;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-9ba0b2a:not(#_) {
+    padding: .7rem .9rem;
+    font-size: .77rem;
+    color: #aaa;
+    white-space: nowrap;
+}
+
+/* portal/cm/manage_pools.html */
+.s-9bb0c4a:not(#_) {
+    font-size: .85rem;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+/* portal/team_manager/match_squad.html */
+.s-9bbf0a7:not(#_) {
+    width: 18px;
+    height: 18px;
+}
+
+/* portal/coordinator/manage_competition.html */
+.s-9bd38a9:not(#_) {
+    font-size: .9rem;
+    font-weight: 700;
+    color: #00695C;
+    margin: 0;
+}
+
+/* portal/team_manager/dashboard.html */
+.s-9c0728c:not(#_) {
+    color: #9e9e9e;
+    font-weight: 600;
+    font-size: .82rem;
+}
+
+/* portal/team_manager/opponent_view.html */
+.s-9c2702a:not(#_) {
+    background: #e8f5e9;
+    border: 1px solid #a5d6a7;
+    border-radius: 10px;
+    padding: 1rem 1.4rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+/* portal/referee_dashboard.html */
+.s-9d45f47:not(#_) {
+    background: #f59e0b;
+}
+
+/* portal/squad_select.html */
+.s-9d740ba:not(#_) {
+    display: inline-block;
+    background: #1B5E20;
+    color: #fff;
+    font-size: .7rem;
+    padding: 1px 6px;
+    border-radius: 10px;
+    margin-left: 4px;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-9df0d30:not(#_) {
+    display: inline-block;
+    padding: .18rem .5rem;
+    border-radius: 20px;
+    background: #e8f5e9;
+    color: #1B5E20;
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+/* portal/cm/manage_competition.html */
+.s-9e1cd29:not(#_) {
+    font-size: .75rem;
+    font-weight: 500;
+    color: #7B1FA2;
+}
+
+/* portal/cm/manage_competition.html */
+.s-9e6c2a6:not(#_) {
+    display: flex;
+    justify-content: flex-end;
+    padding: .4rem .5rem;
+    background: #FAFAFA;
+    border-radius: 0 0 8px 8px;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-9edf118:not(#_) {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: #C62828;
+    line-height: 1;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-9f5e417:not(#_) {
+    text-align: center;
+    flex-shrink: 0;
+}
+
+/* portal/team_manager/dashboard.html */
+.s-9fd7792:not(#_) {
+    color: #6d4c41;
+    font-weight: 600;
+    font-size: .82rem;
+    margin-right: .6rem;
+}
+
+/* portal/match_report_form.html */
+.s-a079693:not(#_) {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1rem;
+    align-items: center;
+    text-align: center;
+}
+
+/* portal/referee_appoint.html */
+.s-a124073:not(#_) {
+    color: #1B5E20;
+    font-size: .85rem;
+}
+
+/* portal/cm/manage_pools.html */
+.s-a150bac:not(#_) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-a17976e:not(#_) {
+    margin-top: .6rem;
+    padding: .45rem .75rem;
+    background: #fce4ec;
+    border-radius: 7px;
+    font-size: .81rem;
+    color: #C62828;
+}
+
+/* portal/competition_report_approve.html */
+.s-a2444ea:not(#_) {
+    background: #ffebee;
+    border: 1px solid #ef9a9a;
+    border-radius: 10px;
+    padding: 1rem 1.4rem;
+    margin-bottom: 1.5rem;
+}
+
+/* portal/appointment_action.html, portal/match_report_form.html */
+.s-a27e530:not(#_) {
+    color: #2E7D32;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-a296136:not(#_) {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+}
+
+/* portal/cm/venues.html */
+.s-a2a67d7:not(#_) {
+    font-size: 2rem;
+    color: #ccc;
+}
+
+/* appeals/upload_decision_evidence.html, appeals/upload_evidence.html */
+.s-a2a7dd2:not(#_) {
+    padding: 2rem;
+    max-width: 700px;
+}
+
+/* jury/disciplinary.html */
+.s-a3c6c86:not(#_) {
+    font-size: .8rem;
+    margin-left: 4px;
+}
+
+/* jury/disciplinary.html, jury/fixtures.html */
+.s-a3cb89d:not(#_) {
+    display: flex;
+    gap: .75rem;
+    flex-wrap: wrap;
+    align-items: end;
+}
+
+/* portal/cm/manage_competition.html */
+.s-a496d1f:not(#_) {
+    font-size: .72rem;
+    font-weight: 600;
+    color: #666;
+}
+
+/* appeals/appeal_detail.html */
+.s-a4b18b4:not(#_) {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: #ede7f6;
+    border-left: 4px solid #673ab7;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-a4bd91c:not(#_) {
+    padding: .4rem .85rem;
+    background: #f5f5f5;
+    color: #666;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: .82rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-a5397de:not(#_) {
+    margin: .25rem 0 0;
+    color: #888;
+    font-size: .86rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-a60180e:not(#_) {
+    display: flex;
+    gap: .5rem;
+    margin: 0;
+}
+
+/* portal/cm/upload_players.html */
+.s-a614a1e:not(#_) {
+    font-size: .82rem;
+    color: #666;
+    padding-left: 1.2rem;
+    margin: 0;
+}
+
+/* portal/cm/edit_standings.html */
+.s-a61f54b:not(#_) {
+    text-align: center;
+    padding: 1rem;
+    color: #bbb;
+    font-size: .85rem;
+}
+
+/* appeals/submit_appeal.html */
+.s-a6c07a2:not(#_) {
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    background: #e8f5e9;
+    border-left: 4px solid #4caf50;
+    max-width: 800px;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-a6dbb60:not(#_) {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: #1B5E20;
+    line-height: 1;
+}
+
+/* appeals/jury_dashboard.html, portal/cm/upload_players.html */
+.s-a7026e2:not(#_) {
+    color: #F9A825;
+}
+
+/* portal/cm/dashboard.html */
+.s-a738082:not(#_) {
+    font-size: .78rem;
+    border-radius: 6px;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-a8a9035:not(#_) {
+    position: relative;
+}
+
+/* appeals/appeal_detail.html */
+.s-a8c660f:not(#_) {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: #e0f2f1;
+    border-left: 4px solid #009688;
+}
+
+/* portal/competition_standings.html */
+.s-a9452ca:not(#_) {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-a94a94a:not(#_) {
+    height: 1px;
+    background: #f0f0f0;
+    margin: .85rem 0;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-a9a6d02:not(#_) {
+    height: 1px;
+    background: #f0f0f0;
+    margin-bottom: .85rem;
+}
+
+/* appeals/appeals_list.html, portal/coordinator/allocate_venues.html */
+.s-aa0ee9a:not(#_) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+/* portal/coordinator/edit_standings.html */
+.s-aa4bbf5:not(#_) {
+    min-width: 220px;
+}
+
+/* appeals/appeal_detail.html, appeals/cancel_hearing.html */
+.s-abadbd8:not(#_) {
+    margin: 0 0 1rem;
+}
+
+/* portal/coordinator/venues.html */
+.s-acd9a61:not(#_) {
+    margin: 0;
+    font-size: .95rem;
+}
+
+/* portal/cm/allocate_venues.html, portal/cm/edit_standings.html */
+.s-ae0638a:not(#_) {
+    width: 10%;
+}
+
+/* portal/team_manager/dashboard.html */
+.s-ae23036:not(#_) {
+    padding: .5rem .8rem;
+    white-space: nowrap;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-ae66002:not(#_) {
+    position: absolute;
+    left: .65rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+    font-size: .85rem;
+}
+
+/* matches/list.html, portal/appointment_action.html */
+.s-af92746:not(#_) {
+    color: #FF8F00;
+}
+
+/* portal/cm/allocate_venues.html */
+.s-afb1c4d:not(#_) {
+    width: 12%;
+}
+
+/* appeals/appeal_detail.html, appeals/cancel_hearing.html */
+.s-afebd1e:not(#_) {
+    margin: .25rem 0;
+}
+
+/* portal/appointment_action.html, portal/match_report_form.html */
+.s-b0103db:not(#_) {
+    font-weight: 600;
+    display: block;
+    margin-bottom: .3rem;
+}
+
+/* portal/coordinator/manage_competition.html */
+.s-b0cfbc4:not(#_) {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #E65100;
+}
+
+/* portal/cm/manage_competition.html */
+.s-b0dff7f:not(#_) {
+    background: #fff;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    margin-bottom: 1.5rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-b16131f:not(#_) {
+    background: #fff;
+    border-radius: 12px;
+    padding: .85rem 1.1rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+/* portal/squad_select.html */
+.s-b1cad8f:not(#_) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-top: .5rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-b1cdadf:not(#_) {
+    font-weight: 800;
+    color: #1B5E20;
+    font-size: 1rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-b1e206e:not(#_) {
+    padding: .4rem .9rem;
+    background: #C62828;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: .82rem;
+    font-weight: 700;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-b272f04:not(#_) {
+    color: #555;
+    font-size: .82rem;
+    margin-top: .3rem;
+}
+
+/* portal/cm/manage_competition.html, portal/coordinator/manage_competition.html */
+.s-b2b5a1b:not(#_) {
+    font-size: .72rem;
+    font-weight: 600;
+    color: #555;
+    display: block;
+    margin-bottom: .2rem;
+}
+
+/* portal/coordinator/appointments.html, portal/coordinator/match_reports.html */
+.s-b303c8d:not(#_) {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: .5rem;
+}
+
+/* portal/referee_appoint.html */
+.s-b31e0a4:not(#_) {
+    padding: .5rem .8rem;
+    text-align: center;
+}
+
+/* portal/cm/upload_players.html */
+.s-b3706d4:not(#_) {
+    background: #E3F2FD;
+    border-color: #1565C0;
+}
+
+/* appeals/jury_dashboard.html */
+.s-b4088ab:not(#_) {
+    background: #F3E5F5;
+    color: #6A1B9A;
+    text-decoration: none;
+}
+
+/* portal/coordinator/dashboard.html */
+.s-b51b6de:not(#_) {
+    background: #FFF3E0;
+    color: #E65100;
+    text-decoration: none;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-b5d1f0f:not(#_) {
+    border-bottom: 1px solid #f4f4f4;
+}
+
+/* portal/coordinator/venues.html */
+.s-b5d26cc:not(#_) {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 1.5rem 0 .75rem;
+}
+
+/* appeals/schedule_hearing.html */
+.s-b660f22:not(#_) {
+    color: #dc3545;
+    font-size: .85rem;
+    margin-top: .25rem;
+}
+
+/* portal/competition_report_approve.html */
+.s-b680bf3:not(#_) {
+    font-size: .8rem;
+    color: #888;
+    margin-top: .5rem;
+}
+
+/* portal/match_report_detail.html */
+.s-b785fdd:not(#_) {
+    background: #1B5E20;
+    color: #fff;
+    padding: .6rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+/* appeals/schedule_hearing.html */
+.s-b7c039a:not(#_) {
+    font-weight: 600;
+    display: block;
+    margin-bottom: .25rem;
+}
+
+/* portal/coordinator/manage_competition.html */
+.s-b7c0a74:not(#_) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+@media (max-width: 767px) { .app-main .s-b7c0a74:not(#_) { grid-template-columns: 1fr; } }
+
+/* portal/match_report_detail.html, portal/match_report_review.html */
+.s-b7dddb7:not(#_) {
+    margin-top: .3rem;
+    color: #FF8F00;
+    font-size: .9rem;
+}
+
+/* portal/match_report_review.html */
+.s-b7e8530:not(#_) {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-b7f674e:not(#_) {
+    margin-left: .4rem;
+    padding: .1rem .5rem;
+    background: #e8f5e9;
+    color: #1B5E20;
+    border-radius: 20px;
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+/* portal/referee_appoint.html */
+.s-b852691:not(#_) {
+    padding: .5rem .8rem;
+    font-size: .85rem;
+}
+
+/* portal/referee_edit_profile.html */
+.s-b8687d5:not(#_) {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #1B5E20;
+}
+
+/* portal/cm/manage_competition.html, portal/coordinator/manage_competition.html */
+.s-b8ef83e:not(#_) {
+    padding: .25rem .4rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: .78rem;
+}
+
+/* portal/match_report_form.html, portal/squad_select.html */
+.s-b9166db:not(#_) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+    gap: 1rem;
+}
+
+/* portal/cm/manage_competition.html */
+.s-bafff15:not(#_) {
+    font-size: .7rem;
+    padding: .2rem .5rem;
+    background: #4A148C;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* portal/cm/manage_competition.html */
+.s-bb68482:not(#_) {
+    font-size: .7rem;
+    padding: .15rem .5rem;
+    background: #7B1FA2;
+    color: #fff;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-bb843f6:not(#_) {
+    display: flex;
+    gap: .75rem;
+    align-items: flex-start;
+}
+
+/* portal/coordinator/manage_competition.html */
+.s-bb93015:not(#_) {
+    text-align: center;
+    padding: 1.5rem;
+    color: #999;
+}
+
+/* portal/competition_standings.html */
+.s-bcbd658:not(#_) {
+    font-size: .85rem;
+    padding: .4rem .8rem;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-bccd277:not(#_) {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: #F57F17;
+    line-height: 1;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-bd4f66b:not(#_) {
+    margin: 0 .4rem;
+}
+
+/* portal/match_report_detail.html, portal/match_report_review.html */
+.s-be83767:not(#_) {
+    margin-top: .5rem;
+    color: #666;
+    font-size: 1rem;
+}
+
+/* appeals/appeal_detail.html */
+.s-be8555d:not(#_) {
+    background: #ff9800;
+    color: #fff;
+    font-size: .8rem;
+    vertical-align: middle;
+}
+
+/* portal/referee_dashboard.html */
+.s-beab6d0:not(#_) {
+    color: #6b7280;
+    font-size: .85rem;
+    line-height: 1.6;
+}
+
+/* portal/squad_review.html */
+.s-bef5a4c:not(#_) {
+    text-align: center;
+    color: #999;
+}
+
+/* portal/competition_report_approve.html */
+.s-bfad34f:not(#_) {
+    padding: .6rem 2rem;
+    color: #c62828;
+}
+
+/* portal/coordinator/edit_fixture.html, portal/coordinator/edit_standings.html */
+.s-bfbf3f3:not(#_) {
+    font-size: .86rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-bfd6fd9:not(#_) {
+    width: 100%;
+    padding: .45rem;
+    background: #C62828;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: .84rem;
+}
+
+/* portal/match_report_review.html */
+.s-c043649:not(#_) {
+    font-weight: 600;
+    margin-bottom: .3rem;
+}
+
+/* portal/match_report_detail.html */
+.s-c06e6fd:not(#_) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+@media (max-width: 767px) { .app-main .s-c06e6fd:not(#_) { grid-template-columns: 1fr; } }
+
+/* portal/coordinator/manage_competition.html */
+.s-c140c6f:not(#_) {
+    font-size: .65rem;
+    padding: .1rem .35rem;
+    background: #00695C;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+}
+
+/* portal/coordinator/manage_competition.html */
+.s-c1f4df7:not(#_) {
+    font-size: .65rem;
+    padding: .1rem .35rem;
+}
+
+/* appeals/appeal_detail.html */
+.s-c27da18:not(#_) {
+    padding: 0 1.5rem 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+/* portal/cm/dashboard.html */
+.s-c286d34:not(#_) {
+    background: linear-gradient(135deg,#F3E5F5,#E1BEE7);
+    border-radius: 10px;
+    padding: .5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-c344d89:not(#_) {
+    margin: 0 0 .75rem;
+    font-size: .83rem;
+    color: #777;
+    line-height: 1.5;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-c3682f9:not(#_) {
+    padding: .42rem 1rem;
+    background: #1B5E20;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: .83rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* portal/referee_dashboard.html */
+.s-c438517:not(#_) {
+    font-size: 2.5rem;
+    color: #f59e0b;
+    display: block;
+    margin-bottom: .75rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-c45f693:not(#_) {
+    border: 1.5px solid #ffe0cc;
+    border-radius: 9px;
+    padding: .85rem;
+}
+
+/* appeals/jury_decision.html, appeals/reappeal.html */
+.s-c4abbf5:not(#_) {
+    padding: 2rem;
+    max-width: 800px;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-c4c79eb:not(#_) {
+    padding: .7rem .9rem;
+    font-size: .82rem;
+    color: #E65100;
+}
+
+/* portal/competition_standings.html */
+.s-c50fbb2:not(#_) {
+    padding: .6rem 1.2rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-weight: 600;
+    color: #888;
+}
+
+/* portal/coordinator/manage_pools.html */
+.s-c5864cf:not(#_) {
+    padding: .75rem 1rem;
+    border-top: 1px solid #eee;
+}
+
+/* portal/competition_report_approve.html */
+.s-c593ad0:not(#_) {
+    text-align: right;
+    flex: 1;
+}
+
+/* appeals/appeal_detail.html, appeals/publish_decision.html */
+.s-c5c80a4:not(#_) {
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: #fff;
+}
+
+/* portal/competition_reports.html */
+.s-c64f130:not(#_) {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+/* portal/cm/manage_competition.html */
+.s-c762868:not(#_) {
+    font-size: .65rem;
+    padding: .1rem .35rem;
+    background: #7B1FA2;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-c7a7e20:not(#_) {
+    margin: 0 0 .45rem;
+    font-size: .8rem;
+    font-weight: 700;
+    color: #444;
+}
+
+/* appeals/appeal_detail.html */
+.s-c7d5396:not(#_) {
+    padding-left: 2rem;
+    color: #666;
+    font-size: .9rem;
+}
+
+/* appeals/appeals_list.html */
+.s-c9008c2:not(#_) {
+    font-size: 1.2rem;
+    color: #888;
+}
+
+/* competitions/detail.html */
+.s-c93bb8a:not(#_) {
+    padding: .6rem 1.5rem;
+    background: #0d47a1;
+}
+
+/* portal/team_manager/match_squad.html */
+.s-c9b5ffc:not(#_) {
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* portal/cm/manage_pools.html */
+.s-ca584a7:not(#_) {
+    background: #E8F5E9;
+    color: #1B5E20;
+    padding: .2rem .6rem;
+    border-radius: 6px;
+    font-size: .78rem;
+}
+
+/* portal/cm/manage_competition.html */
+.s-ca700f0:not(#_) {
+    display: flex;
+    gap: .5rem;
+    margin-top: .5rem;
+    padding: .5rem 0;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-caa1ef2:not(#_) {
+    border: 1.5px solid #fce4ec;
+    border-radius: 9px;
+    padding: .85rem;
+}
+
+/* jury/squad_detail.html, portal/competition_report_approve.html */
+.s-caa7b5b:not(#_) {
+    font-size: .8rem;
+    color: #888;
+}
+
+/* portal/appointment_action.html, portal/squad_review.html */
+.s-cacd04f:not(#_) {
+    background: #c62828;
+    color: #fff;
+    padding: .6rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-caf9042:not(#_) {
+    margin: 0;
+    color: #aaa;
+    font-size: .88rem;
+}
+
+/* portal/coordinator/referees.html */
+.s-cb164f0:not(#_) {
+    margin: 0;
+    font-size: 1rem;
+    color: #E65100;
+}
+
+/* portal/competition_standings.html */
+.s-cb6f3eb:not(#_) {
+    width: 30px;
+}
+
+/* portal/squad_review.html */
+.s-cc3e9b1:not(#_) {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1B5E20;
+}
+
+/* portal/cm/allocate_venues.html */
+.s-ccac479:not(#_) {
+    width: 5%;
+}
+
+/* portal/referee_appoint.html */
+.s-ccd14f2:not(#_) {
+    font-size: .8rem;
+    color: #666;
+    text-transform: uppercase;
+}
+
+/* appeals/appeal_detail.html */
+.s-cd8969f:not(#_) {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    border-left: 4px solid #17a2b8;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-cd937ba:not(#_) {
+    width: 100%;
+    padding: .45rem;
+    background: #E65100;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: .84rem;
+}
+
+/* portal/coordinator/statistics.html */
+.s-cdcf426:not(#_) {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+/* portal/referee_appoint.html */
+.s-cdebb42:not(#_) {
+    display: inline-block;
+    padding: .6rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    background: #f0f0f0;
+    color: #333;
+}
+
+/* appeals/jury_decision.html, appeals/submit_response.html */
+.s-cee95e6:not(#_) {
+    color: #666;
+    font-size: .85rem;
+}
+
+/* portal/appointment_action.html, portal/match_report_detail.html */
+.s-cf031e4:not(#_) {
+    background: #757575;
+    color: #fff;
+    padding: .6rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+/* portal/referee_appointments.html */
+.s-d094250:not(#_) {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #c62828;
+}
+
+/* portal/cm/manage_competition.html, portal/coordinator/manage_competition.html */
+.s-d19829a:not(#_) {
+    padding: .6rem .8rem;
+}
+
+/* portal/match_report_form.html, portal/match_report_review.html */
+.s-d1ab26d:not(#_) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+    gap: 1rem;
+}
+
+/* appeals/cancel_hearing.html */
+.s-d22ff4c:not(#_) {
+    background: #fff3cd;
+    padding: 1rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+    border-left: 4px solid #ffc107;
+}
+
+/* portal/team_manager/match_squad.html */
+.s-d2922ca:not(#_) {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: .8rem;
+}
+
+/* portal/appointment_action.html */
+.s-d2db3ea:not(#_) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+    gap: 1.5rem;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-d2e89db:not(#_) {
+    border-bottom: 1px solid #f4f4f4;
+    background: #fffaf5;
+}
+
+/* appeals/appeal_detail.html */
+.s-d39d4a3:not(#_) {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: #fce4ec;
+    border-left: 4px solid #e91e63;
+}
+
+/* appeals/submit_response.html */
+.s-d3c8df4:not(#_) {
+    margin: .25rem 0 0;
+}
+
+/* portal/cm/manage_competition.html */
+.s-d3fb38d:not(#_) {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .4rem .75rem;
+    background: #f9f9f9;
+    border-bottom: 1px solid #eee;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-d3fd008:not(#_) {
+    flex: 0 0 24px;
+    height: 2px;
+    background: #e0e0e0;
+    margin-bottom: 20px;
+}
+
+/* portal/referee_edit_profile.html */
+.s-d4001dd:not(#_) {
+    width: 100%;
+    padding: .6rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+/* portal/coordinator/manage_competition.html */
+.s-d4da14c:not(#_) {
+    display: flex;
+    justify-content: flex-end;
+    padding: .4rem .5rem;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-d51e7da:not(#_) {
+    font-size: .76rem;
+    color: #aaa;
+    margin-top: .1rem;
+}
+
+/* portal/competition_standings.html */
+.s-d7567a6:not(#_) {
+    color: #aaa;
+    font-size: .78rem;
+}
+
+/* jury/disciplinary.html, jury/fixtures.html */
+.s-d79dcbf:not(#_) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* appeals/schedule_hearing.html */
+.s-d7af785:not(#_) {
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+/* jury/disciplinary.html, jury/fixtures.html */
+.s-d86a1d8:not(#_) {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* portal/referee_dashboard.html */
+.s-d8aef6e:not(#_) {
+    font-size: 2.5rem;
+    opacity: .2;
+    display: block;
+    margin-bottom: .75rem;
+}
+
+/* portal/squad_select.html */
+.s-d8fd394:not(#_) {
+    text-align: center;
+    padding: 1rem;
+}
+
+/* portal/team_manager/file_appeal.html */
+.s-d937c1d:not(#_) {
+    background: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 10px;
+    padding: 1rem 1.4rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+/* portal/competition_standings.html */
+.s-d9b1691:not(#_) {
+    text-align: center;
+    font-weight: 600;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-da2def6:not(#_) {
+    padding: .7rem .9rem;
+    font-size: .77rem;
+    color: #aaa;
+}
+
+/* jury/squad_detail.html */
+.s-da32466:not(#_) {
+    padding: 4px 10px;
+    border-radius: 4px;
+    color: #fff;
+}
+
+/* portal/squad_review.html */
+.s-da466e9:not(#_) {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* portal/match_report_form.html */
+.s-da521de:not(#_) {
+    color: #1565C0;
+    margin-bottom: .5rem;
+}
+
+/* portal/competition_report_approve.html */
+.s-da8b03d:not(#_) {
+    font-size: 2.5rem;
+    font-weight: 900;
+    font-family: monospace;
+    color: #1b5e20;
+    padding: 0 1rem;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-db0d522:not(#_) {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: .85rem;
+    margin-bottom: 1.5rem;
+}
+@media (max-width: 767px) { .app-main .s-db0d522:not(#_) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* portal/referee_appoint.html */
+.s-db413ce:not(#_) {
+    font-weight: 700;
+    font-size: .95rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-dbb4434:not(#_) {
+    padding: 1.25rem;
+    background: #e8f5e9;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: .85rem;
+}
+
+/* appeals/jury_dashboard.html, portal/cm/dashboard.html */
+.s-dbed1b6:not(#_) {
+    background: linear-gradient(135deg,#F3E5F5,#E1BEE7);
+    color: #7B1FA2;
+}
+
+/* portal/team_manager/match_squad.html */
+.s-dbee408:not(#_) {
+    font-weight: 600;
+    min-width: 30px;
+    text-align: center;
+    font-size: .85rem;
+    color: #888;
+}
+
+/* portal/cm/manage_competition.html */
+.s-dcad7c0:not(#_) {
+    font-size: .7rem;
+    color: #E65100;
+    font-weight: 400;
+}
+
+/* portal/cm/manage_competition.html, portal/coordinator/manage_competition.html */
+.s-dcf5900:not(#_) {
+    font-size: .65rem;
+    font-weight: 600;
+    color: #666;
+    display: block;
+}
+
+/* portal/referee_dashboard.html */
+.s-dd10b1f:not(#_) {
+    background: #22c55e;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-dea56ac:not(#_) {
+    width: 100%;
+    padding: .38rem .6rem;
+    border: 1px solid #e8e8e8;
+    border-radius: 7px;
+    font-size: .81rem;
+    margin-bottom: .5rem;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+/* portal/appointment_action.html, portal/match_report_form.html */
+.s-debb563:not(#_) {
+    background: #1B5E20;
+    color: #fff;
+    padding: .6rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+/* appeals/appeal_detail.html */
+.s-df2b076:not(#_) {
+    font-size: .85rem;
+    color: #666;
+    margin: .5rem 0 0;
+}
+
+/* portal/referee_appointments.html */
+.s-df75d82:not(#_) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* appeals/appeal_detail.html */
+.s-dfa4516:not(#_) {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: #e3f2fd;
+    border-left: 4px solid #2196f3;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-dfeebab:not(#_) {
+    border-bottom: 1px solid #f4f4f4;
+    background: #fff9f9;
+}
+
+/* portal/match_report_form.html */
+.s-e0126f1:not(#_) {
+    width: 70px;
+    padding: .4rem;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+/* appeals/appeals_list.html */
+.s-e07aa2f:not(#_) {
+    background: #ff9800;
+    color: #fff;
+    font-size: .7rem;
+    margin-left: .25rem;
+}
+
+/* portal/competition_report_approve.html */
+.s-e091d7b:not(#_) {
+    width: 60px;
+    text-align: center;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-e0a200a:not(#_) {
+    font-size: .76rem;
+    color: #1565C0;
+    display: block;
+    margin-top: .3rem;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-e0aa076:not(#_) {
+    display: inline-block;
+    padding: .3rem .8rem;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    text-decoration: none;
+    font-size: .79rem;
+    color: #555;
+    font-weight: 500;
+}
+
+/* portal/competition_reports.html */
+.s-e1e2b3c:not(#_) {
+    padding: 1rem 1.5rem;
+    text-align: center;
+    border-top: 3px solid #f57c00;
+    flex: 1;
+    min-width: 150px;
+}
+
+/* portal/cm/dashboard.html, portal/coordinator/dashboard.html */
+.s-e2b042f:not(#_) {
+    background: linear-gradient(135deg,#FCE4EC,#F8BBD0);
+    color: #AD1457;
+}
+
+/* portal/competition_report_approve.html */
+.s-e2df1ea:not(#_) {
+    font-size: 1.3rem;
+    font-weight: 800;
+}
+
+/* portal/team_manager/dashboard.html */
+.s-e39466d:not(#_) {
+    color: #1565c0;
+    font-size: .82rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* appeals/pay_fee.html, appeals/submit_response.html */
+.s-e3b7d72:not(#_) {
+    background: #e3f2fd;
+    padding: 1rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-e3bec34:not(#_) {
+    padding: .4rem .9rem;
+    background: #1B5E20;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: .82rem;
+    font-weight: 700;
+}
+
+/* portal/match_report_detail.html, portal/match_report_form.html */
+.s-e40baea:not(#_) {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-bottom: 2rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-e469652:not(#_) {
+    margin-bottom: .9rem;
+    padding: .75rem .9rem;
+    border-radius: 9px;
+    background: #fff8e1;
+    border-left: 3px solid #F9A825;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-e4cd072:not(#_) {
+    padding: .75rem 1rem;
+    background: linear-gradient(135deg,#0D47A1,#1565C0);
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+}
+
+/* portal/referee_appoint.html, portal/coordinator/competitions.html */
+.s-e54a1de:not(#_) {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+}
+
+/* portal/team_manager/sanctions.html */
+.s-e551be1:not(#_) {
+    background: #ef5350;
+    color: #fff;
+    padding: .15rem .5rem;
+    border-radius: 4px;
+    font-size: .78rem;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-e59bb97:not(#_) {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid #ececec;
+    margin-bottom: 0;
+}
+
+/* jury/disciplinary.html */
+.s-e5c86b7:not(#_) {
+    display: inline-block;
+    width: 16px;
+    height: 22px;
+    background: #e53935;
+    border-radius: 2px;
+    vertical-align: middle;
+}
+
+/* competitions/detail.html */
+.s-e649fbc:not(#_) {
+    padding: .6rem 1.5rem;
+    background: #2e7d32;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-e6832a6:not(#_) {
+    display: flex;
+    gap: .4rem;
+    flex-wrap: wrap;
+}
+
+/* jury/disciplinary.html, jury/fixtures.html */
+.s-e6e41be:not(#_) {
+    flex: 1;
+    min-width: 140px;
+}
+
+/* jury/disciplinary.html */
+.s-e6e565d:not(#_) {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background: #f9a825;
+    border-radius: 2px;
+}
+
+/* appeals/jury_dashboard.html */
+.s-e6eb5ef:not(#_) {
+    background: #ECEFF1;
+    color: #37474F;
+}
+
+/* portal/appointment_action.html */
+.s-e719062:not(#_) {
+    color: #666;
+    font-size: .9rem;
+}
+
+/* portal/coordinator/manage_competition.html */
+.s-e724845:not(#_) {
+    font-size: .72rem;
+    background: #00695C;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: .3rem .6rem;
+}
+
+/* portal/cm/manage_competition.html */
+.s-e7b4d79:not(#_) {
+    font-size: .75rem;
+    color: #7B1FA2;
+}
+
+/* portal/cm/manage_competition.html */
+.s-e821012:not(#_) {
+    cursor: pointer;
+    margin-right: .4rem;
+}
+
+/* portal/squad_review_list.html */
+.s-e828018:not(#_) {
+    background: #1B5E20;
+    color: #fff;
+    padding: .4rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: .85rem;
+}
+
+/* portal/appointment_action.html, portal/competition_report_approve.html */
+.s-e9606c2:not(#_) {
+    color: #c62828;
+}
+
+/* portal/competition_report_approve.html */
+.s-e9805e0:not(#_) {
+    font-size: .85rem;
+    padding: .3rem .8rem;
+}
+
+/* portal/competition_report_approve.html, portal/match_report_detail.html */
+.s-e9d209a:not(#_) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+}
+
+/* appeals/appeal_detail.html */
+.s-e9ffd74:not(#_) {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: #e8eaf6;
+    border-left: 4px solid #3f51b5;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-ea6bd4e:not(#_) {
+    flex: 1;
+    min-width: 130px;
+}
+
+/* portal/referee_dashboard.html */
+.s-ea8dc12:not(#_) {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: .4rem;
+}
+
+/* appeals/appeal_detail.html */
+.s-eb15e93:not(#_) {
+    margin: .25rem 0;
+    font-size: .85rem;
+    color: #666;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-eb20a37:not(#_) {
+    margin: .4rem 0 0;
+    font-size: .7rem;
+    color: #aaa;
+}
+
+/* portal/match_report_form.html */
+.s-eb563c2:not(#_) {
+    background: #1B5E20;
+    color: #fff;
+    padding: .4rem 1rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: .85rem;
+}
+
+/* appeals/upload_decision_evidence.html */
+.s-ecedada:not(#_) {
+    background: #e8eaf6;
+    padding: 1rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+}
+
+/* portal/referee_appoint.html */
+.s-ed38172:not(#_) {
+    font-weight: 600;
+    display: block;
+    margin-bottom: .4rem;
+}
+
+/* portal/cm/manage_competition.html */
+.s-ed72700:not(#_) {
+    font-size: .65rem;
+    padding: .1rem .35rem;
+    background: #1565C0;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+}
+
+/* portal/competition_standings.html */
+.s-eda06ea:not(#_) {
+    text-align: center;
+    font-weight: 800;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-edb3a29:not(#_) {
+    display: flex;
+    gap: .65rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+/* appeals/jury_dashboard.html */
+.s-edb9f2e:not(#_) {
+    background: #6A1B9A;
+    color: #fff;
+    text-decoration: none;
+}
+
+/* portal/cm/manage_competition.html, portal/coordinator/manage_competition.html */
+.s-eea8f3d:not(#_) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .5rem;
+    margin-bottom: .6rem;
+}
+@media (max-width: 767px) { .app-main .s-eea8f3d:not(#_) { grid-template-columns: 1fr; } }
+
+/* portal/cm/venues.html */
+.s-eee99bb:not(#_) {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: .75rem;
+}
+
+/* jury/disciplinary.html */
+.s-ef639b5:not(#_) {
+    display: inline-block;
+    width: 16px;
+    height: 22px;
+    background: linear-gradient(135deg, #f9a825 50%, #e53935 50%);
+    border-radius: 2px;
+    vertical-align: middle;
+}
+
+/* portal/cm/manage_competition.html, portal/coordinator/manage_competition.html */
+.s-efb58ae:not(#_) {
+    font-size: .72rem;
+    font-weight: 600;
+    color: #666;
+    display: block;
+    margin-bottom: .15rem;
+}
+
+/* portal/team_manager/match_squad.html */
+.s-f03854e:not(#_) {
+    font-size: .88rem;
+    color: #355;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-f07962b:not(#_) {
+    padding: .7rem .9rem;
+    text-align: center;
+}
+
+/* portal/cm/edit_standings.html */
+.s-f0fb063:not(#_) {
+    width: 22%;
+}
+
+/* portal/cm/manage_pools.html */
+.s-f17da28:not(#_) {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,.7);
+    cursor: pointer;
+    font-size: .85rem;
+}
+
+/* appeals/appeal_detail.html */
+.s-f2b3eda:not(#_) {
+    padding: 6px 12px;
+    border-radius: 4px;
+    color: #fff;
+    font-size: .9rem;
+}
+
+/* appeals/jury_decision.html */
+.s-f2e6645:not(#_) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .5rem;
+}
+@media (max-width: 767px) { .app-main .s-f2e6645:not(#_) { grid-template-columns: 1fr; } }
+
+/* portal/referee_edit_profile.html */
+.s-f32f2e6:not(#_) {
+    color: #666;
+    font-size: .85rem;
+    margin-left: .5rem;
+}
+
+/* portal/referee_appoint.html */
+.s-f3ad8db:not(#_) {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+/* teams/detail.html */
+.s-f556572:not(#_) {
+    color: #1B5E20;
+    margin-right: .5rem;
+    font-size: .85rem;
+}
+
+/* appeals/appeals_list.html */
+.s-f595cef:not(#_) {
+    max-width: 250px;
+}
+
+/* portal/competition_standings.html */
+.s-f5c082f:not(#_) {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background: #e8f5e9;
+    border: 1px solid #a5d6a7;
+    border-radius: 2px;
+    vertical-align: middle;
+    margin-right: .3rem;
+}
+
+/* appeals/appeal_detail.html */
+.s-f621865:not(#_) {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+}
+
+/* jury/disciplinary.html, jury/fixtures.html */
+.s-f645e36:not(#_) {
+    height: 38px;
+    line-height: 24px;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-f781905:not(#_) {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: #E65100;
+    line-height: 1;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-f7bda38:not(#_) {
+    padding: 3.5rem 2rem;
+    text-align: center;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-f831730:not(#_) {
+    margin: 0 0 .4rem;
+    color: #444;
+    font-weight: 700;
+}
+
+/* portal/cm/manage_competition.html, portal/coordinator/manage_competition.html */
+.s-f83c781:not(#_) {
+    margin-top: .6rem;
+    display: flex;
+    gap: .5rem;
+}
+
+/* portal/competition_report_approve.html */
+.s-f8f98af:not(#_) {
+    border: 2px solid #1b5e20;
+}
+
+/* portal/match_report_detail.html, portal/match_report_form.html */
+.s-f8ffc58:not(#_) {
+    font-size: .8rem;
+    font-weight: normal;
+    color: #666;
+    margin-left: .5rem;
+}
+
+/* appeals/schedule_hearing.html */
+.s-f91791f:not(#_) {
+    display: flex;
+    gap: .5rem;
+    margin-top: 1.5rem;
+}
+
+/* portal/cm/manage_competition.html, portal/coordinator/manage_competition.html */
+.s-f96e9d5:not(#_) {
+    width: 100%;
+    padding: .3rem .5rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: .8rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-f9cd13e:not(#_) {
+    font-family: monospace;
+    font-weight: 600;
+    color: #333;
+}
+
+/* portal/cm/manage_competition.html, portal/coordinator/manage_competition.html */
+.s-fa22cb4:not(#_) {
+    font-size: .82rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: .3rem;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-fa75188:not(#_) {
+    font-size: .68rem;
+    padding: .12rem .5rem;
+    background: #e8f5e9;
+    color: #1B5E20;
+    border-radius: 20px;
+    font-weight: 700;
+}
+
+/* portal/team_manager/sanctions.html */
+.s-fa84cd2:not(#_) {
+    padding: .5rem .8rem;
+    text-align: center;
+    font-weight: 700;
+}
+
+/* appeals/appeals_list.html */
+.s-faa002a:not(#_) {
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: #fff;
+    font-size: .78rem;
+}
+
+/* portal/referee_edit_profile.html */
+.s-fae8adf:not(#_) {
+    width: 100%;
+    padding: .6rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f5f5f5;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-fb55408:not(#_) {
+    margin-bottom: 1rem;
+    padding: .85rem 1rem;
+    border-radius: 9px;
+    background: #fce4ec;
+    border-left: 4px solid #C62828;
+    font-size: .88rem;
+    color: #C62828;
+    font-weight: 600;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-fb941ac:not(#_) {
+    display: inline-block;
+    padding: .18rem .5rem;
+    border-radius: 20px;
+    background: #fce4ec;
+    color: #C62828;
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-fc56ce2:not(#_) {
+    display: inline-block;
+    padding: .2rem .55rem;
+    border-radius: 20px;
+    background: #e8f5e9;
+    color: #1B5E20;
+    font-weight: 700;
+    font-size: .82rem;
+}
+
+/* portal/cm/county_player_verification.html */
+.s-fc74ffc:not(#_) {
+    padding: .7rem .9rem;
+    text-align: center;
+    font-size: .75rem;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    border-bottom: 1px solid #eee;
+}
+
+/* portal/team_manager/sanctions.html */
+.s-fc8ab7e:not(#_) {
+    text-align: center;
+    padding: 1.5rem;
+    color: #888;
+}
+
+/* portal/coordinator/manage_competition.html */
+.s-fc9433e:not(#_) {
+    font-weight: 600;
+    margin: 0;
+}
+
+/* portal/cm/verify_county_player.html */
+.s-fd12ff1:not(#_) {
+    font-size: .78rem;
+    color: #aaa;
+    margin-bottom: .5rem;
+}
+
+/* appeals/jury_decision.html, appeals/pay_fee.html */
+.s-fd7130f:not(#_) {
+    display: block;
+    font-weight: 600;
+    margin-bottom: .25rem;
+}
+
+/* appeals/appeal_detail.html, appeals/jury_decision.html */
+.s-fe260dd:not(#_) {
+    margin: 0 0 .5rem;
+}
+
+/* appeals/jury_dashboard.html */
+.s-fe55be1:not(#_) {
+    background: linear-gradient(135deg,#FBE9E7,#FFCCBC);
+    color: #BF360C;
+}
+
+/* portal/cm/dashboard.html */
+.s-fed2809:not(#_) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+}
+
+/* -- Page styles (scoped to body.pg-*) -- */
+/* portal/cm/allocate_venues.html */
+:where(.pg-portal-cm-allocate-venues) .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+:where(.pg-portal-cm-allocate-venues) .page-header h2 { font-size: 1.3rem; font-weight: 700; color: #212121; }
+:where(.pg-portal-cm-allocate-venues) .page-header .subtitle { font-size: .85rem; color: #757575; }
+:where(.pg-portal-cm-allocate-venues) .alloc-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+:where(.pg-portal-cm-allocate-venues) .alloc-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .85rem;
+    }
+:where(.pg-portal-cm-allocate-venues) .alloc-table th {
+        background: #F3E5F5;
+        padding: .55rem .75rem;
+        text-align: left;
+        font-weight: 600;
+        color: #4A148C;
+        border-bottom: 2px solid #E1BEE7;
+        font-size: .8rem;
+    }
+:where(.pg-portal-cm-allocate-venues) .alloc-table td {
+        padding: .5rem .75rem;
+        border-bottom: 1px solid #f5f5f5;
+        vertical-align: middle;
+    }
+:where(.pg-portal-cm-allocate-venues) .alloc-table tr:hover { background: #FAFAFA; }
+:where(.pg-portal-cm-allocate-venues) .alloc-table select {
+        width: 100%;
+        padding: .35rem .5rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: .82rem;
+    }
+:where(.pg-portal-cm-allocate-venues) .alloc-table select:focus {
+        outline: none;
+        border-color: #7B1FA2;
+    }
+:where(.pg-portal-cm-allocate-venues) .match-label { font-weight: 600; }
+:where(.pg-portal-cm-allocate-venues) .match-meta { font-size: .75rem; color: #999; }
+:where(.pg-portal-cm-allocate-venues) .ko-badge {
+        font-size: .68rem;
+        background: #FFF3E0;
+        color: #E65100;
+        padding: .1rem .4rem;
+        border-radius: 4px;
+        font-weight: 600;
+    }
+:where(.pg-portal-cm-allocate-venues) .group-badge {
+        font-size: .68rem;
+        background: #E8F5E9;
+        color: #1B5E20;
+        padding: .1rem .4rem;
+        border-radius: 4px;
+        font-weight: 600;
+    }
+:where(.pg-portal-cm-allocate-venues) .btn-row { padding: 1rem; display: flex; gap: .5rem; }
+:where(.pg-portal-cm-allocate-venues) .no-fix {
+        text-align: center;
+        padding: 2.5rem;
+        color: #bbb;
+    }
+:where(.pg-portal-cm-allocate-venues) .no-fix i { font-size: 2rem; display: block; margin-bottom: .5rem; }
+
+/* portal/cm/create_competition.html */
+:where(.pg-portal-cm-create-competition) .form-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        max-width: 800px;
+    }
+:where(.pg-portal-cm-create-competition) .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+:where(.pg-portal-cm-create-competition) .form-group { margin-bottom: 1rem; }
+:where(.pg-portal-cm-create-competition) .form-group label {
+        display: block;
+        font-weight: 600;
+        font-size: .85rem;
+        margin-bottom: .3rem;
+        color: #333;
+    }
+:where(.pg-portal-cm-create-competition) .form-group input,
+:where(.pg-portal-cm-create-competition) .form-group select,
+:where(.pg-portal-cm-create-competition) .form-group textarea {
+        width: 100%;
+        padding: .55rem .75rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: .9rem;
+        transition: border-color .2s;
+    }
+:where(.pg-portal-cm-create-competition) .form-group input:focus,
+:where(.pg-portal-cm-create-competition) .form-group select:focus,
+:where(.pg-portal-cm-create-competition) .form-group textarea:focus {
+        outline: none;
+        border-color: #7B1FA2;
+        box-shadow: 0 0 0 3px rgba(123,31,162,.1);
+    }
+:where(.pg-portal-cm-create-competition) .form-group textarea { min-height: 100px; resize: vertical; }
+:where(.pg-portal-cm-create-competition) .form-group .help { font-size: .75rem; color: #999; margin-top: .2rem; }
+:where(.pg-portal-cm-create-competition) .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+:where(.pg-portal-cm-create-competition) .page-header h2 { font-size: 1.3rem; font-weight: 700; color: #212121; }
+:where(.pg-portal-cm-create-competition) .btn-row { display: flex; gap: .75rem; align-items: center; margin-top: 1.5rem; }
+@media (max-width: 768px) {
+:where(.pg-portal-cm-create-competition) .form-row { grid-template-columns: 1fr; }
+}
+
+/* portal/cm/edit_competition.html */
+:where(.pg-portal-cm-edit-competition) .form-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        max-width: 800px;
+    }
+:where(.pg-portal-cm-edit-competition) .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+:where(.pg-portal-cm-edit-competition) .form-group { margin-bottom: 1rem; }
+:where(.pg-portal-cm-edit-competition) .form-group label {
+        display: block;
+        font-weight: 600;
+        font-size: .85rem;
+        margin-bottom: .3rem;
+        color: #333;
+    }
+:where(.pg-portal-cm-edit-competition) .form-group input,
+:where(.pg-portal-cm-edit-competition) .form-group select,
+:where(.pg-portal-cm-edit-competition) .form-group textarea {
+        width: 100%;
+        padding: .55rem .75rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: .9rem;
+        transition: border-color .2s;
+    }
+:where(.pg-portal-cm-edit-competition) .form-group input:focus,
+:where(.pg-portal-cm-edit-competition) .form-group select:focus,
+:where(.pg-portal-cm-edit-competition) .form-group textarea:focus {
+        outline: none;
+        border-color: #7B1FA2;
+        box-shadow: 0 0 0 3px rgba(123,31,162,.1);
+    }
+:where(.pg-portal-cm-edit-competition) .form-group textarea { min-height: 100px; resize: vertical; }
+:where(.pg-portal-cm-edit-competition) .form-group .help { font-size: .75rem; color: #999; margin-top: .2rem; }
+:where(.pg-portal-cm-edit-competition) .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+:where(.pg-portal-cm-edit-competition) .page-header h2 { font-size: 1.3rem; font-weight: 700; color: #212121; }
+:where(.pg-portal-cm-edit-competition) .btn-row { display: flex; gap: .75rem; align-items: center; margin-top: 1.5rem; }
+:where(.pg-portal-cm-edit-competition) .status-info {
+        background: #F3E5F5;
+        border-radius: 8px;
+        padding: .75rem 1rem;
+        font-size: .85rem;
+        margin-bottom: 1.25rem;
+    }
+@media (max-width: 768px) {
+:where(.pg-portal-cm-edit-competition) .form-row { grid-template-columns: 1fr; }
+}
+
+/* portal/cm/edit_fixture.html */
+:where(.pg-portal-cm-edit-fixture) .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+:where(.pg-portal-cm-edit-fixture) .page-header h2 { font-size: 1.3rem; font-weight: 700; color: #212121; }
+:where(.pg-portal-cm-edit-fixture) .page-header .subtitle { font-size: .85rem; color: #757575; }
+:where(.pg-portal-cm-edit-fixture) .form-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.75rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        max-width: 700px;
+    }
+:where(.pg-portal-cm-edit-fixture) .fixture-info {
+        background: #F3E5F5;
+        border-radius: 10px;
+        padding: .75rem 1rem;
+        margin-bottom: 1.25rem;
+        font-size: .88rem;
+    }
+:where(.pg-portal-cm-edit-fixture) .fixture-info strong { color: #4A148C; }
+:where(.pg-portal-cm-edit-fixture) .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+:where(.pg-portal-cm-edit-fixture) .form-group { margin-bottom: 1rem; }
+:where(.pg-portal-cm-edit-fixture) .form-group label {
+        display: block;
+        font-weight: 600;
+        font-size: .85rem;
+        margin-bottom: .3rem;
+        color: #333;
+    }
+:where(.pg-portal-cm-edit-fixture) .form-group input,
+:where(.pg-portal-cm-edit-fixture) .form-group select {
+        width: 100%;
+        padding: .5rem .7rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: .88rem;
+    }
+:where(.pg-portal-cm-edit-fixture) .form-group input:focus,
+:where(.pg-portal-cm-edit-fixture) .form-group select:focus {
+        outline: none;
+        border-color: #7B1FA2;
+        box-shadow: 0 0 0 3px rgba(123,31,162,.1);
+    }
+:where(.pg-portal-cm-edit-fixture) .form-group .help { font-size: .75rem; color: #999; margin-top: .2rem; }
+:where(.pg-portal-cm-edit-fixture) .btn-row { display: flex; gap: .75rem; align-items: center; margin-top: 1.5rem; }
+:where(.pg-portal-cm-edit-fixture) .knockout-section {
+        background: #FFF3E0;
+        border: 1px solid #FFE0B2;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+:where(.pg-portal-cm-edit-fixture) .knockout-section h4 {
+        font-size: .85rem;
+        font-weight: 700;
+        color: #E65100;
+        margin-bottom: .75rem;
+    }
+@media (max-width: 768px) {
+:where(.pg-portal-cm-edit-fixture) .form-row { grid-template-columns: 1fr; }
+}
+
+/* portal/cm/edit_rules.html */
+:where(.pg-portal-cm-edit-rules) .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+:where(.pg-portal-cm-edit-rules) .page-header h2 { font-size: 1.3rem; font-weight: 700; color: #212121; }
+:where(.pg-portal-cm-edit-rules) .page-header .subtitle { font-size: .85rem; color: #757575; }
+:where(.pg-portal-cm-edit-rules) .rules-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.75rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        max-width: 800px;
+    }
+:where(.pg-portal-cm-edit-rules) .rules-card label {
+        display: block;
+        font-weight: 600;
+        font-size: .9rem;
+        margin-bottom: .5rem;
+        color: #333;
+    }
+:where(.pg-portal-cm-edit-rules) .rules-card textarea {
+        width: 100%;
+        min-height: 350px;
+        padding: .75rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        font-size: .9rem;
+        line-height: 1.7;
+        resize: vertical;
+        font-family: inherit;
+    }
+:where(.pg-portal-cm-edit-rules) .rules-card textarea:focus {
+        outline: none;
+        border-color: #7B1FA2;
+        box-shadow: 0 0 0 3px rgba(123,31,162,.1);
+    }
+:where(.pg-portal-cm-edit-rules) .rules-card .help {
+        font-size: .78rem;
+        color: #999;
+        margin-top: .35rem;
+    }
+:where(.pg-portal-cm-edit-rules) .btn-row { display: flex; gap: .75rem; align-items: center; margin-top: 1.5rem; }
+:where(.pg-portal-cm-edit-rules) .rules-info {
+        background: #E8F5E9;
+        border-radius: 8px;
+        padding: .6rem 1rem;
+        font-size: .82rem;
+        color: #1B5E20;
+        margin-bottom: 1rem;
+    }
+
+/* portal/cm/edit_standings.html */
+:where(.pg-portal-cm-edit-standings) .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: .5rem;
+    }
+:where(.pg-portal-cm-edit-standings) .page-header h2 { font-size: 1.3rem; font-weight: 700; color: #212121; }
+:where(.pg-portal-cm-edit-standings) .page-header .subtitle { font-size: .85rem; color: #757575; }
+:where(.pg-portal-cm-edit-standings) .recalc-bar {
+        background: #E8F5E9;
+        border: 1px solid #C8E6C9;
+        border-radius: 10px;
+        padding: .75rem 1rem;
+        margin-bottom: 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: .5rem;
+    }
+:where(.pg-portal-cm-edit-standings) .recalc-bar span { font-size: .85rem; color: #1B5E20; }
+:where(.pg-portal-cm-edit-standings) .pool-section {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+:where(.pg-portal-cm-edit-standings) .pool-head {
+        background: linear-gradient(135deg, #4A148C, #7B1FA2);
+        color: #fff;
+        padding: .65rem 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+:where(.pg-portal-cm-edit-standings) .pool-head h3 { font-size: .95rem; font-weight: 700; color: #fff; margin: 0; }
+:where(.pg-portal-cm-edit-standings) .edit-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .82rem;
+    }
+:where(.pg-portal-cm-edit-standings) .edit-table th {
+        background: #FAFAFA;
+        padding: .45rem .5rem;
+        text-align: center;
+        font-weight: 600;
+        color: #666;
+        border-bottom: 1px solid #eee;
+        font-size: .75rem;
+        text-transform: uppercase;
+    }
+:where(.pg-portal-cm-edit-standings) .edit-table th:first-child { text-align: left; padding-left: 1rem; }
+:where(.pg-portal-cm-edit-standings) .edit-table td {
+        padding: .4rem .35rem;
+        text-align: center;
+        border-bottom: 1px solid #f5f5f5;
+    }
+:where(.pg-portal-cm-edit-standings) .edit-table td:first-child { text-align: left; padding-left: 1rem; font-weight: 600; }
+:where(.pg-portal-cm-edit-standings) .edit-table input[type="number"] {
+        width: 52px;
+        padding: .25rem .3rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        text-align: center;
+        font-size: .82rem;
+    }
+:where(.pg-portal-cm-edit-standings) .edit-table input[type="number"]:focus {
+        outline: none;
+        border-color: #7B1FA2;
+        box-shadow: 0 0 0 2px rgba(123,31,162,.15);
+    }
+:where(.pg-portal-cm-edit-standings) .edit-table .pts-cell { font-weight: 800; font-size: .9rem; color: #7B1FA2; }
+:where(.pg-portal-cm-edit-standings) .edit-table .gd-cell { font-weight: 600; color: #1565C0; }
+:where(.pg-portal-cm-edit-standings) .team-actions {
+        display: flex;
+        gap: .3rem;
+        justify-content: center;
+    }
+:where(.pg-portal-cm-edit-standings) .no-pools {
+        text-align: center;
+        padding: 3rem;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    }
+:where(.pg-portal-cm-edit-standings) .no-pools i { font-size: 2rem; color: #ccc; display: block; margin-bottom: .5rem; }
+
+/* portal/cm/generate_fixtures.html */
+:where(.pg-portal-cm-generate-fixtures) .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+:where(.pg-portal-cm-generate-fixtures) .page-header h2 { font-size: 1.3rem; font-weight: 700; color: #212121; }
+:where(.pg-portal-cm-generate-fixtures) .page-header .subtitle { font-size: .85rem; color: #757575; }
+:where(.pg-portal-cm-generate-fixtures) .gen-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.75rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        max-width: 700px;
+        margin-bottom: 1.5rem;
+    }
+:where(.pg-portal-cm-generate-fixtures) .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+:where(.pg-portal-cm-generate-fixtures) .form-group { margin-bottom: 1rem; }
+:where(.pg-portal-cm-generate-fixtures) .form-group label {
+        display: block;
+        font-weight: 600;
+        font-size: .85rem;
+        margin-bottom: .3rem;
+        color: #333;
+    }
+:where(.pg-portal-cm-generate-fixtures) .form-group input,
+:where(.pg-portal-cm-generate-fixtures) .form-group select {
+        width: 100%;
+        padding: .5rem .7rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: .88rem;
+    }
+:where(.pg-portal-cm-generate-fixtures) .form-group input:focus,
+:where(.pg-portal-cm-generate-fixtures) .form-group select:focus {
+        outline: none;
+        border-color: #7B1FA2;
+        box-shadow: 0 0 0 3px rgba(123,31,162,.1);
+    }
+:where(.pg-portal-cm-generate-fixtures) .form-group .help { font-size: .75rem; color: #999; margin-top: .2rem; }
+:where(.pg-portal-cm-generate-fixtures) .info-bar {
+        display: flex;
+        gap: 1.5rem;
+        background: #F3E5F5;
+        border-radius: 10px;
+        padding: .75rem 1.25rem;
+        margin-bottom: 1.25rem;
+        flex-wrap: wrap;
+    }
+:where(.pg-portal-cm-generate-fixtures) .info-bar .ib-item { font-size: .85rem; }
+:where(.pg-portal-cm-generate-fixtures) .info-bar .ib-item strong { color: #4A148C; }
+:where(.pg-portal-cm-generate-fixtures) .warning-box {
+        background: #FFF3E0;
+        border: 1px solid #FFE0B2;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1.25rem;
+        font-size: .85rem;
+        color: #E65100;
+    }
+:where(.pg-portal-cm-generate-fixtures) .warning-box i { margin-right: .3rem; }
+:where(.pg-portal-cm-generate-fixtures) .danger-box {
+        background: #FFEBEE;
+        border: 1px solid #FFCDD2;
+        border-radius: 10px;
+        padding: 1rem;
+        font-size: .85rem;
+        color: #C62828;
+    }
+:where(.pg-portal-cm-generate-fixtures) .btn-row { display: flex; gap: .75rem; align-items: center; margin-top: 1.5rem; }
+@media (max-width: 768px) {
+:where(.pg-portal-cm-generate-fixtures) .form-row { grid-template-columns: 1fr; }
+}
+
+/* portal/cm/manage_competition.html */
+:where(.pg-portal-cm-manage-competition) .comp-hero {
+        background: linear-gradient(135deg, #4A148C 0%, #7B1FA2 50%, #9C27B0 100%);
+        border-radius: 16px;
+        padding: 1.5rem 2rem;
+        color: #fff;
+        margin-bottom: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+:where(.pg-portal-cm-manage-competition) .comp-hero h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: .2rem; }
+:where(.pg-portal-cm-manage-competition) .comp-hero .meta {
+        font-size: .85rem;
+        opacity: .85;
+        display: flex;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+:where(.pg-portal-cm-manage-competition) .comp-hero .hero-actions { display: flex; gap: .5rem; flex-wrap: wrap; align-items: flex-start; }
+:where(.pg-portal-cm-manage-competition) .comp-hero .hero-actions .btn { font-size: .8rem; padding: .35rem .8rem; }
+:where(.pg-portal-cm-manage-competition) .comp-badge {
+        display: inline-block;
+        padding: .15rem .6rem;
+        border-radius: 6px;
+        font-size: .75rem;
+        font-weight: 600;
+    }
+:where(.pg-portal-cm-manage-competition) .badge-active { background: rgba(76,175,80,.2); color: #2E7D32; }
+:where(.pg-portal-cm-manage-competition) .badge-registration { background: rgba(255,193,7,.2); color: #F57F17; }
+:where(.pg-portal-cm-manage-competition) .badge-completed { background: rgba(0,0,0,.1); color: #fff; }
+:where(.pg-portal-cm-manage-competition) .badge-draft { background: rgba(255,255,255,.2); color: #fff; }
+:where(.pg-portal-cm-manage-competition) .mini-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: .75rem;
+        margin-bottom: 1.5rem;
+    }
+:where(.pg-portal-cm-manage-competition) .mini-stat {
+        background: #fff;
+        border-radius: 10px;
+        padding: .75rem 1rem;
+        box-shadow: 0 1px 4px rgba(0,0,0,.05);
+        text-align: center;
+    }
+:where(.pg-portal-cm-manage-competition) .mini-stat .num { font-size: 1.3rem; font-weight: 800; color: #7B1FA2; }
+:where(.pg-portal-cm-manage-competition) .mini-stat .lbl { font-size: .72rem; color: #757575; font-weight: 500; }
+:where(.pg-portal-cm-manage-competition) .section-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: .75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+:where(.pg-portal-cm-manage-competition) .section-title .actions { display: flex; gap: .4rem; }
+:where(.pg-portal-cm-manage-competition) .pool-card {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 1px 6px rgba(0,0,0,.06);
+        margin-bottom: 1rem;
+        overflow: hidden;
+    }
+:where(.pg-portal-cm-manage-competition) .pool-header {
+        background: #F3E5F5;
+        padding: .6rem 1rem;
+        font-weight: 700;
+        font-size: .9rem;
+        color: #4A148C;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+:where(.pg-portal-cm-manage-competition) .standings-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .82rem;
+    }
+:where(.pg-portal-cm-manage-competition) .standings-table th {
+        background: #FAFAFA;
+        padding: .45rem .6rem;
+        text-align: center;
+        font-weight: 600;
+        color: #666;
+        border-bottom: 1px solid #eee;
+    }
+:where(.pg-portal-cm-manage-competition) .standings-table th:first-child,
+:where(.pg-portal-cm-manage-competition) .standings-table td:first-child { text-align: left; padding-left: 1rem; }
+:where(.pg-portal-cm-manage-competition) .standings-table td {
+        padding: .45rem .6rem;
+        text-align: center;
+        border-bottom: 1px solid #f5f5f5;
+    }
+:where(.pg-portal-cm-manage-competition) .standings-table tr:hover { background: #FAFAFA; }
+:where(.pg-portal-cm-manage-competition) .pos-badge {
+        display: inline-block;
+        width: 22px;
+        height: 22px;
+        line-height: 22px;
+        text-align: center;
+        border-radius: 50%;
+        font-size: .7rem;
+        font-weight: 700;
+        margin-right: .3rem;
+    }
+:where(.pg-portal-cm-manage-competition) .pos-1 { background: #FFD700; color: #333; }
+:where(.pg-portal-cm-manage-competition) .pos-2 { background: #C0C0C0; color: #333; }
+:where(.pg-portal-cm-manage-competition) .pos-3 { background: #CD7F32; color: #fff; }
+:where(.pg-portal-cm-manage-competition) .pos-other { background: #EEE; color: #666; }
+:where(.pg-portal-cm-manage-competition) .fixture-list {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 1px 6px rgba(0,0,0,.06);
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+:where(.pg-portal-cm-manage-competition) .fixture-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: .5rem 0;
+        border-bottom: 1px solid #f5f5f5;
+        font-size: .82rem;
+        gap: .5rem;
+    }
+:where(.pg-portal-cm-manage-competition) .fixture-item:last-child { border-bottom: none; }
+:where(.pg-portal-cm-manage-competition) .fixture-teams { flex: 1; font-weight: 600; }
+:where(.pg-portal-cm-manage-competition) .fixture-meta { font-size: .75rem; color: #999; white-space: nowrap; }
+:where(.pg-portal-cm-manage-competition) .fixture-badge {
+        font-size: .7rem;
+        font-weight: 600;
+        padding: .15rem .5rem;
+        border-radius: 4px;
+    }
+:where(.pg-portal-cm-manage-competition) .fb-scheduled { background: #E3F2FD; color: #1565C0; }
+:where(.pg-portal-cm-manage-competition) .fb-completed { background: #E8F5E9; color: #1B5E20; }
+:where(.pg-portal-cm-manage-competition) .fb-cancelled { background: #FFEBEE; color: #C62828; }
+:where(.pg-portal-cm-manage-competition) .fb-postponed { background: #FFF8E1; color: #F57F17; }
+:where(.pg-portal-cm-manage-competition) .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+@media (max-width: 768px) {
+:where(.pg-portal-cm-manage-competition) .two-col { grid-template-columns: 1fr; }
+}
+:where(.pg-portal-cm-manage-competition) .no-data {
+        text-align: center;
+        padding: 1.5rem;
+        color: #bbb;
+        font-size: .85rem;
+    }
+:where(.pg-portal-cm-manage-competition) .no-data i { font-size: 1.5rem; display: block; margin-bottom: .3rem; }
+
+/* portal/cm/manage_pools.html */
+:where(.pg-portal-cm-manage-pools) .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: .5rem;
+    }
+:where(.pg-portal-cm-manage-pools) .page-header h2 { font-size: 1.3rem; font-weight: 700; color: #212121; }
+:where(.pg-portal-cm-manage-pools) .page-header .subtitle { font-size: .85rem; color: #757575; }
+:where(.pg-portal-cm-manage-pools) .pool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
+:where(.pg-portal-cm-manage-pools) .pool-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        overflow: hidden;
+    }
+:where(.pg-portal-cm-manage-pools) .pool-head {
+        background: linear-gradient(135deg, #4A148C, #7B1FA2);
+        color: #fff;
+        padding: .75rem 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+:where(.pg-portal-cm-manage-pools) .pool-head h3 { font-size: 1rem; font-weight: 700; color: #fff; margin: 0; }
+:where(.pg-portal-cm-manage-pools) .pool-team-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: .6rem 1rem;
+        border-bottom: 1px solid #f5f5f5;
+        font-size: .85rem;
+    }
+:where(.pg-portal-cm-manage-pools) .pool-team-item:last-child { border-bottom: none; }
+:where(.pg-portal-cm-manage-pools) .pool-team-item .team-info { display: flex; align-items: center; gap: .5rem; }
+:where(.pg-portal-cm-manage-pools) .pool-team-item .county-tag {
+        font-size: .7rem;
+        background: #F3E5F5;
+        color: #7B1FA2;
+        padding: .1rem .4rem;
+        border-radius: 4px;
+    }
+:where(.pg-portal-cm-manage-pools) .pool-empty {
+        padding: 1rem;
+        text-align: center;
+        color: #bbb;
+        font-size: .82rem;
+    }
+:where(.pg-portal-cm-manage-pools) .add-section {
+        padding: .75rem 1rem;
+        background: #FAFAFA;
+        border-top: 1px solid #eee;
+    }
+:where(.pg-portal-cm-manage-pools) .add-section form { display: flex; gap: .4rem; align-items: center; }
+:where(.pg-portal-cm-manage-pools) .add-section select {
+        flex: 1;
+        padding: .35rem .6rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: .82rem;
+    }
+:where(.pg-portal-cm-manage-pools) .create-form {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.25rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        max-width: 500px;
+        margin-bottom: 1.5rem;
+    }
+:where(.pg-portal-cm-manage-pools) .create-form form { display: flex; gap: .5rem; align-items: flex-end; }
+:where(.pg-portal-cm-manage-pools) .create-form label {
+        display: block;
+        font-weight: 600;
+        font-size: .82rem;
+        margin-bottom: .2rem;
+        color: #333;
+    }
+:where(.pg-portal-cm-manage-pools) .create-form input {
+        padding: .45rem .7rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: .88rem;
+        flex: 1;
+    }
+:where(.pg-portal-cm-manage-pools) .create-form input:focus {
+        outline: none;
+        border-color: #7B1FA2;
+    }
+:where(.pg-portal-cm-manage-pools) .pool-count {
+        font-size: .75rem;
+        background: rgba(255,255,255,.25);
+        padding: .1rem .5rem;
+        border-radius: 10px;
+    }
+
+/* portal/cm/upload_players.html */
+:where(.pg-portal-cm-upload-players) .upload-hero {
+        background: linear-gradient(135deg, #4A148C 0%, #7B1FA2 50%, #9C27B0 100%);
+        border-radius: 16px;
+        padding: 2rem 2.5rem;
+        color: #fff;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+:where(.pg-portal-cm-upload-players) .upload-hero::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(255,255,255,.08) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+:where(.pg-portal-cm-upload-players) .upload-hero h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: .25rem; position: relative; }
+:where(.pg-portal-cm-upload-players) .upload-hero p { opacity: .85; font-size: .95rem; position: relative; }
+:where(.pg-portal-cm-upload-players) .upload-hero .hero-badge {
+        display: inline-block;
+        background: rgba(255,255,255,.15);
+        border: 1px solid rgba(255,255,255,.25);
+        padding: .2rem .8rem;
+        border-radius: 20px;
+        font-size: .75rem;
+        letter-spacing: .5px;
+        text-transform: uppercase;
+        margin-bottom: .5rem;
+    }
+:where(.pg-portal-cm-upload-players) .upload-card {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.06);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+:where(.pg-portal-cm-upload-players) .upload-card h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 1.2rem;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+    }
+:where(.pg-portal-cm-upload-players) .upload-card h3 i { color: #7B1FA2; }
+:where(.pg-portal-cm-upload-players) .form-group { margin-bottom: 1.2rem; }
+:where(.pg-portal-cm-upload-players) .form-group label {
+        display: block;
+        font-weight: 600;
+        font-size: .85rem;
+        color: #555;
+        margin-bottom: .4rem;
+    }
+:where(.pg-portal-cm-upload-players) .form-group select,
+:where(.pg-portal-cm-upload-players) .form-group input[type="file"] {
+        width: 100%;
+        padding: .6rem .8rem;
+        border: 1.5px solid #ddd;
+        border-radius: 8px;
+        font-size: .9rem;
+        transition: border-color .2s;
+    }
+:where(.pg-portal-cm-upload-players) .form-group select:focus,
+:where(.pg-portal-cm-upload-players) .form-group input[type="file"]:focus {
+        border-color: #7B1FA2;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(123,31,162,.1);
+    }
+:where(.pg-portal-cm-upload-players) .drop-zone {
+        border: 2px dashed #ccc;
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all .3s;
+        background: #fafafa;
+    }
+:where(.pg-portal-cm-upload-players) .drop-zone:hover,
+:where(.pg-portal-cm-upload-players) .drop-zone.dragover {
+        border-color: #7B1FA2;
+        background: #f3e5f5;
+    }
+:where(.pg-portal-cm-upload-players) .drop-zone i { font-size: 2.5rem; color: #9C27B0; margin-bottom: .5rem; }
+:where(.pg-portal-cm-upload-players) .drop-zone p { margin: 0; color: #666; font-size: .9rem; }
+:where(.pg-portal-cm-upload-players) .drop-zone .file-name {
+        margin-top: .5rem;
+        font-weight: 600;
+        color: #4A148C;
+    }
+:where(.pg-portal-cm-upload-players) .btn-upload {
+        background: linear-gradient(135deg, #4A148C, #7B1FA2);
+        color: #fff;
+        border: none;
+        padding: .7rem 2rem;
+        border-radius: 8px;
+        font-size: .95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform .15s, box-shadow .15s;
+    }
+:where(.pg-portal-cm-upload-players) .btn-upload:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(123,31,162,.3);
+    }
+:where(.pg-portal-cm-upload-players) .btn-upload:disabled {
+        opacity: .5;
+        cursor: not-allowed;
+        transform: none;
+    }
+:where(.pg-portal-cm-upload-players) .template-info {
+        background: #E8F5E9;
+        border-left: 4px solid #2E7D32;
+        padding: 1rem 1.2rem;
+        border-radius: 0 8px 8px 0;
+        margin-bottom: 1.5rem;
+    }
+:where(.pg-portal-cm-upload-players) .template-info h4 {
+        font-size: .9rem;
+        font-weight: 700;
+        color: #2E7D32;
+        margin-bottom: .3rem;
+    }
+:where(.pg-portal-cm-upload-players) .template-info p { font-size: .85rem; color: #555; margin: 0; }
+:where(.pg-portal-cm-upload-players) .template-info code {
+        background: rgba(0,0,0,.06);
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: .82rem;
+    }
+:where(.pg-portal-cm-upload-players) .upload-steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+:where(.pg-portal-cm-upload-players) .step-card {
+        text-align: center;
+        padding: 1.2rem 1rem;
+        background: #f9f9f9;
+        border-radius: 10px;
+        border: 1px solid #eee;
+    }
+:where(.pg-portal-cm-upload-players) .step-card .step-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #7B1FA2;
+        color: #fff;
+        font-weight: 700;
+        font-size: .85rem;
+        margin-bottom: .5rem;
+    }
+:where(.pg-portal-cm-upload-players) .step-card h5 { font-size: .85rem; font-weight: 600; margin: .3rem 0; }
+:where(.pg-portal-cm-upload-players) .step-card p { font-size: .78rem; color: #888; margin: 0; }
+
+/* portal/cm/venues.html */
+:where(.pg-portal-cm-venues) .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+:where(.pg-portal-cm-venues) .page-header h2 { font-size: 1.3rem; font-weight: 700; color: #212121; }
+:where(.pg-portal-cm-venues) .venue-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+:where(.pg-portal-cm-venues) .venue-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        overflow: hidden;
+        transition: all .25s ease;
+    }
+:where(.pg-portal-cm-venues) .venue-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,.1); }
+:where(.pg-portal-cm-venues) .venue-card .vc-head {
+        background: linear-gradient(135deg, #1565C0, #1976D2);
+        color: #fff;
+        padding: .65rem 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+:where(.pg-portal-cm-venues) .venue-card .vc-head h4 { font-size: .9rem; font-weight: 700; color: #fff; margin: 0; }
+:where(.pg-portal-cm-venues) .venue-card .vc-body { padding: .75rem 1rem; }
+:where(.pg-portal-cm-venues) .venue-card .vc-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: .82rem;
+        padding: .2rem 0;
+        color: #555;
+    }
+:where(.pg-portal-cm-venues) .venue-card .vc-row strong { color: #333; }
+:where(.pg-portal-cm-venues) .venue-card .vc-actions {
+        padding: .5rem 1rem;
+        background: #FAFAFA;
+        border-top: 1px solid #eee;
+        display: flex;
+        gap: .4rem;
+    }
+:where(.pg-portal-cm-venues) .venue-inactive .vc-head { background: linear-gradient(135deg, #757575, #9E9E9E); }
+:where(.pg-portal-cm-venues) .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: .3rem;
+    }
+:where(.pg-portal-cm-venues) .dot-active { background: #4CAF50; }
+:where(.pg-portal-cm-venues) .dot-inactive { background: #F44336; }
+:where(.pg-portal-cm-venues) .create-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        margin-bottom: 2rem;
+        max-width: 700px;
+    }
+:where(.pg-portal-cm-venues) .create-card h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #333;
+    }
+:where(.pg-portal-cm-venues) .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: .75rem;
+    }
+:where(.pg-portal-cm-venues) .form-group { margin-bottom: .75rem; }
+:where(.pg-portal-cm-venues) .form-group label {
+        display: block;
+        font-weight: 600;
+        font-size: .82rem;
+        margin-bottom: .2rem;
+        color: #333;
+    }
+:where(.pg-portal-cm-venues) .form-group input,
+:where(.pg-portal-cm-venues) .form-group select,
+:where(.pg-portal-cm-venues) .form-group textarea {
+        width: 100%;
+        padding: .45rem .65rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: .88rem;
+    }
+:where(.pg-portal-cm-venues) .form-group input:focus,
+:where(.pg-portal-cm-venues) .form-group select:focus,
+:where(.pg-portal-cm-venues) .form-group textarea:focus {
+        outline: none;
+        border-color: #1565C0;
+        box-shadow: 0 0 0 3px rgba(21,101,192,.1);
+    }
+@media (max-width: 768px) {
+:where(.pg-portal-cm-venues) .form-row { grid-template-columns: 1fr; }
+}
+
+/* portal/coordinator/appointments.html */
+:where(.pg-portal-coordinator-appointments) .appt-card { background: #fff; border-radius: 12px; padding: 1rem 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: .75rem; }
+:where(.pg-portal-coordinator-appointments) .appt-card h4 { font-size: .95rem; font-weight: 600; margin: 0 0 .25rem; }
+:where(.pg-portal-coordinator-appointments) .appt-card .meta { font-size: .8rem; color: #757575; margin-bottom: .5rem; }
+:where(.pg-portal-coordinator-appointments) .appt-roles { display: flex; flex-wrap: wrap; gap: .5rem; }
+:where(.pg-portal-coordinator-appointments) .role-chip { font-size: .75rem; padding: .2rem .6rem; border-radius: 6px; background: #f5f5f5; }
+:where(.pg-portal-coordinator-appointments) .role-chip.filled { background: #E8F5E9; color: #1B5E20; }
+:where(.pg-portal-coordinator-appointments) .role-chip.empty { background: #FFF3E0; color: #E65100; }
+:where(.pg-portal-coordinator-appointments) .filter-bar { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+:where(.pg-portal-coordinator-appointments) .filter-bar .btn { font-size: .8rem; padding: .35rem .6rem; border-radius: 8px; }
+:where(.pg-portal-coordinator-appointments) .summary-row { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+:where(.pg-portal-coordinator-appointments) .summary-card { background: #fff; border-radius: 10px; padding: .75rem 1rem; box-shadow: 0 2px 6px rgba(0,0,0,.05); min-width: 140px; }
+:where(.pg-portal-coordinator-appointments) .summary-card .num { font-size: 1.3rem; font-weight: 800; }
+:where(.pg-portal-coordinator-appointments) .summary-card .lbl { font-size: .75rem; color: #757575; }
+
+/* portal/coordinator/competitions.html */
+:where(.pg-portal-coordinator-competitions) .dc-hero {
+        background: linear-gradient(135deg, #00695C 0%, #00897B 50%, #26A69A 100%);
+        border-radius: 16px; padding: 1.5rem 2rem; color: #fff; margin-bottom: 1.5rem;
+    }
+:where(.pg-portal-coordinator-competitions) .dc-hero h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: .2rem; }
+:where(.pg-portal-coordinator-competitions) .dc-hero p { opacity: .85; font-size: .9rem; }
+:where(.pg-portal-coordinator-competitions) .filter-bar { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+:where(.pg-portal-coordinator-competitions) .filter-bar .btn { font-size: .8rem; padding: .35rem .8rem; border-radius: 8px; }
+:where(.pg-portal-coordinator-competitions) .comp-card {
+        background: #fff; border-radius: 12px; padding: 1.25rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: 1rem;
+        display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .75rem;
+    }
+:where(.pg-portal-coordinator-competitions) .comp-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.1); }
+:where(.pg-portal-coordinator-competitions) .comp-card h4 { font-size: 1rem; font-weight: 600; margin: 0; }
+:where(.pg-portal-coordinator-competitions) .comp-card .meta { font-size: .8rem; color: #757575; }
+:where(.pg-portal-coordinator-competitions) .comp-badge {
+        font-size: .75rem; font-weight: 600; padding: .2rem .6rem; border-radius: 6px;
+    }
+
+/* portal/coordinator/manage_competition.html */
+:where(.pg-portal-coordinator-manage-competition) .comp-hero {
+        background: linear-gradient(135deg, #00695C 0%, #00897B 50%, #26A69A 100%);
+        border-radius: 16px; padding: 1.5rem 2rem; color: #fff; margin-bottom: 1.5rem;
+        display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;
+    }
+:where(.pg-portal-coordinator-manage-competition) .comp-hero h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: .2rem; }
+:where(.pg-portal-coordinator-manage-competition) .comp-hero .meta { font-size: .85rem; opacity: .85; display: flex; flex-wrap: wrap; gap: .75rem; }
+:where(.pg-portal-coordinator-manage-competition) .comp-hero .hero-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+:where(.pg-portal-coordinator-manage-competition) .comp-hero .hero-actions .btn { font-size: .8rem; padding: .35rem .8rem; }
+:where(.pg-portal-coordinator-manage-competition) .comp-badge { font-size: .75rem; font-weight: 600; padding: .2rem .6rem; border-radius: 6px; }
+:where(.pg-portal-coordinator-manage-competition) .mgmt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+:where(.pg-portal-coordinator-manage-competition) .mgmt-tile {
+        background: #fff; border-radius: 12px; padding: 1.25rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06); text-decoration: none; color: #212121;
+        border: 1px solid transparent; transition: all .25s ease;
+    }
+:where(.pg-portal-coordinator-manage-competition) .mgmt-tile:hover { transform: translateY(-2px); border-color: #00695C; color: #00695C; box-shadow: 0 6px 20px rgba(0,0,0,.1); }
+:where(.pg-portal-coordinator-manage-competition) .mgmt-tile h4 { font-size: .9rem; font-weight: 600; margin-bottom: .15rem; }
+:where(.pg-portal-coordinator-manage-competition) .mgmt-tile p { font-size: .78rem; color: #757575; margin: 0; }
+:where(.pg-portal-coordinator-manage-competition) .section-card { background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: 1.5rem; overflow: hidden; }
+:where(.pg-portal-coordinator-manage-competition) .section-card .card-header { padding: 1rem 1.25rem; border-bottom: 1px solid #eee; }
+:where(.pg-portal-coordinator-manage-competition) .section-card .card-header h3 { margin: 0; font-size: 1rem; font-weight: 600; }
+:where(.pg-portal-coordinator-manage-competition) .section-card .card-body { padding: 1.25rem; }
+:where(.pg-portal-coordinator-manage-competition) .tbl { width: 100%; border-collapse: collapse; font-size: .85rem; }
+:where(.pg-portal-coordinator-manage-competition) .tbl th { background: #f5f5f5; padding: .5rem .75rem; font-weight: 600; text-align: left; }
+:where(.pg-portal-coordinator-manage-competition) .tbl td { padding: .5rem .75rem; border-bottom: 1px solid #f0f0f0; }
+:where(.pg-portal-coordinator-manage-competition) .tbl tr:last-child td { border-bottom: none; }
+
+/* portal/coordinator/manage_pools.html */
+:where(.pg-portal-coordinator-manage-pools) .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: .5rem; }
+:where(.pg-portal-coordinator-manage-pools) .page-header h2 { font-size: 1.3rem; font-weight: 700; }
+:where(.pg-portal-coordinator-manage-pools) .pool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
+:where(.pg-portal-coordinator-manage-pools) .pool-card { background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.06); overflow: hidden; }
+:where(.pg-portal-coordinator-manage-pools) .pool-head { background: linear-gradient(135deg, #00695C, #00897B); color: #fff; padding: .75rem 1rem; display: flex; justify-content: space-between; align-items: center; }
+:where(.pg-portal-coordinator-manage-pools) .pool-head h3 { font-size: 1rem; font-weight: 700; color: #fff; margin: 0; }
+:where(.pg-portal-coordinator-manage-pools) .pool-team-item { display: flex; justify-content: space-between; align-items: center; padding: .6rem 1rem; border-bottom: 1px solid #f5f5f5; font-size: .85rem; }
+:where(.pg-portal-coordinator-manage-pools) .pool-team-item:last-child { border-bottom: none; }
+:where(.pg-portal-coordinator-manage-pools) .pool-team-item .county-tag { font-size: .7rem; background: #E0F2F1; color: #00695C; padding: .1rem .4rem; border-radius: 4px; }
+:where(.pg-portal-coordinator-manage-pools) .pool-empty { padding: 1rem; text-align: center; color: #bbb; font-size: .85rem; }
+
+/* portal/coordinator/match_reports.html */
+:where(.pg-portal-coordinator-match-reports) .report-card { background: #fff; border-radius: 12px; padding: 1rem 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: .75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .5rem; }
+:where(.pg-portal-coordinator-match-reports) .report-card h4 { font-size: .95rem; font-weight: 600; margin: 0; }
+:where(.pg-portal-coordinator-match-reports) .report-card .meta { font-size: .8rem; color: #757575; }
+:where(.pg-portal-coordinator-match-reports) .status-badge { font-size: .75rem; font-weight: 600; padding: .2rem .6rem; border-radius: 6px; }
+:where(.pg-portal-coordinator-match-reports) .filter-bar { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+:where(.pg-portal-coordinator-match-reports) .filter-bar .btn { font-size: .8rem; padding: .35rem .6rem; border-radius: 8px; }
+
+/* portal/coordinator/referees.html */
+:where(.pg-portal-coordinator-referees) .ref-card { background: #fff; border-radius: 12px; padding: 1rem 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: .75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .5rem; }
+:where(.pg-portal-coordinator-referees) .ref-card h4 { font-size: .95rem; font-weight: 600; margin: 0; }
+:where(.pg-portal-coordinator-referees) .ref-card .meta { font-size: .8rem; color: #757575; }
+:where(.pg-portal-coordinator-referees) .status-badge { font-size: .75rem; font-weight: 600; padding: .2rem .6rem; border-radius: 6px; }
+
+/* portal/coordinator/squads.html */
+:where(.pg-portal-coordinator-squads) .squad-card { background: #fff; border-radius: 12px; padding: 1rem 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: .75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .5rem; }
+:where(.pg-portal-coordinator-squads) .squad-card h4 { font-size: .95rem; font-weight: 600; margin: 0; }
+:where(.pg-portal-coordinator-squads) .squad-card .meta { font-size: .8rem; color: #757575; }
+:where(.pg-portal-coordinator-squads) .status-badge { font-size: .75rem; font-weight: 600; padding: .2rem .6rem; border-radius: 6px; }
+:where(.pg-portal-coordinator-squads) .filter-bar { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+:where(.pg-portal-coordinator-squads) .filter-bar .btn { font-size: .8rem; padding: .35rem .6rem; border-radius: 8px; }
+
+/* portal/coordinator/statistics.html */
+:where(.pg-portal-coordinator-statistics) .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+:where(.pg-portal-coordinator-statistics) .stat-card { background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.06); overflow: hidden; }
+:where(.pg-portal-coordinator-statistics) .stat-card .card-header { padding: .75rem 1rem; border-bottom: 1px solid #eee; }
+:where(.pg-portal-coordinator-statistics) .stat-card .card-header h3 { margin: 0; font-size: 1rem; font-weight: 600; }
+:where(.pg-portal-coordinator-statistics) .stat-card .card-body { padding: 1rem; }
+:where(.pg-portal-coordinator-statistics) .tbl { width: 100%; border-collapse: collapse; font-size: .85rem; }
+:where(.pg-portal-coordinator-statistics) .tbl th { background: #f5f5f5; padding: .5rem .75rem; font-weight: 600; text-align: left; }
+:where(.pg-portal-coordinator-statistics) .tbl td { padding: .5rem .75rem; border-bottom: 1px solid #f0f0f0; }
+@media (max-width: 768px) {
+:where(.pg-portal-coordinator-statistics) .stats-grid { grid-template-columns: 1fr; }
+}
+
+/* portal/coordinator/venues.html */
+:where(.pg-portal-coordinator-venues) .venue-card { background: #fff; border-radius: 12px; padding: 1rem 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: .75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .5rem; }
+:where(.pg-portal-coordinator-venues) .venue-card h4 { font-size: .95rem; font-weight: 600; margin: 0; }
+:where(.pg-portal-coordinator-venues) .venue-card .meta { font-size: .8rem; color: #757575; }
+
+/* portal/referee_appoint.html */
+:where(.pg-portal-referee-appoint) .role-card {
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 1.2rem;
+        margin-bottom: 1rem;
+        transition: border-color .2s;
+    }
+:where(.pg-portal-referee-appoint) .role-card.filled { border-color: #A5D6A7; background: #F1F8E9; }
+:where(.pg-portal-referee-appoint) .role-card.pending-role { border-color: #FFCC80; background: #FFF8E1; }
+:where(.pg-portal-referee-appoint) .role-card.declined-role { border-color: #EF9A9A; background: #FFEBEE; }
+:where(.pg-portal-referee-appoint) .role-card.empty { border-color: #e0e0e0; background: #fafafa; }
+:where(.pg-portal-referee-appoint) .ref-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: .6rem .8rem;
+        border-bottom: 1px solid #eee;
+        transition: background .15s;
+    }
+:where(.pg-portal-referee-appoint) .ref-row:hover { background: #f5f5f5; }
+:where(.pg-portal-referee-appoint) .ref-row:last-child { border-bottom: none; }
+:where(.pg-portal-referee-appoint) .avail-badge {
+        display: inline-block;
+        padding: .15rem .5rem;
+        border-radius: 10px;
+        font-size: .75rem;
+        font-weight: 600;
+    }
+:where(.pg-portal-referee-appoint) .avail-available { background: #E8F5E9; color: #1B5E20; }
+:where(.pg-portal-referee-appoint) .avail-unavailable { background: #FFEBEE; color: #c62828; }
+:where(.pg-portal-referee-appoint) .avail-notset { background: #f5f5f5; color: #999; }
+:where(.pg-portal-referee-appoint) .busy-badge { background: #FFF3E0; color: #E65100; }
+:where(.pg-portal-referee-appoint) .appoint-form { display: inline; }
+:where(.pg-portal-referee-appoint) .appoint-btn {
+        background: #1B5E20; color: #fff; border: none; padding: .35rem .8rem;
+        border-radius: 6px; cursor: pointer; font-size: .85rem;
+    }
+:where(.pg-portal-referee-appoint) .appoint-btn:hover { background: #2E7D32; }
+:where(.pg-portal-referee-appoint) .remove-btn {
+        background: #c62828; color: #fff; border: none; padding: .3rem .7rem;
+        border-radius: 6px; cursor: pointer; font-size: .8rem;
+    }
+:where(.pg-portal-referee-appoint) .remove-btn:hover { background: #E53935; }
+:where(.pg-portal-referee-appoint) .filter-input {
+        width: 100%; padding: .5rem .8rem; border: 1px solid #ddd;
+        border-radius: 8px; margin-bottom: .8rem; font-size: .9rem;
+    }
+:where(.pg-portal-referee-appoint) .ref-table-wrapper { max-height: 400px; overflow-y: auto; }

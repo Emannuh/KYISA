@@ -10,52 +10,52 @@
     <h1><i class="bi bi-person"></i> Player Profile</h1>
 </div>
 
-<div style="display:grid;grid-template-columns:240px 1fr;gap:1.5rem;max-width:900px">
+<div class="s-ae3a235">
     <!-- Photo & Quick Info -->
-    <div class="card" style="padding:1.5rem;text-align:center">
+    <div class="card s-1724771">
         {% if player.photo %}
-        <img src="{{ player.photo.url }}" alt="Player photo" style="width:160px;height:160px;border-radius:50%;object-fit:cover;border:4px solid #e0e0e0;margin-bottom:1rem">
+        <img src="{{ player.photo.url }}" alt="Player photo" class="s-b12d28c">
         {% else %}
-        <div style="width:160px;height:160px;border-radius:50%;background:#e0e0e0;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:3rem;color:#999">
+        <div class="s-b7cc54b">
             <i class="bi bi-person"></i>
         </div>
         {% endif %}
 
         {% if player_type == 'county' %}
-        <div style="font-size:1.15rem;font-weight:700;color:#333">{{ player.first_name }} {{ player.last_name }}</div>
+        <div class="s-357c167">{{ player.first_name }} {{ player.last_name }}</div>
         {% else %}
-        <div style="font-size:1.15rem;font-weight:700;color:#333">{{ player.first_name }} {{ player.last_name }}</div>
+        <div class="s-357c167">{{ player.first_name }} {{ player.last_name }}</div>
         {% endif %}
 
         {% if player_type == 'county' %}
-        <div style="font-size:.85rem;color:#888;margin-top:.3rem">{{ player.discipline.get_sport_type_display }}</div>
-        <div style="font-size:.85rem;color:#888">{{ player.discipline.registration.county }} County</div>
+        <div class="s-14a27c9">{{ player.discipline.get_sport_type_display }}</div>
+        <div class="s-36945e4">{{ player.discipline.registration.county }} County</div>
         {% else %}
-        <div style="font-size:.85rem;color:#888;margin-top:.3rem">{{ player.team.name }}</div>
+        <div class="s-14a27c9">{{ player.team.name }}</div>
         {% endif %}
 
         <!-- Verification Badge -->
-        <div style="margin-top:1rem">
+        <div class="s-a6cb65c">
             {% if player_type == 'county' %}
                 {% if player.verification_status == 'verified' %}
-                <span style="background:#e8f5e9;color:#2e7d32;padding:.3rem .8rem;border-radius:20px;font-size:.82rem;font-weight:600">
+                <span class="s-689abbc">
                     <i class="bi bi-check-circle"></i> Verified
                 </span>
                 {% elif player.verification_status == 'rejected' %}
-                <span style="background:#fce4ec;color:#C62828;padding:.3rem .8rem;border-radius:20px;font-size:.82rem;font-weight:600">
+                <span class="s-8f1d362">
                     <i class="bi bi-x-circle"></i> Rejected
                 </span>
                 {% elif player.verification_status == 'resubmit' %}
-                <span style="background:#e3f2fd;color:#1565c0;padding:.3rem .8rem;border-radius:20px;font-size:.82rem;font-weight:600">
+                <span class="s-25e69f0">
                     <i class="bi bi-arrow-repeat"></i> Resubmit
                 </span>
                 {% else %}
-                <span style="background:#fff3e0;color:#f57c00;padding:.3rem .8rem;border-radius:20px;font-size:.82rem;font-weight:600">
+                <span class="s-76221cd">
                     <i class="bi bi-hourglass-split"></i> Pending
                 </span>
                 {% endif %}
             {% else %}
-                <span style="background:#e8f5e9;color:#2e7d32;padding:.3rem .8rem;border-radius:20px;font-size:.82rem;font-weight:600">
+                <span class="s-689abbc">
                     <i class="bi bi-check-circle"></i> {{ player.get_verification_status_display }}
                 </span>
             {% endif %}
@@ -63,73 +63,73 @@
     </div>
 
     <!-- Details Card -->
-    <div class="card" style="padding:1.5rem">
-        <h2 style="font-size:1.1rem;color:#333;margin-bottom:1rem"><i class="bi bi-info-circle"></i> Player Details</h2>
-        <table style="width:100%;font-size:.9rem">
-            <tr style="border-bottom:1px solid #eee">
-                <td style="padding:.5rem 0;color:#888;width:180px">Full Name</td>
-                <td style="padding:.5rem 0;font-weight:600">{{ player.first_name }} {{ player.last_name }}</td>
+    <div class="card s-a97308a">
+        <h2 class="s-7955fb6"><i class="bi bi-info-circle"></i> Player Details</h2>
+        <table class="s-4a14cc2">
+            <tr class="s-eaecca1">
+                <td class="s-22dd205">Full Name</td>
+                <td class="s-490c25d">{{ player.first_name }} {{ player.last_name }}</td>
             </tr>
-            <tr style="border-bottom:1px solid #eee">
-                <td style="padding:.5rem 0;color:#888">Date of Birth</td>
-                <td style="padding:.5rem 0">{{ player.date_of_birth|date:"d M Y" }}</td>
+            <tr class="s-eaecca1">
+                <td class="s-3b3e8bf">Date of Birth</td>
+                <td class="s-fb3ed8e">{{ player.date_of_birth|date:"d M Y" }}</td>
             </tr>
             {% if player.age %}
-            <tr style="border-bottom:1px solid #eee">
-                <td style="padding:.5rem 0;color:#888">Age</td>
-                <td style="padding:.5rem 0">{{ player.age }} years</td>
+            <tr class="s-eaecca1">
+                <td class="s-3b3e8bf">Age</td>
+                <td class="s-fb3ed8e">{{ player.age }} years</td>
             </tr>
             {% endif %}
-            <tr style="border-bottom:1px solid #eee">
-                <td style="padding:.5rem 0;color:#888">National ID</td>
-                <td style="padding:.5rem 0"><code>{{ player.national_id_number }}</code></td>
+            <tr class="s-eaecca1">
+                <td class="s-3b3e8bf">National ID</td>
+                <td class="s-fb3ed8e"><code>{{ player.national_id_number }}</code></td>
             </tr>
             {% if player.phone %}
-            <tr style="border-bottom:1px solid #eee">
-                <td style="padding:.5rem 0;color:#888">Phone</td>
-                <td style="padding:.5rem 0">{{ player.phone }}</td>
+            <tr class="s-eaecca1">
+                <td class="s-3b3e8bf">Phone</td>
+                <td class="s-fb3ed8e">{{ player.phone }}</td>
             </tr>
             {% endif %}
 
             {% if player_type == 'county' %}
                 {% if player.position %}
-                <tr style="border-bottom:1px solid #eee">
-                    <td style="padding:.5rem 0;color:#888">Position</td>
-                    <td style="padding:.5rem 0">{{ player.position }}</td>
+                <tr class="s-eaecca1">
+                    <td class="s-3b3e8bf">Position</td>
+                    <td class="s-fb3ed8e">{{ player.position }}</td>
                 </tr>
                 {% endif %}
                 {% if player.jersey_number %}
-                <tr style="border-bottom:1px solid #eee">
-                    <td style="padding:.5rem 0;color:#888">Jersey Number</td>
-                    <td style="padding:.5rem 0"><strong>{{ player.jersey_number }}</strong></td>
+                <tr class="s-eaecca1">
+                    <td class="s-3b3e8bf">Jersey Number</td>
+                    <td class="s-fb3ed8e"><strong>{{ player.jersey_number }}</strong></td>
                 </tr>
                 {% endif %}
                 {% if player.huduma_number %}
-                <tr style="border-bottom:1px solid #eee">
-                    <td style="padding:.5rem 0;color:#888">Huduma Number</td>
-                    <td style="padding:.5rem 0"><code>{{ player.huduma_number }}</code></td>
+                <tr class="s-eaecca1">
+                    <td class="s-3b3e8bf">Huduma Number</td>
+                    <td class="s-fb3ed8e"><code>{{ player.huduma_number }}</code></td>
                 </tr>
                 {% endif %}
-                <tr style="border-bottom:1px solid #eee">
-                    <td style="padding:.5rem 0;color:#888">Discipline</td>
-                    <td style="padding:.5rem 0">{{ player.discipline.get_sport_type_display }}</td>
+                <tr class="s-eaecca1">
+                    <td class="s-3b3e8bf">Discipline</td>
+                    <td class="s-fb3ed8e">{{ player.discipline.get_sport_type_display }}</td>
                 </tr>
-                <tr style="border-bottom:1px solid #eee">
-                    <td style="padding:.5rem 0;color:#888">County</td>
-                    <td style="padding:.5rem 0">{{ player.discipline.registration.county }}</td>
+                <tr class="s-eaecca1">
+                    <td class="s-3b3e8bf">County</td>
+                    <td class="s-fb3ed8e">{{ player.discipline.registration.county }}</td>
                 </tr>
 
                 <!-- Huduma Status -->
                 {% if player.huduma_status != 'not_checked' %}
-                <tr style="border-bottom:1px solid #eee">
-                    <td style="padding:.5rem 0;color:#888">IPRS / Huduma</td>
-                    <td style="padding:.5rem 0">
+                <tr class="s-eaecca1">
+                    <td class="s-3b3e8bf">IPRS / Huduma</td>
+                    <td class="s-fb3ed8e">
                         {% if player.huduma_status == 'verified' %}
-                        <span style="color:#2e7d32;font-weight:600"><i class="bi bi-check-circle"></i> Verified</span>
+                        <span class="s-8dc9d66"><i class="bi bi-check-circle"></i> Verified</span>
                         {% elif player.huduma_status == 'failed' %}
-                        <span style="color:#C62828;font-weight:600"><i class="bi bi-x-circle"></i> Failed</span>
+                        <span class="s-73e4b91"><i class="bi bi-x-circle"></i> Failed</span>
                         {% else %}
-                        <span style="color:#f57c00">{{ player.huduma_status }}</span>
+                        <span class="s-e9c866b">{{ player.huduma_status }}</span>
                         {% endif %}
                     </td>
                 </tr>
@@ -137,16 +137,16 @@
 
                 <!-- Higher League Status (non-football) -->
                 {% if player.higher_league_status != 'not_checked' %}
-                <tr style="border-bottom:1px solid #eee">
-                    <td style="padding:.5rem 0;color:#888">Higher League Check</td>
-                    <td style="padding:.5rem 0">
+                <tr class="s-eaecca1">
+                    <td class="s-3b3e8bf">Higher League Check</td>
+                    <td class="s-fb3ed8e">
                         {% if player.higher_league_status == 'clear' %}
-                        <span style="color:#2e7d32;font-weight:600"><i class="bi bi-check-circle"></i> Clear</span>
+                        <span class="s-8dc9d66"><i class="bi bi-check-circle"></i> Clear</span>
                         {% elif player.higher_league_status == 'flagged' %}
-                        <span style="color:#C62828;font-weight:600"><i class="bi bi-exclamation-triangle"></i> Flagged</span>
-                        <div style="font-size:.82rem;color:#C62828;margin-top:.2rem">{{ player.higher_league_details }}</div>
+                        <span class="s-73e4b91"><i class="bi bi-exclamation-triangle"></i> Flagged</span>
+                        <div class="s-ebae022">{{ player.higher_league_details }}</div>
                         {% else %}
-                        <span style="color:#888">Not checked</span>
+                        <span class="s-9dae231">Not checked</span>
                         {% endif %}
                     </td>
                 </tr>
@@ -154,33 +154,33 @@
             {% else %}
                 <!-- Team-based player -->
                 {% if player.shirt_number %}
-                <tr style="border-bottom:1px solid #eee">
-                    <td style="padding:.5rem 0;color:#888">Shirt Number</td>
-                    <td style="padding:.5rem 0"><strong>{{ player.shirt_number }}</strong></td>
+                <tr class="s-eaecca1">
+                    <td class="s-3b3e8bf">Shirt Number</td>
+                    <td class="s-fb3ed8e"><strong>{{ player.shirt_number }}</strong></td>
                 </tr>
                 {% endif %}
-                <tr style="border-bottom:1px solid #eee">
-                    <td style="padding:.5rem 0;color:#888">Team</td>
-                    <td style="padding:.5rem 0;font-weight:600">{{ player.team.name }}</td>
+                <tr class="s-eaecca1">
+                    <td class="s-3b3e8bf">Team</td>
+                    <td class="s-490c25d">{{ player.team.name }}</td>
                 </tr>
             {% endif %}
 
             <tr>
-                <td style="padding:.5rem 0;color:#888">Registered</td>
-                <td style="padding:.5rem 0">{{ player.registered_at|date:"d M Y, H:i" }}</td>
+                <td class="s-3b3e8bf">Registered</td>
+                <td class="s-fb3ed8e">{{ player.registered_at|date:"d M Y, H:i" }}</td>
             </tr>
         </table>
 
         <!-- Documents -->
-        <h3 style="font-size:1rem;color:#333;margin-top:1.5rem;margin-bottom:.8rem"><i class="bi bi-file-earmark"></i> Documents</h3>
-        <div style="display:flex;gap:1rem;flex-wrap:wrap">
+        <h3 class="s-363e28e"><i class="bi bi-file-earmark"></i> Documents</h3>
+        <div class="s-9accc0a">
             {% if player.id_document %}
-            <a href="{{ player.id_document.url }}" target="_blank" style="display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .8rem;background:#e3f2fd;color:#1565c0;border-radius:6px;font-size:.85rem;text-decoration:none;font-weight:600">
+            <a href="{{ player.id_document.url }}" target="_blank" class="s-113f754">
                 <i class="bi bi-file-earmark-person"></i> ID Document
             </a>
             {% endif %}
             {% if player.birth_certificate %}
-            <a href="{{ player.birth_certificate.url }}" target="_blank" style="display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .8rem;background:#e3f2fd;color:#1565c0;border-radius:6px;font-size:.85rem;text-decoration:none;font-weight:600">
+            <a href="{{ player.birth_certificate.url }}" target="_blank" class="s-113f754">
                 <i class="bi bi-file-earmark-text"></i> Birth Certificate
             </a>
             {% endif %}
@@ -188,7 +188,7 @@
     </div>
 </div>
 
-<div style="margin-top:1.5rem">
-    <a href="javascript:history.back()" style="color:#1B5E20;font-weight:600;font-size:.9rem"><i class="bi bi-arrow-left"></i> Back</a>
+<div class="s-1d30ad4">
+    <a href="javascript:history.back()" class="s-e52ba79"><i class="bi bi-arrow-left"></i> Back</a>
 </div>
 {% endblock %}

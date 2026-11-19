@@ -1,25 +1,8 @@
 {% extends 'base.html' %}
+{% block body_class %}pg-portal-county-admin-payment{% endblock %}
 {% block title %}Submit Payment   KYISA{% endblock %}
 
 {% block content %}
-<style>
-    .pay-tabs { display:flex;gap:0;border-radius:12px;overflow:hidden;border:2px solid #e0e0e0;margin-bottom:1.5rem }
-    .pay-tab { flex:1;padding:.85rem;text-align:center;cursor:pointer;font-weight:700;font-size:.9rem;transition:all .2s;background:#fafafa;color:#666 }
-    .pay-tab.active { background:#1B5E20;color:#fff }
-    .pay-tab:first-child { border-right:2px solid #e0e0e0 }
-    .pay-panel { display:none }
-    .pay-panel.active { display:block }
-    .pay-field { margin-bottom:1.25rem }
-    .pay-field label { display:block;font-weight:600;color:#333;margin-bottom:.4rem;font-size:.9rem }
-    .pay-field input, .pay-field select { width:100%;padding:.7rem .9rem;border:1.5px solid #d0d0d0;border-radius:10px;font-size:.92rem;background:#fafafa }
-    .pay-field small { color:#888;font-size:.8rem }
-    .pay-info { background:#fff3e0;border:1px solid #ffe0b2;border-radius:10px;padding:1rem;margin-bottom:1.25rem;font-size:.88rem }
-    .pay-acct { background:linear-gradient(135deg,#1B5E20,#2E7D32);color:#fff;border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.5rem }
-    .pay-acct__title { font-weight:700;font-size:1rem;margin-bottom:.75rem }
-    .pay-acct__row { display:flex;justify-content:space-between;padding:.3rem 0;font-size:.88rem }
-    .pay-acct__label { opacity:.8 }
-    .pay-acct__value { font-weight:600 }
-</style>
 
 <div class="page-header">
     <div class="breadcrumb">
@@ -30,11 +13,11 @@
     <p>Pay via M-Pesa or Bank Transfer, then provide proof below.</p>
 </div>
 
-<div style="max-width:640px">
+<div class="s-5fa6d76">
     <!-- Fee reminder -->
-    <div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:10px;padding:1rem 1.4rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:.75rem">
-        <span style="font-size:1.5rem"><i class="bi bi-cash-stack"></i></span>
-        <span style="font-size:.92rem"><strong style="color:#1b5e20">County Registration Fee: KSh {{ registration_fee|floatformat:0 }}</strong></span>
+    <div class="s-b3bf29b">
+        <span class="s-db5923f"><i class="bi bi-cash-stack"></i></span>
+        <span class="s-f11e1bd"><strong class="s-fe18fbb">County Registration Fee: KSh {{ registration_fee|floatformat:0 }}</strong></span>
     </div>
 
     <!-- Bank account details -->
@@ -47,24 +30,24 @@
             <span class="pay-acct__label">Account No.</span>
             <span class="pay-acct__value">{{ bank_account_no }}
                 <button type="button" onclick="navigator.clipboard.writeText('{{ bank_account_no }}');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)"
-                        style="background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:.15rem .5rem;font-size:.75rem;cursor:pointer;margin-left:.5rem">Copy</button>
+                        class="s-faf78bb">Copy</button>
             </span>
         </div>
         {% if mpesa_paybill %}
-        <div class="pay-acct__row" style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid rgba(255,255,255,.12)">
+        <div class="pay-acct__row s-9f6987c">
             <span class="pay-acct__label"><i class="bi bi-phone"></i> M-Pesa Paybill</span>
             <span class="pay-acct__value">{{ mpesa_paybill }}{% if mpesa_account_no %} &bull; Acc: {{ mpesa_account_no }}{% endif %}</span>
         </div>
         {% endif %}
     </div>
 
-    <div class="card" style="padding:2rem">
+    <div class="card s-d04cabd">
         <form method="post" enctype="multipart/form-data" novalidate>
             {% csrf_token %}
             <input type="hidden" name="payment_method" id="id_payment_method" value="mpesa">
 
             {% if form.non_field_errors %}
-            <div style="color:#C62828;font-size:.9rem;margin-bottom:1rem;padding:.8rem;background:#fce4ec;border-radius:8px">
+            <div class="s-cf0fb5e">
                 {% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}
             </div>
             {% endif %}
@@ -77,7 +60,7 @@
 
             <!-- M-Pesa panel -->
             <div class="pay-panel active" id="mpesa-panel">
-                <div class="pay-info" style="background:#e8f5e9;border-color:#a5d6a7">
+                <div class="pay-info s-2b94310">
                     <strong><i class="bi bi-phone-vibrate"></i> M-Pesa Payment</strong><br>
                     Pay via M-Pesa{% if mpesa_paybill %} (Paybill: {{ mpesa_paybill }}){% endif %}, then enter the transaction code below.
                 </div>
@@ -85,14 +68,14 @@
                     <label for="id_mpesa_reference">M-Pesa Transaction Code *</label>
                     <input type="text" name="mpesa_reference" id="id_mpesa_reference"
                            placeholder="e.g. RIA7K8QX3P" maxlength="100"
-                           style="text-transform:uppercase">
+                           class="s-3d59ac9">
                     <small>Enter the M-Pesa transaction code from your confirmation SMS</small>
                 </div>
             </div>
 
             <!-- Bank Transfer panel -->
             <div class="pay-panel" id="bank-panel">
-                <div class="pay-info" style="background:#e3f2fd;border-color:#90caf9">
+                <div class="pay-info s-43c0b65">
                     <strong><i class="bi bi-bank"></i> Bank Transfer</strong><br>
                     Transfer to the bank account shown above, then provide proof below.
                 </div>
@@ -110,14 +93,14 @@
             </div>
 
             <!-- Amount -->
-            <div class="pay-field" style="margin-top:.5rem">
+            <div class="pay-field s-98176a3">
                 <label for="id_payment_amount">Amount Paid (KSh) *</label>
                 <input type="number" name="payment_amount" id="id_payment_amount"
                        value="{{ registration_fee|floatformat:0 }}"
                        step="0.01" min="1" placeholder="{{ registration_fee|floatformat:0 }}">
             </div>
 
-            <button type="submit" style="width:100%;padding:.9rem;background:#1B5E20;color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:.5rem">
+            <button type="submit" class="s-6144d07">
                 <i class="bi bi-send"></i> Submit Payment Proof
             </button>
         </form>

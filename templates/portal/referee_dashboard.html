@@ -24,17 +24,17 @@
 
 {% if no_profile %}
 <div class="dash-panel">
-  <div class="dash-panel-body" style="text-align:center;padding:3rem 2rem">
-    <i class="bi bi-exclamation-triangle" style="font-size:2.5rem;color:#f59e0b;display:block;margin-bottom:.75rem"></i>
-    <h3 style="font-size:1rem;font-weight:700;color:#111;margin-bottom:.4rem">No Referee Profile Found</h3>
-    <p style="color:#6b7280;font-size:.85rem;line-height:1.6">Your account has the referee role but no profile has been created yet.<br>Please contact the Referee Manager to set up your profile.</p>
+  <div class="dash-panel-body s-0479d4e">
+    <i class="bi bi-exclamation-triangle s-c438517"></i>
+    <h3 class="s-ea8dc12">No Referee Profile Found</h3>
+    <p class="s-beab6d0">Your account has the referee role but no profile has been created yet.<br>Please contact the Referee Manager to set up your profile.</p>
   </div>
 </div>
 
 {% else %}
 
 {% if not profile.is_approved %}
-<div class="palert palert-warning" style="margin-bottom:1.25rem">
+<div class="palert palert-warning s-c33bec6">
   <i class="bi bi-exclamation-triangle-fill"></i>
   <div><strong>Account Pending Approval</strong> Your referee profile is awaiting approval. Some features may be limited.</div>
 </div>
@@ -73,14 +73,14 @@
 <!-- Returned / Draft Reports -->
 {% if returned_reports or draft_reports %}
 <div class="dash-section-title"><i class="bi bi-arrow-repeat"></i> Reports Needing Attention</div>
-<div class="dash-panel" style="margin-bottom:1.25rem">
+<div class="dash-panel s-c33bec6">
   <div class="dash-panel-body">
     {% for r in returned_reports %}
     <div class="dash-activity-item">
-      <div class="dash-activity-dot" style="background:#ef4444"></div>
-      <div style="flex:1">
+      <div class="dash-activity-dot s-2d9651c"></div>
+      <div class="s-634a28b">
         <div class="ai-main">{{ r.fixture.home_team }} vs {{ r.fixture.away_team }}
-          <span class="pstatus pstatus--danger" style="margin-left:.4rem">Returned</span>
+          <span class="pstatus pstatus--danger s-661e20d">Returned</span>
         </div>
         {% if r.reviewer_notes %}<div class="ai-meta">{{ r.reviewer_notes }}</div>{% endif %}
       </div>
@@ -89,10 +89,10 @@
     {% endfor %}
     {% for r in draft_reports %}
     <div class="dash-activity-item">
-      <div class="dash-activity-dot" style="background:#f59e0b"></div>
-      <div style="flex:1">
+      <div class="dash-activity-dot s-9d45f47"></div>
+      <div class="s-634a28b">
         <div class="ai-main">{{ r.fixture.home_team }} vs {{ r.fixture.away_team }}
-          <span class="pstatus pstatus--warning" style="margin-left:.4rem">Draft</span>
+          <span class="pstatus pstatus--warning s-661e20d">Draft</span>
         </div>
       </div>
       <a href="{% url 'match_report_form' fixture_pk=r.fixture.pk %}" class="pbtn pbtn-secondary pbtn-sm">Continue</a>
@@ -105,17 +105,17 @@
 <!-- Pending Confirmations -->
 {% if pending_confirmation %}
 <div class="dash-section-title"><i class="bi bi-bell-fill"></i> Pending Confirmation</div>
-<div class="dash-panel" style="margin-bottom:1.25rem">
+<div class="dash-panel s-c33bec6">
   <div class="dash-panel-body">
     {% for info in pending_confirmation %}
     <div class="dash-activity-item">
-      <div class="dash-activity-dot" style="background:#f59e0b"></div>
-      <div style="flex:1">
-        <div class="ai-main" style="font-weight:600">{{ info.fixture.home_team }} vs {{ info.fixture.away_team }}</div>
+      <div class="dash-activity-dot s-9d45f47"></div>
+      <div class="s-634a28b">
+        <div class="ai-main s-21a1be8">{{ info.fixture.home_team }} vs {{ info.fixture.away_team }}</div>
         <div class="ai-meta">
           {{ info.match_date|date:"D, d M Y" }} · {{ info.fixture.kickoff_time|time:"H:i" }}
           {% if info.fixture.venue %} · {{ info.fixture.venue }}{% endif %}
-          · <strong style="color:#15803d">{{ info.role }}</strong>
+          · <strong class="s-0590246">{{ info.role }}</strong>
         </div>
       </div>
       <a href="{% url 'appointment_action' appointment_pk=info.appointment.pk %}" class="pbtn pbtn-primary pbtn-sm">
@@ -130,17 +130,17 @@
 <!-- Today's Matches -->
 {% if current_matches %}
 <div class="dash-section-title"><i class="bi bi-play-circle-fill"></i> Today's Matches</div>
-<div class="dash-panel" style="margin-bottom:1.25rem">
+<div class="dash-panel s-c33bec6">
   <div class="dash-panel-body">
     {% for info in current_matches %}
     <div class="dash-activity-item">
-      <div class="dash-activity-dot" style="background:#22c55e"></div>
-      <div style="flex:1">
-        <div class="ai-main" style="font-weight:600">{{ info.fixture.home_team }} vs {{ info.fixture.away_team }}</div>
+      <div class="dash-activity-dot s-dd10b1f"></div>
+      <div class="s-634a28b">
+        <div class="ai-main s-21a1be8">{{ info.fixture.home_team }} vs {{ info.fixture.away_team }}</div>
         <div class="ai-meta">
           {{ info.fixture.kickoff_time|time:"H:i" }}
           {% if info.fixture.venue %} · {{ info.fixture.venue }}{% endif %}
-          · <strong style="color:#15803d">{{ info.role }}</strong>
+          · <strong class="s-0590246">{{ info.role }}</strong>
         </div>
       </div>
       {% if info.status == 'pending' %}
@@ -157,7 +157,7 @@
 <!-- Upcoming Matches -->
 {% if upcoming_matches %}
 <div class="dash-section-title"><i class="bi bi-calendar-event-fill"></i> Upcoming Matches</div>
-<div class="portal-table-wrap" style="margin-bottom:1.25rem">
+<div class="portal-table-wrap s-c33bec6">
   <div class="portal-table-scroll">
     <table class="portal-table">
       <thead>
@@ -169,7 +169,7 @@
           <td>{{ info.match_date|date:"d M Y" }}</td>
           <td><strong>{{ info.fixture.home_team }}</strong> vs <strong>{{ info.fixture.away_team }}</strong></td>
           <td>{{ info.fixture.venue|default:"TBD" }}</td>
-          <td><span style="color:#15803d;font-weight:600">{{ info.role }}</span></td>
+          <td><span class="s-14c0fdd">{{ info.role }}</span></td>
           <td>
             {% if info.status == 'confirmed' %}<span class="pstatus pstatus--success">Confirmed</span>
             {% elif info.status == 'pending' %}<span class="pstatus pstatus--warning">Pending</span>
@@ -191,13 +191,13 @@
 <!-- Pending Squads -->
 {% if pending_squads %}
 <div class="dash-section-title"><i class="bi bi-list-check"></i> Squads Awaiting Approval</div>
-<div class="dash-panel" style="margin-bottom:1.25rem">
+<div class="dash-panel s-c33bec6">
   <div class="dash-panel-body">
     {% for sq in pending_squads %}
     <div class="dash-activity-item">
-      <div class="dash-activity-dot" style="background:#3b82f6"></div>
-      <div style="flex:1">
-        <div class="ai-main" style="font-weight:600">{{ sq.team.name }}</div>
+      <div class="dash-activity-dot s-143d858"></div>
+      <div class="s-634a28b">
+        <div class="ai-main s-21a1be8">{{ sq.team.name }}</div>
         <div class="ai-meta">{{ sq.fixture.home_team }} vs {{ sq.fixture.away_team }} · {{ sq.fixture.match_date|date:"d M Y" }}</div>
       </div>
       <a href="{% url 'squad_review' squad_pk=sq.pk %}" class="pbtn pbtn-primary pbtn-sm">Review Squad</a>
@@ -210,13 +210,13 @@
 <!-- Reports Due -->
 {% if pending_reports %}
 <div class="dash-section-title"><i class="bi bi-pencil-square"></i> Reports Due</div>
-<div class="dash-panel" style="margin-bottom:1.25rem">
+<div class="dash-panel s-c33bec6">
   <div class="dash-panel-body">
     {% for fix in pending_reports %}
     <div class="dash-activity-item">
-      <div class="dash-activity-dot" style="background:#f59e0b"></div>
-      <div style="flex:1">
-        <div class="ai-main" style="font-weight:600">{{ fix.home_team }} vs {{ fix.away_team }}</div>
+      <div class="dash-activity-dot s-9d45f47"></div>
+      <div class="s-634a28b">
+        <div class="ai-main s-21a1be8">{{ fix.home_team }} vs {{ fix.away_team }}</div>
         <div class="ai-meta">{{ fix.match_date|date:"d M Y" }}</div>
       </div>
       <a href="{% url 'match_report_form' fixture_pk=fix.pk %}" class="pbtn pbtn-secondary pbtn-sm">Write Report</a>
@@ -228,27 +228,27 @@
 
 <!-- Profile Quick View -->
 <div class="dash-section-title"><i class="bi bi-person-badge-fill"></i> My Profile</div>
-<div class="dash-panel" style="margin-bottom:1.25rem">
+<div class="dash-panel s-c33bec6">
   <div class="dash-panel-head">
     <h3><i class="bi bi-person-circle"></i> Profile Summary</h3>
     <a href="{% url 'referee_edit_profile' %}" class="pbtn pbtn-primary pbtn-sm">Edit Profile</a>
   </div>
   <div class="dash-panel-body">
-    <div class="dash-stats" style="margin-bottom:0">
+    <div class="dash-stats s-50435ff">
       <div class="dash-stat dash-stat--green">
-        <div class="stat-num" style="font-size:1rem">{{ profile.get_referee_type_display }}</div>
+        <div class="stat-num s-b407bc0">{{ profile.get_referee_type_display }}</div>
         <div class="stat-lbl">Official Type</div>
       </div>
       <div class="dash-stat dash-stat--blue">
-        <div class="stat-num" style="font-size:1rem">{{ profile.get_level_display }}</div>
+        <div class="stat-num s-b407bc0">{{ profile.get_level_display }}</div>
         <div class="stat-lbl">Level</div>
       </div>
       <div class="dash-stat dash-stat--purple">
-        <div class="stat-num" style="font-size:1rem">{{ profile.license_number }}</div>
+        <div class="stat-num s-b407bc0">{{ profile.license_number }}</div>
         <div class="stat-lbl">License</div>
       </div>
       <div class="dash-stat dash-stat--amber">
-        <div class="stat-num" style="font-size:1rem">{{ profile.years_experience }} yrs</div>
+        <div class="stat-num s-b407bc0">{{ profile.years_experience }} yrs</div>
         <div class="stat-lbl">Experience</div>
       </div>
     </div>
@@ -258,7 +258,7 @@
 <!-- Completed Matches -->
 {% if completed_matches %}
 <div class="dash-section-title"><i class="bi bi-check-circle-fill"></i> Recent Completed Matches</div>
-<div class="portal-table-wrap" style="margin-bottom:1.5rem">
+<div class="portal-table-wrap s-92cb257">
   <div class="portal-table-scroll">
     <table class="portal-table">
       <thead>
@@ -288,11 +288,11 @@
 
 {% if not pending_confirmation and not upcoming_matches and not current_matches %}
 <div class="dash-panel">
-  <div class="dash-panel-body" style="text-align:center;padding:2.5rem">
-    <i class="bi bi-calendar3" style="font-size:2.5rem;opacity:.2;display:block;margin-bottom:.75rem"></i>
-    <h3 style="font-size:1rem;font-weight:700;margin-bottom:.4rem">No upcoming appointments</h3>
-    <p style="color:#6b7280;font-size:.85rem">You have no active match appointments. Check back later or update your profile.</p>
-    <a href="{% url 'referee_edit_profile' %}" class="pbtn pbtn-primary" style="margin-top:1rem;display:inline-flex">Edit Profile</a>
+  <div class="dash-panel-body s-5d0dedc">
+    <i class="bi bi-calendar3 s-d8aef6e"></i>
+    <h3 class="s-717d9f3">No upcoming appointments</h3>
+    <p class="s-6dc05ad">You have no active match appointments. Check back later or update your profile.</p>
+    <a href="{% url 'referee_edit_profile' %}" class="pbtn pbtn-primary s-3f717eb">Edit Profile</a>
   </div>
 </div>
 {% endif %}

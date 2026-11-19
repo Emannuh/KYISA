@@ -2,10 +2,10 @@
 {% block title %}Generate Fixtures   {{ competition.name }}   KYISA CMS{% endblock %}
 
 {% block content %}
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+<div class="s-aa0ee9a">
     <div>
-        <h2 style="font-size:1.3rem;font-weight:700;"><i class="bi bi-calendar-plus"></i> Generate Fixtures</h2>
-        <div style="font-size:.85rem;color:#757575;">{{ competition.name }} &middot; {{ total_pool_teams }} teams in {{ pools|length }} pool{{ pools|length|pluralize }}</div>
+        <h2 class="s-99083dd"><i class="bi bi-calendar-plus"></i> Generate Fixtures</h2>
+        <div class="s-c9be501">{{ competition.name }} &middot; {{ total_pool_teams }} teams in {{ pools|length }} pool{{ pools|length|pluralize }}</div>
     </div>
     <a href="{% url 'coordinator_competition_manage' pk=competition.pk %}" class="btn btn-outline-secondary btn-sm">&larr; Back</a>
 </div>
@@ -13,7 +13,7 @@
 {% if existing_count %}
 <div class="alert alert-info">
     <strong>{{ existing_count }}</strong> fixture{{ existing_count|pluralize }} already exist for this competition.
-    <form method="post" style="display:inline;" onsubmit="return confirm('Delete all existing fixtures?');">
+    <form method="post" class="s-2f8710b" onsubmit="return confirm('Delete all existing fixtures?');">
         {% csrf_token %}
         <input type="hidden" name="action" value="clear">
         <button class="btn btn-sm btn-warning ms-2">Clear All Fixtures</button>
@@ -22,7 +22,7 @@
 {% endif %}
 
 <div class="card">
-    <div class="card-header"><h3 style="margin:0;font-size:1rem;"><i class="bi bi-gear"></i> Fixture Generation Settings</h3></div>
+    <div class="card-header"><h3 class="s-3fe4ce0"><i class="bi bi-gear"></i> Fixture Generation Settings</h3></div>
     <div class="card-body">
         <form method="post">
             {% csrf_token %}

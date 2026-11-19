@@ -12,7 +12,7 @@
 </div>
 
 <!-- Pending Squads -->
-<div class="card" style="margin-bottom:1.5rem;">
+<div class="card s-92cb257">
     <div class="card-header">
         <h3>🔶 Pending Approval ({{ pending_squads|length }})</h3>
     </div>
@@ -33,14 +33,14 @@
                     {% for sq in pending_squads %}
                     <tr>
                         <td>{{ sq.fixture.home_team }} vs {{ sq.fixture.away_team }}<br>
-                            <small style="color:#666">{{ sq.fixture.match_date|date:"d M Y" }} {{ sq.fixture.kickoff_time|time:"H:i" }}</small>
+                            <small class="s-0ce45ac">{{ sq.fixture.match_date|date:"d M Y" }} {{ sq.fixture.kickoff_time|time:"H:i" }}</small>
                         </td>
                         <td><strong>{{ sq.team.name }}</strong></td>
                         <td>{{ sq.submitted_at|date:"d M Y H:i"|default:"—" }}</td>
                         <td>{{ sq.squad_players.count }}</td>
                         <td>
                             <a href="{% url 'squad_review' squad_pk=sq.pk %}"
-                               style="background:#1B5E20;color:#fff;padding:.4rem 1rem;border-radius:6px;text-decoration:none;font-size:.85rem;">
+                               class="s-e828018">
                                 Review
                             </a>
                         </td>
@@ -94,7 +94,7 @@
                         <td>{{ sq.submitted_at|date:"d M Y H:i"|default:"—" }}</td>
                         <td>
                             <a href="{% url 'squad_review' squad_pk=sq.pk %}"
-                               style="color:#1B5E20;text-decoration:underline;">View</a>
+                               class="s-075fbc2">View</a>
                         </td>
                     </tr>
                     {% endfor %}

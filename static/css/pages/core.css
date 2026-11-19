@@ -1,0 +1,1751 @@
+/* Generated from inline template styles by inline_to_css.py.
+   .s-<hash>:not(#_) = an inline style moved here; :not(#_) keeps inline-level
+   precedence (beats stylesheet classes, loses to styles set by JavaScript).
+   Page styles below are scoped with :where(.pg-<template>). Prefer replacing
+   these with shared component classes over time. */
+/* portal/player_clearance_dashboard.html */
+.s-02bab3e:not(#_) {
+    margin-top: .5rem;
+    background: #e0e0e0;
+    border-radius: 4px;
+    height: 6px;
+    overflow: hidden;
+}
+
+/* portal/verify_player.html */
+.s-02d86ed:not(#_) {
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+/* portal/verification/discipline_players.html */
+.s-033489a:not(#_) {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+/* portal/verification/_player_table.html */
+.s-0774142:not(#_) {
+    background: #E8F5E9;
+    color: #1B5E20;
+    padding: .15rem .5rem;
+    border-radius: 10px;
+    font-size: .78rem;
+    font-weight: 600;
+}
+
+/* portal/add_player.html */
+.s-07ad20a:not(#_) {
+    display: none;
+    margin-bottom: 1rem;
+    padding: .75rem;
+    background: #e3f2fd;
+    border-radius: 8px;
+    border-left: 4px solid #1565c0;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-07f8823:not(#_) {
+    padding: .85rem 1.25rem;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-083149a:not(#_) {
+    display: flex;
+    gap: .75rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* portal/add_player.html */
+.s-08c7c1b:not(#_) {
+    color: #666;
+    font-size: .85rem;
+    margin-bottom: 1rem;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-08d6610:not(#_) {
+    color: #888;
+    font-size: .82rem;
+    text-decoration: none;
+}
+
+/* portal/verify_player.html */
+.s-099e485:not(#_) {
+    text-align: center;
+    padding: 2rem;
+    background: #e8f5e9;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+/* portal/verify_player.html */
+.s-0a06bc7:not(#_) {
+    flex: 1;
+    padding: .6rem;
+    background: #1B5E20;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* portal/verification/discipline_delegation.html */
+.s-0a0d6a1:not(#_) {
+    margin: 0 0 .3rem;
+    font-size: 1rem;
+}
+
+/* portal/player_verification_logs.html */
+.s-0af6b50:not(#_) {
+    background: #f5f5f5;
+    color: #555;
+    padding: .2rem .5rem;
+    border-radius: 4px;
+    font-size: .8rem;
+}
+
+/* portal/verify_player.html */
+.s-0d9b3f7:not(#_) {
+    flex: 1;
+    padding: .6rem;
+    background: #f5f5f5;
+    color: #555;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* portal/verification/discipline_delegation.html, portal/verification/discipline_players.html */
+.s-0ea6527:not(#_) {
+    margin-top: 1.25rem;
+}
+
+/* portal/player_clearance_detail.html */
+.s-0eed941:not(#_) {
+    width: 110px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #4CAF50;
+    background: #f5f7f5;
+}
+
+/* portal/verify_player.html */
+.s-0f622f2:not(#_) {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+    object-fit: contain;
+}
+
+/* portal/player_profile.html */
+.s-113f754:not(#_) {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .4rem .8rem;
+    background: #e3f2fd;
+    color: #1565c0;
+    border-radius: 6px;
+    font-size: .85rem;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-1201a9b:not(#_) {
+    font-size: 2.5rem;
+    color: #C8E6C9;
+}
+
+/* portal/verification/county_disciplines.html */
+.s-12d230f:not(#_) {
+    text-align: center;
+    padding: .5rem;
+    background: #F3E5F5;
+    border-radius: 8px;
+}
+
+/* portal/verification/discipline_delegation.html */
+.s-1348436:not(#_) {
+    font-size: .85rem;
+    color: #666;
+    margin-bottom: .2rem;
+}
+
+/* portal/verify_player.html */
+.s-144de98:not(#_) {
+    color: #555;
+    font-size: .9rem;
+}
+
+/* portal/player_profile.html */
+.s-14a27c9:not(#_) {
+    font-size: .85rem;
+    color: #888;
+    margin-top: .3rem;
+}
+
+/* portal/add_player.html */
+.s-15c603e:not(#_) {
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+/* portal/player_profile.html */
+.s-1724771:not(#_) {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-18d91ff:not(#_) {
+    padding: .5rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: .85rem;
+}
+
+/* portal/verification/registered_counties.html */
+.s-1a6fb08:not(#_) {
+    background: #FFF3E0;
+    color: #E65100;
+    padding: .2rem .6rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: .85rem;
+}
+
+/* portal/verification/discipline_players.html */
+.s-1c5bc65:not(#_) {
+    min-width: 280px;
+    flex: 1;
+}
+
+/* portal/edit_player.html */
+.s-1cf0776:not(#_) {
+    background: #1B5E20;
+    color: #fff;
+    border-color: #1B5E20;
+    padding: .6rem 1.5rem;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-1d5c50a:not(#_) {
+    background: linear-gradient(135deg,#1B5E20,#2E7D32);
+    color: #fff;
+    text-decoration: none;
+    padding: .3rem .75rem;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+/* portal/verify_player.html */
+.s-1f3cf16:not(#_) {
+    color: #1B5E20;
+    margin: .5rem 0;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-1fbcdc6:not(#_) {
+    border-left: 4px solid #FF9800;
+}
+
+/* portal/player_clearance_detail.html, portal/verify_player.html */
+.s-20945d4:not(#_) {
+    margin: 0 0 .75rem;
+    color: #1B5E20;
+}
+
+/* portal/player_clearance_detail.html */
+.s-20d2e7f:not(#_) {
+    width: 110px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #1565C0;
+    background: #f5f7f5;
+}
+
+/* portal/verify_player.html */
+.s-217c256:not(#_) {
+    margin-top: .75rem;
+    padding: .65rem 1rem;
+    background: #fce4ec;
+    border-radius: 8px;
+    font-size: .85rem;
+    color: #C62828;
+}
+
+/* portal/add_player.html */
+.s-226c968:not(#_) {
+    display: block;
+    font-weight: 600;
+    color: #1565c0;
+    margin-bottom: .5rem;
+    font-size: .9rem;
+}
+
+/* portal/player_profile.html */
+.s-22dd205:not(#_) {
+    padding: .5rem 0;
+    color: #888;
+    width: 180px;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-2422d9d:not(#_) {
+    margin: 0 0 .5rem;
+    color: #0D47A1;
+    font-size: .88rem;
+}
+
+/* portal/verify_player.html */
+.s-244a529:not(#_) {
+    color: #C62828;
+    margin: .5rem 0;
+}
+
+/* portal/add_player.html */
+.s-24a4ce0:not(#_) {
+    font-size: .83rem;
+    color: #555;
+}
+
+/* portal/player_clearance_detail.html */
+.s-2663bc4:not(#_) {
+    display: none;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #fce4ec;
+    border-radius: 8px;
+}
+
+/* portal/verify_player.html */
+.s-272da63:not(#_) {
+    width: 100%;
+    padding: .6rem;
+    background: #f5f5f5;
+    color: #555;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: .9rem;
+}
+
+/* portal/player_clearance_detail.html */
+.s-28907ab:not(#_) {
+    font-size: .75rem;
+    color: #666;
+    display: block;
+}
+
+/* portal/player_clearance_detail.html */
+.s-2c1265d:not(#_) {
+    margin: .5rem 0 0;
+    color: #555;
+}
+
+/* portal/verification/discipline_players.html */
+.s-2e32f5f:not(#_) {
+    display: flex;
+    gap: 0;
+    margin-bottom: 0;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+/* portal/player_clearance_detail.html */
+.s-2f018ae:not(#_) {
+    font-size: .85rem;
+    font-weight: 700;
+    color: #1565C0;
+    margin: 0 0 .6rem;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-2f851b2:not(#_) {
+    font-size: .8rem;
+    color: #888;
+    margin-top: .25rem;
+}
+
+/* portal/delete_player.html */
+.s-30b3b92:not(#_) {
+    display: flex;
+    gap: .75rem;
+    justify-content: center;
+}
+
+/* portal/player_clearance_detail.html */
+.s-30cde9e:not(#_) {
+    display: flex;
+    gap: .75rem;
+    flex-wrap: wrap;
+}
+
+/* portal/delete_player.html */
+.s-325cf63:not(#_) {
+    color: #C62828;
+    margin-bottom: .5rem;
+}
+
+/* portal/add_player.html */
+.s-32cccb3:not(#_) {
+    color: #C62828;
+    font-size: .85rem;
+    margin-top: .2rem;
+}
+
+/* portal/player_profile.html */
+.s-357c167:not(#_) {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #333;
+}
+
+/* portal/player_profile.html */
+.s-363e28e:not(#_) {
+    font-size: 1rem;
+    color: #333;
+    margin-top: 1.5rem;
+    margin-bottom: .8rem;
+}
+
+/* portal/player_profile.html */
+.s-3b3e8bf:not(#_) {
+    padding: .5rem 0;
+    color: #888;
+}
+
+/* portal/player_clearance_detail.html */
+.s-3cc5c9d:not(#_) {
+    margin-top: .5rem;
+    padding: .5rem .75rem;
+    background: #e3f2fd;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+/* portal/add_player.html */
+.s-3d5f89d:not(#_) {
+    padding: .6rem 1.5rem;
+    flex: 1;
+}
+
+/* portal/verify_player.html */
+.s-3f1cea1:not(#_) {
+    text-align: center;
+    padding: 2rem;
+    background: #fce4ec;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+/* portal/player_clearance_detail.html */
+.s-3f5650c:not(#_) {
+    margin-top: .65rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(160px,1fr));
+    gap: .5rem;
+}
+
+/* portal/player_clearance_detail.html */
+.s-3ff624b:not(#_) {
+    padding: .4rem 1rem;
+    background: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* portal/verification/county_disciplines.html */
+.s-401deff:not(#_) {
+    font-size: .75rem;
+    color: #1B5E20;
+}
+
+/* portal/verify_player.html */
+.s-47fe482:not(#_) {
+    font-size: .8rem;
+    padding: .25rem .75rem;
+    background: #e3f2fd;
+    color: #0D47A1;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+/* portal/player_clearance_detail.html */
+.s-490a90b:not(#_) {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin-bottom: .5rem;
+}
+
+/* portal/player_profile.html */
+.s-490c25d:not(#_) {
+    padding: .5rem 0;
+    font-weight: 600;
+}
+
+/* portal/player_profile.html */
+.s-4a14cc2:not(#_) {
+    width: 100%;
+    font-size: .9rem;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-4d5b2e0:not(#_) {
+    background: #F5F5F5;
+    color: #888;
+    padding: .3rem .75rem;
+    border-radius: 20px;
+}
+
+/* portal/delete_player.html */
+.s-4da3c36:not(#_) {
+    color: #888;
+    font-size: .85rem;
+    margin-bottom: 1.5rem;
+}
+
+/* portal/add_player.html */
+.s-4e7dcd6:not(#_) {
+    display: flex;
+    gap: .5rem;
+    align-items: flex-start;
+}
+
+/* portal/player_clearance_detail.html */
+.s-50efff8:not(#_) {
+    width: 100%;
+    padding: .4rem .75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-top: .25rem;
+}
+
+/* portal/player_clearance_detail.html */
+.s-50fe511:not(#_) {
+    padding: .4rem 1rem;
+    background: #757575;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+/* portal/player_clearance_detail.html */
+.s-5158cf0:not(#_) {
+    color: #666;
+    font-size: .9rem;
+    margin-bottom: .75rem;
+}
+
+/* portal/player_clearance_detail.html */
+.s-5209440:not(#_) {
+    display: flex;
+    gap: .5rem;
+    align-items: end;
+}
+
+/* portal/player_clearance_detail.html */
+.s-57138ff:not(#_) {
+    display: flex;
+    gap: .75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+/* portal/add_player.html, portal/edit_player.html */
+.s-578cd24:not(#_) {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: .3rem;
+    font-size: .9rem;
+}
+
+/* portal/player_clearance_detail.html */
+.s-58fd1b7:not(#_) {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-598db67:not(#_) {
+    border-left: 4px solid #1565C0;
+}
+
+/* portal/player_clearance_detail.html */
+.s-5ae159e:not(#_) {
+    margin-bottom: 1rem;
+    padding: .5rem 1rem;
+    background: #f5f7f5;
+    border-radius: 6px;
+    font-size: .85rem;
+}
+
+/* portal/add_player.html, portal/edit_player.html */
+.s-5b72d13:not(#_) {
+    display: flex;
+    gap: .75rem;
+    margin-top: 1rem;
+}
+
+/* portal/verification/registered_counties.html */
+.s-5b8ca13:not(#_) {
+    background: #E8F5E9;
+    color: #1B5E20;
+    padding: .2rem .6rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: .85rem;
+}
+
+/* portal/player_clearance_detail.html */
+.s-5b8ea09:not(#_) {
+    padding: .4rem 1rem;
+    background: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+/* portal/verification/county_disciplines.html */
+.s-5d33775:not(#_) {
+    background: linear-gradient(135deg,#1B5E20,#2E7D32);
+    padding: 1rem 1.25rem;
+    color: #fff;
+}
+
+/* portal/player_clearance_detail.html */
+.s-6132e51:not(#_) {
+    padding: 1rem;
+    background: #fff3e0;
+    border-radius: 8px;
+    color: #e65100;
+    font-size: .9rem;
+}
+
+/* portal/verification/_player_table.html */
+.s-6302352:not(#_) {
+    background: #FFEBEE;
+    color: #C62828;
+    padding: .15rem .5rem;
+    border-radius: 10px;
+    font-size: .78rem;
+    font-weight: 600;
+}
+
+/* portal/verify_player.html */
+.s-6377512:not(#_) {
+    color: #1565C0;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* portal/player_clearance_detail.html */
+.s-64478e7:not(#_) {
+    margin-bottom: 1rem;
+    padding: .75rem 1rem;
+    background: #f5f7f5;
+    border-radius: 6px;
+    font-size: .85rem;
+}
+
+/* portal/verification/discipline_delegation.html */
+.s-6974270:not(#_) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(300px,1fr));
+    gap: 1.25rem;
+}
+
+/* portal/verification/county_disciplines.html */
+.s-69d7397:not(#_) {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #E65100;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-6b411e1:not(#_) {
+    padding: .5rem 1.25rem;
+    background: linear-gradient(135deg,#1B5E20,#2E7D32);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    white-space: nowrap;
+    font-size: .85rem;
+}
+
+/* portal/player_clearance_detail.html */
+.s-6b928f9:not(#_) {
+    font-size: .85rem;
+    color: #1B5E20;
+}
+
+/* portal/verify_player.html */
+.s-6c54d29:not(#_) {
+    margin-top: .75rem;
+    padding: .5rem .85rem;
+    background: #e3f2fd;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+/* portal/player_clearance_detail.html */
+.s-6c9ab40:not(#_) {
+    padding: .4rem .65rem;
+    background: #e8f5e9;
+    border-radius: 6px;
+}
+
+/* portal/player_clearance_detail.html */
+.s-6e42a0e:not(#_) {
+    padding: .4rem 1rem;
+    background: #0D47A1;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+/* portal/player_clearance_detail.html */
+.s-6e5ba14:not(#_) {
+    font-weight: 600;
+    font-size: .85rem;
+    color: #1565C0;
+    margin-bottom: .35rem;
+}
+
+/* portal/player_clearance_detail.html, portal/verify_player.html */
+.s-7070f5a:not(#_) {
+    display: none;
+    margin-top: .85rem;
+}
+
+/* portal/player_clearance_detail.html */
+.s-73bd8d7:not(#_) {
+    padding: .4rem .75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    width: 200px;
+    font-size: .85rem;
+}
+
+/* portal/player_clearance_detail.html */
+.s-750167f:not(#_) {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    margin-top: .25rem;
+}
+
+/* portal/player_profile.html */
+.s-76221cd:not(#_) {
+    background: #fff3e0;
+    color: #f57c00;
+    padding: .3rem .8rem;
+    border-radius: 20px;
+    font-size: .82rem;
+    font-weight: 600;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-7660938:not(#_) {
+    padding: .5rem .75rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    flex: 1;
+    min-width: 180px;
+    font-size: .85rem;
+}
+
+/* portal/verification/_player_table.html */
+.s-76dd334:not(#_) {
+    background: #1B5E20;
+    color: #fff;
+    border-color: #1B5E20;
+    padding: .3rem .75rem;
+    font-size: .8rem;
+}
+
+/* portal/verification/discipline_players.html */
+.s-787d7ab:not(#_) {
+    border-left: 4px solid #6A1B9A;
+}
+
+/* portal/add_player.html */
+.s-7afc0fa:not(#_) {
+    margin: 0 0 .25rem;
+}
+
+/* portal/player_clearance_detail.html, portal/player_verification_logs.html */
+.s-7c47a3a:not(#_) {
+    font-size: .85rem;
+    white-space: nowrap;
+}
+
+/* portal/verification/discipline_players.html */
+.s-7c8c90b:not(#_) {
+    border-left: 4px solid #C62828;
+}
+
+/* portal/verification/county_disciplines.html */
+.s-7cf6dff:not(#_) {
+    text-align: center;
+    padding: .5rem;
+    background: #FFEBEE;
+    border-radius: 8px;
+}
+
+/* portal/player_clearance_detail.html */
+.s-7d28419:not(#_) {
+    background: #FF9800;
+    color: #fff;
+    padding: .3rem .75rem;
+    border-radius: 20px;
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+/* portal/add_player.html, portal/verify_player.html */
+.s-7ddd882:not(#_) {
+    margin: 0;
+    color: #555;
+    font-size: .9rem;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-7e92160:not(#_) {
+    background: #FFEBEE;
+    color: #C62828;
+}
+
+/* portal/verification/county_disciplines.html */
+.s-7f70723:not(#_) {
+    flex: 1;
+    text-align: center;
+    padding: .4rem .5rem;
+    font-size: .8rem;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-7f76e80:not(#_) {
+    font-size: .82rem;
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+}
+
+/* portal/player_clearance_detail.html */
+.s-836ef1b:not(#_) {
+    font-size: .85rem;
+    cursor: pointer;
+}
+
+/* portal/verification/county_disciplines.html */
+.s-8535bba:not(#_) {
+    text-align: center;
+    padding: .5rem;
+    background: #E8F5E9;
+    border-radius: 8px;
+}
+
+/* portal/player_verification_logs.html */
+.s-86c5b57:not(#_) {
+    font-size: .75rem;
+    margin-top: .25rem;
+    white-space: pre-wrap;
+}
+
+/* portal/player_clearance_detail.html */
+.s-8af71d9:not(#_) {
+    font-size: .85rem;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-8c32bc8:not(#_) {
+    border-left: 4px solid #1B5E20;
+}
+
+/* portal/player_profile.html */
+.s-8dc9d66:not(#_) {
+    color: #2e7d32;
+    font-weight: 600;
+}
+
+/* portal/verification/county_disciplines.html */
+.s-8e3e052:not(#_) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .5rem;
+    margin-bottom: 1rem;
+}
+@media (max-width: 767px) { .app-main .s-8e3e052:not(#_) { grid-template-columns: 1fr; } }
+
+/* portal/add_player.html */
+.s-8e5c36a:not(#_) {
+    background: #e8f5e9;
+    color: #1B5E20;
+}
+
+/* portal/verification/county_disciplines.html */
+.s-8edf34c:not(#_) {
+    flex: 1;
+    background: #1B5E20;
+    color: #fff;
+    border-color: #1B5E20;
+    text-align: center;
+    padding: .4rem .5rem;
+    font-size: .8rem;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-925fb30:not(#_) {
+    margin: 0 0 .5rem;
+    color: #E65100;
+    font-size: .88rem;
+}
+
+/* portal/verify_player.html */
+.s-9292092:not(#_) {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f5f7f5;
+    border-radius: 10px;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-962d9b7:not(#_) {
+    background: #F5F5F5;
+    color: #888;
+}
+
+/* portal/player_clearance_detail.html */
+.s-9765f4a:not(#_) {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+/* portal/verify_player.html */
+.s-97aae55:not(#_) {
+    width: 100%;
+    padding: .75rem;
+    background: #1B5E20;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* portal/player_verification_logs.html */
+.s-9923784:not(#_) {
+    background: #fce4ec;
+    color: #C62828;
+    padding: .2rem .5rem;
+    border-radius: 4px;
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+/* portal/verify_player.html */
+.s-99d54c9:not(#_) {
+    margin-top: 1.5rem;
+    border-left: 4px solid #0D47A1;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-9d01b31:not(#_) {
+    display: flex;
+    gap: .75rem;
+    align-items: end;
+    flex-wrap: wrap;
+}
+
+/* portal/verify_player.html */
+.s-9f22e92:not(#_) {
+    font-size: .85rem;
+    font-weight: 700;
+    color: #1565C0;
+    margin: 0 0 .4rem;
+}
+
+/* portal/add_player.html */
+.s-9fa683f:not(#_) {
+    margin-top: .35rem;
+    font-size: .83rem;
+    display: none;
+}
+
+/* portal/verification/discipline_delegation.html */
+.s-9fbb01d:not(#_) {
+    width: 60px;
+    height: 72px;
+    background: #f5f5f5;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #e0e0e0;
+    color: #ccc;
+    font-size: 1.5rem;
+}
+
+/* portal/add_player.html */
+.s-9fda85b:not(#_) {
+    background: #1B5E20;
+    color: #fff;
+    border-color: #1B5E20;
+    padding: .6rem 1.5rem;
+    flex: 1;
+}
+
+/* portal/verify_player.html */
+.s-a0595e2:not(#_) {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1.5rem;
+}
+
+/* portal/verification/registered_counties.html */
+.s-a4ef527:not(#_) {
+    background: #1B5E20;
+    color: #fff;
+    border-color: #1B5E20;
+    padding: .35rem .9rem;
+    font-size: .8rem;
+}
+
+/* portal/verification/county_disciplines.html */
+.s-a5df10c:not(#_) {
+    text-align: center;
+    padding: .5rem;
+    background: #FFF3E0;
+    border-radius: 8px;
+}
+
+/* portal/player_clearance_detail.html */
+.s-a621313:not(#_) {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #fce4ec;
+    border-radius: 8px;
+    border-left: 4px solid #C62828;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-a630e95:not(#_) {
+    padding: .5rem 1rem;
+    background: linear-gradient(135deg,#1B5E20,#2E7D32);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: .85rem;
+}
+
+/* portal/verify_player.html */
+.s-a882c5d:not(#_) {
+    padding: 1rem;
+    background: #f5f7f5;
+    border-radius: 10px;
+}
+
+/* portal/add_player.html */
+.s-a8ce352:not(#_) {
+    margin-bottom: 1rem;
+    padding: .75rem;
+    background: #f5f7f5;
+    border-radius: 8px;
+}
+
+/* portal/player_clearance_detail.html, portal/verify_player.html */
+.s-aafd37e:not(#_) {
+    font-size: .82rem;
+    color: #555;
+    margin: 0 0 .75rem;
+}
+
+/* portal/player_clearance_detail.html, portal/verify_player.html */
+.s-ac8d4dc:not(#_) {
+    padding: .25rem .75rem;
+    background: #1565C0;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: .8rem;
+}
+
+/* portal/verification/county_disciplines.html */
+.s-acf5d83:not(#_) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(340px,1fr));
+    gap: 1.25rem;
+}
+
+/* portal/player_clearance_detail.html */
+.s-ae0b6fa:not(#_) {
+    font-size: .85rem;
+    color: #888;
+    margin-bottom: 1rem;
+}
+
+/* portal/player_profile.html */
+.s-ae3a235:not(#_) {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 1.5rem;
+    max-width: 900px;
+}
+@media (max-width: 767px) { .app-main .s-ae3a235:not(#_) { grid-template-columns: 1fr; } }
+
+/* portal/verify_player.html */
+.s-ae700f2:not(#_) {
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
+    background: #fce4ec;
+    border-left: 4px solid #C62828;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+/* portal/player_clearance_detail.html */
+.s-b119fd8:not(#_) {
+    padding: .4rem 1rem;
+    background: #1B5E20;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+/* portal/player_profile.html */
+.s-b12d28c:not(#_) {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #e0e0e0;
+    margin-bottom: 1rem;
+}
+
+/* portal/player_clearance_detail.html */
+.s-b1e12e1:not(#_) {
+    background: #f5f5f5;
+    color: #888;
+    padding: .3rem .75rem;
+    border-radius: 20px;
+    font-size: .85rem;
+}
+
+/* portal/verification/county_disciplines.html */
+.s-b31d5fe:not(#_) {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #6A1B9A;
+}
+
+/* portal/player_clearance_detail.html, portal/verify_player.html */
+.s-b556650:not(#_) {
+    margin: 0 0 .75rem;
+    color: #C62828;
+}
+
+/* portal/verification/county_disciplines.html */
+.s-b5f377f:not(#_) {
+    font-size: .75rem;
+    color: #6A1B9A;
+}
+
+/* portal/player_profile.html */
+.s-b7cc54b:not(#_) {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 3rem;
+    color: #999;
+}
+
+/* portal/verify_player.html */
+.s-b84f43e:not(#_) {
+    margin: .25rem 0 0;
+    color: #555;
+    font-size: .9rem;
+}
+
+/* portal/verification/discipline_delegation.html */
+.s-b9b2f86:not(#_) {
+    width: 60px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 2px solid #e0e0e0;
+}
+
+/* portal/player_verification_logs.html */
+.s-bb8b9e1:not(#_) {
+    cursor: pointer;
+    color: #1565C0;
+}
+
+/* portal/player_clearance_detail.html */
+.s-bc3c598:not(#_) {
+    padding: .4rem 1rem;
+    background: #C62828;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+/* portal/player_clearance_detail.html */
+.s-bc654bf:not(#_) {
+    display: none;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f5f7f5;
+    border-radius: 8px;
+}
+
+/* portal/player_clearance_detail.html */
+.s-bd3f191:not(#_) {
+    margin: 0 0 .5rem;
+    color: #C62828;
+}
+
+/* portal/player_clearance_detail.html */
+.s-c392442:not(#_) {
+    margin-bottom: 1rem;
+    padding: .5rem 1rem;
+    background: #e3f2fd;
+    border-radius: 8px;
+    font-size: .9rem;
+}
+
+/* portal/verify_player.html */
+.s-c4f5d97:not(#_) {
+    color: #1B5E20;
+    font-size: .85rem;
+    margin-top: .5rem;
+    display: inline-block;
+}
+
+/* portal/player_clearance_detail.html, portal/verify_player.html */
+.s-c502e7c:not(#_) {
+    padding: .4rem 1.1rem;
+    background: #1565C0;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+/* portal/verify_player.html */
+.s-c593850:not(#_) {
+    color: #1565C0;
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+/* portal/verification/discipline_delegation.html */
+.s-c69a605:not(#_) {
+    padding: 1.25rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+/* portal/verify_player.html */
+.s-c6daa46:not(#_) {
+    text-align: center;
+    padding: 2rem;
+    color: #C62828;
+    background: #fce4ec;
+    border-radius: 8px;
+}
+
+/* portal/player_clearance_detail.html */
+.s-c71fb76:not(#_) {
+    padding: .4rem 1rem;
+    background: #1565C0;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+/* portal/verification/discipline_players.html */
+.s-c9c1e7b:not(#_) {
+    background: #fce4ec;
+    color: #C62828;
+}
+
+/* portal/verification/county_disciplines.html, portal/verification/discipline_delegation.html */
+.s-ca073c3:not(#_) {
+    padding: 0;
+    overflow: hidden;
+}
+
+/* portal/verify_player.html */
+.s-ce7f70d:not(#_) {
+    margin: .25rem 0 0;
+    padding-left: 1.25rem;
+    font-size: .85rem;
+    color: #888;
+}
+
+/* portal/add_player.html */
+.s-ceabc1d:not(#_) {
+    width: 120px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #1565c0;
+    background: #f5f7f5;
+}
+
+/* portal/player_clearance_detail.html */
+.s-d0a6170:not(#_) {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+/* portal/add_player.html */
+.s-d24cde5:not(#_) {
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
+    background: #fff3e0;
+    border-left: 4px solid #f57c00;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+/* portal/delete_player.html */
+.s-d27e195:not(#_) {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+/* portal/player_clearance_detail.html */
+.s-d2d2b68:not(#_) {
+    display: inline-block;
+    padding: .4rem 1rem;
+    background: #FF9800;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+/* portal/verification/county_disciplines.html */
+.s-d2d8d16:not(#_) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: .85rem;
+    color: #666;
+}
+
+/* portal/player_clearance_detail.html */
+.s-d3a5cbb:not(#_) {
+    font-weight: 600;
+    font-size: .85rem;
+    color: #1B5E20;
+    margin-bottom: .35rem;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-d3c6bef:not(#_) {
+    padding: 3rem;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-d5c6559:not(#_) {
+    display: flex;
+    justify-content: space-between;
+    font-size: .85rem;
+    flex-wrap: wrap;
+    gap: .25rem;
+}
+
+/* portal/verification/county_disciplines.html */
+.s-d9ac1f3:not(#_) {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #C62828;
+}
+
+/* portal/verify_player.html */
+.s-da56eac:not(#_) {
+    display: block;
+    font-weight: 600;
+    font-size: .9rem;
+    margin-bottom: .3rem;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-da95604:not(#_) {
+    margin: 0 0 .5rem;
+    color: #1B5E20;
+    font-size: .88rem;
+}
+
+/* portal/verify_player.html */
+.s-dad0e4e:not(#_) {
+    margin-top: .75rem;
+    padding: .65rem 1rem;
+    background: #e8f5e9;
+    border-radius: 8px;
+    font-size: .85rem;
+    color: #1B5E20;
+}
+
+/* portal/delete_player.html */
+.s-dd6591b:not(#_) {
+    background: #C62828;
+    color: #fff;
+    border-color: #C62828;
+    padding: .6rem 1.5rem;
+}
+
+/* portal/player_clearance_detail.html */
+.s-ddfefb2:not(#_) {
+    background: #1B5E20;
+    color: #fff;
+    padding: .3rem .75rem;
+    border-radius: 20px;
+    font-size: .85rem;
+    font-weight: 700;
+}
+
+/* portal/player_clearance_detail.html */
+.s-de542f5:not(#_) {
+    padding: .5rem 1.5rem;
+    background: #1B5E20;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+/* portal/player_clearance_detail.html */
+.s-df604c1:not(#_) {
+    padding: .4rem 1rem;
+    background: #C62828;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* portal/add_player.html */
+.s-e128f4b:not(#_) {
+    font-weight: 700;
+    color: #1B5E20;
+    padding: 0 .5rem;
+    font-size: .95rem;
+}
+
+/* portal/verification/county_disciplines.html */
+.s-e29ec4c:not(#_) {
+    font-size: .75rem;
+    color: #C62828;
+}
+
+/* portal/player_clearance_detail.html, portal/verify_player.html */
+.s-e2d7aff:not(#_) {
+    margin-bottom: 1.25rem;
+    padding: 1rem;
+    background: #f0f4ff;
+    border: 1px solid #c5cae9;
+    border-radius: 8px;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-e2e8109:not(#_) {
+    color: #666;
+    margin: .75rem 0 .25rem;
+}
+
+/* portal/verify_player.html */
+.s-e400f11:not(#_) {
+    max-width: 200px;
+    max-height: 250px;
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+    object-fit: cover;
+}
+
+/* portal/verification/discipline_delegation.html */
+.s-e469b97:not(#_) {
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    opacity: .9;
+}
+
+/* portal/player_verification_logs.html */
+.s-e524221:not(#_) {
+    font-size: .85rem;
+    max-width: 250px;
+}
+
+/* portal/player_verification_logs.html */
+.s-e5a99cf:not(#_) {
+    font-size: .8rem;
+    max-width: 200px;
+    word-break: break-all;
+    color: #888;
+}
+
+/* portal/verification/county_disciplines.html */
+.s-e7b816d:not(#_) {
+    font-size: .75rem;
+    color: #E65100;
+}
+
+/* portal/add_player.html */
+.s-e8919e5:not(#_) {
+    color: #C62828;
+    margin-bottom: 1rem;
+    padding: .75rem;
+    background: #fce4ec;
+    border-radius: 8px;
+}
+
+/* portal/player_clearance_detail.html */
+.s-eb7e974:not(#_) {
+    flex: 1;
+    min-width: 180px;
+    padding: .4rem .75rem;
+    border: 1px solid #c5cae9;
+    border-radius: 6px;
+    font-size: .85rem;
+}
+
+/* portal/player_profile.html */
+.s-ebae022:not(#_) {
+    font-size: .82rem;
+    color: #C62828;
+    margin-top: .2rem;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-ec99bd3:not(#_) {
+    padding: .5rem 1.25rem;
+    background: linear-gradient(135deg,#1565C0,#1E88E5);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    white-space: nowrap;
+    font-size: .85rem;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-ef497ef:not(#_) {
+    background: #1B5E20;
+    color: #fff;
+    padding: .3rem .75rem;
+    border-radius: 20px;
+    font-weight: 700;
+}
+
+/* portal/player_clearance_detail.html */
+.s-ef98b55:not(#_) {
+    color: #666;
+    font-size: .9rem;
+    margin-bottom: 1rem;
+}
+
+/* portal/verify_player.html */
+.s-f3541e3:not(#_) {
+    flex: 1;
+    min-width: 160px;
+    padding: .4rem .75rem;
+    border: 1px solid #c5cae9;
+    border-radius: 6px;
+    font-size: .85rem;
+}
+
+/* portal/verify_player.html */
+.s-f5235dc:not(#_) {
+    padding: .5rem 1.25rem;
+    background: #0D47A1;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: .88rem;
+    font-weight: 700;
+}
+
+/* portal/verification/_player_table.html */
+.s-f650cfa:not(#_) {
+    background: #FFF3E0;
+    color: #E65100;
+    padding: .15rem .5rem;
+    border-radius: 10px;
+    font-size: .78rem;
+    font-weight: 600;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-f763b3b:not(#_) {
+    background: #FF9800;
+    color: #fff;
+    padding: .3rem .75rem;
+    border-radius: 20px;
+}
+
+/* portal/verification/_player_table.html */
+.s-f780f07:not(#_) {
+    background: #F3E5F5;
+    color: #6A1B9A;
+    padding: .15rem .5rem;
+    border-radius: 10px;
+    font-size: .78rem;
+    font-weight: 600;
+}
+
+/* portal/player_clearance_detail.html */
+.s-f87a1f4:not(#_) {
+    margin-bottom: .25rem;
+    font-size: .9rem;
+}
+
+/* portal/verify_player.html */
+.s-f92d4f5:not(#_) {
+    width: 100%;
+    padding: .6rem;
+    background: #C62828;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* portal/player_profile.html */
+.s-fb3ed8e:not(#_) {
+    padding: .5rem 0;
+}
+
+/* portal/player_clearance_detail.html */
+.s-fb6ad53:not(#_) {
+    padding: .75rem 1.5rem;
+    background: #e8f5e9;
+    border-radius: 8px;
+    color: #1B5E20;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+/* portal/player_clearance_detail.html */
+.s-fbf5a77:not(#_) {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* portal/verification/county_disciplines.html */
+.s-fc49cb1:not(#_) {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1B5E20;
+}
+
+/* portal/verification/discipline_delegation.html */
+.s-fd20b2d:not(#_) {
+    padding: 0 1.25rem 1rem;
+    border-top: 1px solid #f0f0f0;
+    padding-top: .75rem;
+}
+
+/* portal/player_clearance_dashboard.html */
+.s-ff6dd97:not(#_) {
+    width: 100%;
+    padding: .5rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: .25rem;
+    font-size: .85rem;
+}
+
+/* portal/add_player.html */
+.s-ffb475c:not(#_) {
+    padding: .45rem 1rem;
+    background: #1565c0;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: .85rem;
+    cursor: pointer;
+    white-space: nowrap;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+}

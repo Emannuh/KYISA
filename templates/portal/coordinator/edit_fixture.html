@@ -2,18 +2,18 @@
 {% block title %}Edit Fixture   KYISA CMS{% endblock %}
 
 {% block content %}
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+<div class="s-aa0ee9a">
     <div>
-        <h2 style="font-size:1.3rem;font-weight:700;"><i class="bi bi-pencil-square"></i> Edit Fixture</h2>
-        <div style="font-size:.85rem;color:#757575;">{{ competition.name }}</div>
+        <h2 class="s-99083dd"><i class="bi bi-pencil-square"></i> Edit Fixture</h2>
+        <div class="s-c9be501">{{ competition.name }}</div>
     </div>
     <a href="{% url 'coordinator_competition_manage' pk=competition.pk %}" class="btn btn-outline-secondary btn-sm">&larr; Back</a>
 </div>
 
 <div class="card">
-    <div class="card-header"><h3 style="margin:0;font-size:1rem;">{{ fixture.home_team.name|default:"TBA" }} vs {{ fixture.away_team.name|default:"TBA" }}</h3></div>
+    <div class="card-header"><h3 class="s-3fe4ce0">{{ fixture.home_team.name|default:"TBA" }} vs {{ fixture.away_team.name|default:"TBA" }}</h3></div>
     <div class="card-body">
-        <div class="alert alert-warning" style="font-size:.86rem;">
+        <div class="alert alert-warning s-bfbf3f3">
             Result or status changes are exceptional edits only. Provide a reason and confirm; this update is logged for SG tracking.
         </div>
         <form method="post">
@@ -58,8 +58,8 @@
                     <label class="form-label">Exceptional Case Reason (required for result/status changes)</label>
                     <input type="text" name="exceptional_reason" class="form-control" placeholder="Explain why this result/table edit is exceptional" minlength="12">
                 </div>
-                <div class="col-md-4" style="display:flex;align-items:end;">
-                    <label class="form-label" style="margin:0;display:flex;gap:.4rem;align-items:center;">
+                <div class="col-md-4 s-717cd64">
+                    <label class="form-label s-60ff7c8">
                         <input type="checkbox" name="confirm_exceptional" value="1">
                         Confirm exceptional case
                     </label>

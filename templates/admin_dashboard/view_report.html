@@ -22,7 +22,7 @@
                     <h4>Match Details</h4>
                     <table class="table table-bordered">
                         <tr>
-                            <th style="width: 40%;">Home Team:</th>
+                            <th class="s-3ec9698">Home Team:</th>
                             <td>{{ report.match.home_team.name }}</td>
                         </tr>
                         <tr>
@@ -81,7 +81,7 @@
                     <h4>Referee Information</h4>
                     <table class="table table-bordered">
                         <tr>
-                            <th style="width: 40%;">Referee:</th>
+                            <th class="s-3ec9698">Referee:</th>
                             <td>
                                 {% if report.referee %}
                                     {{ report.referee.full_name }}
@@ -115,7 +115,7 @@
                     <h4>Approval Details</h4>
                     <table class="table table-bordered">
                         <tr>
-                            <th style="width: 40%;">Approved By:</th>
+                            <th class="s-3ec9698">Approved By:</th>
                             <td>
                                 {% if report.approved_by %}
                                     {{ report.approved_by.get_full_name|default:report.approved_by.email }}

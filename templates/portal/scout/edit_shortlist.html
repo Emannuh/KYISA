@@ -12,49 +12,49 @@
     <h1><i class="bi bi-pencil-square"></i> Edit Shortlist Entry</h1>
 </div>
 
-<div class="card" style="max-width:600px;">
+<div class="card s-2e56d29">
     <div class="card-body">
         <!-- Player Info -->
-        <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid #eee;">
+        <div class="s-d865e2c">
             {% if entry.player.photo %}
-            <img src="{{ entry.player.photo.url }}" alt="" style="width:50px;height:60px;object-fit:cover;border-radius:6px;">
+            <img src="{{ entry.player.photo.url }}" alt="" class="s-f512c60">
             {% else %}
-            <div style="width:50px;height:60px;background:#f5f5f5;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:1.5rem;">
+            <div class="s-8482b7d">
                 <i class="bi bi-person-fill"></i>
             </div>
             {% endif %}
             <div>
-                <h3 style="margin:0;font-size:1.1rem;">{{ entry.player.first_name }} {{ entry.player.last_name }}</h3>
-                <div style="font-size:.85rem;color:#666;">{{ entry.player.discipline.registration.get_county_display }} · {{ entry.player.discipline.get_sport_type_display }}</div>
-                <div style="font-size:.85rem;color:#888;">Age: {{ entry.player.age }} · Position: {{ entry.player.position|default:"—" }}</div>
+                <h3 class="s-09485a3">{{ entry.player.first_name }} {{ entry.player.last_name }}</h3>
+                <div class="s-53b7c24">{{ entry.player.discipline.registration.get_county_display }} · {{ entry.player.discipline.get_sport_type_display }}</div>
+                <div class="s-36945e4">Age: {{ entry.player.age }} · Position: {{ entry.player.position|default:"—" }}</div>
             </div>
         </div>
 
         <form method="post">
             {% csrf_token %}
 
-            <div style="margin-bottom:1.25rem;">
-                <label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:.5rem;">Rating</label>
-                <div style="display:flex;gap:.5rem;">
+            <div class="s-c33bec6">
+                <label class="s-cdfd4c1">Rating</label>
+                <div class="s-5cd47cb">
                     {% for i in "12345" %}
                     <label style="cursor:pointer;font-size:1.8rem;color:{% if forloop.counter <= entry.rating %}#E65100{% else %}#ddd{% endif %};" id="star-label-{{ i }}">
-                        <input type="radio" name="rating" value="{{ i }}" {% if entry.rating == forloop.counter %}checked{% endif %} style="display:none;" onchange="updateStars({{ i }})">
+                        <input type="radio" name="rating" value="{{ i }}" {% if entry.rating == forloop.counter %}checked{% endif %} class="s-5790ffb" onchange="updateStars({{ i }})">
                         ★
                     </label>
                     {% endfor %}
                 </div>
             </div>
 
-            <div style="margin-bottom:1.5rem;">
-                <label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:.4rem;">Scouting Notes</label>
+            <div class="s-92cb257">
+                <label class="s-60aed03">Scouting Notes</label>
                 <textarea name="notes" class="form-control" rows="5" placeholder="Player observations, strengths, areas to watch...">{{ entry.notes }}</textarea>
             </div>
 
-            <div style="display:flex;gap:.75rem;">
-                <button type="submit" class="btn" style="background:#1B5E20;color:#fff;padding:.5rem 1.25rem;border-radius:8px;font-weight:600;">
+            <div class="s-2259230">
+                <button type="submit" class="btn s-c396eb1">
                     <i class="bi bi-check-lg"></i> Save Changes
                 </button>
-                <a href="{% url 'scout_shortlist' %}" class="btn btn-outline" style="padding:.5rem 1.25rem;border-radius:8px;">Cancel</a>
+                <a href="{% url 'scout_shortlist' %}" class="btn btn-outline s-a10c1be">Cancel</a>
             </div>
         </form>
     </div>

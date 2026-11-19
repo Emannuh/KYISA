@@ -20,45 +20,45 @@
             <tr>
                 <td>
                     <strong>{{ p.first_name }} {{ p.last_name }}</strong>
-                    <br><small style="color:#888">#{{ p.jersey_number|default:"—" }} · {{ p.position|default:"—" }}</small>
+                    <br><small class="s-9dae231">#{{ p.jersey_number|default:"—" }} · {{ p.position|default:"—" }}</small>
                 </td>
                 <td>{{ p.age }}</td>
                 <td>{{ p.national_id_number|default:"—" }}</td>
-                <td>{% if p.photo %}<a href="{{ p.photo.url }}" target="_blank" style="color:#1B5E20">📸</a>{% else %}<span style="color:#C62828">✕</span>{% endif %}</td>
-                <td>{% if p.id_document %}<a href="{{ p.id_document.url }}" target="_blank" style="color:#1B5E20">🪪</a>{% else %}<span style="color:#C62828">✕</span>{% endif %}</td>
-                <td>{% if p.birth_certificate %}<a href="{{ p.birth_certificate.url }}" target="_blank" style="color:#1B5E20">📜</a>{% else %}<span style="color:#888">—</span>{% endif %}</td>
+                <td>{% if p.photo %}<a href="{{ p.photo.url }}" target="_blank" class="s-a24cb3b">📸</a>{% else %}<span class="s-767a43b">✕</span>{% endif %}</td>
+                <td>{% if p.id_document %}<a href="{{ p.id_document.url }}" target="_blank" class="s-a24cb3b">🪪</a>{% else %}<span class="s-767a43b">✕</span>{% endif %}</td>
+                <td>{% if p.birth_certificate %}<a href="{{ p.birth_certificate.url }}" target="_blank" class="s-a24cb3b">📜</a>{% else %}<span class="s-9dae231">—</span>{% endif %}</td>
                 <td>
                     {# Verifisha (auto IPRS) takes priority, then Prembly (manual IPRS) #}
                     {% if p.verifisha_status == 'verified' %}
-                        <span title="IPRS auto-verified" style="background:#E8F5E9;color:#1B5E20;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">✅ IPRS</span>
+                        <span title="IPRS auto-verified" class="s-41c3092">✅ IPRS</span>
                     {% elif p.prembly_status == 'verified' %}
-                        <span title="IPRS Verified" style="background:#E8F5E9;color:#1B5E20;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">✅ IPRS</span>
+                        <span title="IPRS Verified" class="s-41c3092">✅ IPRS</span>
                     {% elif p.huduma_status == 'verified' %}
-                        <span title="Manually verified" style="background:#E8F5E9;color:#1B5E20;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">✅ Verified</span>
+                        <span title="Manually verified" class="s-41c3092">✅ Verified</span>
                     {% elif p.verifisha_status == 'pending' %}
-                        <span title="Verifisha check pending" style="background:#E3F2FD;color:#0d47a1;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">🕐 Pending</span>
+                        <span title="Verifisha check pending" class="s-429e957">🕐 Pending</span>
                     {% elif p.prembly_status == 'mismatch' %}
-                        <span title="IPRS name/DOB mismatch" style="background:#FFF8E1;color:#E65100;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">⚠️ Mismatch</span>
+                        <span title="IPRS name/DOB mismatch" class="s-22e915c">⚠️ Mismatch</span>
                     {% elif p.prembly_status == 'failed' %}
-                        <span title="IPRS check failed" style="background:#FFEBEE;color:#C62828;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">❌ Failed</span>
+                        <span title="IPRS check failed" class="s-9ea9419">❌ Failed</span>
                     {% else %}
-                        <span title="IPRS not yet checked" style="background:#f5f5f5;color:#888;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600">— Not checked</span>
+                        <span title="IPRS not yet checked" class="s-189a9bc">— Not checked</span>
                     {% endif %}
                 </td>
                 <td>
                     {% if p.verification_status == 'pending' %}
-                    <span style="background:#FFF3E0;color:#E65100;padding:.15rem .5rem;border-radius:10px;font-size:.78rem;font-weight:600">Pending</span>
+                    <span class="s-f650cfa">Pending</span>
                     {% elif p.verification_status == 'verified' %}
-                    <span style="background:#E8F5E9;color:#1B5E20;padding:.15rem .5rem;border-radius:10px;font-size:.78rem;font-weight:600">Verified</span>
+                    <span class="s-0774142">Verified</span>
                     {% elif p.verification_status == 'rejected' %}
-                    <span style="background:#FFEBEE;color:#C62828;padding:.15rem .5rem;border-radius:10px;font-size:.78rem;font-weight:600">Rejected</span>
+                    <span class="s-6302352">Rejected</span>
                     {% elif p.verification_status == 'resubmit' %}
-                    <span style="background:#F3E5F5;color:#6A1B9A;padding:.15rem .5rem;border-radius:10px;font-size:.78rem;font-weight:600">Resubmit</span>
+                    <span class="s-f780f07">Resubmit</span>
                     {% endif %}
                 </td>
                 <td><small>{{ p.registered_at|date:"d M Y" }}</small></td>
                 <td>
-                    <a href="{% url 'verify_county_player' player_pk=p.pk %}" class="btn btn-outline btn-sm" style="background:#1B5E20;color:#fff;border-color:#1B5E20;padding:.3rem .75rem;font-size:.8rem">Review</a>
+                    <a href="{% url 'verify_county_player' player_pk=p.pk %}" class="btn btn-outline btn-sm s-76dd334">Review</a>
                 </td>
             </tr>
             {% endfor %}
@@ -66,9 +66,9 @@
     </table>
 </div>
 {% else %}
-<div style="padding:3rem;text-align:center">
-    <div style="font-size:3rem">📋</div>
-    <h3 style="margin:.5rem 0">No players in this category</h3>
-    <p style="color:#888">No players match the current filter.</p>
+<div class="s-0c1b9d7">
+    <div class="s-64a35c0">📋</div>
+    <h3 class="s-5057ba9">No players in this category</h3>
+    <p class="s-9dae231">No players match the current filter.</p>
 </div>
 {% endif %}

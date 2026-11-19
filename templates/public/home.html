@@ -41,12 +41,12 @@
                     <span class="hero-line hero-line--alt hero-line--alt-2">Intercounty Sports</span>
                     <span class="hero-line hero-line--alt hero-line--alt-3">Association <span class="hero-line--accent">(KYISA)</span></span>
                 </h1>
-                <p class="hero-tagline anim-up" style="--delay:.85s">THE HOME OF KENYAN YOUTH SPORTS</p>
-                <p class="hero-quote anim-up" style="--delay:1s">
+                <p class="hero-tagline anim-up s-73b1d3d">THE HOME OF KENYAN YOUTH SPORTS</p>
+                <p class="hero-quote anim-up s-f6dc528">
                     &ldquo;Let me win. But if I cannot win, let me be brave in the attempt.&rdquo;
                     <span class="hero-quote__by">Special Olympics athlete oath</span>
                 </p>
-                <div class="hero-actions anim-up" style="--delay:1.15s">
+                <div class="hero-actions anim-up s-c24edfe">
                     <a href="{% url 'public_competitions' %}" class="btn btn--gold btn--lg">
                         View Competitions
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -77,53 +77,53 @@
         <div class="hero-right">
             <!-- Live Match Center -->
             <div class="cd-card-entrance hero-card-slot" id="liveMatchCard">
-                <div class="cd-card cd-card--mini cd-card--show" style="width:340px;border:2px solid rgba(229,57,53,.45);cursor:pointer;border-radius:22px;overflow:hidden;" onclick="document.getElementById('fixtures').scrollIntoView({behavior:'smooth'})">
-                    <div class="cd-card__glow" style="background:radial-gradient(circle,rgba(229,57,53,.12),transparent 70%)"></div>
-                    <div class="cd-card__inner" style="padding:1.4rem 1.2rem;border-radius:22px;">
+                <div class="cd-card cd-card--mini cd-card--show s-3571cbf" onclick="document.getElementById('fixtures').scrollIntoView({behavior:'smooth'})">
+                    <div class="cd-card__glow s-fffe989"></div>
+                    <div class="cd-card__inner s-d53b5b0">
 
                         {% if live_matches %}
                         <!-- Header -->
-                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem;">
-                            <div style="display:flex;align-items:center;gap:.45rem;">
-                                <span style="width:9px;height:9px;border-radius:50%;background:#E53935;box-shadow:0 0 8px rgba(229,57,53,.6);animation:livePulse 1.5s infinite;"></span>
-                                <span style="font-size:.72rem;font-weight:700;color:#E53935;text-transform:uppercase;letter-spacing:1.5px;">Live</span>
+                        <div class="s-c4b98bb">
+                            <div class="s-e47d683">
+                                <span class="s-7134acb"></span>
+                                <span class="s-5089777">Live</span>
                             </div>
-                            <span style="font-size:.68rem;font-weight:600;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;">Match Center</span>
+                            <span class="s-547569b">Match Center</span>
                         </div>
 
                         <div class="live-hero-matches">
                             {% for m in live_matches %}
                             <div class="live-hero-match{% if forloop.first %} live-hero-match--active{% endif %}" data-idx="{{ forloop.counter0 }}">
                                 <!-- Competition & Round -->
-                                <div style="text-align:center;margin-bottom:.6rem;">
-                                    <span style="font-size:.62rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.8px;">{{ m.competition.name }}{% if m.is_knockout and m.knockout_round %} · {{ m.get_knockout_round_display }}{% endif %}</span>
+                                <div class="s-faa3d5d">
+                                    <span class="s-400c91b">{{ m.competition.name }}{% if m.is_knockout and m.knockout_round %} · {{ m.get_knockout_round_display }}{% endif %}</span>
                                 </div>
 
                                 <!-- Teams & Score -->
-                                <div style="display:flex;align-items:center;gap:.5rem;">
+                                <div class="s-ef5f7de">
                                     <!-- Home -->
-                                    <div style="flex:1;text-align:center;">
-                                        <div style="font-size:.95rem;font-weight:700;color:#fff;line-height:1.2;">{{ m.home_team.name|truncatewords:2 }}</div>
+                                    <div class="s-bb08fa5">
+                                        <div class="s-6175592">{{ m.home_team.name|truncatewords:2 }}</div>
                                     </div>
 
                                     <!-- Score -->
-                                    <div style="background:linear-gradient(135deg,rgba(229,57,53,.25),rgba(229,57,53,.12));border:1px solid rgba(229,57,53,.3);border-radius:12px;padding:.45rem .8rem;min-width:72px;text-align:center;">
-                                        <div style="font-size:1.6rem;font-weight:900;color:#fff;letter-spacing:2px;">{{ m.home_score|default:"0" }} – {{ m.away_score|default:"0" }}</div>
+                                    <div class="s-40775c7">
+                                        <div class="s-c0e8d61">{{ m.home_score|default:"0" }} – {{ m.away_score|default:"0" }}</div>
                                     </div>
 
                                     <!-- Away -->
-                                    <div style="flex:1;text-align:center;">
-                                        <div style="font-size:.95rem;font-weight:700;color:#fff;line-height:1.2;">{{ m.away_team.name|truncatewords:2 }}</div>
+                                    <div class="s-bb08fa5">
+                                        <div class="s-6175592">{{ m.away_team.name|truncatewords:2 }}</div>
                                     </div>
                                 </div>
 
                                 <!-- Status row -->
-                                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.6rem;padding-top:.5rem;border-top:1px solid rgba(255,255,255,.06);">
-                                    <span style="font-size:.68rem;font-weight:700;color:#E53935;text-transform:uppercase;">
+                                <div class="s-7755aa0">
+                                    <span class="s-2e31204">
                                         {% if m.live_half == 1 %}1st Half{% elif m.live_half == 2 %}2nd Half{% elif m.live_half == 3 %}Extra Time 1{% elif m.live_half == 4 %}Extra Time 2{% elif m.live_half == 99 %}Penalties{% elif m.live_half == 0 %}HT{% else %}LIVE{% endif %}
                                     </span>
-                                    <span style="font-size:.62rem;color:rgba(255,255,255,.35);">
-                                        <i class="bi bi-geo-alt" style="font-size:.58rem;"></i> {{ m.venue.name|default:"TBD" }}
+                                    <span class="s-5bb1413">
+                                        <i class="bi bi-geo-alt s-ed7dff5"></i> {{ m.venue.name|default:"TBD" }}
                                     </span>
                                 </div>
                             </div>
@@ -132,23 +132,23 @@
 
                         {% elif recent_finals %}
                         <!-- Finals / latest results per competition -->
-                        <div style="display:flex;align-items:center;gap:.45rem;margin-bottom:.75rem;">
-                            <i class="bi bi-trophy-fill" style="font-size:.75rem;color:#F9A825;"></i>
-                            <span style="font-size:.72rem;font-weight:700;color:#F9A825;text-transform:uppercase;letter-spacing:1.5px;">Final Results</span>
+                        <div class="s-be63f39">
+                            <i class="bi bi-trophy-fill s-3f41178"></i>
+                            <span class="s-a4daf52">Final Results</span>
                         </div>
 
-                        <div style="margin-top:.3rem;">
+                        <div class="s-2abadb3">
                             {% for match in recent_finals %}
                             <div style="padding:.55rem 0;{% if not forloop.last %}border-bottom:1px solid rgba(255,255,255,.06);{% endif %}">
-                                <div style="font-size:.58rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.6px;margin-bottom:.3rem;">{{ match.competition.name }}{% if match.is_knockout and match.knockout_round %} · {{ match.get_knockout_round_display }}{% endif %}</div>
-                                <div style="display:flex;align-items:center;gap:.5rem;">
+                                <div class="s-eff1ca9">{{ match.competition.name }}{% if match.is_knockout and match.knockout_round %} · {{ match.get_knockout_round_display }}{% endif %}</div>
+                                <div class="s-ef5f7de">
                                     <span style="font-size:.82rem;font-weight:{% if match.home_score > match.away_score %}700{% else %}500{% endif %};color:{% if match.home_score > match.away_score %}#fff{% else %}rgba(255,255,255,.6){% endif %};flex:1;text-align:left;">{{ match.home_team.name|truncatewords:2 }}</span>
-                                    <div style="background:rgba(76,175,80,.12);border:1px solid rgba(76,175,80,.25);border-radius:8px;padding:.2rem .55rem;text-align:center;min-width:52px;">
-                                        <span style="font-size:.82rem;font-weight:800;color:#fff;letter-spacing:1px;">{{ match.home_score|default:"0" }} – {{ match.away_score|default:"0" }}</span>
+                                    <div class="s-880f0e3">
+                                        <span class="s-a3a5039">{{ match.home_score|default:"0" }} – {{ match.away_score|default:"0" }}</span>
                                     </div>
                                     <span style="font-size:.82rem;font-weight:{% if match.away_score > match.home_score %}700{% else %}500{% endif %};color:{% if match.away_score > match.home_score %}#fff{% else %}rgba(255,255,255,.6){% endif %};flex:1;text-align:right;">{{ match.away_team.name|truncatewords:2 }}</span>
                                 </div>
-                                <div style="text-align:center;font-size:.58rem;color:rgba(255,255,255,.3);margin-top:.25rem;">
+                                <div class="s-ed1d2f7">
                                     FT · {{ match.match_date|date:"d M" }}
                                 </div>
                             </div>
@@ -157,36 +157,36 @@
 
                         {% elif upcoming_fixtures %}
                         <!-- No finals yet show upcoming -->
-                        <div style="display:flex;align-items:center;gap:.45rem;margin-bottom:.75rem;">
-                            <i class="bi bi-calendar-event" style="font-size:.75rem;color:#F9A825;"></i>
-                            <span style="font-size:.72rem;font-weight:700;color:#F9A825;text-transform:uppercase;letter-spacing:1.5px;">Upcoming</span>
+                        <div class="s-be63f39">
+                            <i class="bi bi-calendar-event s-3f41178"></i>
+                            <span class="s-a4daf52">Upcoming</span>
                         </div>
 
-                        <div style="margin-top:.3rem;">
+                        <div class="s-2abadb3">
                             {% for match in upcoming_fixtures|slice:":3" %}
                             <div style="padding:.55rem 0;{% if not forloop.last %}border-bottom:1px solid rgba(255,255,255,.06);{% endif %}">
-                                <div style="font-size:.58rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.6px;margin-bottom:.3rem;">{{ match.competition.name }}{% if match.is_knockout and match.knockout_round %} · {{ match.get_knockout_round_display }}{% endif %}</div>
-                                <div style="display:flex;align-items:center;gap:.5rem;">
-                                    <span style="font-size:.82rem;font-weight:600;color:#fff;flex:1;text-align:left;">{{ match.home_team.name|truncatewords:2 }}</span>
-                                    <div style="background:rgba(249,168,37,.12);border:1px solid rgba(249,168,37,.25);border-radius:8px;padding:.2rem .55rem;text-align:center;">
-                                        <span style="font-size:.66rem;font-weight:700;color:#F9A825;">{{ match.match_date|date:"d M" }} · {{ match.kickoff_time|time:"H:i" }}</span>
+                                <div class="s-eff1ca9">{{ match.competition.name }}{% if match.is_knockout and match.knockout_round %} · {{ match.get_knockout_round_display }}{% endif %}</div>
+                                <div class="s-ef5f7de">
+                                    <span class="s-8c174d4">{{ match.home_team.name|truncatewords:2 }}</span>
+                                    <div class="s-6691895">
+                                        <span class="s-5a87895">{{ match.match_date|date:"d M" }} · {{ match.kickoff_time|time:"H:i" }}</span>
                                     </div>
-                                    <span style="font-size:.82rem;font-weight:600;color:#fff;flex:1;text-align:right;">{{ match.away_team.name|truncatewords:2 }}</span>
+                                    <span class="s-e5aeb46">{{ match.away_team.name|truncatewords:2 }}</span>
                                 </div>
                             </div>
                             {% endfor %}
                         </div>
                         {% else %}
-                        <div style="text-align:center;padding:1.5rem 0;color:rgba(255,255,255,.4);font-size:.82rem;">
-                            <i class="bi bi-calendar3" style="font-size:1.8rem;display:block;margin-bottom:.5rem;opacity:.35;"></i>
+                        <div class="s-f10de4e">
+                            <i class="bi bi-calendar3 s-75487bd"></i>
                             No matches scheduled yet
                         </div>
                         {% endif %}
 
-                        <div style="text-align:center;margin-top:.85rem;">
-                            <a href="#fixtures" style="display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;font-weight:700;color:#fff;background:linear-gradient(135deg,rgba(229,57,53,.35),rgba(229,57,53,.18));border:1px solid rgba(229,57,53,.3);padding:.45rem 1rem;border-radius:10px;text-decoration:none;transition:all .2s;">
+                        <div class="s-d9e5f0f">
+                            <a href="#fixtures" class="s-74226c3">
                                 {% if live_matches %}
-                                <span style="width:6px;height:6px;border-radius:50%;background:#E53935;animation:livePulse 1.5s infinite;"></span>
+                                <span class="s-1f589cb"></span>
                                 View All Live →
                                 {% elif recent_finals %}
                                 View All Results →
@@ -201,7 +201,7 @@
         </div>
     </div>
 
-    <div class="kenya-stripe" style="position:absolute;bottom:0;left:0;right:0;z-index:5"></div>
+    <div class="kenya-stripe s-4a0e33c"></div>
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════════════════
@@ -212,55 +212,55 @@
      GROUP STANDINGS
      ══════════════════════════════════════════════════════════════════════════ -->
 {% if standings_data %}
-<section class="sec" id="standings" style="background:#f8f9fa;padding:3rem 0;">
+<section class="sec s-c2574a6" id="standings">
     <div class="container">
-        <div class="reveal" style="text-align:center;margin-bottom:2rem;">
-            <span style="display:inline-block;background:#1B5E20;color:#fff;padding:.3rem .8rem;border-radius:20px;font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:.5rem;"><i class="bi bi-table"></i> Standings</span>
-            <h2 style="font-family:'Outfit',sans-serif;font-size:1.6rem;font-weight:700;color:#1a1a1a;margin:0;">Group Tables</h2>
-            <p style="color:#888;font-size:.88rem;margin-top:.3rem;">Live standings updated after each match</p>
+        <div class="reveal s-bed805c">
+            <span class="s-7d152f6"><i class="bi bi-table"></i> Standings</span>
+            <h2 class="s-f7aef1c">Group Tables</h2>
+            <p class="s-bcb6473">Live standings updated after each match</p>
         </div>
 
         {% for comp_data in standings_data %}
-        <div class="reveal" style="margin-bottom:2.5rem;">
-            <h3 style="font-family:'Outfit',sans-serif;font-size:1.15rem;font-weight:700;color:#1B5E20;margin-bottom:1rem;padding-left:.5rem;border-left:3px solid #F9A825;">
+        <div class="reveal s-b71f74e">
+            <h3 class="s-735cde6">
                 <i class="bi bi-trophy"></i> {{ comp_data.competition.name }}
             </h3>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.25rem;">
+            <div class="s-3a90f17">
                 {% for pool_info in comp_data.pools %}
-                <div class="card" style="border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);">
-                    <div style="background:linear-gradient(135deg,#003311,#006B23);padding:.6rem 1rem;">
-                        <h4 style="margin:0;color:#fff;font-size:.9rem;font-weight:700;letter-spacing:.5px;">{{ pool_info.pool.name }}</h4>
+                <div class="card s-05d834b">
+                    <div class="s-88a74a7">
+                        <h4 class="s-6c6e746">{{ pool_info.pool.name }}</h4>
                     </div>
-                    <div style="overflow-x:auto;">
-                        <table style="width:100%;border-collapse:collapse;font-size:.8rem;">
+                    <div class="s-987eb2a">
+                        <table class="s-50faa8e">
                             <thead>
-                                <tr style="background:#f0f2f5;">
-                                    <th style="padding:.5rem .6rem;text-align:left;font-weight:700;color:#555;width:40%;">Team</th>
-                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:700;color:#555;">P</th>
-                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:700;color:#555;">W</th>
-                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:700;color:#555;">D</th>
-                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:700;color:#555;">L</th>
-                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:700;color:#555;">GF</th>
-                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:700;color:#555;">GA</th>
-                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:700;color:#555;">GD</th>
-                                    <th style="padding:.5rem .4rem;text-align:center;font-weight:800;color:#1B5E20;">Pts</th>
+                                <tr class="s-a18c6c1">
+                                    <th class="s-a94d2cc">Team</th>
+                                    <th class="s-5ad0254">P</th>
+                                    <th class="s-5ad0254">W</th>
+                                    <th class="s-5ad0254">D</th>
+                                    <th class="s-5ad0254">L</th>
+                                    <th class="s-5ad0254">GF</th>
+                                    <th class="s-5ad0254">GA</th>
+                                    <th class="s-5ad0254">GD</th>
+                                    <th class="s-1c3cf02">Pts</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for pt in pool_info.teams %}
                                 <tr style="border-bottom:1px solid #eee;{% if forloop.counter <= 2 %}background:rgba(27,94,32,.04);{% endif %}">
-                                    <td style="padding:.5rem .6rem;font-weight:600;color:#1a1a1a;white-space:nowrap;">
-                                        <span style="display:inline-block;width:18px;text-align:center;color:#888;font-size:.75rem;margin-right:.25rem;">{{ forloop.counter }}</span>
+                                    <td class="s-3acdf10">
+                                        <span class="s-390391d">{{ forloop.counter }}</span>
                                         {{ pt.team.name }}
                                     </td>
-                                    <td style="padding:.5rem .4rem;text-align:center;color:#555;">{{ pt.played }}</td>
-                                    <td style="padding:.5rem .4rem;text-align:center;color:#555;">{{ pt.won }}</td>
-                                    <td style="padding:.5rem .4rem;text-align:center;color:#555;">{{ pt.drawn }}</td>
-                                    <td style="padding:.5rem .4rem;text-align:center;color:#555;">{{ pt.lost }}</td>
-                                    <td style="padding:.5rem .4rem;text-align:center;color:#555;">{{ pt.goals_for }}</td>
-                                    <td style="padding:.5rem .4rem;text-align:center;color:#555;">{{ pt.goals_against }}</td>
-                                    <td style="padding:.5rem .4rem;text-align:center;color:#555;">{{ pt.goal_difference }}</td>
-                                    <td style="padding:.5rem .4rem;text-align:center;font-weight:800;color:#1B5E20;">{{ pt.points }}</td>
+                                    <td class="s-0bce2ea">{{ pt.played }}</td>
+                                    <td class="s-0bce2ea">{{ pt.won }}</td>
+                                    <td class="s-0bce2ea">{{ pt.drawn }}</td>
+                                    <td class="s-0bce2ea">{{ pt.lost }}</td>
+                                    <td class="s-0bce2ea">{{ pt.goals_for }}</td>
+                                    <td class="s-0bce2ea">{{ pt.goals_against }}</td>
+                                    <td class="s-0bce2ea">{{ pt.goal_difference }}</td>
+                                    <td class="s-1c3cf02">{{ pt.points }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -279,50 +279,50 @@
      KNOCKOUT BRACKET Auto-shows when knockout matches exist
      ══════════════════════════════════════════════════════════════════════════ -->
 {% if knockout_fixtures %}
-<section class="sec" id="knockout" style="background:#fff;padding:3rem 0;">
+<section class="sec s-4bb0bb3" id="knockout">
     <div class="container">
-        <div class="reveal" style="text-align:center;margin-bottom:2rem;">
-            <span style="display:inline-block;background:#6A1B9A;color:#fff;padding:.3rem .8rem;border-radius:20px;font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:.5rem;"><i class="bi bi-trophy"></i> Knockout Stage</span>
-            <h2 style="font-family:'Outfit',sans-serif;font-size:1.6rem;font-weight:700;color:#1a1a1a;margin:0;">Elimination Rounds</h2>
-            <p style="color:#888;font-size:.88rem;margin-top:.3rem;">KNOCK OUT STAGE RESULTS</p>
+        <div class="reveal s-bed805c">
+            <span class="s-3a2d037"><i class="bi bi-trophy"></i> Knockout Stage</span>
+            <h2 class="s-f7aef1c">Elimination Rounds</h2>
+            <p class="s-bcb6473">KNOCK OUT STAGE RESULTS</p>
         </div>
 
-        <div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;">
+        <div class="s-decc7f3">
             {% for fx in knockout_fixtures %}
             <div class="reveal" style="--delay:{{ forloop.counter0 }}0ms;background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.08);overflow:hidden;min-width:280px;max-width:320px;flex:1;">
-                <div style="background:linear-gradient(135deg,#4A148C,#7B1FA2);padding:.5rem 1rem;display:flex;justify-content:space-between;align-items:center;">
-                    <span style="color:#fff;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">{{ fx.get_knockout_round_display }}</span>
+                <div class="s-e9cf170">
+                    <span class="s-d573e6b">{{ fx.get_knockout_round_display }}</span>
                     {% if fx.status == 'live' %}
-                    <span style="display:flex;align-items:center;gap:.25rem;font-size:.7rem;font-weight:700;color:#FF5252;">
-                        <span style="width:6px;height:6px;border-radius:50%;background:#FF5252;animation:livePulse 1.5s infinite;"></span> LIVE
+                    <span class="s-26ba0d2">
+                        <span class="s-97bbb06"></span> LIVE
                     </span>
                     {% elif fx.status == 'completed' %}
-                    <span style="font-size:.7rem;font-weight:600;color:rgba(255,255,255,.7);">FT{% if fx.home_penalties is not None and fx.away_penalties is not None %} · Pens{% elif fx.home_score_et is not None and fx.away_score_et is not None %} · AET{% endif %}</span>
+                    <span class="s-408bb78">FT{% if fx.home_penalties is not None and fx.away_penalties is not None %} · Pens{% elif fx.home_score_et is not None and fx.away_score_et is not None %} · AET{% endif %}</span>
                     {% else %}
-                    <span style="font-size:.7rem;color:rgba(255,255,255,.6);">{{ fx.match_date|date:"d M" }}{% if fx.kickoff_time %} · {{ fx.kickoff_time|time:"H:i" }}{% endif %}</span>
+                    <span class="s-5432a13">{{ fx.match_date|date:"d M" }}{% if fx.kickoff_time %} · {{ fx.kickoff_time|time:"H:i" }}{% endif %}</span>
                     {% endif %}
                 </div>
-                <div style="padding:1rem;">
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;">
+                <div class="s-499aa75">
+                    <div class="s-38ab263">
                         <span style="font-weight:{% if fx.winner == fx.home_team %}800{% else %}600{% endif %};font-size:.88rem;color:{% if fx.winner == fx.home_team %}#1B5E20{% else %}#333{% endif %};">{{ fx.home_team.name|default:"TBA" }}</span>
                         {% if fx.home_score is not None %}
                         <span style="font-weight:800;font-size:1.1rem;color:{% if fx.winner == fx.home_team %}#1B5E20{% else %}#333{% endif %};">{{ fx.home_score }}</span>
                         {% endif %}
                     </div>
-                    <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <div class="s-9833a16">
                         <span style="font-weight:{% if fx.winner == fx.away_team %}800{% else %}600{% endif %};font-size:.88rem;color:{% if fx.winner == fx.away_team %}#1B5E20{% else %}#333{% endif %};">{{ fx.away_team.name|default:"TBA" }}</span>
                         {% if fx.away_score is not None %}
                         <span style="font-weight:800;font-size:1.1rem;color:{% if fx.winner == fx.away_team %}#1B5E20{% else %}#333{% endif %};">{{ fx.away_score }}</span>
                         {% endif %}
                     </div>
                     {% if fx.home_penalties is not None and fx.away_penalties is not None %}
-                    <div style="text-align:center;font-size:.75rem;color:#6A1B9A;font-weight:600;margin-top:.5rem;padding-top:.5rem;border-top:1px dashed #E1BEE7;">
+                    <div class="s-419069f">
                         Penalties: {{ fx.home_penalties }} – {{ fx.away_penalties }}
                     </div>
                     {% endif %}
                     {% if fx.venue %}
-                    <div style="font-size:.72rem;color:#999;margin-top:.4rem;">
-                        <i class="bi bi-geo-alt" style="font-size:.65rem;"></i> {{ fx.venue.name }}
+                    <div class="s-23d39ba">
+                        <i class="bi bi-geo-alt s-e45a482"></i> {{ fx.venue.name }}
                     </div>
                     {% endif %}
                 </div>
@@ -460,13 +460,13 @@
             </div>
             <div class="mh-grid mh-grid--videos">
                 {% for video in latest_videos %}
-                <div class="mh-video-card"
+                <div class="mh-video-card s-74fa97c"
                      data-source="{{ video.source }}"
                      data-embed="{{ video.embed_url }}"
                      {% if video.source == 'upload' and video.video_file %}data-file="{{ video.video_file.url }}"{% endif %}
                      data-title="{{ video.title }}"
                      onclick="kyisaOpenVideo(this)"
-                     style="cursor:pointer">
+                    >
                     <div class="mh-video-card__thumb">
                         {% if video.thumbnail %}
                         <img src="{{ video.thumbnail.url }}" alt="{{ video.title }}" loading="lazy">
@@ -490,11 +490,11 @@
         {% endif %}
 
         <!-- Video Modal -->
-        <div class="mh-vid-modal" id="mhVidModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:99999;align-items:center;justify-content:center;padding:2rem;">
-            <button onclick="kyisaCloseVideo()" style="position:absolute;top:1.5rem;right:1.5rem;background:rgba(255,255,255,.15);border:none;color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.4rem;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="bi bi-x-lg"></i></button>
-            <div style="width:100%;max-width:900px;">
-                <div id="mhVidEmbed" style="position:relative;padding-bottom:56.25%;height:0;border-radius:12px;overflow:hidden;"></div>
-                <div id="mhVidTitle" style="color:#fff;text-align:center;margin-top:1rem;font-size:1rem;font-weight:600;"></div>
+        <div class="mh-vid-modal s-3fec008" id="mhVidModal">
+            <button onclick="kyisaCloseVideo()" class="s-025e2c4"><i class="bi bi-x-lg"></i></button>
+            <div class="s-069480a">
+                <div id="mhVidEmbed" class="s-e2d1470"></div>
+                <div id="mhVidTitle" class="s-b47668b"></div>
             </div>
         </div>
 
@@ -510,25 +510,25 @@
     <!-- Results & Statistics strip -->
     <div class="mc-stats">
         <div class="container">
-            <div class="mc-stats__header reveal" style="text-align:center;padding-bottom:.5rem;">
-                <h2 style="color:#fff;font-family:'Outfit',sans-serif;font-size:1.6rem;font-weight:700;letter-spacing:1px;margin:0;">Results &amp; Statistics</h2>
-                <p style="color:rgba(255,255,255,.7);font-size:.85rem;margin-top:.25rem;">A decade of youth sports excellence across Kenya</p>
+            <div class="mc-stats__header reveal s-032118a">
+                <h2 class="s-ce696ee">Results &amp; Statistics</h2>
+                <p class="s-a417278">A decade of youth sports excellence across Kenya</p>
             </div>
             <div class="mc-stats__row">
                 <div class="mc-stat reveal">
                     <span class="mc-stat__num" data-count="11">0</span>
                     <span class="mc-stat__label">Editions Completed</span>
                 </div>
-                <div class="mc-stat reveal" style="--delay:.06s">
+                <div class="mc-stat reveal s-dbc2623">
                     <span class="mc-stat__num" data-count="30000" data-suffix="+">0</span>
                     <span class="mc-stat__label">Participants</span>
                 </div>
-                <div class="mc-stat reveal" style="--delay:.12s">
+                <div class="mc-stat reveal s-85e975d">
                     <span class="mc-stat__num" data-count="47">0</span>
                     <span class="mc-stat__label">Counties Represented</span>
                 </div>
                 {% if stats.competitions %}
-                <div class="mc-stat reveal" style="--delay:.18s">
+                <div class="mc-stat reveal s-94bc028">
                     <span class="mc-stat__num" data-count="{{ stats.competitions }}">0</span>
                     <span class="mc-stat__label">Competitions</span>
                 </div>
@@ -545,11 +545,11 @@
             {% if live_matches %}
             <div class="mc-live-strip reveal">
                 <div class="mc-live-strip__header">
-                    <span class="mc-badge mc-badge--red" style="animation:livePulse 1.5s infinite;">
-                        <span style="width:6px;height:6px;border-radius:50%;background:#fff;display:inline-block;margin-right:.25rem;"></span>
+                    <span class="mc-badge mc-badge--red s-b7b32d4">
+                        <span class="s-44f4fb2"></span>
                         LIVE
                     </span>
-                    <h3 style="color:#fff;font-size:1rem;font-weight:700;margin:0;">Live Matches</h3>
+                    <h3 class="s-3d73642">Live Matches</h3>
                 </div>
                 <div class="mc-live-cards">
                     {% for m in live_matches %}
@@ -646,7 +646,7 @@
                         </div>
                         {% endfor %}
                     </div>
-                    <div style="text-align:center;margin-top:1rem" class="reveal">
+                    <div class="reveal s-b032bcb">
                         <a href="{% url 'public_results' %}" class="btn btn--outline btn--sm">All Results →</a>
                     </div>
                     {% else %}

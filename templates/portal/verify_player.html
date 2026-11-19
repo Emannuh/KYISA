@@ -13,7 +13,7 @@
 </div>
 
 <!-- Player Info Summary -->
-<div class="stats-grid" style="margin-bottom:1.5rem">
+<div class="stats-grid s-92cb257">
     <div class="stat-card green">
         <div class="stat-icon green">⚽</div>
         <div class="stat-info"><h3>{{ player.team.name }}</h3><p>{{ player.team.county }}</p></div>
@@ -40,71 +40,71 @@
 </div>
 
 {% if not player.is_age_eligible %}
-<div style="margin-bottom:1.5rem;padding:1rem 1.25rem;border-radius:10px;background:#fce4ec;border-left:4px solid #C62828;display:flex;align-items:center;gap:.75rem">
-    <span style="font-size:1.5rem">⛔</span>
+<div class="s-ae700f2">
+    <span class="s-db5923f">⛔</span>
     <div>
-        <strong style="color:#C62828">Age Restriction Violation</strong>
-        <p style="margin:0;color:#555;font-size:.9rem">This player is <strong>{{ player.age }} years old</strong>. The allowed age bracket is <strong>18 to 23</strong>. This player has been automatically locked out.</p>
+        <strong class="s-767a43b">Age Restriction Violation</strong>
+        <p class="s-7ddd882">This player is <strong>{{ player.age }} years old</strong>. The allowed age bracket is <strong>18 to 23</strong>. This player has been automatically locked out.</p>
     </div>
 </div>
 {% endif %}
 
 {% if player.verification_status == 'rejected' and player.rejection_reason %}
-<div style="margin-bottom:1.5rem;padding:1rem 1.25rem;border-radius:10px;background:#fce4ec;border-left:4px solid #C62828;display:flex;align-items:center;gap:.75rem">
-    <span style="font-size:1.5rem">❌</span>
+<div class="s-ae700f2">
+    <span class="s-db5923f">❌</span>
     <div>
-        <strong style="color:#C62828">Rejected: {{ player.get_rejection_reason_display }}</strong>
-        {% if player.rejection_notes %}<p style="margin:.25rem 0 0;color:#555;font-size:.9rem">{{ player.rejection_notes }}</p>{% endif %}
+        <strong class="s-767a43b">Rejected: {{ player.get_rejection_reason_display }}</strong>
+        {% if player.rejection_notes %}<p class="s-b84f43e">{{ player.rejection_notes }}</p>{% endif %}
     </div>
 </div>
 {% endif %}
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem">
+<div class="s-ced7761">
     <!-- Documents Column -->
     <div class="card">
         <div class="card-header"><h3>📄 Uploaded Documents</h3></div>
         <div class="card-body">
 
             <!-- Passport Photo -->
-            <div style="margin-bottom:1.5rem;padding:1rem;background:#f5f7f5;border-radius:10px">
-                <h4 style="margin:0 0 .75rem;color:#1B5E20">📸 Passport-Size Photo</h4>
+            <div class="s-9292092">
+                <h4 class="s-20945d4">📸 Passport-Size Photo</h4>
                 {% if player.photo %}
-                <div style="text-align:center">
-                    <img src="{{ player.photo.url }}" alt="Player Photo" style="max-width:200px;max-height:250px;border-radius:8px;border:2px solid #e0e0e0;object-fit:cover">
-                    <br><a href="{{ player.photo.url }}" target="_blank" style="color:#1B5E20;font-size:.85rem;margin-top:.5rem;display:inline-block">Open Full Size ↗</a>
+                <div class="s-65f9d5a">
+                    <img src="{{ player.photo.url }}" alt="Player Photo" class="s-e400f11">
+                    <br><a href="{{ player.photo.url }}" target="_blank" class="s-c4f5d97">Open Full Size ↗</a>
                 </div>
                 {% else %}
-                <div style="text-align:center;padding:2rem;color:#C62828;background:#fce4ec;border-radius:8px">
+                <div class="s-c6daa46">
                     <strong>⚠️ Not Uploaded</strong>
                 </div>
                 {% endif %}
             </div>
 
             <!-- National ID -->
-            <div style="margin-bottom:1.5rem;padding:1rem;background:#f5f7f5;border-radius:10px">
-                <h4 style="margin:0 0 .75rem;color:#1B5E20">🪪 National ID ({{ player.national_id_number|default:"Not provided" }})</h4>
+            <div class="s-9292092">
+                <h4 class="s-20945d4">🪪 National ID ({{ player.national_id_number|default:"Not provided" }})</h4>
                 {% if player.id_document %}
-                <div style="text-align:center">
-                    <img src="{{ player.id_document.url }}" alt="ID Document" style="max-width:100%;max-height:300px;border-radius:8px;border:2px solid #e0e0e0;object-fit:contain">
-                    <br><a href="{{ player.id_document.url }}" target="_blank" style="color:#1B5E20;font-size:.85rem;margin-top:.5rem;display:inline-block">Open Full Size ↗</a>
+                <div class="s-65f9d5a">
+                    <img src="{{ player.id_document.url }}" alt="ID Document" class="s-0f622f2">
+                    <br><a href="{{ player.id_document.url }}" target="_blank" class="s-c4f5d97">Open Full Size ↗</a>
                 </div>
                 {% else %}
-                <div style="text-align:center;padding:2rem;color:#C62828;background:#fce4ec;border-radius:8px">
+                <div class="s-c6daa46">
                     <strong>⚠️ Not Uploaded</strong>
                 </div>
                 {% endif %}
             </div>
 
             <!-- Birth Certificate -->
-            <div style="padding:1rem;background:#f5f7f5;border-radius:10px">
-                <h4 style="margin:0 0 .75rem;color:#1B5E20">📜 Birth Certificate</h4>
+            <div class="s-a882c5d">
+                <h4 class="s-20945d4">📜 Birth Certificate</h4>
                 {% if player.birth_certificate %}
-                <div style="text-align:center">
-                    <img src="{{ player.birth_certificate.url }}" alt="Birth Certificate" style="max-width:100%;max-height:300px;border-radius:8px;border:2px solid #e0e0e0;object-fit:contain">
-                    <br><a href="{{ player.birth_certificate.url }}" target="_blank" style="color:#1B5E20;font-size:.85rem;margin-top:.5rem;display:inline-block">Open Full Size ↗</a>
+                <div class="s-65f9d5a">
+                    <img src="{{ player.birth_certificate.url }}" alt="Birth Certificate" class="s-0f622f2">
+                    <br><a href="{{ player.birth_certificate.url }}" target="_blank" class="s-c4f5d97">Open Full Size ↗</a>
                 </div>
                 {% else %}
-                <div style="text-align:center;padding:2rem;color:#C62828;background:#fce4ec;border-radius:8px">
+                <div class="s-c6daa46">
                     <strong>⚠️ Not Uploaded</strong>
                 </div>
                 {% endif %}
@@ -115,27 +115,27 @@
     <!-- Verification Actions Column -->
     <div>
         <!-- Player Details -->
-        <div class="card" style="margin-bottom:1.5rem">
+        <div class="card s-92cb257">
             <div class="card-header"><h3>Player Details</h3></div>
             <div class="card-body">
                 <table>
-                    <tr><td style="font-weight:600;width:40%">Full Name</td><td>{{ player.first_name }} {{ player.last_name }}</td></tr>
-                    <tr><td style="font-weight:600">Date of Birth</td><td>{{ player.date_of_birth|date:"d M Y" }}</td></tr>
-                    <tr><td style="font-weight:600">Age</td><td>{{ player.age }} years {% if not player.is_age_eligible %}<span style="color:#C62828;font-weight:700">⛔ INELIGIBLE</span>{% else %}<span style="color:#1B5E20">✅ Eligible</span>{% endif %}</td></tr>
-                    <tr><td style="font-weight:600">National ID #</td><td>{{ player.national_id_number|default:"—" }}</td></tr>
-                    <tr><td style="font-weight:600">Birth Cert #</td><td>{{ player.birth_cert_number|default:"—" }}</td></tr>
-                    <tr><td style="font-weight:600">Position</td><td>{{ player.get_position_display }}</td></tr>
-                    <tr><td style="font-weight:600">Shirt Number</td><td>#{{ player.shirt_number }}</td></tr>
-                    <tr><td style="font-weight:600">Team</td><td>{{ player.team.name }} ({{ player.team.county }})</td></tr>
-                    <tr><td style="font-weight:600">Registered</td><td>{{ player.registered_at|date:"d M Y H:i" }}</td></tr>
+                    <tr><td class="s-02b1ff7">Full Name</td><td>{{ player.first_name }} {{ player.last_name }}</td></tr>
+                    <tr><td class="s-21a1be8">Date of Birth</td><td>{{ player.date_of_birth|date:"d M Y" }}</td></tr>
+                    <tr><td class="s-21a1be8">Age</td><td>{{ player.age }} years {% if not player.is_age_eligible %}<span class="s-8a3f6f6">⛔ INELIGIBLE</span>{% else %}<span class="s-a24cb3b">✅ Eligible</span>{% endif %}</td></tr>
+                    <tr><td class="s-21a1be8">National ID #</td><td>{{ player.national_id_number|default:"—" }}</td></tr>
+                    <tr><td class="s-21a1be8">Birth Cert #</td><td>{{ player.birth_cert_number|default:"—" }}</td></tr>
+                    <tr><td class="s-21a1be8">Position</td><td>{{ player.get_position_display }}</td></tr>
+                    <tr><td class="s-21a1be8">Shirt Number</td><td>#{{ player.shirt_number }}</td></tr>
+                    <tr><td class="s-21a1be8">Team</td><td>{{ player.team.name }} ({{ player.team.county }})</td></tr>
+                    <tr><td class="s-21a1be8">Registered</td><td>{{ player.registered_at|date:"d M Y H:i" }}</td></tr>
                     <tr>
-                        <td style="font-weight:600">Documents</td>
+                        <td class="s-21a1be8">Documents</td>
                         <td>
                             {% if player.documents_uploaded %}
-                            <span style="color:#1B5E20;font-weight:600">✅ All uploaded</span>
+                            <span class="s-35363a4">✅ All uploaded</span>
                             {% else %}
-                            <span style="color:#C62828;font-weight:600">⚠️ Incomplete</span>
-                            <ul style="margin:.25rem 0 0;padding-left:1.25rem;font-size:.85rem;color:#888">
+                            <span class="s-73e4b91">⚠️ Incomplete</span>
+                            <ul class="s-ce7f70d">
                                 {% if not player.photo %}<li>Missing passport photo</li>{% endif %}
                                 {% if not player.id_document %}<li>Missing ID copy</li>{% endif %}
                                 {% if not player.birth_certificate %}<li>Missing birth certificate</li>{% endif %}
@@ -160,35 +160,35 @@
                 {% endif %}
 
                 {% if player.verification_status == 'verified' %}
-                <div style="text-align:center;padding:2rem;background:#e8f5e9;border-radius:10px;margin-bottom:1rem">
-                    <div style="font-size:3rem">✅</div>
-                    <h3 style="color:#1B5E20;margin:.5rem 0">Verified</h3>
-                    <p style="color:#555;font-size:.9rem">
+                <div class="s-099e485">
+                    <div class="s-64a35c0">✅</div>
+                    <h3 class="s-1f3cf16">Verified</h3>
+                    <p class="s-144de98">
                         By {{ player.verified_by.get_full_name|default:"System" }}
                         on {{ player.verified_at|date:"d M Y H:i"|default:"—" }}
                     </p>
                 </div>
                 <form method="post">
                     {% csrf_token %}
-                    <button type="submit" name="action" value="reset" style="width:100%;padding:.6rem;background:#f5f5f5;color:#555;border:1px solid #ddd;border-radius:8px;cursor:pointer;font-size:.9rem">
+                    <button type="submit" name="action" value="reset" class="s-272da63">
                         🔄 Reset to Pending
                     </button>
                 </form>
 
                 {% elif player.verification_status == 'rejected' %}
-                <div style="text-align:center;padding:2rem;background:#fce4ec;border-radius:10px;margin-bottom:1rem">
-                    <div style="font-size:3rem">❌</div>
-                    <h3 style="color:#C62828;margin:.5rem 0">{{ player.get_rejection_reason_display }}</h3>
+                <div class="s-3f1cea1">
+                    <div class="s-64a35c0">❌</div>
+                    <h3 class="s-244a529">{{ player.get_rejection_reason_display }}</h3>
                     {% if player.rejection_notes %}
-                    <p style="color:#555;font-size:.9rem">{{ player.rejection_notes }}</p>
+                    <p class="s-144de98">{{ player.rejection_notes }}</p>
                     {% endif %}
                 </div>
-                <form method="post" style="display:flex;gap:.5rem">
+                <form method="post" class="s-5cd47cb">
                     {% csrf_token %}
-                    <button type="submit" name="action" value="verify" style="flex:1;padding:.6rem;background:#1B5E20;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600">
+                    <button type="submit" name="action" value="verify" class="s-0a06bc7">
                         ✅ Override & Verify
                     </button>
-                    <button type="submit" name="action" value="reset" style="flex:1;padding:.6rem;background:#f5f5f5;color:#555;border:1px solid #ddd;border-radius:8px;cursor:pointer">
+                    <button type="submit" name="action" value="reset" class="s-0d9b3f7">
                         🔄 Reset to Pending
                     </button>
                 </form>
@@ -199,26 +199,26 @@
                     {% csrf_token %}
 
                     <!-- Approve Button -->
-                    <button type="submit" name="action" value="verify" style="width:100%;padding:.75rem;background:#1B5E20;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:1rem;margin-bottom:1rem">
+                    <button type="submit" name="action" value="verify" class="s-97aae55">
                         ✅ Verify Player
                     </button>
 
                     <!-- Reject with reason -->
-                    <div style="border:1px solid #e0e0e0;border-radius:10px;padding:1rem">
-                        <h4 style="margin:0 0 .75rem;color:#C62828">❌ Reject Player</h4>
-                        <div style="margin-bottom:.75rem">
-                            <label style="display:block;font-weight:600;font-size:.9rem;margin-bottom:.3rem">Rejection Reason *</label>
-                            <select name="rejection_reason" class="form-control" style="width:100%">
+                    <div class="s-02d86ed">
+                        <h4 class="s-b556650">❌ Reject Player</h4>
+                        <div class="s-c438d31">
+                            <label class="s-da56eac">Rejection Reason *</label>
+                            <select name="rejection_reason" class="form-control s-16000cc">
                                 {% for value, label in rejection_reasons %}
                                 <option value="{{ value }}">{{ label }}</option>
                                 {% endfor %}
                             </select>
                         </div>
-                        <div style="margin-bottom:.75rem">
-                            <label style="display:block;font-weight:600;font-size:.9rem;margin-bottom:.3rem">Additional Notes</label>
-                            <textarea name="rejection_notes" class="form-control" rows="3" placeholder="Optional describe the issue..." style="width:100%"></textarea>
+                        <div class="s-c438d31">
+                            <label class="s-da56eac">Additional Notes</label>
+                            <textarea name="rejection_notes" class="form-control s-16000cc" rows="3" placeholder="Optional describe the issue..."></textarea>
                         </div>
-                        <button type="submit" name="action" value="reject" style="width:100%;padding:.6rem;background:#C62828;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600" onclick="return confirm('Are you sure you want to reject this player?')">
+                        <button type="submit" name="action" value="reject" class="s-f92d4f5" onclick="return confirm('Are you sure you want to reject this player?')">
                             ❌ Reject
                         </button>
                     </div>
@@ -229,16 +229,16 @@
     </div>
 </div>
 
-<div style="margin-top:1.5rem;display:flex;gap:1.5rem">
-    <a href="{% url 'player_verification_list' %}" style="color:#1B5E20;font-weight:600;text-decoration:none">← Back to Verification List</a>
-    <a href="{% url 'player_clearance_detail' player_pk=player.pk %}" style="color:#1565C0;font-weight:600;text-decoration:none">🛡️ View Full Clearance (Huduma + FIFA Connect) →</a>
+<div class="s-a0595e2">
+    <a href="{% url 'player_verification_list' %}" class="s-d4aa11c">← Back to Verification List</a>
+    <a href="{% url 'player_clearance_detail' player_pk=player.pk %}" class="s-6377512">🛡️ View Full Clearance (Huduma + FIFA Connect) →</a>
 </div>
 
 <!-- ── VERIFISHA IPRS SECTION ─────────────────────────────────────────── -->
-<div class="card" style="margin-top:1.5rem;border-left:4px solid #0D47A1">
-    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
-        <h3 style="margin:0">🔍 Verifisha IPRS Verification</h3>
-        <span style="font-size:.8rem;padding:.25rem .75rem;background:#e3f2fd;color:#0D47A1;border-radius:20px;font-weight:600">
+<div class="card s-99d54c9">
+    <div class="card-header s-6823804">
+        <h3 class="s-2a0ca83">🔍 Verifisha IPRS Verification</h3>
+        <span class="s-47fe482">
             {% if player.huduma_status == 'verified' %}✅ Verified
             {% elif player.huduma_status == 'failed' %}❌ Failed
             {% elif player.huduma_status == 'pending' %}⏳ Pending
@@ -248,47 +248,47 @@
     <div class="card-body">
 
         <!-- Quick IPRS Lookup -->
-        <div style="margin-bottom:1.25rem;padding:1rem;background:#f0f4ff;border:1px solid #c5cae9;border-radius:8px">
-            <p style="font-size:.85rem;font-weight:700;color:#1565C0;margin:0 0 .4rem">🔎 Quick IPRS Lookup</p>
-            <p style="font-size:.82rem;color:#555;margin:0 0 .75rem">Type an ID number to check IPRS records instantly.</p>
-            <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <div class="s-e2d7aff">
+            <p class="s-9f22e92">🔎 Quick IPRS Lookup</p>
+            <p class="s-aafd37e">Type an ID number to check IPRS records instantly.</p>
+            <div class="s-5283a0d">
                 <input type="text" id="vp-iprs-input"
                        value="{{ player.national_id_number|default:'' }}"
                        placeholder="e.g. 12345678"
-                       style="flex:1;min-width:160px;padding:.4rem .75rem;border:1px solid #c5cae9;border-radius:6px;font-size:.85rem">
-                <button onclick="vpRunLookup()" style="padding:.4rem 1.1rem;background:#1565C0;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:.85rem;font-weight:600">
+                       class="s-f3541e3">
+                <button onclick="vpRunLookup()" class="s-c502e7c">
                     Lookup
                 </button>
             </div>
-            <div id="vp-iprs-result" style="display:none;margin-top:.85rem"></div>
+            <div id="vp-iprs-result" class="s-7070f5a"></div>
         </div>
 
         <!-- Run Verifisha Check -->
         {% if player.huduma_status != 'verified' %}
-        <form method="post" action="{% url 'verifisha_verify_player' player_pk=player.pk %}" style="display:inline">
+        <form method="post" action="{% url 'verifisha_verify_player' player_pk=player.pk %}" class="s-2f8710b">
             {% csrf_token %}
             <input type="hidden" name="action" value="submit">
-            <button type="submit" style="padding:.5rem 1.25rem;background:#0D47A1;color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:.88rem;font-weight:700">
+            <button type="submit" class="s-f5235dc">
                 🔍 Run Verifisha IPRS Check
             </button>
         </form>
         {% endif %}
 
         {% if player.huduma_status == 'pending' and player.huduma_reference %}
-        <div style="margin-top:.75rem;padding:.5rem .85rem;background:#e3f2fd;border-radius:6px;display:inline-flex;align-items:center;gap:.75rem">
-            <span style="color:#1565C0;font-size:.85rem;font-weight:600">⏳ Report pending…</span>
-            <button onclick="vpPollVerifisha()" style="padding:.25rem .75rem;background:#1565C0;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:.8rem">Check Now</button>
+        <div class="s-6c54d29">
+            <span class="s-c593850">⏳ Report pending…</span>
+            <button onclick="vpPollVerifisha()" class="s-ac8d4dc">Check Now</button>
         </div>
         {% endif %}
 
         {% if player.huduma_status == 'verified' and player.huduma_notes %}
-        <div style="margin-top:.75rem;padding:.65rem 1rem;background:#e8f5e9;border-radius:8px;font-size:.85rem;color:#1B5E20">
+        <div class="s-dad0e4e">
             <strong>✅ Verified:</strong> {{ player.huduma_notes }}
         </div>
         {% endif %}
 
         {% if player.huduma_status == 'failed' and player.huduma_notes %}
-        <div style="margin-top:.75rem;padding:.65rem 1rem;background:#fce4ec;border-radius:8px;font-size:.85rem;color:#C62828">
+        <div class="s-217c256">
             <strong>❌ Failed:</strong> {{ player.huduma_notes }}
         </div>
         {% endif %}

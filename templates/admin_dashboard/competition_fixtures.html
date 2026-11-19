@@ -1,83 +1,8 @@
 {% extends 'base.html' %}
+{% block body_class %}pg-admin-dashboard-competition-fixtures{% endblock %}
 {% block title %}{{ competition.name }} Fixtures &amp; Results   KYISA CMS{% endblock %}
 
 {% block extra_css %}
-<style>
-    .comp-hero {
-        background: linear-gradient(135deg, #0D3B0F 0%, #1B5E20 50%, #2E7D32 100%);
-        border-radius: 16px; padding: 1.5rem 2rem; color: #fff; margin-bottom: 1.5rem;
-        display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;
-    }
-    .comp-hero h1 { font-size: 1.3rem; font-weight: 700; margin-bottom: .2rem; }
-    .comp-hero .meta { font-size: .85rem; opacity: .85; display: flex; flex-wrap: wrap; gap: .75rem; }
-
-    .pool-section { margin-bottom: 2rem; }
-    .pool-header {
-        background: linear-gradient(135deg, #1565C0, #1976D2);
-        color: #fff; padding: .75rem 1.25rem; border-radius: 12px 12px 0 0;
-        display: flex; justify-content: space-between; align-items: center;
-    }
-    .pool-header h3 { margin: 0; font-size: 1rem; font-weight: 600; }
-    .pool-body { background: #fff; border-radius: 0 0 12px 12px; box-shadow: 0 2px 8px rgba(0,0,0,.06); overflow: hidden; }
-
-    .standings-tbl, .results-tbl { width: 100%; border-collapse: collapse; font-size: .83rem; }
-    .standings-tbl th, .results-tbl th { background: #f8f9fa; padding: .5rem .75rem; font-weight: 600; text-align: left; }
-    .standings-tbl td, .results-tbl td { padding: .5rem .75rem; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
-    .standings-tbl tr:last-child td, .results-tbl tr:last-child td { border-bottom: none; }
-    .standings-tbl .pos-1 { background: #E8F5E9; }
-    .standings-tbl .pos-2 { background: #F1F8E9; }
-
-    .section-label {
-        font-size: .75rem; font-weight: 600; text-transform: uppercase;
-        letter-spacing: .5px; color: #999; margin: 1.25rem .75rem .5rem;
-    }
-
-    .result-card {
-        background: #fff; border-radius: 12px; margin-bottom: 1.5rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,.06); overflow: hidden;
-    }
-    .result-card-header {
-        padding: .75rem 1.25rem; border-bottom: 1px solid #eee;
-        font-weight: 600; font-size: .9rem; color: #1B5E20;
-        background: #E8F5E9; display: flex; align-items: center; gap: .5rem;
-    }
-
-    .result-row {
-        display: flex; align-items: center; padding: .6rem 1rem;
-        border-bottom: 1px solid #f5f5f5; gap: .5rem; flex-wrap: wrap;
-    }
-    .result-row:last-child { border-bottom: none; }
-    .result-row .team-name { font-weight: 600; font-size: .85rem; min-width: 100px; }
-    .result-row .team-home { text-align: right; flex: 1; }
-    .result-row .team-away { text-align: left; flex: 1; }
-    .result-row .score-inputs {
-        display: flex; align-items: center; gap: .3rem; flex-shrink: 0;
-    }
-    .result-row .score-inputs input[type="number"] {
-        width: 50px; height: 36px; text-align: center; font-weight: 700; font-size: .95rem;
-        border: 2px solid #ddd; border-radius: 8px; transition: border-color .2s;
-    }
-    .result-row .score-inputs input:focus { border-color: #1B5E20; outline: none; }
-    .result-row .score-inputs .dash { font-weight: 700; color: #999; font-size: 1rem; }
-    .result-row .save-btn {
-        border: none; background: #1B5E20; color: #fff; border-radius: 8px;
-        padding: .4rem .75rem; font-size: .8rem; font-weight: 600; cursor: pointer;
-        transition: background .2s; white-space: nowrap;
-    }
-    .result-row .save-btn:hover { background: #2E7D32; }
-    .result-row .date-info { font-size: .75rem; color: #999; min-width: 60px; }
-    .result-row.has-result { background: #FAFFF9; }
-    .result-row.has-result .score-inputs input { background: #E8F5E9; border-color: #A5D6A7; }
-
-    .knockout-section .pool-header { background: linear-gradient(135deg, #6A1B9A, #8E24AA); }
-    .knockout-section .result-card-header { background: #F3E5F5; color: #6A1B9A; }
-
-    @media (max-width: 768px) {
-        .result-row { flex-direction: column; text-align: center; gap: .3rem; }
-        .result-row .team-home, .result-row .team-away { text-align: center; min-width: auto; }
-        .result-row .score-inputs input[type="number"] { width: 45px; height: 32px; }
-    }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -89,16 +14,16 @@
             <span>{{ competition.get_sport_type_display }}</span>
             <span>{{ competition.get_age_group_display }}</span>
             <span>{{ competition.start_date|date:"d M Y" }} {{ competition.end_date|date:"d M Y" }}</span>
-            <span style="background:rgba(255,255,255,.2);padding:.15rem .5rem;border-radius:6px;">{{ competition.get_status_display }}</span>
+            <span class="s-f3d530c">{{ competition.get_status_display }}</span>
         </div>
     </div>
     <a href="{% url 'admin_manage_fixtures' %}" class="btn btn-light btn-sm">&larr; All Competitions</a>
 </div>
 
 {% if messages %}
-<div style="margin-bottom:1rem;">
+<div class="s-c2c0d0a">
     {% for msg in messages %}
-    <div class="alert alert-{{ msg.tags }}" style="border-radius:10px;font-size:.88rem;">{{ msg }}</div>
+    <div class="alert alert-{{ msg.tags }} s-3bfbd99">{{ msg }}</div>
     {% endfor %}
 </div>
 {% endif %}
@@ -108,7 +33,7 @@
 <div class="pool-section">
     <div class="pool-header">
         <h3><i class="bi bi-grid-3x3-gap"></i> {{ pd.pool.name }}</h3>
-        <span style="font-size:.8rem;opacity:.85;">{{ pd.teams|length }} teams &middot; {{ pd.fixtures|length }} fixtures</span>
+        <span class="s-61e4bea">{{ pd.teams|length }} teams &middot; {{ pd.fixtures|length }} fixtures</span>
     </div>
     <div class="pool-body">
         <!-- Standings table -->
@@ -137,7 +62,7 @@
     </div>
 
     <!-- Update Results card -->
-    <div class="result-card" style="margin-top:.5rem;">
+    <div class="result-card s-98176a3">
         <div class="result-card-header">
             <i class="bi bi-pencil-square"></i> Update Results {{ pd.pool.name }}
         </div>
@@ -157,7 +82,7 @@
             </div>
         </form>
         {% empty %}
-        <div style="text-align:center;color:#999;padding:1rem;">No fixtures in this pool yet</div>
+        <div class="s-c07d29a">No fixtures in this pool yet</div>
         {% endfor %}
     </div>
 </div>
@@ -165,9 +90,9 @@
 
 {% if not pool_data %}
 <div class="pool-section">
-    <div style="text-align:center;padding:2rem;color:#999;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
-        <i class="bi bi-grid-3x3-gap" style="font-size:2rem;opacity:.3;"></i>
-        <p style="margin-top:.5rem;">No pools created yet for this competition</p>
+    <div class="s-9c234ac">
+        <i class="bi bi-grid-3x3-gap s-a3b877f"></i>
+        <p class="s-98176a3">No pools created yet for this competition</p>
     </div>
 </div>
 {% endif %}
@@ -176,15 +101,15 @@
 <div class="pool-section knockout-section">
     <div class="pool-header">
         <h3><i class="bi bi-trophy"></i> Knockout Stage</h3>
-        <div style="display:flex;align-items:center;gap:.75rem;">
-            <span style="font-size:.8rem;opacity:.85;">{{ knockout_fixtures|length }} fixture{{ knockout_fixtures|length|pluralize:"s" }}</span>
-            <a href="{% url 'admin_create_knockout_fixture' pk=competition.pk %}" class="btn btn-light btn-sm" style="font-size:.78rem;font-weight:600;">
+        <div class="s-83ee465">
+            <span class="s-61e4bea">{{ knockout_fixtures|length }} fixture{{ knockout_fixtures|length|pluralize:"s" }}</span>
+            <a href="{% url 'admin_create_knockout_fixture' pk=competition.pk %}" class="btn btn-light btn-sm s-11c5f4f">
                 <i class="bi bi-plus-circle"></i> Create Knockout Match
             </a>
         </div>
     </div>
     {% if knockout_fixtures %}
-    <div class="result-card" style="border-radius:0 0 12px 12px;">
+    <div class="result-card s-6648d24">
         <div class="result-card-header">
             <i class="bi bi-pencil-square"></i> Update Results Knockout
         </div>
@@ -201,10 +126,10 @@
                     <button type="submit" class="save-btn"><i class="bi bi-check-lg"></i> Save</button>
                 </div>
                 <span class="team-name team-away">{{ fx.away_team.name|default:"TBA" }}</span>
-                <div style="display:flex;gap:.35rem;align-items:center;flex-shrink:0;">
-                    <a href="{% url 'admin_edit_fixture' pk=competition.pk fixture_pk=fx.pk %}" class="btn btn-outline-secondary btn-sm" style="font-size:.72rem;padding:.2rem .5rem;" title="Edit"><i class="bi bi-pencil"></i></a>
+                <div class="s-4e20fbd">
+                    <a href="{% url 'admin_edit_fixture' pk=competition.pk fixture_pk=fx.pk %}" class="btn btn-outline-secondary btn-sm s-6d1ca07" title="Edit"><i class="bi bi-pencil"></i></a>
                     {% if fx.home_score is None %}
-                    <a href="{% url 'admin_delete_knockout_fixture' pk=competition.pk fixture_pk=fx.pk %}" class="btn btn-outline-danger btn-sm" style="font-size:.72rem;padding:.2rem .5rem;" title="Delete"><i class="bi bi-trash"></i></a>
+                    <a href="{% url 'admin_delete_knockout_fixture' pk=competition.pk fixture_pk=fx.pk %}" class="btn btn-outline-danger btn-sm s-6d1ca07" title="Delete"><i class="bi bi-trash"></i></a>
                     {% endif %}
                 </div>
             </div>
@@ -213,8 +138,8 @@
         {% if knockout_fixtures %}
         {% for fx in knockout_fixtures %}
         {% if fx.winner %}
-        <div style="padding:.3rem 1rem;font-size:.78rem;color:#6A1B9A;background:#F3E5F5;border-top:1px solid #E1BEE7;display:flex;align-items:center;gap:.35rem;">
-            <i class="bi bi-trophy-fill" style="font-size:.7rem;"></i>
+        <div class="s-a7e7508">
+            <i class="bi bi-trophy-fill s-fb07672"></i>
             <strong>{{ fx.get_knockout_round_display }} Winner:</strong> {{ fx.winner.name }}
             {% if fx.home_penalties is not None and fx.away_penalties is not None %}
                 (Pens: {{ fx.home_penalties }}-{{ fx.away_penalties }})
@@ -225,10 +150,10 @@
         {% endif %}
     </div>
     {% else %}
-    <div style="text-align:center;padding:2rem;color:#999;background:#fff;border-radius:0 0 12px 12px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
-        <i class="bi bi-trophy" style="font-size:2rem;opacity:.3;"></i>
-        <p style="margin-top:.5rem;">No knockout fixtures yet</p>
-        <a href="{% url 'admin_create_knockout_fixture' pk=competition.pk %}" class="btn btn-sm" style="background:#6A1B9A;color:#fff;margin-top:.5rem;">
+    <div class="s-9e62e53">
+        <i class="bi bi-trophy s-a3b877f"></i>
+        <p class="s-98176a3">No knockout fixtures yet</p>
+        <a href="{% url 'admin_create_knockout_fixture' pk=competition.pk %}" class="btn btn-sm s-a17ebcf">
             <i class="bi bi-plus-circle"></i> Create First Knockout Match
         </a>
     </div>
@@ -238,12 +163,12 @@
 <!-- Unassigned Fixtures -->
 {% if unassigned_fixtures %}
 <div class="pool-section">
-    <div class="pool-header" style="background:linear-gradient(135deg,#E65100,#F57C00);">
+    <div class="pool-header s-0b5d6c1">
         <h3><i class="bi bi-question-circle"></i> Unassigned Fixtures</h3>
-        <span style="font-size:.8rem;opacity:.85;">{{ unassigned_fixtures|length }} fixtures</span>
+        <span class="s-61e4bea">{{ unassigned_fixtures|length }} fixtures</span>
     </div>
-    <div class="result-card" style="border-radius:0 0 12px 12px;">
-        <div class="result-card-header" style="background:#FFF3E0;color:#E65100;">
+    <div class="result-card s-6648d24">
+        <div class="result-card-header s-013065e">
             <i class="bi bi-pencil-square"></i> Update Results Unassigned
         </div>
         {% for fx in unassigned_fixtures %}

@@ -8,7 +8,7 @@
         <span class="sep"><i class="bi bi-chevron-right"></i></span>
         <span>Albums</span>
     </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+    <div class="s-02159f4">
         <div>
             <h1><i class="bi bi-images"></i> Photo Albums</h1>
             <p>Manage gallery albums and photos.</p>
@@ -24,7 +24,7 @@
         {% if album.display_cover %}
         <img class="portal-card-img" src="{{ album.display_cover }}" alt="{{ album.title }}" onerror="this.outerHTML='<div class=\'portal-card-img\' style=\'background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:2rem\'><i class=\'bi bi-image\'></i></div>'">
         {% else %}
-        <div class="portal-card-img" style="background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:2rem"><i class="bi bi-image"></i></div>
+        <div class="portal-card-img s-4f582d2"><i class="bi bi-image"></i></div>
         {% endif %}
         <div class="portal-card-body">
             <h4>{{ album.title }}</h4>
@@ -33,9 +33,9 @@
                 {% if album.event_date %}&bull; {{ album.event_date|date:"M d, Y" }}{% endif %}
             </p>
             {% if album.is_published %}
-            <span class="pstatus pstatus--success" style="margin-top:.5rem">Live</span>
+            <span class="pstatus pstatus--success s-98176a3">Live</span>
             {% else %}
-            <span class="pstatus pstatus--warning" style="margin-top:.5rem"><i class="bi bi-eye-slash"></i> Unpublished</span>
+            <span class="pstatus pstatus--warning s-98176a3"><i class="bi bi-eye-slash"></i> Unpublished</span>
             {% endif %}
         </div>
         <div class="portal-card-footer">

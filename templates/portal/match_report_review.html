@@ -12,61 +12,61 @@
     <p>{{ report.fixture.home_team }} vs {{ report.fixture.away_team }} {{ report.fixture.match_date|date:"d M Y" }}</p>
 </div>
 
-<div class="alert alert-info" style="margin-bottom:1.5rem;">
+<div class="alert alert-info s-92cb257">
     <strong>Submitted by:</strong> {{ report.referee.user.get_full_name|default:"Unknown" }}
     on {{ report.submitted_at|date:"d M Y H:i"|default:"—" }}
 </div>
 
 <!-- Score -->
-<div class="card" style="margin-bottom:1.5rem;">
+<div class="card s-92cb257">
     <div class="card-header">
         <h3>{% if sport_cfg.label == 'Football' %}⚽{% elif sport_cfg.label == 'Volleyball' %}🏐{% elif sport_cfg.label == 'Handball' %}🤾{% else %}🏀{% endif %} Final Score
-            <span style="font-size:.8rem;font-weight:normal;color:#666;margin-left:.5rem;">({{ sport_cfg.score_unit }})</span>
+            <span class="s-f8ffc58">({{ sport_cfg.score_unit }})</span>
         </h3>
     </div>
-    <div class="card-body" style="text-align:center;">
-        <div style="display:flex;justify-content:center;align-items:center;gap:2rem;">
+    <div class="card-body s-65f9d5a">
+        <div class="s-e9d209a">
             <div>
-                <div style="font-weight:600;margin-bottom:.3rem;">{{ report.fixture.home_team.name }}</div>
-                <div style="font-size:3rem;font-weight:bold;color:#1B5E20;">{{ report.home_score }}</div>
+                <div class="s-c043649">{{ report.fixture.home_team.name }}</div>
+                <div class="s-7ae1315">{{ report.home_score }}</div>
             </div>
-            <div style="font-size:2rem;color:#999;">—</div>
+            <div class="s-428ad7b">—</div>
             <div>
-                <div style="font-weight:600;margin-bottom:.3rem;">{{ report.fixture.away_team.name }}</div>
-                <div style="font-size:3rem;font-weight:bold;color:#1B5E20;">{{ report.away_score }}</div>
+                <div class="s-c043649">{{ report.fixture.away_team.name }}</div>
+                <div class="s-7ae1315">{{ report.away_score }}</div>
             </div>
         </div>
         {% if sport_cfg.label == 'Volleyball' and report.home_sets is not None %}
-        <div style="margin-top:.5rem;color:#666;font-size:1rem;">Sets: {{ report.home_sets }} {{ report.away_sets }}</div>
+        <div class="s-be83767">Sets: {{ report.home_sets }} {{ report.away_sets }}</div>
         {% endif %}
         {% if report.overtime_played %}
-        <div style="margin-top:.3rem;color:#FF8F00;font-size:.9rem;">⏱️ {% if sport_cfg.label == 'Football' %}After Extra Time{% else %}After Overtime ({{ report.overtime_periods }} OT period{{ report.overtime_periods|pluralize }}){% endif %}</div>
+        <div class="s-b7dddb7">⏱️ {% if sport_cfg.label == 'Football' %}After Extra Time{% else %}After Overtime ({{ report.overtime_periods }} OT period{{ report.overtime_periods|pluralize }}){% endif %}</div>
         {% endif %}
     </div>
 </div>
 
 <!-- Period Scores -->
 {% if period_scores %}
-<div class="card" style="margin-bottom:1.5rem;">
+<div class="card s-92cb257">
     <div class="card-header"><h3>📊 {{ sport_cfg.period_label }} Scores</h3></div>
     <div class="card-body">
-        <table style="width:100%;border-collapse:collapse;text-align:center;">
+        <table class="s-6525f09">
             <thead>
-                <tr style="border-bottom:2px solid #ddd;">
-                    <th style="padding:.5rem;text-align:left;">{{ sport_cfg.period_label }}</th>
-                    <th style="padding:.5rem;">{{ report.fixture.home_team.name }}</th>
-                    <th style="padding:.5rem;">{{ report.fixture.away_team.name }}</th>
+                <tr class="s-71a92c6">
+                    <th class="s-32c297e">{{ sport_cfg.period_label }}</th>
+                    <th class="s-94860b6">{{ report.fixture.home_team.name }}</th>
+                    <th class="s-94860b6">{{ report.fixture.away_team.name }}</th>
                 </tr>
             </thead>
             <tbody>
                 {% for ps in period_scores %}
                 <tr style="border-bottom:1px solid #eee;{% if ps.is_overtime %}background:#fff8e1;{% endif %}">
-                    <td style="padding:.5rem;text-align:left;font-weight:600;">
+                    <td class="s-470fabf">
                         {{ ps.period_label }}
-                        {% if ps.is_overtime %}<span style="font-size:.75rem;color:#FF8F00;"> (OT)</span>{% endif %}
+                        {% if ps.is_overtime %}<span class="s-8c00b6e"> (OT)</span>{% endif %}
                     </td>
-                    <td style="padding:.5rem;font-size:1.1rem;font-weight:600;">{{ ps.home_score }}</td>
-                    <td style="padding:.5rem;font-size:1.1rem;font-weight:600;">{{ ps.away_score }}</td>
+                    <td class="s-3d95cd7">{{ ps.home_score }}</td>
+                    <td class="s-3d95cd7">{{ ps.away_score }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -76,25 +76,25 @@
 {% endif %}
 
 <!-- Disciplinary -->
-<div class="card" style="margin-bottom:1.5rem;">
+<div class="card s-92cb257">
     <div class="card-header"><h3>🟨 Disciplinary</h3></div>
     <div class="card-body">
-        <table style="width:100%;">
-            <tr><th></th><th style="text-align:center;">{{ report.fixture.home_team.name }}</th><th style="text-align:center;">{{ report.fixture.away_team.name }}</th></tr>
-            <tr><td>🟨 Yellow Cards</td><td style="text-align:center;font-size:1.2rem;font-weight:bold;">{{ report.home_yellow_cards }}</td><td style="text-align:center;font-size:1.2rem;font-weight:bold;">{{ report.away_yellow_cards }}</td></tr>
-            <tr><td>🟥 Red Cards</td><td style="text-align:center;font-size:1.2rem;font-weight:bold;">{{ report.home_red_cards }}</td><td style="text-align:center;font-size:1.2rem;font-weight:bold;">{{ report.away_red_cards }}</td></tr>
+        <table class="s-16000cc">
+            <tr><th></th><th class="s-65f9d5a">{{ report.fixture.home_team.name }}</th><th class="s-65f9d5a">{{ report.fixture.away_team.name }}</th></tr>
+            <tr><td>🟨 Yellow Cards</td><td class="s-b7e8530">{{ report.home_yellow_cards }}</td><td class="s-b7e8530">{{ report.away_yellow_cards }}</td></tr>
+            <tr><td>🟥 Red Cards</td><td class="s-b7e8530">{{ report.home_red_cards }}</td><td class="s-b7e8530">{{ report.away_red_cards }}</td></tr>
             {% if sport_cfg.label == 'Handball' %}
-            <tr><td>⏱️ 2-Min Suspensions</td><td style="text-align:center;font-size:1.2rem;font-weight:bold;">{{ report.home_suspensions }}</td><td style="text-align:center;font-size:1.2rem;font-weight:bold;">{{ report.away_suspensions }}</td></tr>
+            <tr><td>⏱️ 2-Min Suspensions</td><td class="s-b7e8530">{{ report.home_suspensions }}</td><td class="s-b7e8530">{{ report.away_suspensions }}</td></tr>
             {% endif %}
         </table>
     </div>
 </div>
 
 <!-- Match Details -->
-<div class="card" style="margin-bottom:1.5rem;">
+<div class="card s-92cb257">
     <div class="card-header"><h3>📊 Match Details</h3></div>
     <div class="card-body">
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
+        <div class="s-d1ab26d">
             {% if sport_cfg.default_duration %}
             <div><strong>Duration:</strong> {{ report.match_duration }} mins</div>
             {% endif %}
@@ -110,21 +110,21 @@
 </div>
 
 {% if report.is_abandoned %}
-<div class="alert alert-danger" style="margin-bottom:1.5rem;">
+<div class="alert alert-danger s-92cb257">
     <strong>⚠️ Match Abandoned:</strong> {{ report.abandonment_reason }}
 </div>
 {% endif %}
 
 {% if report.referee_notes %}
-<div class="card" style="margin-bottom:1.5rem;">
+<div class="card s-92cb257">
     <div class="card-header"><h3>🗒️ Referee Notes</h3></div>
-    <div class="card-body"><p style="white-space:pre-wrap;">{{ report.referee_notes }}</p></div>
+    <div class="card-body"><p class="s-39f8dfb">{{ report.referee_notes }}</p></div>
 </div>
 {% endif %}
 
 <!-- Events -->
 {% if events %}
-<div class="card" style="margin-bottom:1.5rem;">
+<div class="card s-92cb257">
     <div class="card-header"><h3>📋 Match Events ({{ events|length }})</h3></div>
     <div class="card-body">
         <div class="table-responsive">
@@ -167,27 +167,27 @@
 
 <!-- Approve / Return -->
 {% if report.status == 'submitted' %}
-<div class="card" style="margin-bottom:2rem;">
+<div class="card s-e705884">
     <div class="card-header"><h3>⚖️ Decision</h3></div>
     <div class="card-body">
-        <form method="post" style="display:flex;flex-direction:column;gap:1rem;">
+        <form method="post" class="s-11a63a3">
             {% csrf_token %}
             <div>
-                <label style="font-weight:600;display:block;margin-bottom:.3rem;">Reviewer Notes (optional):</label>
+                <label class="s-b0103db">Reviewer Notes (optional):</label>
                 <textarea name="reviewer_notes" rows="3"
-                          style="width:100%;padding:.6rem;border:1px solid #ddd;border-radius:8px;font-size:.95rem;"
+                          class="s-55e4fe4"
                           placeholder="Comments, corrections needed, or approval note..."></textarea>
             </div>
-            <div style="display:flex;gap:1rem;justify-content:flex-end;">
+            <div class="s-1f3907f">
                 <a href="{% url 'matches_list' %}"
-                   style="background:#757575;color:#fff;padding:.6rem 1.5rem;border-radius:8px;text-decoration:none;">Cancel</a>
+                   class="s-cf031e4">Cancel</a>
                 <button type="submit" name="action" value="return"
-                        style="background:#FF8F00;color:#fff;padding:.6rem 1.5rem;border-radius:8px;border:none;cursor:pointer;font-size:1rem;"
+                        class="s-8798efa"
                         onclick="return confirm('Return this report for revision?')">
                     🔄 Return for Revision
                 </button>
                 <button type="submit" name="action" value="approve"
-                        style="background:#1B5E20;color:#fff;padding:.6rem 1.5rem;border-radius:8px;border:none;cursor:pointer;font-size:1rem;"
+                        class="s-debb563"
                         onclick="return confirm('Approve this report? This will finalize the match result and update standings.')">
                     ✅ Approve Report
                 </button>
@@ -196,9 +196,9 @@
     </div>
 </div>
 {% else %}
-<div style="display:flex;justify-content:flex-end;margin-bottom:2rem;">
+<div class="s-52f564d">
     <a href="{% url 'matches_list' %}"
-       style="background:#757575;color:#fff;padding:.6rem 1.5rem;border-radius:8px;text-decoration:none;">← Back to Matches</a>
+       class="s-cf031e4">← Back to Matches</a>
 </div>
 {% endif %}
 {% endblock %}

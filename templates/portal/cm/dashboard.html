@@ -66,42 +66,42 @@
 <div class="dash-section-title"><i class="bi bi-lightning-charge"></i> Quick Actions</div>
 <div class="dash-actions">
             <a href="{% url 'cm_create_competition' %}" class="dash-tile">
-                <div class="tile-icon" style="background:linear-gradient(135deg,#F3E5F5,#E1BEE7);color:#7B1FA2;"><i class="bi bi-plus-circle"></i></div>
+                <div class="tile-icon s-dbed1b6"><i class="bi bi-plus-circle"></i></div>
                 <div class="tile-text">
                     <h4>Create Competition</h4>
                     <p>New league, cup, or tournament</p>
                 </div>
             </a>
             <a href="{% url 'cm_venues' %}" class="dash-tile">
-                <div class="tile-icon" style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);color:#1565C0;"><i class="bi bi-geo-alt"></i></div>
+                <div class="tile-icon s-0530c51"><i class="bi bi-geo-alt"></i></div>
                 <div class="tile-text">
                     <h4>Manage Venues</h4>
                     <p>Add and configure match venues</p>
                 </div>
             </a>
             <a href="{% url 'pending_teams' %}" class="dash-tile">
-                <div class="tile-icon" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);color:#1B5E20;"><i class="bi bi-check-circle"></i></div>
+                <div class="tile-icon s-227b4b9"><i class="bi bi-check-circle"></i></div>
                 <div class="tile-text">
                     <h4>County Registrations</h4>
                     <p>Review pending county registrations</p>
                 </div>
             </a>
             <a href="{% url 'county_player_verification_list' %}" class="dash-tile">
-                <div class="tile-icon" style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);color:#E65100;"><i class="bi bi-person-vcard"></i></div>
+                <div class="tile-icon s-d6a9f41"><i class="bi bi-person-vcard"></i></div>
                 <div class="tile-text">
-                    <h4>Player Verification {% if stats.pending_county_players %}<span class="tile-badge" style="background:#C62828;color:#fff;">{{ stats.pending_county_players }}</span>{% endif %}</h4>
+                    <h4>Player Verification {% if stats.pending_county_players %}<span class="tile-badge s-bcb8f21">{{ stats.pending_county_players }}</span>{% endif %}</h4>
                     <p>Review pending players by county and discipline</p>
                 </div>
             </a>
             <a href="{% url 'competitions_list' %}" class="dash-tile">
-                <div class="tile-icon" style="background:linear-gradient(135deg,#FCE4EC,#F8BBD0);color:#AD1457;"><i class="bi bi-list-ul"></i></div>
+                <div class="tile-icon s-e2b042f"><i class="bi bi-list-ul"></i></div>
                 <div class="tile-text">
                     <h4>All Competitions</h4>
                     <p>View and manage all competitions</p>
                 </div>
             </a>
             <a href="{% url 'teams_list' %}" class="dash-tile">
-                <div class="tile-icon" style="background:linear-gradient(135deg,#ECEFF1,#CFD8DC);color:#455A64;"><i class="bi bi-people"></i></div>
+                <div class="tile-icon s-454eb2e"><i class="bi bi-people"></i></div>
                 <div class="tile-text">
                     <h4>All Teams</h4>
                     <p>Browse registered teams</p>
@@ -119,12 +119,12 @@
                 {% for comp in active_competitions %}
                 <div class="dash-activity-item">
                     <div>
-                        <div style="font-weight:600;">
-                            <a href="{% url 'cm_competition_manage' pk=comp.pk %}" style="color:#212121;text-decoration:none;">{{ comp.name }}</a>
+                        <div class="s-21a1be8">
+                            <a href="{% url 'cm_competition_manage' pk=comp.pk %}" class="s-372ef7e">{{ comp.name }}</a>
                         </div>
-                        <div style="font-size:.82rem;color:#888;">{{ comp.get_sport_type_display }} &middot; {{ comp.get_age_group_display }}</div>
+                        <div class="s-1889d5d">{{ comp.get_sport_type_display }} &middot; {{ comp.get_age_group_display }}</div>
                     </div>
-                    <span class="dash-badge" style="background:#E8F5E9;color:#1B5E20;">{{ comp.get_status_display }}</span>
+                    <span class="dash-badge s-02f0f8b">{{ comp.get_status_display }}</span>
                 </div>
                 {% endfor %}
             {% else %}
@@ -132,17 +132,17 @@
             {% endif %}
 
             {% if registration_competitions %}
-            <div style="margin-top:1rem;padding-top:.75rem;border-top:1px solid #eee;">
-                <div style="font-size:.78rem;font-weight:700;color:#757575;text-transform:uppercase;margin-bottom:.5rem;">Registration Open</div>
+            <div class="s-5cea8ac">
+                <div class="s-9307707">Registration Open</div>
                 {% for comp in registration_competitions %}
                 <div class="dash-activity-item">
                     <div>
-                        <div style="font-weight:600;">
-                            <a href="{% url 'cm_competition_manage' pk=comp.pk %}" style="color:#212121;text-decoration:none;">{{ comp.name }}</a>
+                        <div class="s-21a1be8">
+                            <a href="{% url 'cm_competition_manage' pk=comp.pk %}" class="s-372ef7e">{{ comp.name }}</a>
                         </div>
-                        <div style="font-size:.82rem;color:#888;">{{ comp.get_sport_type_display }}</div>
+                        <div class="s-1889d5d">{{ comp.get_sport_type_display }}</div>
                     </div>
-                    <span class="dash-badge" style="background:#FFF8E1;color:#F57F17;">Registration</span>
+                    <span class="dash-badge s-e02d7b3">Registration</span>
                 </div>
                 {% endfor %}
             </div>
@@ -157,15 +157,15 @@
                 {% for report in pending_reports %}
                 <div class="dash-activity-item">
                     <div>
-                        <div style="font-weight:600;">{{ report.fixture.home_team }} vs {{ report.fixture.away_team }}</div>
-                        <div style="font-size:.82rem;color:#888;">
+                        <div class="s-21a1be8">{{ report.fixture.home_team }} vs {{ report.fixture.away_team }}</div>
+                        <div class="s-1889d5d">
                             {{ report.fixture.competition.name|truncatechars:25 }} &middot;
                             {{ report.home_score }}-{{ report.away_score }} &middot;
                             {{ report.submitted_at|date:"d M" }}
                         </div>
                     </div>
                     <a href="{% url 'competition_report_approve' pk=report.fixture.competition.pk report_pk=report.pk %}"
-                       class="btn btn-primary btn-sm" style="font-size:.78rem;border-radius:6px;">Review</a>
+                       class="btn btn-primary btn-sm s-a738082">Review</a>
                 </div>
                 {% endfor %}
             {% else %}
@@ -177,14 +177,14 @@
 
 <!-- Sport Breakdown -->
 {% if sport_breakdown %}
-<div class="dash-panel" style="margin-top:1.5rem;">
+<div class="dash-panel s-1d30ad4">
     <div class="dash-panel-head"><i class="bi bi-bar-chart-line"></i> Competitions by Sport</div>
     <div class="dash-panel-body">
-        <div style="display:flex;flex-wrap:wrap;gap:.75rem;">
+        <div class="s-fed2809">
             {% for sport in sport_breakdown %}
-            <div style="background:linear-gradient(135deg,#F3E5F5,#E1BEE7);border-radius:10px;padding:.5rem 1rem;display:flex;align-items:center;gap:.5rem;">
-                <span style="font-weight:700;color:#7B1FA2;">{{ sport.count }}</span>
-                <span style="font-size:.85rem;color:#333;">{{ sport.label }}</span>
+            <div class="s-c286d34">
+                <span class="s-7846ad3">{{ sport.count }}</span>
+                <span class="s-0e482b9">{{ sport.label }}</span>
             </div>
             {% endfor %}
         </div>

@@ -11,13 +11,21 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{% asset 'css/style.css' %}">
     <link rel="stylesheet" href="{% asset 'css/portal.css' %}">
+    {# Page styles moved out of templates (inline style="" and <style> blocks) #}
+    <link rel="stylesheet" href="{% asset 'css/pages/shared.css' %}">
+    <link rel="stylesheet" href="{% asset 'css/pages/admin.css' %}">
+    <link rel="stylesheet" href="{% asset 'css/pages/county.css' %}">
+    <link rel="stylesheet" href="{% asset 'css/pages/competitions.css' %}">
+    <link rel="stylesheet" href="{% asset 'css/pages/kicosca.css' %}">
+    <link rel="stylesheet" href="{% asset 'css/pages/media.css' %}">
+    <link rel="stylesheet" href="{% asset 'css/pages/core.css' %}">
     <link rel="icon" href="{% static 'img/kyisa_logo_official.jpg' %}" type="image/jpeg">
     {# Apply the saved sidebar state before first paint to avoid a layout jump. #}
     <script>try{if(localStorage.getItem('kyisa.sidebar')==='collapsed')document.documentElement.classList.add('sidebar-collapsed')}catch(e){}</script>
     {% block extra_css %}{% endblock %}
 </head>
 {# data-session-timeout must match SESSION_COOKIE_AGE in settings.py (seconds). #}
-<body class="app"
+<body class="app {% block body_class %}{% endblock %}"
       data-logout-url="{% url 'web_logout' %}"
       data-login-url="{% url 'web_login' %}"
       data-keepalive-url="{% url 'session_keepalive' %}"

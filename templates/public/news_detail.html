@@ -1,4 +1,5 @@
 {% extends "public/base.html" %}
+{% block body_class %}pg-public-news-detail{% endblock %}
 {% load static %}
 
 {% block title %}{{ article.title }}{% endblock %}
@@ -36,77 +37,6 @@
 {% endblock %}
 
 {% block extra_css %}
-<style>
-/* ═══════════════════════════════════════
-   NEWS DETAIL PAGE
-═══════════════════════════════════════ */
-
-/* ── Article Body ── */
-.nd-body {
-    max-width: 780px; margin: -2rem auto 3rem; padding: 0 1.5rem;
-    position: relative; z-index: 5;
-}
-.nd-featured-img {
-    border-radius: 16px; overflow: hidden; margin-bottom: 2.5rem;
-    box-shadow: 0 8px 40px rgba(0,0,0,.1);
-}
-.nd-featured-img img { width: 100%; display: block; }
-.nd-content {
-    background: #fff; border-radius: 16px; padding: 3rem;
-    box-shadow: 0 2px 16px rgba(0,0,0,.04);
-    font-size: 1.05rem; line-height: 1.8; color: #333;
-}
-.nd-content p { margin-bottom: 1.25rem; }
-.nd-content h2, .nd-content h3 {
-    font-family: 'Outfit', sans-serif; color: #1a1a1a;
-    margin-top: 2rem; margin-bottom: .75rem;
-}
-.nd-content img {
-    border-radius: 8px; margin: 1.5rem 0;
-}
-
-/* ── Author bar ── */
-.nd-author {
-    display: flex; align-items: center; gap: 1rem;
-    padding: 1.5rem 0; margin-top: 2rem;
-    border-top: 1px solid #f0f0f0;
-}
-.nd-author-avatar {
-    width: 44px; height: 44px; border-radius: 50%;
-    background: #e8f5e9; display: flex; align-items: center; justify-content: center;
-    color: #1B5E20; font-weight: 700; font-size: 1rem;
-}
-.nd-author-info { line-height: 1.3; }
-.nd-author-info strong { font-size: .9rem; color: #1a1a1a; }
-.nd-author-info span { display: block; font-size: .78rem; color: #999; }
-
-/* ── Related Articles ── */
-.nd-related {
-    max-width: 900px; margin: 0 auto 4rem; padding: 0 1.5rem;
-}
-.nd-related h3 {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1.2rem; font-weight: 700; margin-bottom: 1.25rem; color: #1a1a1a;
-}
-.nd-rel-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem;
-}
-.nd-rel-card {
-    background: #fff; border-radius: 12px; overflow: hidden;
-    box-shadow: 0 2px 12px rgba(0,0,0,.04);
-    text-decoration: none; transition: transform .25s, box-shadow .25s;
-}
-.nd-rel-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,.08); }
-.nd-rel-img { height: 140px; overflow: hidden; background: #e8f5e9; }
-.nd-rel-img img { width: 100%; height: 100%; object-fit: cover; }
-.nd-rel-body { padding: 1rem; }
-.nd-rel-body h4 {
-    font-size: .88rem; font-weight: 600; color: #1a1a1a; line-height: 1.4;
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-}
-.nd-rel-body span { font-size: .72rem; color: #999; margin-top: .4rem; display: block; }
-@media (max-width: 700px) { .nd-rel-grid { grid-template-columns: 1fr; } }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -132,7 +62,7 @@
             <span>Article</span>
         </div>
     </div>
-    <div class="kenya-stripe" style="position:absolute;bottom:0;left:0;right:0;z-index:5"></div>
+    <div class="kenya-stripe s-4a0e33c"></div>
 </section>
 
 <!-- ── ARTICLE BODY ── -->
@@ -169,8 +99,8 @@
                 {% if r.featured_image %}
                     <img src="{{ r.featured_image.url }}" alt="{{ r.title }}">
                 {% else %}
-                    <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#1B5E20;">
-                        <i class="bi bi-file-text" style="font-size:2rem;opacity:.3;"></i>
+                    <div class="s-a027eeb">
+                        <i class="bi bi-file-text s-a3b877f"></i>
                     </div>
                 {% endif %}
             </div>
