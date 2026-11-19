@@ -1,0 +1,10 @@
+<div class="sidebar-section" data-section="media">
+  <button type="button" class="sidebar-section-toggle" aria-expanded="true"><span>News &amp; Media</span><i class="bi bi-chevron-down toggle-icon" aria-hidden="true"></i></button>
+  <div class="sidebar-section-body">
+    <a href="{% url 'media_dashboard' %}" class="sidebar-link"><i class="bi bi-camera-reels"></i><span class="label">Media Dashboard</span></a>
+    <a href="{% url 'media_article_list' %}" class="sidebar-link"><i class="bi bi-newspaper"></i><span class="label">Articles</span></a>
+    <a href="{% url 'media_album_list' %}" class="sidebar-link"><i class="bi bi-images"></i><span class="label">Photo Albums</span></a>
+    <a href="{% url 'media_video_list' %}" class="sidebar-link"><i class="bi bi-play-circle"></i><span class="label">Videos</span></a>
+    <a href="{% url 'media_categories' %}" class="sidebar-link"><i class="bi bi-tags"></i><span class="label">Categories</span></a>
+  </div>
+</div>

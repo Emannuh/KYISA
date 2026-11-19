@@ -1,684 +1,176 @@
-{% load static %}
-<!DOCTYPE html>
+{% load static assets %}<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign In — KYISA Portal</title>
+  <meta name="theme-color" content="#0c1410">
+  <title>Sign in | KYISA Portal</title>
   <link rel="icon" href="{% static 'img/kyisa_logo_official.jpg' %}" type="image/jpeg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <style>
-    :root {
-      --g3: #074d1c; --g4: #0e7a2e; --g5: #18a845; --g6: #22cc55; --g7: #5de082;
-      --gold: #e8b800; --gold-lt: #fdd835;
-      --ease: cubic-bezier(.4,0,.2,1);
-    }
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-    html, body { height:100%; }
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
-
-    /* ── FULLSCREEN BACKGROUND ── */
-    .bg {
-      position: fixed; inset: 0; z-index: 0;
-    }
-    .bg__img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      object-position: center 20%;
-      filter: brightness(.45) saturate(.9);
-    }
-    /* multi-layer overlay — vignette + green tint at bottom */
-    .bg__overlay {
-      position: absolute; inset: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,0,0,.55) 0%, transparent 70%),
-        radial-gradient(ellipse 100% 55% at 50% 100%, rgba(4,30,10,.85) 0%, transparent 65%),
-        linear-gradient(170deg, rgba(0,0,0,.35) 0%, rgba(2,20,8,.55) 100%);
-    }
-    /* animated green shimmer line at bottom */
-    .bg__line {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent 0%, var(--g5) 40%, var(--g6) 60%, transparent 100%);
-      animation: lineShimmer 4s ease-in-out infinite;
-    }
-    @keyframes lineShimmer {
-      0%,100% { opacity:.4; transform:scaleX(.6); }
-      50%      { opacity:1;  transform:scaleX(1); }
-    }
-
-    /* ── PAGE ── */
-    .page {
-      position: relative; z-index: 1;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* ── TOP NAV BAR ── */
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.4rem 2.5rem;
-    }
-    .topbar-brand {
-      display: flex; align-items: center; gap: .9rem;
-    }
-    .topbar-logo {
-      width: 42px; height: 42px; border-radius: 50%;
-      object-fit: cover; background: #fff;
-      border: 2px solid rgba(255,255,255,.2);
-      box-shadow: 0 0 0 4px rgba(24,168,69,.18), 0 4px 16px rgba(0,0,0,.5);
-    }
-    .topbar-sep {
-      width: 1px; height: 26px;
-      background: rgba(255,255,255,.18);
-    }
-    .topbar-name {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.1rem; font-weight: 900;
-      color: #fff; letter-spacing: 2px;
-    }
-    .topbar-sub {
-      font-size: .58rem; font-weight: 600;
-      color: rgba(255,255,255,.38);
-      letter-spacing: 1.5px; text-transform: uppercase;
-      margin-top: 1px;
-    }
-    .topbar-right {
-      display: flex; align-items: center; gap: 1rem;
-    }
-    .back-link {
-      display: inline-flex; align-items: center; gap: .4rem;
-      font-size: .75rem; color: rgba(255,255,255,.45);
-      text-decoration: none; font-weight: 500;
-      transition: color .2s;
-    }
-    .back-link:hover { color: var(--g7); }
-    .status-pill {
-      display: inline-flex; align-items: center; gap: .35rem;
-      padding: .22rem .7rem;
-      background: rgba(24,168,69,.12);
-      border: 1px solid rgba(24,168,69,.25);
-      border-radius: 50px;
-      font-size: .61rem; font-weight: 700;
-      color: var(--g7); letter-spacing: .8px; text-transform: uppercase;
-    }
-    .status-dot {
-      width: 5px; height: 5px; border-radius: 50%;
-      background: var(--g6);
-      animation: pulse 2s ease infinite;
-    }
-    @keyframes pulse {
-      0%  { box-shadow: 0 0 0 0   rgba(34,204,85,.7); }
-      70% { box-shadow: 0 0 0 5px rgba(34,204,85,0); }
-      100%{ box-shadow: 0 0 0 0   rgba(34,204,85,0); }
-    }
-
-    /* ── MAIN — card + caption ── */
-    .main {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4rem;
-      padding: 1rem 2.5rem 2rem;
-    }
-
-    /* ── CAPTION (left of card on desktop) ── */
-    .caption {
-      max-width: 400px;
-      flex-shrink: 0;
-      animation: fadeUp .7s var(--ease) .1s both;
-    }
-    .caption__season {
-      display: inline-flex; align-items: center; gap: .45rem;
-      padding: .28rem .8rem;
-      background: rgba(24,168,69,.14);
-      border: 1px solid rgba(24,168,69,.28);
-      border-radius: 50px;
-      font-size: .65rem; font-weight: 700;
-      color: var(--g7); letter-spacing: .8px; text-transform: uppercase;
-      margin-bottom: 1.1rem;
-    }
-    .caption__title {
-      font-family: 'Outfit', sans-serif;
-      font-size: clamp(2rem, 3.5vw, 3rem);
-      font-weight: 900;
-      color: #fff;
-      line-height: 1.1;
-      letter-spacing: -.5px;
-      margin-bottom: .9rem;
-      text-shadow: 0 2px 20px rgba(0,0,0,.5);
-    }
-    .caption__title em { font-style: normal; color: var(--gold); }
-    .caption__sub {
-      font-size: .9rem; font-weight: 400;
-      color: rgba(255,255,255,.5);
-      line-height: 1.65;
-      margin-bottom: 1.75rem;
-    }
-    .caption__stats {
-      display: flex; gap: .6rem;
-    }
-    .caption__stat {
-      display: flex; align-items: center; gap: .55rem;
-      padding: .55rem 1rem;
-      background: rgba(0,0,0,.35);
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 12px;
-      backdrop-filter: blur(12px);
-    }
-    .caption__stat-num {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.5rem; font-weight: 900;
-      color: var(--gold); line-height: 1;
-    }
-    .caption__stat-lbl {
-      font-size: .58rem; font-weight: 700;
-      color: rgba(255,255,255,.35);
-      text-transform: uppercase; letter-spacing: 1px;
-      line-height: 1.4;
-    }
-
-    /* ── CARD ── */
-    .card {
-      width: 100%; max-width: 390px;
-      background: rgba(10,14,12,.82);
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 24px;
-      padding: 2.25rem 2.25rem 2rem;
-      backdrop-filter: blur(28px) saturate(1.4);
-      box-shadow:
-        0 0 0 1px rgba(24,168,69,.08),
-        0 32px 64px rgba(0,0,0,.55),
-        0 8px 24px rgba(0,0,0,.35);
-      animation: fadeUp .6s var(--ease) both;
-      flex-shrink: 0;
-    }
-    @keyframes fadeUp {
-      from { opacity:0; transform:translateY(18px); }
-      to   { opacity:1; transform:translateY(0); }
-    }
-
-    /* green top accent */
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 10%; right: 10%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--g5), transparent);
-      border-radius: 1px;
-    }
-    .card { position: relative; }
-
-    .card-heading {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.75rem; font-weight: 900;
-      color: #fff; letter-spacing: -.4px;
-      line-height: 1.15; margin-bottom: .2rem;
-    }
-    .card-heading span { color: var(--g5); }
-    .card-sub {
-      font-size: .82rem; color: rgba(255,255,255,.32);
-      margin-bottom: 1.6rem;
-    }
-
-    /* alerts */
-    .alert {
-      padding: .65rem .85rem; border-radius: 9px;
-      font-size: .79rem; font-weight: 500;
-      margin-bottom: .9rem;
-      display: flex; align-items: flex-start; gap: .4rem;
-      line-height: 1.5; animation: slideIn .3s var(--ease);
-    }
-    @keyframes slideIn { from{opacity:0;transform:translateY(-5px)} }
-    .alert--error,.alert--danger{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.18);color:#fca5a5;}
-    .alert--success{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.18);color:#86efac;}
-    .alert--warning{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.18);color:#fcd34d;}
-    .alert--info{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.18);color:#93c5fd;}
-
-    /* fields */
-    .fields { display:flex; flex-direction:column; gap:.95rem; }
-    .field { display:flex; flex-direction:column; gap:.3rem; }
-    .field__label {
-      font-size: .71rem; font-weight: 600;
-      color: rgba(255,255,255,.4); letter-spacing: .2px;
-      transition: color .2s;
-    }
-    .field.focused .field__label { color: var(--g7); }
-    .field__wrap { position:relative; display:flex; align-items:center; }
-    .field__ico {
-      position:absolute; left:.85rem;
-      color:rgba(255,255,255,.18); pointer-events:none; display:flex;
-      transition:color .2s;
-    }
-    .field__ico svg { width:15px; height:15px; }
-    .field.focused .field__ico { color:var(--g5); }
-    .field__input {
-      width:100%;
-      padding:.8rem .9rem .8rem 2.6rem;
-      background:rgba(255,255,255,.06);
-      border:1.5px solid rgba(255,255,255,.1);
-      border-radius:11px; color:#fff;
-      font-size:.86rem; font-family:inherit; font-weight:500; outline:none;
-      transition:border-color .2s, background .2s, box-shadow .2s;
-    }
-    .field__input::placeholder{color:rgba(255,255,255,.18);font-weight:400;}
-    .field__input:hover{border-color:rgba(255,255,255,.16);background:rgba(255,255,255,.08);}
-    .field__input:focus{
-      border-color:rgba(24,168,69,.6);
-      background:rgba(255,255,255,.08);
-      box-shadow:0 0 0 3px rgba(24,168,69,.1);
-    }
-    .eye-btn{
-      position:absolute; right:.6rem;
-      background:none; border:none; cursor:pointer;
-      color:rgba(255,255,255,.18); padding:5px; border-radius:7px; display:flex;
-      transition:color .2s, background .2s;
-    }
-    .eye-btn:hover{color:rgba(255,255,255,.45);background:rgba(255,255,255,.06);}
-    .eye-btn svg{width:15px;height:15px;}
-
-    /* options */
-    .options{display:flex;align-items:center;justify-content:space-between;margin-top:.05rem;}
-    .check-label{
-      display:flex;align-items:center;gap:.35rem;
-      font-size:.72rem;color:rgba(255,255,255,.32);
-      cursor:pointer;user-select:none;
-    }
-    .check-label input[type="checkbox"]{
-      width:13px;height:13px;border-radius:3px;
-      cursor:pointer;accent-color:var(--g5);flex-shrink:0;
-    }
-    .forgot-btn{
-      font-size:.72rem;color:var(--gold);font-weight:600;
-      background:none;border:none;cursor:pointer;
-      font-family:inherit;transition:color .2s;
-    }
-    .forgot-btn:hover{color:var(--gold-lt);}
-
-    /* CTA */
-    .submit-btn{
-      width:100%;margin-top:1.1rem;
-      padding:.88rem;border:none;border-radius:11px;
-      font-family:'Outfit',sans-serif;
-      font-size:.97rem;font-weight:800;
-      color:#fff;cursor:pointer;letter-spacing:.35px;
-      background:linear-gradient(135deg,var(--g3) 0%,var(--g4) 40%,var(--g5) 100%);
-      box-shadow:0 4px 24px rgba(14,122,46,.4),0 0 0 1px rgba(24,168,69,.22);
-      transition:transform .17s var(--ease),box-shadow .17s var(--ease),background .2s;
-      position:relative; overflow:hidden;
-    }
-    .submit-btn::before{
-      content:'';position:absolute;inset:0;
-      background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
-      transform:translateX(-100%);transition:transform .55s;
-    }
-    .submit-btn:hover{
-      transform:translateY(-2px);
-      background:linear-gradient(135deg,var(--g4) 0%,var(--g5) 40%,var(--g6) 100%);
-      box-shadow:0 8px 32px rgba(24,168,69,.5),0 0 0 1px rgba(34,204,85,.26);
-    }
-    .submit-btn:hover::before{transform:translateX(100%);}
-    .submit-btn:active{transform:translateY(0);}
-    .submit-btn:disabled{opacity:.45;cursor:not-allowed;transform:none;}
-    .submit-btn .lbl{transition:opacity .2s;}
-    .submit-btn.loading .lbl{opacity:0;}
-    .submit-btn .spin{
-      position:absolute;top:50%;left:50%;
-      transform:translate(-50%,-50%);
-      width:19px;height:19px;
-      border:2.5px solid rgba(255,255,255,.2);
-      border-top-color:#fff;border-radius:50%;
-      animation:spin .6s linear infinite;opacity:0;
-    }
-    .submit-btn.loading .spin{opacity:1;}
-    @keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
-
-    /* hint + help */
-    .enter-hint{font-size:.63rem;color:rgba(255,255,255,.18);text-align:center;margin-top:.5rem;}
-    .enter-hint kbd{
-      display:inline-block;padding:.07rem .3rem;
-      background:rgba(255,255,255,.07);
-      border:1px solid rgba(255,255,255,.1);
-      border-radius:4px;font-size:.6rem;font-family:inherit;
-    }
-    .divider{display:flex;align-items:center;gap:.55rem;margin:1.2rem 0 .65rem;}
-    .divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.07);}
-    .divider span{font-size:.59rem;font-weight:700;color:rgba(255,255,255,.18);text-transform:uppercase;letter-spacing:1.5px;}
-    .help-text{text-align:center;font-size:.75rem;color:rgba(255,255,255,.26);}
-    .help-text a{color:var(--gold);font-weight:600;text-decoration:none;transition:color .2s;}
-    .help-text a:hover{color:var(--gold-lt);}
-
-    /* ── PARTNERS FOOTER ── */
-    .footer {
-      padding: .9rem 2.5rem 1.1rem;
-      border-top: 1px solid rgba(255,255,255,.06);
-      position: relative; z-index: 1;
-    }
-    .partners__lbl{
-      font-size:.5rem;font-weight:700;
-      color:rgba(255,255,255,.2);
-      text-transform:uppercase;letter-spacing:2.5px;
-      text-align:center;margin-bottom:.6rem;
-    }
-    .partners__row{
-      display:flex;flex-wrap:wrap;
-      justify-content:center;align-items:center;
-      gap:.4rem;
-    }
-    .partner{
-      display:flex;align-items:center;gap:.35rem;
-      padding:.28rem .5rem;
-      background:rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.07);
-      border-radius:8px;
-      transition:all .2s var(--ease);
-    }
-    .partner:hover{background:rgba(232,184,0,.07);border-color:rgba(232,184,0,.18);transform:translateY(-1px);}
-    .partner img{width:22px;height:22px;flex-shrink:0;border-radius:50%;object-fit:cover;background:#fff;border:1px solid rgba(255,255,255,.12);}
-    .partner__info{line-height:1.2;min-width:0;}
-    .partner__abbr{font-size:.6rem;font-weight:700;color:var(--gold);white-space:nowrap;}
-    .partner__name{font-size:.48rem;color:rgba(255,255,255,.26);white-space:nowrap;}
-    .partners__copy{text-align:center;font-size:.48rem;color:rgba(255,255,255,.12);text-transform:uppercase;letter-spacing:1px;margin-top:.6rem;}
-
-    /* ── MODAL ── */
-    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;z-index:999;}
-    .modal-bg.open{display:flex;}
-    .modal{background:rgba(14,18,16,.95);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:2rem;max-width:380px;width:90%;box-shadow:0 32px 64px rgba(0,0,0,.6);animation:modalIn .28s var(--ease);position:relative;backdrop-filter:blur(24px);}
-    @keyframes modalIn{from{opacity:0;transform:translateY(10px) scale(.97)}}
-    .modal__close{position:absolute;top:.85rem;right:.85rem;background:none;border:none;cursor:pointer;color:rgba(255,255,255,.22);padding:.4rem;border-radius:7px;transition:all .2s;}
-    .modal__close:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);}
-    .modal__icon{width:48px;height:48px;background:rgba(24,168,69,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;color:var(--g5);}
-    .modal h3{font-family:'Outfit',sans-serif;font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:.4rem;text-align:center;}
-    .modal p{color:rgba(255,255,255,.36);font-size:.83rem;line-height:1.6;margin-bottom:1.25rem;text-align:center;}
-    .modal-btns{display:flex;gap:.6rem;}
-    .modal-btn{flex:1;padding:.65rem;border-radius:9px;font-weight:600;font-size:.81rem;cursor:pointer;transition:all .2s;border:none;text-align:center;text-decoration:none;display:block;font-family:inherit;}
-    .modal-btn--primary{background:var(--g4);color:#fff;}
-    .modal-btn--primary:hover{background:var(--g5);}
-    .modal-btn--ghost{background:rgba(255,255,255,.06);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.08);}
-    .modal-btn--ghost:hover{background:rgba(255,255,255,.1);}
-
-    /* ── RESPONSIVE ── */
-    @media(max-width:1024px){
-      .main{flex-direction:column;gap:1.75rem;padding:1.5rem 1.5rem 2rem;align-items:center;}
-      .caption{max-width:600px;text-align:center;}
-      .caption__stats{justify-content:center;}
-      .caption__title{font-size:clamp(1.6rem,5vw,2.4rem);}
-      .card{max-width:480px;}
-      .topbar{padding:1.2rem 1.5rem;}
-    }
-    @media(max-width:640px){
-      .topbar{padding:1rem 1.25rem;}
-      .topbar-name{font-size:.95rem;}
-      .topbar-sub{display:none;}
-      .caption{display:none;}
-      .main{padding:1rem 1.25rem 1.5rem;justify-content:flex-start;}
-      .card{max-width:100%;border-radius:18px;padding:1.75rem 1.5rem 1.5rem;}
-      .footer{padding:.75rem 1.25rem .9rem;}
-      .partners__row{gap:.35rem;}
-    }
-  </style>
+  <link rel="stylesheet" href="{% asset 'css/auth.css' %}">
 </head>
 <body>
+<div class="auth">
 
-<!-- FULLSCREEN BACKGROUND -->
-<div class="bg">
-  <img class="bg__img" src="{% static 'img/kyisa_champions.jpg' %}" alt="" aria-hidden="true">
-  <div class="bg__overlay"></div>
-  <div class="bg__line"></div>
-</div>
-
-<div class="page">
-
-  <!-- TOP BAR -->
-  <header class="topbar">
-    <div class="topbar-brand">
-      <img class="topbar-logo" src="{% static 'img/kyisa_logo_official.jpg' %}" alt="KYISA">
-      <div class="topbar-sep"></div>
-      <img class="topbar-logo" src="{% static 'img/COG.jpg' %}" alt="COG">
-      <div style="margin-left:.35rem">
-        <div class="topbar-name">KYISA</div>
-        <div class="topbar-sub">Competition Management System</div>
+  <!-- Showcase (desktop) -->
+  <section class="auth-showcase" aria-hidden="true">
+    <img class="auth-showcase__img" src="{% static 'img/kyisa_champions.jpg' %}" alt="">
+    <div class="auth-brand">
+      <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="">
+      <div><strong>KYISA</strong><small>Competition Management System</small></div>
+    </div>
+    <div class="auth-caption">
+      <span class="auth-caption__tag"><i class="bi bi-trophy-fill"></i> {% now "Y" %} Season</span>
+      <h2>Kenya's premier<br><em>youth sports</em><br>competition</h2>
+      <p>Bringing together all 47 counties to compete, develop and excel across six disciplines.</p>
+      <div class="auth-stats">
+        <div class="auth-stat"><strong>47</strong><span>Counties</span></div>
+        <div class="auth-stat"><strong>6+</strong><span>Disciplines</span></div>
+        <div class="auth-stat"><strong>{% now "Y" %}</strong><span>Season</span></div>
       </div>
     </div>
-    <div class="topbar-right">
-      <a href="{% url 'home' %}" class="back-link">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
-        Back to Home
-      </a>
-      <div class="status-pill">
-        <span class="status-dot"></span>
-        Online
-      </div>
-    </div>
-  </header>
+  </section>
 
-  <!-- MAIN -->
-  <main class="main">
-
-    <!-- CAPTION -->
-    <div class="caption" aria-hidden="true">
-      <div class="caption__season">
-        <i class="bi bi-trophy-fill"></i>
-        2026 Season
+  <!-- Form panel -->
+  <main class="auth-panel">
+    <div class="auth-panel__top">
+      <div class="auth-brand">
+        <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="">
+        <div><strong>KYISA</strong><small>Competition Management</small></div>
       </div>
-      <h1 class="caption__title">
-        Kenya's Premier<br><em>Youth Sports</em><br>Competition
-      </h1>
-      <p class="caption__sub">
-        Bringing together all 47 counties to compete, develop and excel across six disciplines.
-      </p>
-      <div class="caption__stats">
-        <div class="caption__stat">
-          <div class="caption__stat-num">47</div>
-          <div class="caption__stat-lbl">Counties<br>Competing</div>
-        </div>
-        <div class="caption__stat">
-          <div class="caption__stat-num">6+</div>
-          <div class="caption__stat-lbl">Sports<br>Disciplines</div>
-        </div>
-        <div class="caption__stat">
-          <div class="caption__stat-num">2026</div>
-          <div class="caption__stat-lbl">Current<br>Season</div>
-        </div>
-      </div>
+      <a href="{% url 'home' %}" class="back-link"><i class="bi bi-arrow-left"></i><span>Back to website</span></a>
     </div>
 
-    <!-- FORM CARD -->
-    <div class="card">
-      <h2 class="card-heading">Welcome<br><span>back.</span></h2>
-      <p class="card-sub">Sign in to your KYISA portal</p>
+    <div class="auth-form-wrap">
+      <div class="auth-form">
+        <h1>Welcome back</h1>
+        <p class="lead">Sign in to your KYISA portal account.</p>
 
-      {% if messages %}
         {% for message in messages %}
-        <div class="alert alert--{{ message.tags }}" role="alert">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div class="notice notice--{{ message.level_tag|default:'info' }}" role="{% if message.level_tag == 'error' %}alert{% else %}status{% endif %}">
+          <i class="bi {% if message.level_tag == 'success' %}bi-check-circle-fill{% elif message.level_tag == 'error' %}bi-x-octagon-fill{% elif message.level_tag == 'warning' %}bi-exclamation-triangle-fill{% else %}bi-info-circle-fill{% endif %}" aria-hidden="true"></i>
           <span>{{ message }}</span>
         </div>
         {% endfor %}
-      {% endif %}
 
-      {% if error %}
-      <div class="alert alert--error" role="alert">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-        <span>{{ error }}</span>
+        {% if error %}
+        <div class="notice notice--error" role="alert" id="loginError">
+          <i class="bi bi-x-octagon-fill" aria-hidden="true"></i>
+          <span>{{ error }}</span>
+        </div>
+        {% endif %}
+
+        <form method="post" action="{% url 'web_login' %}" id="loginForm">
+          {% csrf_token %}
+
+          <div class="field">
+            <label for="email">Email address</label>
+            <div class="input">
+              <i class="bi bi-envelope" aria-hidden="true"></i>
+              <input type="email" id="email" name="email" required autocomplete="username" inputmode="email"
+                     placeholder="you@example.com" value="{{ email|default:'' }}"
+                     {% if error %}aria-invalid="true" aria-describedby="loginError"{% else %}autofocus{% endif %}>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field__row">
+              <label for="password">Password</label>
+              <button type="button" class="link-btn" id="forgotBtn">Forgot password?</button>
+            </div>
+            <div class="input">
+              <i class="bi bi-lock" aria-hidden="true"></i>
+              <input type="password" id="password" name="password" required autocomplete="current-password"
+                     class="has-reveal" placeholder="Enter your password"
+                     {% if error %}aria-invalid="true" aria-describedby="loginError capsHint" autofocus{% else %}aria-describedby="capsHint"{% endif %}>
+              <button type="button" class="reveal" id="revealBtn" aria-label="Show password" aria-pressed="false"><i class="bi bi-eye"></i></button>
+            </div>
+            <p class="hint hint--warn" id="capsHint" hidden><i class="bi bi-capslock-fill" aria-hidden="true"></i> Caps Lock is on</p>
+          </div>
+
+          <button type="submit" class="submit" id="submitBtn">
+            <span class="spinner" aria-hidden="true"></span>
+            <span class="submit__label">Sign in</span>
+          </button>
+        </form>
+
+        <p class="secure-note"><i class="bi bi-shield-lock" aria-hidden="true"></i> Sessions sign out automatically after 15 minutes of inactivity.</p>
+
+        <p class="help">Need an account? Contact your <a href="{% url 'contact' %}">KYISA administrator</a>.</p>
       </div>
-      {% endif %}
-
-      <form method="post" action="{% url 'web_login' %}" class="fields" id="loginForm" novalidate>
-        {% csrf_token %}
-
-        <div class="field" id="emailField">
-          <label for="email" class="field__label">Email Address</label>
-          <div class="field__wrap">
-            <span class="field__ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                <polyline points="22,6 12,13 2,6"/>
-              </svg>
-            </span>
-            <input type="email" id="email" name="email" class="field__input"
-              placeholder="you@example.com" required autofocus autocomplete="email"
-              value="{{ email|default:'' }}" aria-label="Email address">
-          </div>
-        </div>
-
-        <div class="field" id="pwField">
-          <label for="password" class="field__label">Password</label>
-          <div class="field__wrap">
-            <span class="field__ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <rect x="3" y="11" width="18" height="11" rx="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-            </span>
-            <input type="password" id="password" name="password" class="field__input"
-              placeholder="Enter your password" required autocomplete="current-password"
-              aria-label="Password">
-            <button type="button" class="eye-btn" id="eyeBtn" aria-label="Show password">
-              <svg id="eyeIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <div class="options">
-          <label class="check-label">
-            <input type="checkbox" name="remember" value="1">
-            Remember me
-          </label>
-          <button type="button" class="forgot-btn" id="forgotBtn">Forgot password?</button>
-        </div>
-
-        <button type="submit" class="submit-btn" id="submitBtn">
-          <span class="lbl">Sign In</span>
-          <span class="spin" aria-hidden="true"></span>
-        </button>
-      </form>
-
-      <p class="enter-hint">Press <kbd>Enter</kbd> to sign in</p>
-
-      <div class="divider"><span>Need help?</span></div>
-      <p class="help-text">
-        Contact your <a href="{% url 'contact' %}">KYISA administrator</a> for account access.
-      </p>
     </div>
 
+    <footer class="partners">
+      <p class="partners__label">Official partners</p>
+      <div class="partners__row">
+        <span class="partner"><img src="{% static 'img/GOK.png' %}" alt="" loading="lazy">GOK</span>
+        <span class="partner"><img src="{% static 'img/COG.jpg' %}" alt="" loading="lazy">COG</span>
+        <span class="partner"><img src="{% static 'img/fkf_logo_sm.png' %}" alt="" loading="lazy">FKF</span>
+        <span class="partner"><img src="{% static 'img/kbf_logo.jpg' %}" alt="" loading="lazy">KBF</span>
+        <span class="partner"><img src="{% static 'img/khf_logo.png' %}" alt="" loading="lazy">KHF</span>
+        <span class="partner"><img src="{% static 'img/kvf_logo.png' %}" alt="" loading="lazy">KVF</span>
+      </div>
+      <p class="copyright">&copy; {% now "Y" %} Kenya Youth Intercounty Sports Association</p>
+    </footer>
   </main>
-
-  <!-- PARTNERS FOOTER -->
-  <footer class="footer">
-    <p class="partners__lbl">Official Partners &amp; Stakeholders</p>
-    <div class="partners__row">
-      <div class="partner">
-        <img src="{% static 'img/GOK.png' %}" alt="GOK" loading="lazy">
-        <div class="partner__info"><div class="partner__abbr">GOK</div><div class="partner__name">Govt of Kenya</div></div>
-      </div>
-      <div class="partner">
-        <img src="{% static 'img/COG.jpg' %}" alt="COG" loading="lazy">
-        <div class="partner__info"><div class="partner__abbr">COG</div><div class="partner__name">Council of Govs</div></div>
-      </div>
-      <div class="partner">
-        <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="KYISA" loading="lazy">
-        <div class="partner__info"><div class="partner__abbr">KYISA</div><div class="partner__name">Youth Sports</div></div>
-      </div>
-      <div class="partner">
-        <img src="{% static 'img/fkf_logo.png' %}" alt="FKF" loading="lazy">
-        <div class="partner__info"><div class="partner__abbr">FKF</div><div class="partner__name">Football Kenya</div></div>
-      </div>
-      <div class="partner">
-        <img src="{% static 'img/kbf_logo.jpg' %}" alt="KBF" loading="lazy">
-        <div class="partner__info"><div class="partner__abbr">KBF</div><div class="partner__name">Basketball Fed.</div></div>
-      </div>
-      <div class="partner">
-        <img src="{% static 'img/khf_logo.png' %}" alt="KHF" loading="lazy">
-        <div class="partner__info"><div class="partner__abbr">KHF</div><div class="partner__name">Handball Fed.</div></div>
-      </div>
-      <div class="partner">
-        <img src="{% static 'img/kvf_logo.png' %}" alt="KVF" loading="lazy">
-        <div class="partner__info"><div class="partner__abbr">KVF</div><div class="partner__name">Volleyball Fed.</div></div>
-      </div>
-    </div>
-    <p class="partners__copy">&copy; 2026 Kenya Youth Intercounty Sports Association</p>
-  </footer>
-
 </div>
 
-<!-- FORGOT PASSWORD MODAL -->
-<div class="modal-bg" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-  <div class="modal">
-    <button class="modal__close" id="modalClose" aria-label="Close">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-      </svg>
-    </button>
-    <div class="modal__icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
-      </svg>
-    </div>
-    <h3 id="modalTitle">Forgot Your Password?</h3>
-    <p>Password resets are handled by your KYISA administrator. Contact them directly for access.</p>
-    <div class="modal-btns">
-      <button class="modal-btn modal-btn--ghost" id="modalCancel">Close</button>
-      <a href="{% url 'contact' %}" class="modal-btn modal-btn--primary">Contact Support</a>
-    </div>
+<dialog class="auth-dialog" id="forgotDialog" aria-labelledby="forgotTitle">
+  <div class="auth-dialog__icon" aria-hidden="true"><i class="bi bi-key"></i></div>
+  <h2 id="forgotTitle">Forgot your password?</h2>
+  <p>For security, password resets are handled by your KYISA administrator. Contact them and they'll send you a new temporary password or one-time sign-in link.</p>
+  <div class="auth-dialog__actions">
+    <form method="dialog"><button class="btn-ghost">Close</button></form>
+    <a href="{% url 'contact' %}" class="btn-solid">Contact support</a>
   </div>
-</div>
+</dialog>
 
 <script>
-(function(){
-  /* forgot modal */
-  const modal=document.getElementById('modal');
-  document.getElementById('forgotBtn').addEventListener('click',()=>modal.classList.add('open'));
-  [document.getElementById('modalClose'),document.getElementById('modalCancel')].forEach(el=>el&&el.addEventListener('click',()=>modal.classList.remove('open')));
-  modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open');});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remove('open');});
+(function () {
+  var form = document.getElementById('loginForm');
+  var pw = document.getElementById('password');
+  var reveal = document.getElementById('revealBtn');
+  var caps = document.getElementById('capsHint');
+  var submit = document.getElementById('submitBtn');
+  var dialog = document.getElementById('forgotDialog');
 
-  /* password toggle */
-  const pw=document.getElementById('password'),eyeBtn=document.getElementById('eyeBtn'),eyeIco=document.getElementById('eyeIco');
-  const eyeOpen='<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
-  const eyeClosed='<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
-  eyeBtn&&eyeBtn.addEventListener('click',()=>{
-    const show=pw.type==='password';
-    pw.type=show?'text':'password';
-    eyeBtn.setAttribute('aria-label',show?'Hide password':'Show password');
-    eyeIco.innerHTML=show?eyeClosed:eyeOpen;
+  reveal.addEventListener('click', function () {
+    var show = pw.type === 'password';
+    pw.type = show ? 'text' : 'password';
+    reveal.setAttribute('aria-pressed', String(show));
+    reveal.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+    reveal.firstElementChild.className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
+    pw.focus();
   });
 
-  /* submit loading */
-  const form=document.getElementById('loginForm'),submitBtn=document.getElementById('submitBtn');
-  form&&form.addEventListener('submit',()=>{submitBtn.classList.add('loading');submitBtn.disabled=true;});
+  function checkCaps(e) {
+    if (e.getModifierState) caps.hidden = !e.getModifierState('CapsLock');
+  }
+  pw.addEventListener('keydown', checkCaps);
+  pw.addEventListener('keyup', checkCaps);
+  pw.addEventListener('blur', function () { caps.hidden = true; });
 
-  /* field focus */
-  document.querySelectorAll('.field__input').forEach(input=>{
-    const field=input.closest('.field');
-    input.addEventListener('focus',()=>field.classList.add('focused'));
-    input.addEventListener('blur',()=>field.classList.remove('focused'));
+  form.addEventListener('submit', function (e) {
+    if (!form.checkValidity()) return; // let the browser show its messages
+    if (submit.disabled) { e.preventDefault(); return; }
+    submit.disabled = true;
+    submit.classList.add('is-loading');
+    submit.querySelector('.submit__label').textContent = 'Signing in…';
+  });
+  // Re-enable if the page is restored from the back/forward cache.
+  window.addEventListener('pageshow', function () {
+    submit.disabled = false;
+    submit.classList.remove('is-loading');
+    submit.querySelector('.submit__label').textContent = 'Sign in';
   });
 
-  /* auto-dismiss alerts */
-  document.querySelectorAll('.alert').forEach(el=>{
-    setTimeout(()=>{
-      el.style.transition='opacity .3s, transform .3s';
-      el.style.opacity='0';el.style.transform='translateY(-5px)';
-      setTimeout(()=>el.remove(),300);
-    },5000);
+  document.getElementById('forgotBtn').addEventListener('click', function () {
+    if (dialog.showModal) dialog.showModal(); else window.location.href = '{% url "contact" %}';
   });
+  dialog.addEventListener('click', function (e) { if (e.target === dialog) dialog.close(); });
 })();
 </script>
 </body>

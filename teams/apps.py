@@ -21,6 +21,11 @@ class TeamsConfig(AppConfig):
         try:
             from django.db import connection
 
+            # Postgres-only safety net (uses information_schema / DROP COLUMN IF
+            # EXISTS). On other backends, migrations 0022–0027 create these columns.
+            if connection.vendor != 'postgresql':
+                return
+
             columns_to_add = [
                 ('verifisha_report_id',   "VARCHAR(255) NOT NULL DEFAULT ''"),
                 ('verifisha_status',      "VARCHAR(20)  NOT NULL DEFAULT 'not_checked'"),

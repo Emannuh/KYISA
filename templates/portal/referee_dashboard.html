@@ -8,9 +8,9 @@
   <div class="hero-decor"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
   <div class="hero-inner">
     <div>
-      <span class="hero-badge"><span class="pulse-dot" style="background:#fbbf24"></span> Referee Portal</span>
+      <span class="hero-badge"><span class="pulse-dot"></span> Referee Portal</span>
       <h1><i class="bi bi-flag"></i> Referee Dashboard</h1>
-      <p>Welcome, {{ user.get_full_name }}{% if profile %} {{ profile.get_level_display }}{% endif %}</p>
+      <p>Welcome, {{ user.get_full_name }}{% if profile %} · {{ profile.get_level_display }} referee{% endif %}</p>
     </div>
     {% if profile %}
     <div class="hero-chips">

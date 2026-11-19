@@ -7,6 +7,8 @@ was recorded as applied without the SQL executing.
 """
 from django.db import migrations
 
+from ._portable import PostgresSQLOrEnsureColumns
+
 
 class Migration(migrations.Migration):
 
@@ -15,7 +17,14 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL(
+        PostgresSQLOrEnsureColumns(
+            columns={
+                'prembly_status': "VARCHAR(20) NOT NULL DEFAULT 'not_checked'",
+                'prembly_reference': "VARCHAR(255) NOT NULL DEFAULT ''",
+                'prembly_verified_name': "VARCHAR(200) NOT NULL DEFAULT ''",
+                'prembly_checked_at': 'TIMESTAMPTZ NULL',
+                'is_age_eligible': 'BOOLEAN NOT NULL DEFAULT TRUE',
+            },
             sql="""
             DO $$
             BEGIN

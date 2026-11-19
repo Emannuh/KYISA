@@ -13,9 +13,40 @@ import time
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.utils import timezone
+import html as _html
+import re as _re
 from django.utils.html import strip_tags
 
 logger = logging.getLogger(__name__)
+
+
+def html_to_text(html_body):
+    """
+    Readable plain-text alternative for an HTML email.
+
+    strip_tags() alone leaves dozens of blank lines and literal entities
+    (&nbsp; &#9888; &copy;). This keeps paragraph/row structure, shows link
+    targets, decodes entities and collapses whitespace.
+    """
+    text = _re.sub(r"(?is)<(head|style|script)\b.*?</\1>", "", html_body)
+    text = _re.sub(r"(?s)<!--.*?-->", "", text)
+
+    # Links become "Label (target)" unless the label already is the target.
+    def _link(m):
+        href, label = m.group(1), strip_tags(m.group(2)).strip()
+        target = href.replace("mailto:", "")
+        if not label or label in (href, target) or href.startswith("#"):
+            return label or target
+        return f"{label} ({target})"
+
+    text = _re.sub(r"""(?is)<a\b[^>]*href=["']([^"']+)["'][^>]*>(.*?)</a>""", _link, text)
+    text = _re.sub(r"(?i)<br\s*/?>", "\n", text)
+    text = _re.sub(r"(?i)</(p|div|h[1-6]|tr|table|li)>", "\n", text)
+    text = _re.sub(r"(?i)</td>", "  ", text)
+    text = _html.unescape(strip_tags(text)).replace("\xa0", " ")
+    lines = [" ".join(line.split()) for line in text.splitlines()]
+    text = "\n".join(lines)
+    return _re.sub(r"\n{3,}", "\n\n", text).strip() + "\n"
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -102,8 +133,8 @@ def _base_html(title, body_content):
               &nbsp;&nbsp;|&nbsp;&nbsp;
               <a href="https://kyisa.org" style="color:#0b5d4b;text-decoration:none;font-size:12px;font-weight:600;">www.kyisa.org</a>
             </p>
-            <p style="margin:0 0 4px;font-size:10px;color:#d1d5db;">&copy; {year} Kenya Youth Intercounty Sports Association. All rights reserved.</p>
-            <p style="margin:0;font-size:9px;color:#e5e7eb;">This is an automated message from the KYISA portal. Please do not reply to this email.<br>For support, contact us at <a href="mailto:it@kyisa.org" style="color:#9ca3af;text-decoration:none;">it@kyisa.org</a></p>
+            <p style="margin:0 0 4px;font-size:11px;color:#9ca3af;">&copy; {year} Kenya Youth Intercounty Sports Association. All rights reserved.</p>
+            <p style="margin:0;font-size:11px;line-height:1.5;color:#9ca3af;">This is an automated message from the KYISA portal. Please do not reply to this email.<br>For support, contact us at <a href="mailto:it@kyisa.org" style="color:#9ca3af;text-decoration:none;">it@kyisa.org</a></p>
           </td>
         </tr>
       </table>
@@ -166,7 +197,7 @@ def _send(subject, html_body, recipients, fail_silently=True, sent_by=None, cc=N
     def _worker():
         from admin_dashboard.models import EmailLog
 
-        plain_body = strip_tags(html_body)
+        plain_body = html_to_text(html_body)
         from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "KYISA IT Team <it@kyisa.org>")
         max_retries = 3
         last_error = ""

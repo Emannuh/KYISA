@@ -11,6 +11,8 @@ migration was recorded as applied before the SQL actually ran.
 """
 from django.db import migrations, models
 
+from ._portable import PostgresSQLOrEnsureColumns
+
 
 class Migration(migrations.Migration):
 
@@ -20,7 +22,14 @@ class Migration(migrations.Migration):
 
     operations = [
         # Step 1: Clean up any stale columns AND add the new ones — all idempotent
-        migrations.RunSQL(
+        PostgresSQLOrEnsureColumns(
+            columns={
+                'verifisha_report_id': "VARCHAR(255) NOT NULL DEFAULT ''",
+                'verifisha_status': "VARCHAR(20) NOT NULL DEFAULT 'not_checked'",
+                'verifisha_notes': "TEXT NOT NULL DEFAULT ''",
+                'verifisha_checked_at': 'TIMESTAMPTZ NULL',
+            },
+            drop=('huduma_reference', 'huduma_notes'),
             sql="""
 DO $$
 BEGIN

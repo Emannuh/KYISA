@@ -63,7 +63,7 @@ from .web_views import (
     team_register_view, team_register_success_view,
     county_admin_register_view, county_admin_register_success_view,
     # CMS portal
-    web_login_view, web_logout_view, dashboard_view,
+    web_login_view, web_logout_view, dashboard_view, session_keepalive_view,
     magic_login_view,
     force_change_password_view,
     competitions_list_view, competition_detail_view,
@@ -228,6 +228,7 @@ urlpatterns = [
     # ── CMS PORTAL (Authenticated) ───────────────────────────────────────────
     path("portal/login/",                   web_login_view,         name="web_login"),
     path("portal/logout/",                  web_logout_view,        name="web_logout"),
+    path("portal/session/keepalive/",       session_keepalive_view, name="session_keepalive"),
     path("portal/magic/<str:token>/",       magic_login_view,       name="magic_login"),
     path("portal/force-change-password/",   force_change_password_view, name="force_change_password"),
     path("portal/",                         dashboard_view,         name="dashboard"),

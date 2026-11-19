@@ -16,11 +16,11 @@
 <section class="hero hero--dark" id="hero">
     <!-- Background image slideshow -->
     <div class="hero-bg-slideshow" id="heroBgSlideshow">
-        <div class="hero-bg-slide hero-bg-slide--active hero-bg-slide--zoom" style="background-image:url('{% static 'img/photo_410.png' %}')"></div>
-        <div class="hero-bg-slide" style="background-image:url('{% static 'img/photo_432.png' %}')"></div>
-        <div class="hero-bg-slide" style="background-image:url('{% static 'img/photo_438.png' %}')"></div>
-        <div class="hero-bg-slide" style="background-image:url('{% static 'img/photo_448.png' %}')"></div>
-        <div class="hero-bg-slide" style="background-image:url('{% static 'img/IMG-20260416-WA0305.jpg' %}')"></div>
+        <div class="hero-bg-slide hero-bg-slide--active hero-bg-slide--zoom" style="background-image:url('{% static 'img/photo_410.jpg' %}')"></div>
+        <div class="hero-bg-slide" data-bg="{% static 'img/photo_432.jpg' %}"></div>
+        <div class="hero-bg-slide" data-bg="{% static 'img/photo_438.jpg' %}"></div>
+        <div class="hero-bg-slide" data-bg="{% static 'img/photo_448.jpg' %}"></div>
+        <div class="hero-bg-slide" data-bg="{% static 'img/IMG-20260416-WA0305.jpg' %}"></div>
     </div>
 
     <div class="hero-bg hero-bg--dark">
@@ -43,7 +43,8 @@
                 </h1>
                 <p class="hero-tagline anim-up" style="--delay:.85s">THE HOME OF KENYAN YOUTH SPORTS</p>
                 <p class="hero-quote anim-up" style="--delay:1s">
-                    &ldquo;Let me win,But If I Cannot Win, Let Me Be Brave In The Attempt- Special Olympics.&rdquo;
+                    &ldquo;Let me win. But if I cannot win, let me be brave in the attempt.&rdquo;
+                    <span class="hero-quote__by">Special Olympics athlete oath</span>
                 </p>
                 <div class="hero-actions anim-up" style="--delay:1.15s">
                     <a href="{% url 'public_competitions' %}" class="btn btn--gold btn--lg">
@@ -61,7 +62,7 @@
                 <div class="kenya-flag-wrap">
                     <div class="flag-pole"><div class="flag-pole-cap"></div></div>
                     <div class="kenya-flag">
-                        <img src="{% static 'img/kenya_flag.png' %}" alt="Flag of Kenya" class="flag-img">
+                        <img src="{% static 'img/kenya_flag.svg' %}" alt="Flag of Kenya" class="flag-img" width="600" height="400">
                     </div>
                 </div>
                 <div class="flag-text-block">
@@ -332,6 +333,7 @@
 </section>
 {% endif %}
 
+{% if latest_albums or latest_articles or latest_videos %}
 <section class="sec media-highlights" id="news">
     <div class="container">
 
@@ -496,17 +498,10 @@
             </div>
         </div>
 
-        <!-- Empty state when no media content -->
-        {% if not latest_albums and not latest_articles and not latest_videos %}
-        <div class="mh-empty">
-            <i class="bi bi-camera-reels"></i>
-            <h3>Media Highlights Coming Soon</h3>
-            <p>Photos, news, and videos from KYISA events will appear here.</p>
-        </div>
-        {% endif %}
 
     </div>
 </section>
+{% endif %}
 
 <!-- ══════════════════════════════════════════════════════════════════════════
      MATCH CENTER FIXTURES + STATS + RESULTS
@@ -532,10 +527,12 @@
                     <span class="mc-stat__num" data-count="47">0</span>
                     <span class="mc-stat__label">Counties Represented</span>
                 </div>
+                {% if stats.competitions %}
                 <div class="mc-stat reveal" style="--delay:.18s">
-                    <span class="mc-stat__num" data-count="{{ stats.competitions|default:'0' }}">0</span>
+                    <span class="mc-stat__num" data-count="{{ stats.competitions }}">0</span>
                     <span class="mc-stat__label">Competitions</span>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -583,7 +580,7 @@
                 <!-- Fixtures column -->
                 <div class="mc-col">
                     <div class="mc-col__head reveal">
-                        <span class="mc-badge mc-badge--red">Live</span>
+                        {% if live_matches %}<span class="mc-badge mc-badge--red">Live</span>{% else %}<span class="mc-badge">Next up</span>{% endif %}
                         <h3 class="mc-col__title">Upcoming Fixtures</h3>
                     </div>
                     {% if upcoming_fixtures %}
@@ -768,9 +765,20 @@
         var bgSlides = document.querySelectorAll('.hero-bg-slide');
         var activeBg = 0;
         var bgCount = bgSlides.length;
+        /* Only the first photo loads with the page; each later one is fetched
+           shortly before it is shown (saves several MB on first visit). */
+        function loadBg(el) {
+            if (el && el.dataset.bg) {
+                el.style.backgroundImage = "url('" + el.dataset.bg + "')";
+                delete el.dataset.bg;
+            }
+        }
+        setTimeout(function () { loadBg(bgSlides[1]); }, 2500);
         function nextBgSlide() {
             bgSlides[activeBg].classList.remove('hero-bg-slide--active', 'hero-bg-slide--zoom');
             activeBg = (activeBg + 1) % bgCount;
+            loadBg(bgSlides[activeBg]);
+            loadBg(bgSlides[(activeBg + 1) % bgCount]);
             bgSlides[activeBg].classList.add('hero-bg-slide--active');
             requestAnimationFrame(function(){
                 bgSlides[activeBg].classList.add('hero-bg-slide--zoom');

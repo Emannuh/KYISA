@@ -315,37 +315,27 @@
             <a href="{% url 'edit_user_roles' user_id=detail_user.id %}" class="action-link" style="background:#E3F2FD;color:#1565C0;">
                 <span class="al-icon" style="background:#BBDEFB;"><i class="bi bi-gear"></i></span> Change Role
             </a>
-            <a href="{% url 'reset_user_password' user_id=detail_user.id %}"
-               onclick="return confirm('Generate a new random password for {{ detail_user.email }}?')"
-               class="action-link" style="background:#FFF3E0;color:#E65100;">
+            <form method="post" action="{% url 'reset_user_password' user_id=detail_user.id %}" class="inline-form" onsubmit="return confirm('Generate a new random password for {{ detail_user.email }}?')">{% csrf_token %}<button type="submit" class="action-link" style="background:#FFF3E0;color:#E65100;">
                 <span class="al-icon" style="background:#FFCC80;"><i class="bi bi-key"></i></span> Reset Password
-            </a>
-            <a href="{% url 'toggle_user_status' user_id=detail_user.id %}"
-               onclick="return confirm('{% if detail_user.is_active %}Deactivate{% else %}Activate{% endif %} {{ detail_user.email }}?')"
-               class="action-link" style="background:#FFF8E1;color:#F57F17;">
+            </button></form>
+            <form method="post" action="{% url 'toggle_user_status' user_id=detail_user.id %}" class="inline-form" onsubmit="return confirm('{% if detail_user.is_active %}Deactivate{% else %}Activate{% endif %} {{ detail_user.email }}?')">{% csrf_token %}<button type="submit" class="action-link" style="background:#FFF8E1;color:#F57F17;">
                 <span class="al-icon" style="background:#FFE082;">{% if detail_user.is_active %}<i class="bi bi-pause-fill"></i>{% else %}<i class="bi bi-play-fill"></i>{% endif %}</span>
                 {% if detail_user.is_active %}Deactivate Account{% else %}Activate Account{% endif %}
-            </a>
+            </button></form>
             {% if not detail_user.is_superuser and detail_user != request.user %}
-            <a href="{% url 'user_suspend_toggle' user_id=detail_user.id %}"
-               onclick="return confirm('{% if detail_user.is_suspended %}Unsuspend{% else %}Suspend{% endif %} {{ detail_user.email }}?')"
-               class="action-link" style="{% if detail_user.is_suspended %}background:#E8F5E9;color:#1B5E20;{% else %}background:#FFEBEE;color:#C62828;{% endif %}">
+            <form method="post" action="{% url 'user_suspend_toggle' user_id=detail_user.id %}" class="inline-form" onsubmit="return confirm('{% if detail_user.is_suspended %}Unsuspend{% else %}Suspend{% endif %} {{ detail_user.email }}?')">{% csrf_token %}<button type="submit" class="action-link" style="{% if detail_user.is_suspended %}background:#E8F5E9;color:#1B5E20;{% else %}background:#FFEBEE;color:#C62828;{% endif %}">
                 <span class="al-icon" style="{% if detail_user.is_suspended %}background:#C8E6C9;{% else %}background:#FFCDD2;{% endif %}">
                     {% if detail_user.is_suspended %}<i class="bi bi-check-lg"></i>{% else %}<i class="bi bi-x-lg"></i>{% endif %}
                 </span>
                 {% if detail_user.is_suspended %}Unsuspend{% else %}Suspend Account{% endif %}
-            </a>
-            <a href="{% url 'user_toggle_staff' user_id=detail_user.id %}"
-               onclick="return confirm('{% if detail_user.is_staff %}Revoke{% else %}Grant{% endif %} staff access?')"
-               class="action-link" style="background:#ECEFF1;color:#455A64;">
+            </button></form>
+            <form method="post" action="{% url 'user_toggle_staff' user_id=detail_user.id %}" class="inline-form" onsubmit="return confirm('{% if detail_user.is_staff %}Revoke{% else %}Grant{% endif %} staff access?')">{% csrf_token %}<button type="submit" class="action-link" style="background:#ECEFF1;color:#455A64;">
                 <span class="al-icon" style="background:#CFD8DC;">{% if detail_user.is_staff %}<i class="bi bi-lock"></i>{% else %}<i class="bi bi-unlock"></i>{% endif %}</span>
                 {% if detail_user.is_staff %}Revoke Staff{% else %}Grant Staff{% endif %}
-            </a>
-            <a href="{% url 'delete_user' user_id=detail_user.id %}"
-               onclick="return confirm('WARNING: PERMANENTLY DELETE {{ detail_user.email }}? This cannot be undone!')"
-               class="action-link" style="background:#C62828;color:#fff;margin-top:.5rem;">
+            </button></form>
+            <form method="post" action="{% url 'delete_user' user_id=detail_user.id %}" class="inline-form" onsubmit="return confirm('WARNING: PERMANENTLY DELETE {{ detail_user.email }}? This cannot be undone!')">{% csrf_token %}<button type="submit" class="action-link" style="background:#C62828;color:#fff;margin-top:.5rem;">
                 <span class="al-icon" style="background:rgba(255,255,255,.2);"><i class="bi bi-trash"></i></span> Delete User
-            </a>
+            </button></form>
             {% endif %}
         </div>
     </div>

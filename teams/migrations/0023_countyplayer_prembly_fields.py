@@ -4,6 +4,8 @@ Uses DO $$ ... $$ idempotent SQL (same pattern as 0022).
 """
 from django.db import migrations, models
 
+from ._portable import PostgresSQLOrEnsureColumns
+
 
 class Migration(migrations.Migration):
 
@@ -12,7 +14,13 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL(
+        PostgresSQLOrEnsureColumns(
+            columns={
+                'prembly_status': "VARCHAR(20) NOT NULL DEFAULT 'not_checked'",
+                'prembly_reference': "VARCHAR(255) NOT NULL DEFAULT ''",
+                'prembly_notes': "TEXT NOT NULL DEFAULT ''",
+                'prembly_checked_at': 'TIMESTAMPTZ NULL',
+            },
             sql="""
 DO $$
 BEGIN

@@ -11,6 +11,8 @@ columns that are genuinely missing.  Safe to run multiple times.
 """
 from django.db import migrations
 
+from ._portable import ensure_columns
+
 
 def ensure_prembly_columns(apps, schema_editor):
     """Add missing prembly/age columns directly via cursor, checking first."""
@@ -21,6 +23,11 @@ def ensure_prembly_columns(apps, schema_editor):
         'prembly_checked_at':  "TIMESTAMP WITH TIME ZONE NULL",
         'is_age_eligible':     "BOOLEAN NOT NULL DEFAULT TRUE",
     }
+
+    if schema_editor.connection.vendor != 'postgresql':
+        # information_schema / ANY() are Postgres-only; use portable introspection.
+        ensure_columns(schema_editor.connection, columns)
+        return
 
     with schema_editor.connection.cursor() as cursor:
         # Fetch which columns already exist

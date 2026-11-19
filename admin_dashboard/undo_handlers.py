@@ -114,19 +114,6 @@ def undo_player_suspension(log):
         return False, "Player no longer exists"
 
 
-def undo_user_deactivation(log):
-    """Undo user deactivation."""
-    try:
-        user = User.objects.get(pk=log.object_id)
-        if not user.is_active:
-            user.is_active = True
-            user.save()
-            return True, f"User '{user.email}' reactivated"
-        return False, "User is already active"
-    except User.DoesNotExist:
-        return False, "User no longer exists"
-
-
 def undo_user_role_change(log):
     """Undo user role change."""
     try:

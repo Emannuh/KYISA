@@ -1,6 +1,7 @@
 # admin_dashboard/views.py — Adapted for KYISA CMS models
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.utils import timezone
 from django.utils.safestring import mark_safe
@@ -33,49 +34,43 @@ def send_welcome_email(user_obj, password, role):
     Includes:
       - Updated narration: account created by the KYISA Systems Admin Team
       - Credentials table (email, temp password, role)
-      - One-click magic OTP login link (valid 72 h, single-use)
+      - One-click magic OTP login link (valid LoginToken.TTL_HOURS, single-use)
     """
     import secrets
+    from django.conf import settings
     from django.utils import timezone
+    from django.utils.html import escape
     from datetime import timedelta
     from kyisa_cms.email_utils import _base_html, _info_box, _send
     from accounts.models import LoginToken
 
-    role_display = dict(UserRole.choices).get(role, role)
-    site_url = "https://kyisa.org"
+    role_display = escape(dict(UserRole.choices).get(role, role))
+    full_name = escape(f"{user_obj.first_name} {user_obj.last_name}".strip())
+    site_url = settings.SITE_URL
     login_url = f"{site_url}/portal/login/"
 
-    # ── Generate a fresh single-use magic login token (72 h) ──────────────
+    # ── Generate a fresh single-use magic login token ─────────────────────
     raw_token = secrets.token_urlsafe(48)
     LoginToken.objects.create(
         user=user_obj,
         token=raw_token,
-        expires_at=timezone.now() + timedelta(hours=72),
+        expires_at=LoginToken.default_expiry(),
     )
     magic_url = f"{site_url}/portal/magic/{raw_token}/"
 
-    # ── Copy-to-clipboard button: inline JS works in modern email clients
-    # (Gmail web, Apple Mail, Outlook on Mac). In clients that block scripts
-    # the password is still visible in plain text so the user can copy manually.
-    pw_copy_block = f"""<span style="display:inline-flex;align-items:center;gap:8px;vertical-align:middle;">
-  <code id="pw-val" style="background:#f1f5f9;color:#0f172a;font-family:monospace;
-        font-size:15px;font-weight:700;padding:5px 12px;border-radius:6px;
-        letter-spacing:.08em;border:1px solid #cbd5e1;">{password}</code>
-  <a href="#" onclick="(function(){{
-       var t=document.getElementById('pw-val');
-       if(navigator.clipboard){{navigator.clipboard.writeText(t.textContent);}}
-       else{{var r=document.createRange();r.selectNode(t);window.getSelection().removeAllRanges();window.getSelection().addRange(r);document.execCommand('copy');window.getSelection().removeAllRanges();}}
-       this.textContent='Copied!';this.style.background='#16a34a';
-       setTimeout(function(){{this.textContent='Copy';this.style.background='#0f172a';}}.bind(this),1800);
-       return false;}}).call(this);return false;"
-     style="display:inline-block;background:#0f172a;color:#f0fdf4;text-decoration:none;
-            font-size:11px;font-weight:700;padding:5px 11px;border-radius:6px;
-            letter-spacing:.3px;cursor:pointer;transition:background .2s;">Copy</a>
-</span>"""
+    # Email clients strip JavaScript, so there is no "Copy" button. The password
+    # sits in its own block with user-select:all: one tap/click selects it all.
+    pw_copy_block = (
+        '<code style="display:inline-block;background:#f1f5f9;color:#0f172a;'
+        'font-family:Consolas,Menlo,monospace;font-size:15px;font-weight:700;'
+        'padding:6px 12px;border-radius:6px;letter-spacing:.08em;'
+        'border:1px solid #cbd5e1;user-select:all;-webkit-user-select:all;">'
+        f'{escape(password)}</code>'
+    )
 
     body = f"""
     <p style="margin:0 0 16px;font-size:15px;color:#1f2937;">
-      Dear <strong>{user_obj.first_name} {user_obj.last_name}</strong>,
+      Dear <strong>{full_name}</strong>,
     </p>
     <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.65;">
       Welcome to the <strong>KYISA Competition Management System</strong>. Your account has been
@@ -85,9 +80,9 @@ def send_welcome_email(user_obj, password, role):
 
     <!-- ── CREDENTIALS ── -->
     <p style="margin:0 0 8px;font-size:11px;font-weight:700;text-transform:uppercase;
-              letter-spacing:.08em;color:#6b7280;">Option 1 — Login with credentials</p>
+              letter-spacing:.08em;color:#6b7280;">Option 1: sign in with your credentials</p>
     {_info_box([
-        ("Email", user_obj.email),
+        ("Email", escape(user_obj.email)),
         ("Temporary Password", pw_copy_block),
         ("Role", role_display),
     ])}
@@ -108,12 +103,11 @@ def send_welcome_email(user_obj, password, role):
         <td style="padding:20px 24px;">
           <p style="margin:0 0 4px;font-size:11px;font-weight:700;text-transform:uppercase;
                     letter-spacing:.08em;color:#1d4ed8;">
-            &#9889; Option 2 — Magic Login Link (no password needed)
+            &#9889; Option 2: one-click sign-in link (no password needed)
           </p>
           <p style="margin:6px 0 18px;font-size:13px;color:#374151;line-height:1.6;">
-            Skip the password entirely — click the button below to log in instantly.
-            Works great on mobile.<br>
-            <strong>Valid for 72 hours &middot; One use only.</strong>
+            Skip the password and sign in with one click. Works well on mobile.<br>
+            <strong>Valid for {LoginToken.TTL_HOURS} hours &middot; One use only.</strong>
           </p>
           <div style="text-align:center;margin-bottom:14px;">
             <a href="{magic_url}"
@@ -141,9 +135,10 @@ def send_welcome_email(user_obj, password, role):
     </div>
     """
 
-    html = _base_html(f"Welcome to KYISA CMS — Your {role_display} Account", body)
+    title = f"Welcome to KYISA CMS: your {role_display} account"
+    html = _base_html(title, body)
     _send(
-        subject=f"Welcome to KYISA CMS — Your {role_display} Account",
+        subject=title,
         html_body=html,
         recipients=[user_obj.email],
         sent_by=None,
@@ -152,17 +147,19 @@ def send_welcome_email(user_obj, password, role):
 
 def send_password_reset_email(user_obj, new_password):
     """Send branded HTML password reset email."""
+    from django.conf import settings
+    from django.utils.html import escape
     from kyisa_cms.email_utils import _base_html, _info_box, _action_button, _send
 
-    login_url = "https://kyisa.org/portal/login/"
+    login_url = f"{settings.SITE_URL}/portal/login/"
 
     body = f"""
-    <p>Dear <strong>{user_obj.first_name} {user_obj.last_name}</strong>,</p>
+    <p>Dear <strong>{escape(user_obj.first_name)} {escape(user_obj.last_name)}</strong>,</p>
     <p>Your password has been reset by a KYISA administrator. Please use the new credentials below
     to log in.</p>
     {_info_box([
-        ("Email", user_obj.email),
-        ("New Password", f"<code style='background:#f0f0f0;padding:2px 8px;border-radius:4px;font-size:15px;letter-spacing:1px;'>{new_password}</code>"),
+        ("Email", escape(user_obj.email)),
+        ("New Password", f"<code style='background:#f0f0f0;padding:2px 8px;border-radius:4px;font-size:15px;letter-spacing:1px;user-select:all;'>{escape(new_password)}</code>"),
     ])}
     <div style="background:#FFEBEE;border-left:4px solid #C62828;padding:12px 16px;border-radius:4px;margin:16px 0;">
       <strong style="color:#C62828;">&#9888; Security Notice:</strong> You will be required to change
@@ -172,9 +169,9 @@ def send_password_reset_email(user_obj, new_password):
     <p style="font-size:13px;color:#666;">If the button above doesn't work, copy and paste this URL
     into your browser:<br><a href="{login_url}">{login_url}</a></p>
     """
-    html = _base_html("Password Reset — KYISA CMS", body)
+    html = _base_html("Password reset | KYISA CMS", body)
     _send(
-        subject="KYISA CMS — Your Password Has Been Reset",
+        subject="KYISA CMS: your password has been reset",
         html_body=html,
         recipients=[user_obj.email],
         sent_by=None,
@@ -263,8 +260,8 @@ def approve_registrations(request):
                             f'Linked to existing user: {team.contact_email}'
                         ))
                     else:
-                        import secrets, string as _s
-                        default_pw = ''.join(secrets.choice(_s.ascii_letters + _s.digits) for _ in range(10))
+                        from accounts.passwords import generate_temp_password
+                        default_pw = generate_temp_password()
                         mgr = User.objects.create_user(
                             email=team.contact_email,
                             password=default_pw,
@@ -625,7 +622,8 @@ def create_user(request):
             return redirect('manage_users')
 
         try:
-            password = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
+            from accounts.passwords import generate_temp_password
+            password = generate_temp_password()
             user_obj = User.objects.create_user(
                 email=email,
                 password=password,
@@ -667,6 +665,7 @@ def create_user(request):
 
 @login_required
 @user_passes_test(superadmin_required)
+@require_POST  # state-changing: never on GET (CSRF-protected form only)
 def toggle_user_status(request, user_id):
     """Activate or deactivate a user."""
     user_obj = get_object_or_404(User, id=user_id)
@@ -679,22 +678,38 @@ def toggle_user_status(request, user_id):
     user_obj.save()
 
     status = "activated" if user_obj.is_active else "deactivated"
+    ActivityLog.objects.create(
+        user=request.user,
+        action='USER_UPDATE',
+        description=f'{request.user.get_full_name()} {status} user: {user_obj.email}',
+        object_repr=user_obj.email,
+        ip_address=request.META.get('REMOTE_ADDR', ''),
+    )
     messages.success(request, f"{user_obj.email} has been {status}.")
     return redirect('manage_users')
 
 
 @login_required
 @user_passes_test(superadmin_required)
+@require_POST  # state-changing: never on GET (CSRF-protected form only)
 def reset_user_password(request, user_id):
     """Reset password for any user."""
     import random, string
 
     user_obj = get_object_or_404(User, id=user_id)
-    new_password = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
+    from accounts.passwords import generate_temp_password
+    new_password = generate_temp_password()
     user_obj.set_password(new_password)
     user_obj.must_change_password = True
     user_obj.save(update_fields=['password', 'must_change_password'])
 
+    ActivityLog.objects.create(
+        user=request.user,
+        action='PASSWORD_CHANGE',
+        description=f'{request.user.get_full_name()} reset the password for {user_obj.email} (temporary password emailed)',
+        object_repr=user_obj.email,
+        ip_address=request.META.get('REMOTE_ADDR', ''),
+    )
     send_password_reset_email(user_obj, new_password)
     messages.success(request, mark_safe(
         f'Password reset for {user_obj.email}.<br>'
@@ -777,6 +792,7 @@ def edit_user_roles(request, user_id):
 
 @login_required
 @user_passes_test(superadmin_required)
+@require_POST  # state-changing: never on GET (CSRF-protected form only)
 def delete_user(request, user_id):
     """Delete a user account."""
     user_obj = get_object_or_404(User, id=user_id)
@@ -1006,6 +1022,7 @@ def user_edit_profile(request, user_id):
 
 @login_required
 @user_passes_test(superadmin_required)
+@require_POST  # state-changing: never on GET (CSRF-protected form only)
 def user_suspend_toggle(request, user_id):
     """Suspend or unsuspend a user account."""
     user_obj = get_object_or_404(User, id=user_id)
@@ -1053,8 +1070,13 @@ def user_force_password(request, user_id):
             messages.error(request, 'Password cannot be empty.')
             return redirect('user_detail', user_id=user_obj.id)
 
-        if len(new_password) < 6:
-            messages.error(request, 'Password must be at least 6 characters.')
+        from django.contrib.auth.password_validation import validate_password
+        from django.core.exceptions import ValidationError
+        try:
+            validate_password(new_password, user=user_obj)
+        except ValidationError as exc:
+            for err in exc.messages:
+                messages.error(request, err)
             return redirect('user_detail', user_id=user_obj.id)
 
         if new_password != confirm_password:
@@ -1082,6 +1104,7 @@ def user_force_password(request, user_id):
 
 @login_required
 @user_passes_test(superadmin_required)
+@require_POST  # state-changing: never on GET (CSRF-protected form only)
 def user_toggle_staff(request, user_id):
     """Toggle is_staff status for a user."""
     user_obj = get_object_or_404(User, id=user_id)

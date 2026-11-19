@@ -1,4 +1,4 @@
-{% load static %}
+{% load static assets %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,7 +26,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=20260413b">
+    <link rel="stylesheet" href="{% asset 'css/style.css' %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- Structured Data (JSON-LD) -->
@@ -60,88 +60,65 @@
     ul{list-style:none}
     img{max-width:100%;display:block}
     .container{max-width:1200px;margin:0 auto;padding:0 1.5rem}
-    /* Preloader */
-    .preloader{position:fixed;inset:0;background:#fff;z-index:99999;display:flex;align-items:center;justify-content:center;transition:opacity .5s,visibility .5s}
-    .preloader--done{opacity:0;visibility:hidden;pointer-events:none}
-    .preloader-inner{text-align:center}
-    .preloader-logo{width:90px;height:90px;border-radius:50%;background:#fff;border:3px solid rgba(27,94,32,.15);margin:0 auto 1.5rem;object-fit:cover;box-shadow:0 4px 20px rgba(27,94,32,.12)}
-    .preloader-name{display:block;font-family:'Outfit',sans-serif;font-size:1.6rem;font-weight:800;color:#1B5E20;letter-spacing:5px}
-    .preloader-tagline{display:block;font-size:.75rem;color:#757575;letter-spacing:3px;text-transform:uppercase;margin-top:.25rem}
-    .preloader-bar{width:180px;height:2px;background:rgba(27,94,32,.1);border-radius:2px;margin:1.5rem auto 0;overflow:hidden}
-    .preloader-bar-fill{height:100%;width:0;background:linear-gradient(90deg,#1B5E20,#4CAF50);border-radius:2px;transition:width .12s}
-    /* Navbar */
-    .fkf-nav{position:fixed;top:0;left:0;right:0;z-index:10000;padding:0 2rem;height:70px;display:flex;align-items:center;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none;transition:background .4s ease,box-shadow .4s ease,backdrop-filter .4s ease}
-    .fkf-nav--solid{background:linear-gradient(135deg,rgba(10,26,13,.97),rgba(13,40,16,.95));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 2px 24px rgba(0,0,0,.35)}
+    /* Navbar (critical): see style.css for the full rules */
+    .fkf-nav{position:fixed;top:0;left:0;right:0;z-index:10000;height:72px;padding:0 1.5rem;display:flex;align-items:center;background:transparent}
+    .fkf-nav--solid{height:64px;background:rgba(255,255,255,.88);backdrop-filter:saturate(1.6) blur(14px);-webkit-backdrop-filter:saturate(1.6) blur(14px);border-bottom:1px solid rgba(15,23,19,.07)}
     </style>
     {% block extra_css %}{% endblock %}
 </head>
-<body>
-
-<!-- ── PRELOADER ───────────────────────────────────────────────────────────── -->
-<div id="preloader" class="preloader">
-    <div class="preloader-inner">
-        <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="KYISA" class="preloader-logo">
-        <div class="preloader-text">
-            <span class="preloader-name">KYISA</span>
-            <span class="preloader-tagline">Kenya Youth Intercounty Sports Association</span>
-        </div>
-        <div class="preloader-bar">
-            <div class="preloader-bar-fill" id="preloaderBar"></div>
-        </div>
-    </div>
-</div>
+<body id="top">
 
 <!-- ── NAVBAR ──────────────────────────────────────────────────────────────── -->
-<nav class="fkf-nav" id="fkfNav">
+<nav class="fkf-nav" id="fkfNav" aria-label="Main">
     <div class="fkf-nav-inner">
-        <a href="{% url 'home' %}" class="fkf-nav-brand">
-            <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="KYISA">
-            <div class="fkf-nav-brand-text">
+        <a href="{% url 'home' %}" class="fkf-nav-brand" aria-label="KYISA home">
+            <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="" width="40" height="40">
+            <span class="fkf-nav-brand-text">
                 <span class="brand-name">KYISA</span>
-                <span class="brand-sub">Official</span>
-            </div>
+                <span class="brand-sub">Youth Intercounty Sports</span>
+            </span>
         </a>
 
-        <button class="fkf-nav-toggle" id="navToggle" aria-label="Menu">
+        <button type="button" class="fkf-nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
             <span></span><span></span><span></span>
         </button>
 
         <ul class="fkf-nav-links" id="navLinks">
-            <!-- Login link visible only in mobile hamburger menu -->
-            <li class="nav-mobile-login">
-                {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard' %}"><i class="bi bi-box-arrow-in-right"></i> Portal</a>
-                {% else %}
-                    <a href="{% url 'web_login' %}"><i class="bi bi-box-arrow-in-right"></i> Portal Login</a>
-                {% endif %}
+            <li><a href="{% url 'home' %}" class="{% if active_page == 'home' %}active{% endif %}"{% if active_page == 'home' %} aria-current="page"{% endif %}>Home</a></li>
+            <li class="nav-dropdown">
+                <button type="button" class="nav-dd-toggle{% if active_page == 'about' or active_page == 'leadership' %} active{% endif %}" aria-expanded="false" aria-controls="ddAbout">About <i class="bi bi-chevron-down" aria-hidden="true"></i></button>
+                <ul class="dropdown-menu" id="ddAbout">
+                    <li><a href="{% url 'about' %}" class="{% if active_page == 'about' %}active{% endif %}"><i class="bi bi-info-circle" aria-hidden="true"></i> About KYISA</a></li>
+                    <li><a href="{% url 'leadership' %}" class="{% if active_page == 'leadership' %}active{% endif %}"><i class="bi bi-people" aria-hidden="true"></i> Leadership</a></li>
+                </ul>
             </li>
-            <li><a href="{% url 'home' %}" class="{% if active_page == 'home' %}active{% endif %}">Home</a></li>
-            <li><a href="{% url 'about' %}" class="{% if active_page == 'about' %}active{% endif %}">About</a></li>
-            <li><a href="{% url 'leadership' %}" class="{% if active_page == 'leadership' %}active{% endif %}">Leadership</a></li>
             <li><a href="{% url 'public_competitions' %}" class="{% if active_page == 'competitions' %}active{% endif %}">Competitions</a></li>
             <li><a href="{% url 'public_results' %}" class="{% if active_page == 'results' %}active{% endif %}">Results</a></li>
             <li class="nav-dropdown">
-                <a href="#" class="{% if active_page == 'news_media' %}active{% endif %}" onclick="this.parentElement.classList.toggle('open');return false;">News & Media ▾</a>
-                <ul class="dropdown-menu">
-                    <li><a href="{% url 'news_media:news_list' %}">📰 News & Highlights</a></li>
-                    <li><a href="{% url 'news_media:gallery_list' %}">📸 Gallery</a></li>
-                    <li><a href="{% url 'news_media:videos_list' %}">🎬 Videos</a></li>
+                <button type="button" class="nav-dd-toggle{% if active_page == 'news_media' %} active{% endif %}" aria-expanded="false" aria-controls="ddMedia">News &amp; Media <i class="bi bi-chevron-down" aria-hidden="true"></i></button>
+                <ul class="dropdown-menu" id="ddMedia">
+                    <li><a href="{% url 'news_media:news_list' %}"><i class="bi bi-newspaper" aria-hidden="true"></i> News &amp; Highlights</a></li>
+                    <li><a href="{% url 'news_media:gallery_list' %}"><i class="bi bi-images" aria-hidden="true"></i> Gallery</a></li>
+                    <li><a href="{% url 'news_media:videos_list' %}"><i class="bi bi-play-circle" aria-hidden="true"></i> Videos</a></li>
                 </ul>
             </li>
             <li><a href="{% url 'contact' %}" class="{% if active_page == 'contact' %}active{% endif %}">Contact</a></li>
-            <li class="nav-dropdown">
-                <a href="#" class="{% if active_page == 'register' %}active{% endif %}" onclick="this.parentElement.classList.toggle('open');return false;">Register ▾</a>
-                <ul class="dropdown-menu">
-                    <li><a href="{% url 'county_admin_register' %}">🏛️ County Registration</a></li>
-                </ul>
+            <li class="nav-mobile-only nav-mobile-ctas">
+                <a href="{% url 'county_admin_register' %}" class="fkf-nav-btn fkf-nav-btn--ghost"><i class="bi bi-building-add" aria-hidden="true"></i> Register your county</a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="fkf-nav-btn fkf-nav-btn--primary"><i class="bi bi-grid-1x2" aria-hidden="true"></i> Open portal</a>
+                {% else %}
+                <a href="{% url 'web_login' %}" class="fkf-nav-btn fkf-nav-btn--primary"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Staff login</a>
+                {% endif %}
             </li>
         </ul>
 
         <div class="fkf-nav-actions">
+            <a href="{% url 'county_admin_register' %}" class="fkf-nav-btn fkf-nav-btn--ghost{% if active_page == 'register' %} active{% endif %}">Register county</a>
             {% if user.is_authenticated %}
-                <a href="{% url 'dashboard' %}" class="fkf-nav-btn">Portal</a>
+            <a href="{% url 'dashboard' %}" class="fkf-nav-btn fkf-nav-btn--primary"><i class="bi bi-grid-1x2" aria-hidden="true"></i> Portal</a>
             {% else %}
-                <a href="{% url 'web_login' %}" class="fkf-nav-btn">Staff Login</a>
+            <a href="{% url 'web_login' %}" class="fkf-nav-btn fkf-nav-btn--primary"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Staff login</a>
             {% endif %}
         </div>
     </div>
@@ -151,7 +128,7 @@
 {% if messages %}
 <div class="container" style="margin-top:5rem;position:relative;z-index:10;">
     {% for message in messages %}
-    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    <div class="alert alert-{{ message.tags }}" role="status" data-autodismiss>{{ message }}</div>
     {% endfor %}
 </div>
 {% endif %}
@@ -161,123 +138,155 @@
 <!-- ── FOOTER ─────────────────────────────────────────────────────────────── -->
 <footer class="fkf-footer">
     <div class="kenya-stripe"></div>
-    <div class="fkf-footer-main">
-        <div class="container">
-            <div class="fkf-footer-grid">
-                <div class="fkf-footer-brand">
-                    <div class="fkf-footer-brand-top">
-                        <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="KYISA">
-                        <h3>KYISA</h3>
-                    </div>
-                    <p>Kenya Youth Intercounty Sports Association enhancing the spirit of devolution through sports.</p>
-                    <div class="fkf-social">
-                        <a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
-                        <a href="#" aria-label="X"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
-                        <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg></a>
-                        <a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0C.488 3.45.029 5.804 0 12c.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0C23.512 20.55 23.971 18.196 24 12c-.029-6.185-.484-8.549-4.385-8.816zM9 16V8l8 4-8 4z"/></svg></a>
-                    </div>
-                </div>
-                <div>
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="{% url 'home' %}">Home</a></li>
-                        <li><a href="{% url 'about' %}">About KYISA</a></li>
-                        <li><a href="{% url 'public_competitions' %}">Competitions</a></li>
-                        <li><a href="{% url 'public_results' %}">Results</a></li>
-                        <li><a href="{% url 'contact' %}">Contact Us</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4>Resources</h4>
-                    <ul>
-                            <li><a href="{% url 'county_admin_register' %}">County Registration</a></li>
-                        <li><a href="{% url 'web_login' %}">Staff Portal</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4>Contact</h4>
-                    <ul>
-                        <li>P.O BOX 20655-00200, Nairobi</li>
-                        <li>info@kyisa.org</li>
-                        <li>Info.kyisa@gmail.com</li>
-                        <li>+254 700 000 000</li>
-                    </ul>
-                </div>
+
+    <div class="container">
+        <!-- Call to action -->
+        <div class="ft-cta">
+            <div>
+                <h2>Bring your county to KYISA</h2>
+                <p>Register your county delegation for the next edition of the Kenya Youth Intercounty Sports Association games.</p>
             </div>
-            <!-- Affiliations strip -->
-            <div class="footer-affil-strip">
-                <span class="footer-affil-label">Affiliated to:</span>
-                <div class="footer-affil-logos">
-                    <img src="{% static 'img/fkf_logo.png' %}" alt="FKF" title="Football Kenya Federation">
-                    <img src="{% static 'img/kbf_logo.jpg' %}" alt="KBF" title="Kenya Basketball Federation">
-                    <img src="{% static 'img/kvf_logo.png' %}" alt="KVF" title="Kenya Volleyball Federation">
-                    <img src="{% static 'img/khf_logo.png' %}" alt="KHF" title="Kenya Handball Federation">
+            <div class="ft-cta__actions">
+                <a href="{% url 'county_admin_register' %}" class="ft-btn ft-btn--light"><i class="bi bi-building-add" aria-hidden="true"></i> Register your county</a>
+                <a href="{% url 'contact' %}" class="ft-btn ft-btn--ghost">Talk to us</a>
+            </div>
+        </div>
+
+        <div class="ft-grid">
+            <div class="ft-brand">
+                <a href="{% url 'home' %}" class="ft-brand__top">
+                    <img src="{% static 'img/kyisa_logo_official.jpg' %}" alt="" width="44" height="44">
+                    <span><strong>KYISA</strong><small>Kenya Youth Intercounty Sports Association</small></span>
+                </a>
+                <p>Enhancing the spirit of devolution through youth sports across all 47 counties.</p>
+                {% comment %}
+                Social links: replace each href with the real KYISA profile URL, then remove this comment wrapper.
+                <div class="ft-social">
+                    <a href="https://facebook.com/" aria-label="KYISA on Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="https://x.com/" aria-label="KYISA on X"><i class="bi bi-twitter-x"></i></a>
+                    <a href="https://instagram.com/" aria-label="KYISA on Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="https://youtube.com/" aria-label="KYISA on YouTube"><i class="bi bi-youtube"></i></a>
                 </div>
+                {% endcomment %}
+            </div>
+
+            <nav class="ft-col" aria-label="Explore">
+                <h3>Explore</h3>
+                <ul>
+                    <li><a href="{% url 'about' %}">About KYISA</a></li>
+                    <li><a href="{% url 'leadership' %}">Leadership</a></li>
+                    <li><a href="{% url 'public_competitions' %}">Competitions</a></li>
+                    <li><a href="{% url 'public_results' %}">Results</a></li>
+                    <li><a href="{% url 'public_statistics' %}">Statistics</a></li>
+                </ul>
+            </nav>
+
+            <nav class="ft-col" aria-label="News and media">
+                <h3>News &amp; Media</h3>
+                <ul>
+                    <li><a href="{% url 'news_media:news_list' %}">News &amp; Highlights</a></li>
+                    <li><a href="{% url 'news_media:gallery_list' %}">Gallery</a></li>
+                    <li><a href="{% url 'news_media:videos_list' %}">Videos</a></li>
+                    <li><a href="{% url 'web_login' %}">Staff portal</a></li>
+                </ul>
+            </nav>
+
+            <div class="ft-col">
+                <h3>Contact</h3>
+                <ul class="ft-contact">
+                    <li><i class="bi bi-geo-alt" aria-hidden="true"></i> P.O. Box 20655-00200, Nairobi</li>
+                    <li><i class="bi bi-envelope" aria-hidden="true"></i> <a href="mailto:info@kyisa.org">info@kyisa.org</a></li>
+                    <li><i class="bi bi-envelope-at" aria-hidden="true"></i> <a href="mailto:info.kyisa@gmail.com">info.kyisa@gmail.com</a></li>
+                    <li><i class="bi bi-telephone" aria-hidden="true"></i> +254 700 000 000</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="ft-partners">
+            <span>Affiliated to</span>
+            <div class="ft-partners__logos">
+                <img src="{% static 'img/fkf_logo_sm.png' %}" alt="Football Kenya Federation" title="Football Kenya Federation" width="40" height="40" loading="lazy">
+                <img src="{% static 'img/kbf_logo.jpg' %}" alt="Kenya Basketball Federation" title="Kenya Basketball Federation" width="40" height="40" loading="lazy">
+                <img src="{% static 'img/kvf_logo.png' %}" alt="Kenya Volleyball Federation" title="Kenya Volleyball Federation" width="40" height="40" loading="lazy">
+                <img src="{% static 'img/khf_logo.png' %}" alt="Kenya Handball Federation" title="Kenya Handball Federation" width="40" height="40" loading="lazy">
             </div>
         </div>
     </div>
-    <div class="fkf-footer-bottom">
+
+    <div class="ft-bottom">
         <div class="container">
-            &copy; {{ current_year|default:"2026" }} Kenya Youth Intercounty Sports Association. All rights reserved.
+            <span>&copy; {% now "Y" %} Kenya Youth Intercounty Sports Association. All rights reserved.</span>
+            <a href="#top" class="ft-top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;"><i class="bi bi-arrow-up" aria-hidden="true"></i> Back to top</a>
         </div>
     </div>
 </footer>
 
-<script src="{% static 'js/main.js' %}"></script>
+<script src="{% asset 'js/main.js' %}"></script>
 <script>
-/* Preloader: fill bar then hide */
-(function(){
-    var bar = document.getElementById('preloaderBar');
-    var pre = document.getElementById('preloader');
-    if (!bar || !pre) return;
-    var w = 0;
-    var iv = setInterval(function(){
-        w += 5;
-        bar.style.width = Math.min(w, 100) + '%';
-        if (w >= 100) {
-            clearInterval(iv);
-            setTimeout(function(){
-                pre.classList.add('preloader--done');
-            }, 200);
-        }
-    }, 30);
-    /* Fallback: hide after 2s no matter what */
-    setTimeout(function(){ pre.classList.add('preloader--done'); }, 2000);
-})();
-
-/* Navbar: solid on scroll all pages */
-(function(){
+/* Navbar: transparent over the page header (homepage photo or green inner-page header), white glass elsewhere and after scrolling */
+(function () {
     var nav = document.getElementById('fkfNav');
     if (!nav) return;
-    function checkScroll(){
-        if(window.scrollY > 60) nav.classList.add('fkf-nav--solid');
-        else nav.classList.remove('fkf-nav--solid');
+    var overPhoto = !!document.querySelector('.hero--dark, .page-hero');
+    function update() {
+        nav.classList.toggle('fkf-nav--solid', !overPhoto || window.scrollY > 40);
     }
-    window.addEventListener('scroll', checkScroll);
-    checkScroll();
+    window.addEventListener('scroll', update, { passive: true });
+    update();
 })();
 
-/* Mobile nav toggle all pages */
-(function(){
+/* Mobile menu + accessible dropdowns */
+(function () {
+    var nav = document.getElementById('fkfNav');
     var toggle = document.getElementById('navToggle');
     var links = document.getElementById('navLinks');
-    if(!toggle || !links) return;
-    toggle.addEventListener('click', function(){
-        toggle.classList.toggle('open');
-        links.classList.toggle('open');
+    if (!nav || !toggle || !links) return;
+
+    function setMenu(open) {
+        toggle.classList.toggle('open', open);
+        links.classList.toggle('open', open);
+        nav.classList.toggle('menu-open', open);
+        document.body.classList.toggle('nav-locked', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    }
+    toggle.addEventListener('click', function () { setMenu(!links.classList.contains('open')); });
+    links.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', function () { setMenu(false); });
     });
-    links.querySelectorAll('a').forEach(function(a){
-        a.addEventListener('click', function(){
-            toggle.classList.remove('open');
-            links.classList.remove('open');
+
+    var dropdowns = Array.prototype.slice.call(document.querySelectorAll('.nav-dropdown'));
+    function setDropdown(dd, open) {
+        dd.classList.toggle('open', open);
+        var btn = dd.querySelector('.nav-dd-toggle');
+        if (btn) btn.setAttribute('aria-expanded', String(open));
+    }
+    dropdowns.forEach(function (dd) {
+        var btn = dd.querySelector('.nav-dd-toggle');
+        if (!btn) return;
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var open = !dd.classList.contains('open');
+            dropdowns.forEach(function (other) { if (other !== dd) setDropdown(other, false); });
+            setDropdown(dd, open);
+        });
+        // Keep aria-expanded truthful when opened by hover or keyboard focus.
+        dd.addEventListener('focusin', function () { btn.setAttribute('aria-expanded', 'true'); });
+        dd.addEventListener('focusout', function (e) {
+            if (!dd.contains(e.relatedTarget)) setDropdown(dd, false);
         });
     });
-    /* Close dropdowns when clicking outside */
-    document.addEventListener('click', function(e){
-        if(!e.target.closest('.nav-dropdown')){
-            document.querySelectorAll('.nav-dropdown.open').forEach(function(d){ d.classList.remove('open'); });
-        }
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.nav-dropdown')) dropdowns.forEach(function (dd) { setDropdown(dd, false); });
     });
+    document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return;
+        var openDd = dropdowns.filter(function (dd) { return dd.classList.contains('open') || dd.contains(document.activeElement); })[0];
+        dropdowns.forEach(function (dd) { setDropdown(dd, false); });
+        if (openDd) { var b = openDd.querySelector('.nav-dd-toggle'); if (b) b.focus(); }
+        else if (links.classList.contains('open')) { setMenu(false); toggle.focus(); }
+    });
+    window.addEventListener('resize', function () { if (window.innerWidth > 1080) setMenu(false); });
 })();
 </script>
 {% block extra_js %}{% endblock %}

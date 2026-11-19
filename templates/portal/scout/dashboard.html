@@ -5,13 +5,13 @@
 <!-- Hero Banner -->
 <div class="dash-hero dash-hero--teal">
     <div class="hero-decor"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-    <span class="hero-badge"><span class="pulse-dot" style="background:#00BFA5"></span> Scout</span>
+    <span class="hero-badge"><span class="pulse-dot"></span> Scout</span>
     <h1><i class="bi bi-binoculars-fill"></i> Scout Dashboard</h1>
     <p>Assigned Discipline:
         {% if discipline %}
-        <span style="display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);padding:.2rem .8rem;border-radius:20px;font-weight:600;font-size:.85rem">{{ discipline_label }}</span>
+        <span class="hero-tag">{{ discipline_label }}</span>
         {% else %}
-        <span style="display:inline-block;background:rgba(230,81,0,.5);padding:.2rem .8rem;border-radius:20px;font-weight:600;font-size:.82rem">Not Assigned Contact Admin</span>
+        <span class="hero-tag hero-tag--warn">Not assigned: contact your admin</span>
         {% endif %}
     </p>
 </div>

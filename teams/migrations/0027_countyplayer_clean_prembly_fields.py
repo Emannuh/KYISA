@@ -14,6 +14,8 @@ state so ORM queries no longer try to SELECT it.
 """
 from django.db import migrations, models
 
+from ._portable import PostgresSQLOrEnsureColumns
+
 
 class Migration(migrations.Migration):
 
@@ -23,7 +25,11 @@ class Migration(migrations.Migration):
 
     operations = [
         # ── Ensure prembly_notes column exists in DB ──────────────────────
-        migrations.RunSQL(
+        PostgresSQLOrEnsureColumns(
+            columns={
+                'prembly_notes': "TEXT NOT NULL DEFAULT ''",
+                'prembly_verified_name': "VARCHAR(200) NOT NULL DEFAULT ''",
+            },
             sql="""
             DO $$
             BEGIN

@@ -28,38 +28,6 @@ class IsSportCoordinator(BasePermission):
         )
 
 
-class IsSoccerCoordinator(BasePermission):
-    """Only Soccer Coordinator can access."""
-    message = "You must be a Soccer Coordinator to perform this action."
-    def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated and
-                    request.user.role == UserRole.SOCCER_COORDINATOR)
-
-
-class IsHandballCoordinator(BasePermission):
-    """Only Handball Coordinator can access."""
-    message = "You must be a Handball Coordinator to perform this action."
-    def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated and
-                    request.user.role == UserRole.HANDBALL_COORDINATOR)
-
-
-class IsBasketballCoordinator(BasePermission):
-    """Only Basketball Coordinator can access."""
-    message = "You must be a Basketball Coordinator to perform this action."
-    def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated and
-                    request.user.role == UserRole.BASKETBALL_COORDINATOR)
-
-
-class IsVolleyballCoordinator(BasePermission):
-    """Only Volleyball Coordinator can access."""
-    message = "You must be a Volleyball Coordinator to perform this action."
-    def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated and
-                    request.user.role == UserRole.VOLLEYBALL_COORDINATOR)
-
-
 class IsReferee(BasePermission):
     """Only approved Referees can access."""
     message = "You must be an approved Referee to perform this action."
@@ -81,25 +49,6 @@ class IsTeamManager(BasePermission):
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_authenticated and
                     request.user.role == UserRole.TEAM_MANAGER)
-
-
-class IsTreasurer(BasePermission):
-    """Only the Treasurer can access."""
-    message = "You must be a Treasurer to perform this action."
-    def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated and
-                    request.user.role == UserRole.TREASURER)
-
-
-class IsTreasurerOrAdmin(BasePermission):
-    """Treasurer or Admin."""
-    def has_permission(self, request, view):
-        return bool(
-            request.user and request.user.is_authenticated and
-            (request.user.is_staff or request.user.role in [
-                UserRole.TREASURER, UserRole.ADMIN
-            ])
-        )
 
 
 class IsAdminOrCompetitionManager(BasePermission):

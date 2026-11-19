@@ -6,6 +6,8 @@ and will not fail if the column already exists or doesn't exist.
 """
 from django.db import migrations, models
 
+from ._portable import PostgresSQLOrEnsureColumns
+
 
 class Migration(migrations.Migration):
 
@@ -15,7 +17,14 @@ class Migration(migrations.Migration):
 
     operations = [
         # ── Use raw SQL so this is fully idempotent ──────────────────────────
-        migrations.RunSQL(
+        PostgresSQLOrEnsureColumns(
+            columns={
+                'prembly_status': "VARCHAR(20) NOT NULL DEFAULT 'not_checked'",
+                'prembly_reference': "VARCHAR(255) NOT NULL DEFAULT ''",
+                'prembly_verified_name': "VARCHAR(200) NOT NULL DEFAULT ''",
+                'prembly_checked_at': 'TIMESTAMPTZ NULL',
+                'is_age_eligible': 'BOOLEAN NOT NULL DEFAULT TRUE',
+            },
             sql="""
             DO $$
             BEGIN

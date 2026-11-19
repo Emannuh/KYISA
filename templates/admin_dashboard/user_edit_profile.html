@@ -156,11 +156,9 @@
                 <a href="{% url 'edit_user_roles' user_id=detail_user.id %}" class="sidebar-action" style="background:#E3F2FD;color:#1565C0;">
                     <i class="bi bi-gear"></i> Change Role
                 </a>
-                <a href="{% url 'reset_user_password' user_id=detail_user.id %}"
-                   onclick="return confirm('Reset password?')"
-                   class="sidebar-action" style="background:#FFF3E0;color:#E65100;">
+                <form method="post" action="{% url 'reset_user_password' user_id=detail_user.id %}" class="inline-form" onsubmit="return confirm('Reset password?')">{% csrf_token %}<button type="submit" class="sidebar-action" style="background:#FFF3E0;color:#E65100;">
                     <i class="bi bi-key"></i> Reset Password
-                </a>
+                </button></form>
             </div>
         </div>
     </div>

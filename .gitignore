@@ -37,7 +37,14 @@ Thumbs.db
 nul
 
 # Compiled/build
-# staticfiles/ — committed to git so Railway has it at deploy time
+# collectstatic output — every deploy path (Dockerfile, Procfile,
+# railway.toml, deploy.yml) runs collectstatic, so it is never committed.
+staticfiles/
+
+# Local tooling / personal files
+.tmp/
+*.lnk
+*.pptx
 
 # DigitalOcean (not used)
 .do/

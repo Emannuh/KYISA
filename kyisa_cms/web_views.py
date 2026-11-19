@@ -42,7 +42,8 @@ from referees.models import (
     get_required_roles, get_head_official_role, HEAD_OFFICIAL_ROLES,
 )
 from referees.forms import RefereeRegistrationForm
-from matches.models import MatchReport, MatchEvent, MatchReportStatus, SquadSubmission, SquadPlayer, SquadStatus
+from accounts.passwords import generate_temp_password
+from matches.models import MatchReport, MatchEvent, MatchReportStatus, SquadSubmission, SquadPlayer, SquadStatus, get_sport_config
 from datetime import date, timedelta
 
 
@@ -100,19 +101,21 @@ def send_credentials_email(user, temporary_password, role_label):
     from datetime import timedelta
     from accounts.models import LoginToken
 
-    # Generate a single-use magic login token (valid 7 days — gives time for treasurer approval)
+    # Generate a single-use magic login token (lifetime: LoginToken.TTL_HOURS)
     raw_token = secrets.token_urlsafe(48)
     LoginToken.objects.create(
         user=user,
         token=raw_token,
-        expires_at=timezone.now() + timedelta(days=7),
+        expires_at=LoginToken.default_expiry(),
     )
 
-    site_url = "https://kyisa.org"
+    from django.conf import settings as _settings
+    from django.utils.html import escape as _esc
+    site_url = _settings.SITE_URL
     magic_url = f"{site_url}/portal/magic/{raw_token}/"
     login_url = f"{site_url}/portal/login/"
 
-    subject = f'KYISA Portal Access — {role_label}'
+    subject = f'KYISA Portal Access: {role_label}'
 
     # ── Plain text fallback ────────────────────────────────────────────────
     text_content = (
@@ -122,9 +125,9 @@ def send_credentials_email(user, temporary_password, role_label):
         f'Temporary Password: {temporary_password}\n'
         f'Role:               {role_label}\n\n'
         f'Login URL: {login_url}\n\n'
-        f'OR — click this magic link to log in directly (no password needed):\n'
+        f'OR click this one-time link to sign in directly (no password needed):\n'
         f'{magic_url}\n\n'
-        f'The magic link expires in 7 days and can only be used once.\n'
+        f'The magic link expires in {LoginToken.TTL_HOURS} hours and can only be used once.\n'
         f'Please change your password immediately after first login.\n\n'
         f'KYISA IT Team\n'
         f'it@kyisa.org'
@@ -160,30 +163,30 @@ def send_credentials_email(user, temporary_password, role_label):
         <tr>
           <td style="padding:36px 40px 28px;">
             <p style="margin:0 0 20px;font-size:15px;color:#374151;">
-              Dear <strong>{user.first_name} {user.last_name}</strong>,
+              Dear <strong>{_esc(user.first_name)} {_esc(user.last_name)}</strong>,
             </p>
             <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.6;">
-              Your <strong>{role_label}</strong> account on the KYISA Competition Management System is ready.
+              Your <strong>{_esc(role_label)}</strong> account on the KYISA Competition Management System is ready.
               Use either option below to access your portal.
             </p>
 
             <!-- CREDENTIALS BOX -->
             <div style="background:#f8fafc;border:1px solid #e5e9f0;border-radius:12px;padding:20px 24px;margin-bottom:28px;">
-              <p style="margin:0 0 6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#6b7280;">Option 1 — Login with credentials</p>
+              <p style="margin:0 0 6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#6b7280;">Option 1: sign in with your credentials</p>
               <table cellpadding="0" cellspacing="0" style="width:100%;margin-top:12px;">
                 <tr>
                   <td style="padding:6px 0;font-size:13px;color:#6b7280;width:140px;">Login Email</td>
-                  <td style="padding:6px 0;font-size:13px;color:#0d1117;font-weight:700;">{user.email}</td>
+                  <td style="padding:6px 0;font-size:13px;color:#0d1117;font-weight:700;">{_esc(user.email)}</td>
                 </tr>
                 <tr>
                   <td style="padding:6px 0;font-size:13px;color:#6b7280;">Temporary Password</td>
                   <td style="padding:6px 0;">
-                    <span style="background:#1e293b;color:#86efac;font-family:monospace;font-size:15px;font-weight:700;padding:4px 12px;border-radius:6px;letter-spacing:.08em;">{temporary_password}</span>
+                    <span style="background:#1e293b;color:#86efac;font-family:monospace;font-size:15px;font-weight:700;padding:4px 12px;border-radius:6px;letter-spacing:.08em;user-select:all;-webkit-user-select:all;">{_esc(temporary_password)}</span>
                   </td>
                 </tr>
                 <tr>
                   <td style="padding:6px 0;font-size:13px;color:#6b7280;">Role</td>
-                  <td style="padding:6px 0;font-size:13px;color:#0d1117;font-weight:600;">{role_label}</td>
+                  <td style="padding:6px 0;font-size:13px;color:#0d1117;font-weight:600;">{_esc(role_label)}</td>
                 </tr>
               </table>
               <div style="margin-top:16px;">
@@ -195,10 +198,10 @@ def send_credentials_email(user, temporary_password, role_label):
 
             <!-- MAGIC LINK BOX -->
             <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:20px 24px;margin-bottom:28px;">
-              <p style="margin:0 0 8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#3b82f6;">Option 2 — Magic login link (no password needed)</p>
+              <p style="margin:0 0 8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#3b82f6;">Option 2: one-click sign-in link (no password needed)</p>
               <p style="margin:0 0 16px;font-size:13px;color:#374151;line-height:1.55;">
-                Click the button below to log in directly — no password required. Works great on mobile.
-                <br><strong>Valid for 72 hours · One use only.</strong>
+                Click the button below to sign in directly, no password required. Works well on mobile.
+                <br><strong>Valid for {LoginToken.TTL_HOURS} hours · One use only.</strong>
               </p>
               <a href="{magic_url}" style="display:inline-block;background:#0a66c2;color:#ffffff;text-decoration:none;font-size:14px;font-weight:700;padding:12px 28px;border-radius:8px;">
                 ✨ Click to Log In Instantly
@@ -959,8 +962,13 @@ def web_login_view(request):
             messages.success(request, f'Welcome back, {user.first_name}!')
             return redirect('dashboard')
         else:
+            error = 'Invalid email or password. Please try again.'
+            # An all-capitals email almost always means Caps Lock is on, which
+            # also flips every letter of the password.
+            if any(c.isalpha() for c in email) and email == email.upper():
+                error += ' Caps Lock appears to be on: turn it off and re-enter your password.'
             return render(request, 'accounts/login.html', {
-                'error': 'Invalid email or password. Please try again.',
+                'error': error,
                 'email': email,
             })
 
@@ -977,10 +985,23 @@ def force_change_password_view(request):
         new_password = request.POST.get('new_password', '')
         confirm_password = request.POST.get('confirm_password', '')
 
+        from django.contrib.auth.password_validation import validate_password
+        from django.core.exceptions import ValidationError
+
+        password_errors = []
         if new_password != confirm_password:
-            messages.error(request, 'Passwords do not match.')
-        elif len(new_password) < 8:
-            messages.error(request, 'Password must be at least 8 characters.')
+            password_errors.append('Passwords do not match.')
+        else:
+            # Enforce the AUTH_PASSWORD_VALIDATORS policy from settings
+            # (length, common-password, numeric-only, similarity to user data).
+            try:
+                validate_password(new_password, user=request.user)
+            except ValidationError as exc:
+                password_errors.extend(exc.messages)
+
+        if password_errors:
+            for err in password_errors:
+                messages.error(request, err)
         else:
             request.user.set_password(new_password)
             request.user.must_change_password = False
@@ -990,6 +1011,18 @@ def force_change_password_view(request):
             return redirect('dashboard')
 
     return render(request, 'accounts/force_change_password.html')
+
+
+@login_required(login_url='web_login')
+def session_keepalive_view(request):
+    """
+    Lightweight ping used by the portal idle-timeout script. Because
+    SESSION_SAVE_EVERY_REQUEST is on, any authenticated request refreshes the
+    session expiry; this endpoint does that without rendering a page.
+    Expired sessions are redirected to the login page by @login_required,
+    which the client detects and treats as signed out.
+    """
+    return HttpResponse(status=204)
 
 
 def web_logout_view(request):
@@ -1002,7 +1035,7 @@ def web_logout_view(request):
 def magic_login_view(request, token):
     """
     Single-use magic login link — logs the user in without a password.
-    The token is generated alongside the credentials email and expires in 72 hours.
+    The token is generated alongside the credentials email and expires after LoginToken.TTL_HOURS.
     """
     from accounts.models import LoginToken
     from django.utils import timezone
@@ -1045,14 +1078,6 @@ def magic_login_view(request, token):
 def dashboard_view(request):
     """Role-based dashboard with stats and recent fixtures."""
     user = request.user
-
-    stats = {
-        'competitions': Competition.objects.count(),
-        'teams': Team.objects.count(),
-        'referees': RefereeProfile.objects.filter(is_approved=True).count(),
-        'fixtures': Fixture.objects.count(),
-        'players': Player.objects.count(),
-    }
 
     # System admin dashboard is reserved for super admins.
     if user.role == 'admin' and user.is_superuser:
@@ -1102,6 +1127,16 @@ def dashboard_view(request):
 
     if user.role == 'scout':
         return redirect('scout_dashboard')
+
+    # Only roles without a dedicated portal reach this point, so the
+    # stats queries run only when the generic dashboard is actually rendered.
+    stats = {
+        'competitions': Competition.objects.count(),
+        'teams': Team.objects.count(),
+        'referees': RefereeProfile.objects.filter(is_approved=True).count(),
+        'fixtures': Fixture.objects.count(),
+        'players': Player.objects.count(),
+    }
 
     recent_fixtures = Fixture.objects.select_related(
         'competition', 'home_team', 'away_team'
@@ -1482,11 +1517,6 @@ def team_register_success_view(request):
     return redirect('county_admin_register')
 
 
-def referee_register_success_view(request):
-    """Redirect to home — public referee registration is handled via admin portal."""
-    return redirect('home')
-
-
 # ══════════════════════════════════════════════════════════════════════════════
 #   ADMIN / MANAGER — TEAM APPROVAL VIEWS
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1523,7 +1553,7 @@ def pending_referees_view(request):
             # Activate the user account
             user = profile.user
             user.is_active = True
-            temp_pw = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(10))
+            temp_pw = generate_temp_password()
             user.set_password(temp_pw)
             user.must_change_password = True
             user.save(update_fields=['is_active', 'password', 'must_change_password'])
@@ -2408,20 +2438,6 @@ def _coordinator_discipline(user):
         return [disc] if disc else None
 
     return None
-
-
-def _discipline_filter(queryset, user, field='sport_type'):
-    """
-    Apply a discipline scope filter to a Competition queryset.
-    Admins / CM / media managers see everything.
-    Sport coordinators see all sport_type values in their list.
-    """
-    if user.role in ('admin', 'competition_manager', 'media_manager') or user.is_superuser:
-        return queryset
-    disciplines = _coordinator_discipline(user)
-    if not disciplines:
-        return queryset.none()
-    return queryset.filter(**{f'{field}__in': disciplines})
 
 
 @role_required('coordinator', 'admin')
@@ -3450,7 +3466,7 @@ def coordinator_referees_view(request):
             profile.save()
             user = profile.user
             user.is_active = True
-            temp_pw = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
+            temp_pw = generate_temp_password()
             user.set_password(temp_pw)
             user.must_change_password = True
             user.save()
@@ -6032,10 +6048,7 @@ def county_admin_register_view(request):
         if form.is_valid():
             cd = form.cleaned_data
             # Auto-generate a secure temporary password
-            temp_password = ''.join(
-                secrets.choice(string.ascii_letters + string.digits)
-                for _ in range(12)
-            )
+            temp_password = generate_temp_password()
             user = User.objects.create_user(
                 email=cd['email'],
                 password=temp_password,
@@ -6731,10 +6744,7 @@ def treasurer_county_registrations_view(request):
             # with the magic login link — user may have lost or forgotten the original.
             try:
                 import secrets, string
-                temp_password = ''.join(
-                    secrets.choice(string.ascii_letters + string.digits)
-                    for _ in range(12)
-                )
+                temp_password = generate_temp_password()
                 reg.user.set_password(temp_password)
                 reg.user.must_change_password = True
                 reg.user.save(update_fields=['password', 'must_change_password'])
@@ -6840,7 +6850,7 @@ def county_admin_add_bench_member_view(request, discipline_pk):
                         messages.success(request, f'{member.get_full_name} added as {member.get_role_display()}. Existing Team Manager account linked.')
                     else:
                         try:
-                            temp_pw = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
+                            temp_pw = generate_temp_password()
                             tm_user = User.objects.create_user(
                                 email=member.email,
                                 password=temp_pw,
@@ -6933,7 +6943,7 @@ def county_admin_delegation_members_view(request):
                 member.save()
 
                 if member.role == CountyDelegationRole.CECM_SPORTS:
-                    temp_pw = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
+                    temp_pw = generate_temp_password()
                     name_parts = member.full_name.strip().split()
                     first_name = name_parts[0] if name_parts else 'CECM'
                     last_name = ' '.join(name_parts[1:]) if len(name_parts) > 1 else 'Sports'
@@ -7088,12 +7098,6 @@ def player_profile_view(request, player_pk):
         'player': player,
         'player_type': player_type,
     })
-
-
-@login_required(login_url='web_login')
-def county_player_profile_view(request, player_pk):
-    """County player profile view — redirect to the unified player profile."""
-    return player_profile_view(request, player_pk)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -7867,7 +7871,7 @@ def sg_system_overview_view(request):
         },
         {
             'title': 'Referee',
-            'icon': 'bi bi-whistle-fill',
+            'icon': 'bi bi-flag-fill',
             'color': '#c2410c',
             'bg': '#fff7ed',
             'count': rc('referee'),
@@ -7910,7 +7914,7 @@ def sg_system_overview_view(request):
         },
         {
             'title': 'Jury Chair',
-            'icon': 'bi bi-bank-fill',
+            'icon': 'bi bi-bank',
             'color': '#475569',
             'bg': '#f8fafc',
             'count': rc('jury_chair'),
@@ -8547,8 +8551,8 @@ def scout_players_view(request):
         players = players.filter(discipline__registration__county=county_filter)
     if search_query:
         players = players.filter(
-            models.Q(first_name__icontains=search_query) |
-            models.Q(last_name__icontains=search_query)
+            Q(first_name__icontains=search_query) |
+            Q(last_name__icontains=search_query)
         )
 
     # Get IDs already shortlisted by this scout
@@ -8833,7 +8837,7 @@ def sys_admin_dashboard_view(request):
         },
         {
             'title': 'Referees',
-            'icon': 'bi bi-whistle',
+            'icon': 'bi bi-flag',
             'count': role_total(UserRole.REFEREE),
             'count_label': 'referees',
             'primary_url': 'referee_portal',
@@ -8914,7 +8918,7 @@ def sys_admin_dashboard_view(request):
         },
         {
             'title': 'Jury Chair',
-            'icon': 'bi bi-balance-scale',
+            'icon': 'bi bi-bank',
             'count': role_total(UserRole.JURY_CHAIR),
             'count_label': 'jury chair users',
             'primary_url': 'jury_dashboard',
@@ -8952,22 +8956,7 @@ def sys_admin_dashboard_view(request):
         },
     ]
 
-    # ── Attach users and preview_role to each workspace ──────────────────────
-    _workspace_role_map = {
-        'System Admin':           [UserRole.ADMIN],
-        'Organising Secretary':   [UserRole.COMPETITION_MANAGER],
-        'Sport Coordinators':     [UserRole.COORDINATOR, UserRole.SOCCER_COORDINATOR, UserRole.HANDBALL_COORDINATOR, UserRole.BASKETBALL_COORDINATOR, UserRole.VOLLEYBALL_COORDINATOR],
-        'Media Managers':         [UserRole.MEDIA_MANAGER],
-        'Referees':               [UserRole.REFEREE],
-        'Team Managers':          [UserRole.TEAM_MANAGER],
-        'County Sports Directors': [UserRole.COUNTY_SPORTS_DIRECTOR],
-        'Treasurer':              [UserRole.TREASURER],
-        'Secretary General':      [UserRole.SECRETARY_GENERAL],
-        'Verification Officers':  [UserRole.VERIFICATION_OFFICER],
-        'Jury Chair':             [UserRole.JURY_CHAIR],
-        'Scouts':                 [UserRole.SCOUT],
-        'CEC Sports':             [UserRole.CEC_SPORTS_MEMBER],
-    }
+    # ── Attach preview_role to each workspace ────────────────────────────────
     # Map workspace title → previewable role slug
     _workspace_preview_role = {
         'Organising Secretary':   'competition_manager',
@@ -8983,192 +8972,8 @@ def sys_admin_dashboard_view(request):
         'Scouts':                 'scout',
         'CEC Sports':             'cec_sports',
     }
-    all_active_users = list(User.objects.filter(is_active=True).order_by('last_name', 'first_name'))
     for ws in role_workspaces:
-        role_keys = _workspace_role_map.get(ws['title'], [])
-        ws['users']        = [u for u in all_active_users if u.role in role_keys]
         ws['preview_role'] = _workspace_preview_role.get(ws['title'], '')
-
-    dashboard_hubs = [
-        {
-            'title': 'Coordinator Desk',
-            'icon': 'bi bi-person-gear',
-            'theme': 'teal',
-            'description': 'Competition control for coordinators across fixtures, appointments, reports, and venues.',
-            'count_label': 'active users',
-            'count': role_total(
-                UserRole.COORDINATOR,
-                UserRole.SOCCER_COORDINATOR,
-                UserRole.HANDBALL_COORDINATOR,
-                UserRole.BASKETBALL_COORDINATOR,
-                UserRole.VOLLEYBALL_COORDINATOR,
-            ),
-            'primary_url': 'coordinator_competitions',
-            'primary_label': 'Open coordinator tools',
-            'actions': [
-                {'label': 'Competitions', 'url': 'coordinator_competitions'},
-                {'label': 'Appointments', 'url': 'coordinator_appointments'},
-                {'label': 'Reports', 'url': 'coordinator_match_reports'},
-                {'label': 'Venues', 'url': 'coordinator_venues'},
-            ],
-        },
-        {
-            'title': 'Finance Desk',
-            'icon': 'bi bi-cash-stack',
-            'theme': 'amber',
-            'description': 'Payments, registrations, transfers, suspensions, and platform-wide statistics in one place.',
-            'count_label': 'treasurer users',
-            'count': role_total(UserRole.TREASURER),
-            'primary_url': 'treasurer_county_payments',
-            'primary_label': 'Open finance tools',
-            'actions': [
-                {'label': 'County Payments', 'url': 'treasurer_county_payments'},
-                {'label': 'Registrations', 'url': 'treasurer_county_registrations'},
-                {'label': 'Transfers', 'url': 'manage_transfers'},
-                {'label': 'Statistics', 'url': 'statistics_dashboard'},
-            ],
-        },
-        {
-            'title': 'Secretary General Desk',
-            'icon': 'bi bi-shield-lock',
-            'theme': 'indigo',
-            'description': 'Executive oversight for verifications, appeals, treasurer actions, user actions, and overrides.',
-            'count_label': 'secretary general users',
-            'count': role_total(UserRole.SECRETARY_GENERAL),
-            'primary_url': 'sg_verifications',
-            'primary_label': 'Open SG oversight',
-            'actions': [
-                {'label': 'Verifications', 'url': 'sg_verifications'},
-                {'label': 'Appeals', 'url': 'sg_appeals'},
-                {'label': 'User Actions', 'url': 'sg_user_actions'},
-                {'label': 'Overrides', 'url': 'sg_exceptional_overrides'},
-            ],
-        },
-        {
-            'title': 'Jury Desk',
-            'icon': 'bi bi-balance-scale',
-            'theme': 'slate',
-            'description': 'Appeals review, data exports, match reports, and disciplinary records for jury workflows.',
-            'count_label': 'jury chair users',
-            'count': role_total(UserRole.JURY_CHAIR),
-            'primary_url': 'jury_dashboard',
-            'primary_label': 'Open jury dashboard',
-            'actions': [
-                {'label': 'Jury Dashboard', 'url': 'jury_dashboard'},
-                {'label': 'Teams Data', 'url': 'jury_teams'},
-                {'label': 'Players Data', 'url': 'jury_players'},
-                {'label': 'Disciplinary', 'url': 'jury_disciplinary'},
-            ],
-        },
-        {
-            'title': 'Scouting Desk',
-            'icon': 'bi bi-binoculars',
-            'theme': 'blue',
-            'description': 'Scout verified players quickly and maintain the shortlist without leaving the admin hub.',
-            'count_label': 'scout users',
-            'count': role_total(UserRole.SCOUT),
-            'primary_url': 'scout_players',
-            'primary_label': 'Open scouting tools',
-            'actions': [
-                {'label': 'Browse Players', 'url': 'scout_players'},
-                {'label': 'Shortlist', 'url': 'scout_shortlist'},
-            ],
-        },
-        {
-            'title': 'Media Desk',
-            'icon': 'bi bi-camera-reels',
-            'theme': 'purple',
-            'description': 'Manage media publishing flow across the dashboard, articles, galleries, and videos.',
-            'count_label': 'media users',
-            'count': role_total(UserRole.MEDIA_MANAGER),
-            'primary_url': 'media_dashboard',
-            'primary_label': 'Open media tools',
-            'actions': [
-                {'label': 'Dashboard', 'url': 'media_dashboard'},
-                {'label': 'Articles', 'url': 'media_article_list'},
-                {'label': 'Albums', 'url': 'media_album_list'},
-                {'label': 'Videos', 'url': 'media_video_list'},
-            ],
-        },
-        {
-            'title': 'County Operations Desk',
-            'icon': 'bi bi-building',
-            'theme': 'green',
-            'description': 'County registration operations across disciplines, delegations, and verification readiness.',
-            'count_label': 'county admin users',
-            'count': role_total(UserRole.COUNTY_SPORTS_DIRECTOR),
-            'primary_url': 'county_admin_dashboard',
-            'primary_label': 'Open county workflows',
-            'actions': [
-                {'label': 'County Dashboard', 'url': 'county_admin_dashboard'},
-                {'label': 'Verification', 'url': 'county_admin_verification'},
-            ],
-        },
-        {
-            'title': 'Team Manager Desk',
-            'icon': 'bi bi-people',
-            'theme': 'blue',
-            'description': 'Matchday operations for squad submissions, sanctions tracking, and appeals filing.',
-            'count_label': 'team manager users',
-            'count': role_total(UserRole.TEAM_MANAGER),
-            'primary_url': 'team_manager_dashboard',
-            'primary_label': 'Open team manager tools',
-            'actions': [
-                {'label': 'Manager Dashboard', 'url': 'team_manager_dashboard'},
-                {'label': 'Sanctions', 'url': 'team_manager_sanctions'},
-                {'label': 'File Appeal', 'url': 'team_manager_file_appeal'},
-            ],
-        },
-        {
-            'title': 'Referee Desk',
-            'icon': 'bi bi-whistle',
-            'theme': 'amber',
-            'description': 'Referee profile and appointment workflows for match officiating and reporting.',
-            'count_label': 'referee users',
-            'count': role_total(UserRole.REFEREE),
-            'primary_url': 'referee_portal',
-            'primary_label': 'Open referee portal',
-            'actions': [
-                {'label': 'Referee Dashboard', 'url': 'referee_portal'},
-                {'label': 'Edit Profile', 'url': 'referee_edit_profile'},
-            ],
-        },
-        {
-            'title': 'Verification Desk',
-            'icon': 'bi bi-patch-check',
-            'theme': 'teal',
-            'description': 'County-level player and delegation verification before tournament participation.',
-            'count_label': 'verification officers',
-            'count': role_total(UserRole.VERIFICATION_OFFICER),
-            'primary_url': 'vo_registered_counties',
-            'primary_label': 'Open verification queues',
-            'actions': [
-                {'label': 'Registered Counties', 'url': 'vo_registered_counties'},
-                {'label': 'CM Verification', 'url': 'county_player_verification_list'},
-            ],
-        },
-        {
-            'title': 'CEC Sports Desk',
-            'icon': 'bi bi-eye',
-            'theme': 'slate',
-            'description': 'Read-only executive visibility for county sports leadership and oversight reporting.',
-            'count_label': 'cec sports users',
-            'count': role_total(UserRole.CEC_SPORTS_MEMBER),
-            'primary_url': 'cec_sports_portal',
-            'primary_label': 'Open CEC portal',
-            'actions': [
-                {'label': 'CEC Dashboard', 'url': 'cec_sports_portal'},
-            ],
-        },
-    ]
-
-    # ── Users grouped by role (for per-user portal cards) ────────────────
-    all_users = User.objects.filter(is_active=True).order_by('role', 'last_name', 'first_name')
-    users_by_role = {}
-    for u in all_users:
-        if u.role not in users_by_role:
-            users_by_role[u.role] = []
-        users_by_role[u.role].append(u)
 
     # ── Test Dashboards — quick preview grid for sys admin testing ────────
     test_dashboards = [
@@ -9177,11 +8982,11 @@ def sys_admin_dashboard_view(request):
         {'role': 'treasurer',           'label': 'Treasurer',              'icon': 'bi bi-cash-stack',        'bg': '#fef9c3', 'color': '#854d0e', 'count': role_count_map.get(UserRole.TREASURER, 0)},
         {'role': 'secretary_general',   'label': 'Secretary General',      'icon': 'bi bi-shield-lock-fill', 'bg': '#e0e7ff', 'color': '#3730a3', 'count': role_count_map.get(UserRole.SECRETARY_GENERAL, 0)},
         {'role': 'verification_officer','label': 'Verification Officer',   'icon': 'bi bi-patch-check-fill', 'bg': '#f0fdfa', 'color': '#0f766e', 'count': role_count_map.get(UserRole.VERIFICATION_OFFICER, 0)},
-        {'role': 'referee',             'label': 'Referee',                'icon': 'bi bi-whistle-fill',      'bg': '#fff7ed', 'color': '#c2410c', 'count': role_count_map.get(UserRole.REFEREE, 0)},
+        {'role': 'referee',             'label': 'Referee',                'icon': 'bi bi-flag-fill',      'bg': '#fff7ed', 'color': '#c2410c', 'count': role_count_map.get(UserRole.REFEREE, 0)},
         {'role': 'team_manager',        'label': 'Team Manager',           'icon': 'bi bi-people-fill',       'bg': '#eff6ff', 'color': '#1d4ed8', 'count': role_count_map.get(UserRole.TEAM_MANAGER, 0)},
         {'role': 'scout',               'label': 'Scout',                  'icon': 'bi bi-binoculars-fill',   'bg': '#f0f9ff', 'color': '#0369a1', 'count': role_count_map.get(UserRole.SCOUT, 0)},
         {'role': 'media_manager',       'label': 'Media Manager',          'icon': 'bi bi-camera-reels-fill', 'bg': '#fdf4ff', 'color': '#7e22ce', 'count': role_count_map.get(UserRole.MEDIA_MANAGER, 0)},
-        {'role': 'jury_chair',          'label': 'Jury Chair',             'icon': 'bi bi-bank-fill',         'bg': '#f8fafc', 'color': '#475569', 'count': role_count_map.get(UserRole.JURY_CHAIR, 0)},
+        {'role': 'jury_chair',          'label': 'Jury Chair',             'icon': 'bi bi-bank',         'bg': '#f8fafc', 'color': '#475569', 'count': role_count_map.get(UserRole.JURY_CHAIR, 0)},
         {'role': 'coordinator',         'label': 'Sport Coordinator',      'icon': 'bi bi-person-gear',       'bg': '#ecfdf5', 'color': '#065f46', 'count': role_total(UserRole.COORDINATOR, UserRole.SOCCER_COORDINATOR, UserRole.HANDBALL_COORDINATOR, UserRole.BASKETBALL_COORDINATOR, UserRole.VOLLEYBALL_COORDINATOR)},
         {'role': 'cec_sports',          'label': 'CEC Sports',             'icon': 'bi bi-eye-fill',          'bg': '#fafaf9', 'color': '#78716c', 'count': role_count_map.get(UserRole.CEC_SPORTS_MEMBER, 0)},
     ]
@@ -9203,8 +9008,6 @@ def sys_admin_dashboard_view(request):
         'recent_fixtures': recent_fixtures,
         'role_distribution': role_distribution,
         'role_workspaces': role_workspaces,
-        'dashboard_hubs': dashboard_hubs,
-        'users_by_role': users_by_role,
         'test_dashboards': test_dashboards,
         'kicosca_county_count': role_count_map.get(UserRole.COUNTY_SPORTS_DIRECTOR, 0),
     })

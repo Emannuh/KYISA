@@ -107,15 +107,6 @@ def _get_or_create_entry_for_officer(user, edition):
     return entry, reg
 
 
-def _get_or_create_entry(reg, edition):
-    """Get or create a KicoscaCountyEntry for this county/edition."""
-    entry, _ = KicoscaCountyEntry.objects.get_or_create(
-        edition=edition,
-        county_registration=reg,
-    )
-    return entry
-
-
 # ── Dashboard ─────────────────────────────────────────────────────────────────
 
 @kicosca_required

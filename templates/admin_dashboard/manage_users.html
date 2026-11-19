@@ -726,26 +726,23 @@ document.addEventListener('DOMContentLoaded', toggleCountyField);
                                 </a>
                                 <div class="menu-divider"></div>
                                 <div class="menu-label">Account</div>
-                                <a href="{% url 'toggle_user_status' user_id=user.id %}"
-                                    onclick="return confirm('{% if user.is_active %}Deactivate{% else %}Activate{% endif %} {{ user.email }}?')">
+                                <form method="post" action="{% url 'toggle_user_status' user_id=user.id %}" class="inline-form" onsubmit="return confirm('{% if user.is_active %}Deactivate{% else %}Activate{% endif %} {{ user.email }}?')">{% csrf_token %}<button type="submit">
                                     <span class="menu-icon toggle">
                                         {% if user.is_active %}<i class="bi bi-pause-fill"></i>{% else %}<i
                                             class="bi bi-play-fill"></i>{% endif %}
                                     </span>
                                     {% if user.is_active %}Deactivate{% else %}Activate{% endif %} User
-                                </a>
-                                <a href="{% url 'reset_user_password' user_id=user.id %}"
-                                    onclick="return confirm('Reset password for {{ user.email }}?')">
+                                </button></form>
+                                <form method="post" action="{% url 'reset_user_password' user_id=user.id %}" class="inline-form" onsubmit="return confirm('Reset password for {{ user.email }}?')">{% csrf_token %}<button type="submit">
                                     <span class="menu-icon key"><i class="bi bi-key"></i></span>
                                     Reset Password
-                                </a>
+                                </button></form>
                                 {% if not user.is_superuser and user != request.user %}
                                 <div class="menu-divider"></div>
-                                <a href="{% url 'delete_user' user_id=user.id %}" class="danger-item"
-                                    onclick="return confirm('WARNING: DELETE {{ user.email }}? This cannot be undone!')">
+                                <form method="post" action="{% url 'delete_user' user_id=user.id %}" class="inline-form" onsubmit="return confirm('WARNING: DELETE {{ user.email }}? This cannot be undone!')">{% csrf_token %}<button type="submit" class="danger-item">
                                     <span class="menu-icon del"><i class="bi bi-trash"></i></span>
                                     Delete User
-                                </a>
+                                </button></form>
                                 {% endif %}
                             </div>
                         </div>

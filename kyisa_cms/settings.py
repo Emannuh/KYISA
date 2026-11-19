@@ -20,6 +20,11 @@ DEBUG      = env.bool("DEBUG", default=False)
 # Required — must be set explicitly in .env; empty list = deny all in production
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 
+# Public base URL used for links in outgoing emails (login page, magic links).
+# Override locally, e.g. SITE_URL=http://127.0.0.1:8010, so emailed links
+# point at your dev server instead of production.
+SITE_URL = env("SITE_URL", default="https://kyisa.org").rstrip("/")
+
 # In local development it's convenient to reach the server via localhost.
 # These are appended only when DEBUG is on so production is never permissive.
 if DEBUG:
@@ -372,8 +377,9 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE          = "Africa/Nairobi"
 
 # ── EMAIL ──────────────────────────────────────────────────────────────────────
-# Dev: console backend. Production: Brevo API via django-anymail
-EMAIL_BACKEND    = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
+# Dev: kyisa_cms.dev_email_backend prints each email as readable plain text in
+# the runserver terminal. Production: Brevo API via django-anymail.
+EMAIL_BACKEND    = env("EMAIL_BACKEND", default="kyisa_cms.dev_email_backend.EmailBackend")
 EMAIL_HOST       = env("EMAIL_HOST", default="localhost")
 EMAIL_PORT       = env.int("EMAIL_PORT", default=587)
 EMAIL_USE_TLS    = env.bool("EMAIL_USE_TLS", default=True)

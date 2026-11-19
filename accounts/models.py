@@ -36,6 +36,20 @@ class UserRole(models.TextChoices):
 
 
 class UserManager(BaseUserManager):
+    def get_by_natural_key(self, username):
+        """
+        Case-insensitive email lookup for authentication (web login, API token
+        login, admin). Emails are case-insensitive in practice, and phones often
+        change capitalisation, so "KKK@gmail.com" and "kkk@gmail.com" must match.
+        If two accounts differ only by case, fall back to an exact match rather
+        than guessing which one is meant.
+        """
+        field = self.model.USERNAME_FIELD
+        try:
+            return self.get(**{f"{field}__iexact": username})
+        except self.model.MultipleObjectsReturned:
+            return self.get(**{field: username})
+
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError("Email is required")
@@ -131,8 +145,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 class LoginToken(models.Model):
     """
     Single-use magic login link token for new users who cannot use OTP.
-    Expires after 72 hours and is deleted on use.
+    Valid for TTL_HOURS from creation and deleted on use.
     """
+    # Lifetime of every emailed one-click sign-in link. Emails read this value,
+    # so the text always matches the real expiry.
+    TTL_HOURS = 12
+
     user       = models.ForeignKey(User, on_delete=models.CASCADE, related_name='login_tokens')
     token      = models.CharField(max_length=64, unique=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -146,9 +164,20 @@ class LoginToken(models.Model):
     def __str__(self):
         return f"LoginToken for {self.user.email} (expires {self.expires_at:%Y-%m-%d %H:%M})"
 
+    @classmethod
+    def default_expiry(cls):
+        from django.utils import timezone
+        from datetime import timedelta
+        return timezone.now() + timedelta(hours=cls.TTL_HOURS)
+
     def is_valid(self):
         from django.utils import timezone
-        return not self.used and self.expires_at > timezone.now()
+        from datetime import timedelta
+        now = timezone.now()
+        # Also cap by creation time, so links issued under an older, longer
+        # policy can't outlive the current TTL.
+        cap = self.created_at + timedelta(hours=self.TTL_HOURS) if self.created_at else self.expires_at
+        return not self.used and now < min(self.expires_at, cap)
 
 
 class KenyaCounty(models.TextChoices):
