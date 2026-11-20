@@ -393,46 +393,129 @@ img { max-width: 100%; }
     opacity: 1;
     pointer-events: auto;
 }
+/* ── Kenyan flag (phase C): large plain flag, animated reveal + gentle float ── */
+.hero-phase--flag { --flag-w: clamp(300px, 33vw, 470px); }
+.kenya-flag-stage {
+    position: relative; display: flex; justify-content: center;
+    margin: 1.25rem auto 1.5rem;
+    perspective: 1400px;
+    --tilt-x: 0deg; --tilt-y: 0deg;
+}
+.kenya-flag-glow {
+    position: absolute; left: 50%; top: 50%;
+    width: calc(var(--flag-w) * 1.2); height: calc(var(--flag-w) * .8);
+    transform: translate(-50%, -50%);
+    background:
+        radial-gradient(ellipse at 30% 45%, rgba(0,140,60,.45), transparent 60%),
+        radial-gradient(ellipse at 70% 55%, rgba(200,16,46,.32), transparent 60%),
+        radial-gradient(ellipse at 50% 50%, rgba(249,168,37,.14), transparent 70%);
+    filter: blur(40px); opacity: 0; pointer-events: none;
+}
 .kenya-flag-wrap {
-    display: flex; align-items: stretch;
-    justify-content: center; margin-bottom: 1rem; margin-top: 1rem; gap: 0;
-}
-.flag-pole {
-    width: 8px;
-    background: linear-gradient(180deg, #a0a0a0 0%, #666 40%, #888 100%);
-    border-radius: 4px; position: relative; flex-shrink: 0;
-    box-shadow: 2px 0 10px rgba(0,0,0,.3); min-height: 100%;
-}
-.flag-pole-cap {
-    position: absolute; top: -14px; left: 50%;
-    transform: translateX(-50%);
-    width: 18px; height: 18px;
-    background: radial-gradient(circle at 40% 35%, #d4af37, #a08520);
-    border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,.35);
+    position: relative; z-index: 1;
+    transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+    transform-style: preserve-3d;
+    transition: transform .6s cubic-bezier(.16,1,.3,1);
 }
 .kenya-flag {
-    position: relative; width: 380px; flex-shrink: 0;
-    transform-origin: left center; animation: flag-sway 6s ease-in-out infinite;
-    filter: drop-shadow(0 15px 40px rgba(0,0,0,.35));
-    overflow: hidden; border-radius: 2px;
+    position: relative;
+    width: var(--flag-w); aspect-ratio: 4 / 3;            /* a little taller than the official 3:2 */
+    border-radius: 10px; overflow: hidden;
+    box-shadow:
+        0 30px 60px -15px rgba(0,0,0,.65),
+        0 0 0 1px rgba(255,255,255,.14);
 }
-.flag-img { width: 100%; height: auto; display: block; object-fit: cover; }
+.flag-img { width: 100%; height: 100%; display: block; object-fit: fill; }   /* stretch, never crop */
+/* soft moving light across the fabric: gives depth without cutting the image */
+.kenya-flag::before {
+    content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: repeating-linear-gradient(100deg,
+        rgba(255,255,255,0) 0%, rgba(255,255,255,.10) 12%,
+        rgba(0,0,0,0) 25%, rgba(0,0,0,.12) 37%, rgba(255,255,255,0) 50%);
+    background-size: 200% 100%;
+    mix-blend-mode: soft-light;
+}
+.flag-sheen {
+    position: absolute; inset: 0; z-index: 2; overflow: hidden; pointer-events: none;
+}
+.flag-sheen::after {
+    content: ""; position: absolute; top: -20%; bottom: -20%; left: 0; width: 35%;
+    background: linear-gradient(100deg, transparent 0%, rgba(255,255,255,.32) 50%, transparent 100%);
+    transform: translateX(-160%) skewX(-12deg);
+    mix-blend-mode: soft-light;
+}
+.kenya-flag-shadow {
+    position: absolute; left: 50%; bottom: -30px;
+    width: calc(var(--flag-w) * .75); height: 24px;
+    transform: translateX(-50%);
+    background: radial-gradient(ellipse at center, rgba(0,0,0,.55), transparent 70%);
+    filter: blur(8px); opacity: 0; pointer-events: none;
+}
 .flag-text-block {
-    background: rgba(0,0,0,.6); border-radius: 12px;
-    padding: 1rem 1.75rem; max-width: 600px; margin: 0 auto;
-    border: 1px solid rgba(255,255,255,.1);
-    box-shadow: 0 8px 32px rgba(0,0,0,.45);
+    position: relative; overflow: hidden;
+    background: linear-gradient(160deg, rgba(14,24,16,.72), rgba(6,10,7,.62));
+    backdrop-filter: blur(12px) saturate(1.3); -webkit-backdrop-filter: blur(12px) saturate(1.3);
+    border-radius: 16px;
+    padding: 1.25rem 2rem 1.1rem; max-width: 620px; margin: 0 auto;
+    border: 1px solid rgba(255,255,255,.12);
+    box-shadow: 0 18px 50px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08);
 }
+.flag-rule {
+    display: flex; justify-content: center; gap: 4px; margin: 0 auto .75rem;
+}
+.flag-rule i { display: block; height: 3px; width: 26px; border-radius: 3px; transform-origin: center; }
+.flag-rule i:nth-child(1) { background: #111; box-shadow: 0 0 0 1px rgba(255,255,255,.25); }
+.flag-rule i:nth-child(2) { background: #c8102e; }
+.flag-rule i:nth-child(3) { background: #008c3c; }
 .flag-quote {
     font-family: 'Outfit', Georgia, serif;
-    font-size: 1.05rem; font-style: italic; font-weight: 500;
+    font-size: 1.12rem; font-style: italic; font-weight: 500;
     color: #ffffff; max-width: 640px; text-align: center;
     line-height: 1.65; margin: 0 auto .75rem;
+    text-shadow: 0 2px 12px rgba(0,0,0,.4);
 }
 .flag-author {
     display: block; text-align: center;
     font-size: .88rem; color: #f5d060;
     letter-spacing: 1.5px; font-weight: 700; text-transform: uppercase;
+}
+.flag-author em { color: rgba(255,255,255,.7); font-weight: 600; }
+
+/* Entrance choreography each time the flag phase comes in */
+.hero-phase--flag.hero-phase--active .kenya-flag-wrap { animation: flag-reveal 1.2s .15s cubic-bezier(.16,1,.3,1) backwards; }
+.hero-phase--flag.hero-phase--active .kenya-flag      { animation: flag-float 7s 1.4s ease-in-out infinite; }
+.hero-phase--flag.hero-phase--active .kenya-flag::before { animation: flag-ripple 6s linear infinite; }
+.hero-phase--flag.hero-phase--active .kenya-flag-glow { animation: flag-glow-in 1.4s .4s ease-out forwards, flag-glow-pulse 5s 1.8s ease-in-out infinite; }
+.hero-phase--flag.hero-phase--active .kenya-flag-shadow { animation: flag-fade-in 1s .8s ease-out forwards; }
+.hero-phase--flag.hero-phase--active .flag-sheen::after { animation: flag-sheen 3.4s 1.4s cubic-bezier(.4,0,.2,1) infinite; }
+.hero-phase--flag.hero-phase--active .flag-text-block { animation: hero-rise .9s .75s cubic-bezier(.16,1,.3,1) both; }
+.hero-phase--flag.hero-phase--active .flag-rule i     { animation: flag-rule-grow .7s cubic-bezier(.16,1,.3,1) both; }
+.hero-phase--flag.hero-phase--active .flag-rule i:nth-child(1) { animation-delay: 1.05s; }
+.hero-phase--flag.hero-phase--active .flag-rule i:nth-child(2) { animation-delay: 1.15s; }
+.hero-phase--flag.hero-phase--active .flag-rule i:nth-child(3) { animation-delay: 1.25s; }
+.hero-phase--flag.hero-phase--active .flag-quote      { animation: hero-rise .9s 1.0s cubic-bezier(.16,1,.3,1) both; }
+.hero-phase--flag.hero-phase--active .flag-author     { animation: hero-rise .9s 1.25s cubic-bezier(.16,1,.3,1) both; }
+
+@keyframes flag-reveal {
+    0%   { opacity: 0; transform: translateY(40px) rotateX(22deg) scale(.82); filter: blur(12px); clip-path: inset(0 50% 0 50% round 10px); }
+    55%  { opacity: 1; filter: blur(0); }
+    100% { opacity: 1; transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y)); filter: none; clip-path: inset(0 0 0 0 round 10px); }
+}
+@keyframes flag-float {
+    0%, 100% { transform: translateY(0) rotateY(0deg) rotateX(0deg); }
+    25%      { transform: translateY(-6px) rotateY(3deg) rotateX(1deg); }
+    50%      { transform: translateY(-2px) rotateY(0deg) rotateX(-1deg); }
+    75%      { transform: translateY(-7px) rotateY(-3deg) rotateX(.5deg); }
+}
+@keyframes flag-ripple { from { background-position: 0% 0; } to { background-position: -200% 0; } }
+@keyframes flag-glow-in    { from { opacity: 0; transform: translate(-50%, -50%) scale(.7); } to { opacity: .85; transform: translate(-50%, -50%) scale(1); } }
+@keyframes flag-glow-pulse { 0%, 100% { opacity: .85; transform: translate(-50%, -50%) scale(1); } 50% { opacity: .55; transform: translate(-50%, -50%) scale(1.06); } }
+@keyframes flag-fade-in    { to { opacity: 1; } }
+@keyframes flag-sheen      { 0% { transform: translateX(-160%) skewX(-12deg); } 45%, 100% { transform: translateX(420%) skewX(-12deg); } }
+@keyframes flag-rule-grow  { from { transform: scaleX(0); opacity: 0; } to { transform: scaleX(1); opacity: 1; } }
+@keyframes hero-rise {
+    from { opacity: 0; transform: translateY(18px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateY(0);    filter: none; }
 }
 .hero-logo-wrap {
     position: relative; display: inline-block; margin-bottom: 1rem;
@@ -499,7 +582,7 @@ img { max-width: 100%; }
     .hero--dark .hero-title { font-size: 2.4rem; }
     .hero-logo-img { width: 150px; height: auto; }
     .hero--dark .hero-tagline { font-size: .75rem; letter-spacing: 2px; }
-    .kenya-flag { width: 340px; }
+    .hero-phase--flag { --flag-w: min(370px, 70vw); }
     .flag-quote { font-size: 1rem; max-width: 440px; }
     .flag-author { font-size: .75rem; }
     .hero-split { flex-direction: column; gap: 1.5rem; padding: 1.5rem 1.25rem; align-items: center; }
@@ -531,7 +614,7 @@ img { max-width: 100%; }
     .hero-logo-wrap { margin-bottom: .5rem; }
     .hero-logo-ring { width: 88px; height: 88px; }
     .hero-quote { font-size: .78rem; line-height: 1.45; max-width: 320px; margin: .5rem auto .75rem; }
-    .kenya-flag { width: 220px; }
+    .hero-phase--flag { --flag-w: min(290px, 72vw); }
     .flag-quote { font-size: .82rem; max-width: 280px; margin: .5rem auto; }
     .flag-author { font-size: .65rem; letter-spacing: 1px; }
     .flag-text-block { padding: 0 .75rem; }
@@ -543,7 +626,7 @@ img { max-width: 100%; }
     .hero-logo-img { width: 60px; }
     .hero-logo-ring { width: 76px; height: 76px; }
     .hero-quote { font-size: .7rem; max-width: 250px; }
-    .kenya-flag { width: 180px; }
+    .hero-phase--flag { --flag-w: 72vw; }
     .flag-quote { font-size: .72rem; max-width: 230px; }
 }
 @media (max-width: 768px) {
@@ -551,15 +634,6 @@ img { max-width: 100%; }
 .flag-author {
         font-size: .75rem;
     }
-}
-@keyframes flag-sway {
-    0%   { transform: perspective(800px) rotateY(0deg)  skewY(0deg); }
-    15%  { transform: perspective(800px) rotateY(6deg)  skewY(-1.5deg); }
-    30%  { transform: perspective(800px) rotateY(-3deg) skewY(1deg); }
-    50%  { transform: perspective(800px) rotateY(5deg)  skewY(-1deg); }
-    70%  { transform: perspective(800px) rotateY(-2deg) skewY(.8deg); }
-    85%  { transform: perspective(800px) rotateY(4deg)  skewY(-.6deg); }
-    100% { transform: perspective(800px) rotateY(0deg)  skewY(0deg); }
 }
 
 
@@ -580,13 +654,83 @@ img { max-width: 100%; }
     color: rgba(255,255,255,.6);
 }
 .btn--outline-light { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-.flag-img { border-radius: 2px; }
 @media (max-width: 768px) {
     .hero-logo-img { padding: 6px 10px; border-radius: 12px; }
     .hero .hero-quote .hero-quote__by { font-size: .75rem; }
 }
+
+/* ── Hero: premium motion layer (same layout, smoother feel) ─────────── */
+@media (min-width: 769px) {
+    .hero-left { min-height: 660px; }                   /* fits the larger flag + quote */
+}
+/* Cinematic cross-fade between phases: soft blur + depth */
+.hero-phase {
+    filter: blur(8px);
+    transform: translateY(-50%) scale(.97);
+    transition: opacity .9s cubic-bezier(.4,0,.2,1), transform .9s cubic-bezier(.16,1,.3,1), filter .9s cubic-bezier(.4,0,.2,1);
+}
+.hero-phase--active { filter: none; transform: translateY(-50%) scale(1); }
+@media (max-width: 768px) {
+    .hero-phase { transform: scale(.97); }
+    .hero-phase--active { transform: none; }
+}
+/* Logo: re-entrance, gentle float and a breathing halo */
+.hero .hero-logo-ring {
+    display: block; position: absolute; inset: -22px; width: auto; height: auto;
+    border-radius: 36px; z-index: 1; pointer-events: none;
+    background: radial-gradient(ellipse at center, rgba(249,168,37,.45), rgba(46,125,50,.35) 55%, transparent 75%);
+    filter: blur(22px);
+    animation: hero-halo 5s ease-in-out infinite;
+}
+.hero-phase--active .hero-logo-wrap { animation: hero-logo-in 1s cubic-bezier(.34,1.4,.64,1) both; }
+.hero-logo-img { animation: hero-float 6s ease-in-out infinite; }
+/* Gold shimmer on (KYISA) */
+.hero--dark .hero-line--accent {
+    background: linear-gradient(100deg, #F9A825 0%, #F9A825 35%, #FFF1C1 50%, #F9A825 65%, #F57F17 100%);
+    background-size: 250% 100%;
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+    animation: hero-gold-shimmer 4.5s linear infinite;
+}
+/* Supporting copy replays its entrance on every phase change */
+.hero-phase--active .hero-tagline { animation: hero-tagline-in 1.2s .85s cubic-bezier(.16,1,.3,1) both; }
+.hero-phase--active .hero-quote   { animation: hero-rise .9s 1s cubic-bezier(.16,1,.3,1) both; }
+.hero-phase--active .hero-actions { animation: hero-rise .9s 1.15s cubic-bezier(.16,1,.3,1) both; }
+/* Primary CTA: glow + periodic light sweep */
+.hero .btn--gold {
+    position: relative; overflow: hidden; isolation: isolate;
+    box-shadow: 0 10px 28px rgba(249,168,37,.3), inset 0 1px 0 rgba(255,255,255,.35);
+}
+.hero .btn--gold::after {
+    content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 45%; z-index: -1;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.55), transparent);
+    transform: translateX(-130%) skewX(-18deg);
+    animation: hero-btn-sweep 4.5s 2.5s ease-in-out infinite;
+}
+.hero .btn--gold:hover { box-shadow: 0 14px 34px rgba(249,168,37,.45), inset 0 1px 0 rgba(255,255,255,.35); }
+@media (max-width: 480px) {
+    .flag-text-block { padding: .9rem 1rem .8rem; border-radius: 14px; }
+    .flag-rule { margin-bottom: .5rem; }
+    .flag-rule i { width: 20px; }
+    .kenya-flag-stage { margin: 1.25rem auto 1rem; }
+}
+
+@keyframes hero-float        { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+@keyframes hero-halo         { 0%, 100% { opacity: .55; transform: scale(.96); } 50% { opacity: .9; transform: scale(1.04); } }
+@keyframes hero-logo-in      { from { opacity: 0; transform: scale(.82); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes hero-gold-shimmer { from { background-position: 100% 0; } to { background-position: -150% 0; } }
+@keyframes hero-tagline-in   { from { opacity: 0; letter-spacing: .9em; filter: blur(4px); transform: none; } to { opacity: 1; filter: none; transform: none; } }
+@keyframes hero-btn-sweep    { 0% { transform: translateX(-130%) skewX(-18deg); } 40%, 100% { transform: translateX(330%) skewX(-18deg); } }
+
 @media (prefers-reduced-motion: reduce) {
-    .hero-bg-slide--zoom, .kenya-flag { animation: none; }
+    .hero-bg-slide--zoom, .kenya-flag, .hero-logo-img, .hero .hero-logo-ring,
+    .hero--dark .hero-line--accent, .hero .btn--gold::after,
+    .hero-phase--active .hero-logo-wrap, .hero-phase--active .hero-tagline,
+    .hero-phase--active .hero-quote, .hero-phase--active .hero-actions,
+    .hero-phase--flag.hero-phase--active *, .flag-sheen::after, .kenya-flag::before { animation: none !important; }
+    .hero-phase, .hero-phase--active { filter: none; transition: opacity .4s ease; }
+    .kenya-flag-glow { opacity: .7; }
+    .kenya-flag-shadow { opacity: 1; }
 }
 
 

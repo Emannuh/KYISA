@@ -17,6 +17,7 @@
             <span class="comp-badge s-8135f7c">{{ competition.get_status_display }}</span>
         </div>
     </div>
+    {% if can_setup %}
     <div class="hero-actions">
         <a href="{% url 'coordinator_manage_pools' pk=competition.pk %}" class="btn btn-light btn-sm">Pools</a>
         <a href="{% url 'coordinator_generate_fixtures' pk=competition.pk %}" class="btn btn-light btn-sm">Fixtures</a>
@@ -25,8 +26,10 @@
         <a href="{% url 'coordinator_statistics' pk=competition.pk %}" class="btn btn-light btn-sm">Stats</a>
         <a href="{% url 'coordinator_competition_rules' pk=competition.pk %}" class="btn btn-light btn-sm">Rules</a>
     </div>
+    {% endif %}
 </div>
 
+{% if can_setup %}
 <!-- Management tiles -->
 <div class="mgmt-grid">
     <a href="{% url 'coordinator_manage_pools' pk=competition.pk %}" class="mgmt-tile">
@@ -50,6 +53,7 @@
         <p>Define criteria &amp; competition rules</p>
     </a>
 </div>
+{% endif %}
 
 <!-- Pools & Standings -->
 {% if pool_data %}
@@ -234,7 +238,7 @@
             </div>
             {% endfor %}
         {% else %}
-            <div class="s-bb93015">No pools created yet <a href="{% url 'coordinator_manage_pools' pk=competition.pk %}">create pools first</a></div>
+            <div class="s-bb93015">No pools created yet{% if can_setup %} <a href="{% url 'coordinator_manage_pools' pk=competition.pk %}">create pools first</a>{% endif %}</div>
         {% endif %}
     </div>
 </div>

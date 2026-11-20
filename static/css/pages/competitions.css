@@ -5107,6 +5107,27 @@
 :where(.pg-portal-cm-manage-competition) .badge-registration { background: rgba(255,193,7,.2); color: #F57F17; }
 :where(.pg-portal-cm-manage-competition) .badge-completed { background: rgba(0,0,0,.1); color: #fff; }
 :where(.pg-portal-cm-manage-competition) .badge-draft { background: rgba(255,255,255,.2); color: #fff; }
+/* Header actions and status badge sit on the purple gradient: these rules carry
+   real specificity so the global .btn-secondary / badge colours can't override them. */
+.pg-portal-cm-manage-competition .comp-hero .hero-actions .btn {
+        color: #fff;
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.35);
+        box-shadow: none;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+    }
+.pg-portal-cm-manage-competition .comp-hero .hero-actions .btn:hover,
+.pg-portal-cm-manage-competition .comp-hero .hero-actions .btn:focus-visible {
+        color: #4A148C;
+        background: #fff;
+        border-color: #fff;
+    }
+.pg-portal-cm-manage-competition .comp-hero .hero-actions .btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.pg-portal-cm-manage-competition .comp-hero .badge-active       { background: #C8E6C9; color: #1B5E20; }
+.pg-portal-cm-manage-competition .comp-hero .badge-registration { background: #FFE082; color: #5D4037; }
+.pg-portal-cm-manage-competition .comp-hero .badge-completed    { background: rgba(255,255,255,.9); color: #4A148C; }
+.pg-portal-cm-manage-competition .comp-hero .badge-draft        { background: rgba(255,255,255,.22); color: #fff; border: 1px solid rgba(255,255,255,.4); }
 :where(.pg-portal-cm-manage-competition) .mini-stats {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));

@@ -60,7 +60,7 @@
         <h3 class="s-fa6b896"><i class="bi bi-play-circle"></i> Videos</h3>
         <p class="s-76b1f67">Manage video content</p>
     </a>
-    <a href="{% url 'coordinator_competitions' %}" class="card s-d94d324">
+    <a href="{% if user.role == 'competition_manager' %}{% url 'competitions_list' %}{% else %}{% url 'coordinator_competitions' %}{% endif %}" class="card s-d94d324">
         <h3 class="s-fa6b896"><i class="bi bi-trophy"></i> Fixtures & Results</h3>
         <p class="s-76b1f67">View all fixtures and update match results</p>
     </a>

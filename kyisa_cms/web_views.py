@@ -2525,6 +2525,11 @@ def coordinator_competitions_view(request):
     """List all competitions for the coordinator's discipline(s)."""
     from competitions.models import Competition, SportType, CompetitionStatus
 
+    # The Organising Secretary has its own competition screens; the coordinator
+    # setup pages linked from here are closed to that role.
+    if request.user.role == 'competition_manager' and not request.user.is_superuser:
+        return redirect('competitions_list')
+
     disciplines = _coordinator_discipline(request.user)  # list or None
     if request.user.role in ('media_manager', 'competition_manager', 'admin') or request.user.is_superuser:
         competitions = Competition.objects.all().order_by('-start_date')
@@ -2567,6 +2572,10 @@ def coordinator_competition_manage_view(request, pk):
     from matches.models import MatchReport
 
     competition = get_object_or_404(Competition, pk=pk)
+
+    # Organising Secretary: use the dedicated screen, which links to pages it may open
+    if request.user.role == 'competition_manager' and not request.user.is_superuser:
+        return redirect('cm_competition_manage', pk=competition.pk)
 
     # Verify discipline ownership (media managers & competition managers can access all)
     disciplines = _coordinator_discipline(request.user)
@@ -2824,6 +2833,12 @@ def coordinator_competition_manage_view(request, pk):
         'knockout_round_choices': KnockoutRound.choices,
         'pending_reports': pending_reports,
         'approved_reports': approved_reports,
+        # Pools, venues, standings, stats and rules pages are coordinator/admin only;
+        # hide their links from media managers rather than bounce them.
+        'can_setup': request.user.is_superuser or request.user.role in (
+            'admin', 'coordinator', 'soccer_coordinator', 'handball_coordinator',
+            'basketball_coordinator', 'volleyball_coordinator',
+        ),
     })
 
 

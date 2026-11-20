@@ -4,7 +4,7 @@
 {% block content %}
 <div class="page-header">
     <div class="breadcrumb">
-        <a href="{% url 'treasurer_dashboard' %}">Treasurer</a>
+        {% if user.role == 'competition_manager' %}<a href="{% url 'cm_dashboard' %}">Organising Secretary</a>{% else %}<a href="{% url 'treasurer_dashboard' %}">Treasurer</a>{% endif %}
         <span>County Registrations</span>
     </div>
     <h1><i class="bi bi-person-badge"></i> County Registrations</h1>
